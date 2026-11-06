@@ -226,6 +226,11 @@ def sh_fakes(tmp_path) -> tuple[str, Fakes]:
     shell = find_on_path("sh")
     if shell is None:
         pytest.skip("sh is not installed")
+    # Git for Windows: bin/sh.exe is a wrapper that puts its own git on PATH; usr/bin/sh.exe
+    # keeps the fake PATH.
+    plain = Path(shell).parent.parent / "usr" / "bin" / "sh.exe"
+    if os.name == "nt" and Path(shell).parent.name.lower() == "bin" and plain.is_file():
+        shell = str(plain)
     system = [str(Path(shell).parent)]
     if os.name == "nt":
         system.append(str(Path(os.environ.get("SystemRoot", r"C:\Windows")) / "System32"))

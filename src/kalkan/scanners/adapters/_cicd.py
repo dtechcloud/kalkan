@@ -165,7 +165,7 @@ def target_path(raw: object, target: Path, *, cwd: Path | None = None) -> str:
             return posix
     if cwd is not None:
         try:
-            joined = (cwd / text).resolve()
+            joined = (cwd / posix).resolve()  # a Windows path from a tool on POSIX too
             if joined.is_file():
                 return joined.relative_to(root).as_posix()
         except (OSError, ValueError):
