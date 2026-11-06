@@ -232,7 +232,7 @@ def test_default_timeout_and_cwd(tmp_path):
     runner = FakeRunner(write_after("--out", sarif([])))
     run_adapter(FakeSarifAdapter(), ctx, runner=runner, resolver=resolver())
     call = runner.calls[0]
-    assert 0 < call["timeout"] <= 77
+    assert 0 < call["timeout"] <= 77 + 1e-6  # the Windows clock can add a few ulp
     assert call["cwd"] == ctx.run_dir.resolve() / "scans"
 
 
