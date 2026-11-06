@@ -1,0 +1,72 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan sca_reach task result (docs/ENGINE-SPEC.md section 18).",
+  "required": [
+    "task_id",
+    "vuln_ref",
+    "reachability",
+    "reason",
+    "evidence",
+    "searched"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-sca_reach$"
+    },
+    "vuln_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reachability": {
+      "type": "string",
+      "enum": [
+        "reachable",
+        "not_reachable",
+        "unknown"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "visibleContent": true
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "line",
+          "quote"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Target-relative POSIX path."
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact text from the cited line or the two lines around it."
+          }
+        }
+      }
+    },
+    "searched": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "visibleContent": true
+      }
+    }
+  }
+}

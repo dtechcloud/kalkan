@@ -1,0 +1,41 @@
+{
+  "verdict": "needs_validation",
+  "fingerprint": "sqli:app/db.py:find_user",
+  "title": "find_user içinde biçimlenmiş SQL",
+  "description": "Opengrep, f-string ile kurulan bir SQL sorgusu buldu.",
+  "claimed_root_cause": "find_user, SQL metnini f-string ile kuruyor.",
+  "trace": [
+    {
+      "kind": "sink",
+      "file": "app/db.py",
+      "line": 8,
+      "scope": "find_user",
+      "description": "Biçimlenmiş SQL metnini çalıştırıyor."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "app/db.py",
+      "line": 8,
+      "description": "Opengrep kuralı bu satırı işaretledi."
+    }
+  ],
+  "blockers": [
+    "unverified_evidence"
+  ],
+  "validation_plan": {
+    "local": "Test veritabanıyla payload gönder."
+  },
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "engines": [
+    "opengrep",
+    "verifier"
+  ],
+  "id": "KF-CF0FB1E8E50E80FC",
+  "candidates": [
+    "CAND-7FB0BF0A3BDA3C13"
+  ]
+}

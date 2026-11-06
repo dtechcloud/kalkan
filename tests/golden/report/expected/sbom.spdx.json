@@ -1,0 +1,166 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "kalkan-sbom-shop",
+  "documentNamespace": "https://kalkan.invalid/spdx/20261015T120000Z-shop-a1b2-9207de23-d9dd-5a45-b3b9-f485faa6f9df",
+  "creationInfo": {
+    "created": "2026-10-15T12:30:00Z",
+    "creators": [
+      "Tool: kalkan-0.0.0-golden",
+      "Tool: syft-1.54.0"
+    ],
+    "comment": "Joined by kalkan from the SBOM of Syft (or Trivy), the exact pins of manifests without a lockfile and the vendored JavaScript libraries. Vendored libraries: RetireJS jsrepository-v5 2026-10-15 (SHA-256 c213444cbf88314fb7fd11c20f0541fb880245ddef07f90b7f437a25f533b081)."
+  },
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-Target",
+      "name": "shop",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "APPLICATION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "comment": "kalkan run 20261015T120000Z-shop-a1b2; target shop"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-9b08c8dcea7d919f6445",
+      "name": "jquery",
+      "versionInfo": "1.12.4",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/jquery@1.12.4"
+        }
+      ],
+      "sourceInfo": "kalkan sources: vendored; locations: web/static/js/jquery.min.js; RetireJS library: jquery"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-fa432c681217cd2cf4f8",
+      "name": "lodash",
+      "versionInfo": "4.17.15",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:npm/lodash@4.17.15"
+        }
+      ],
+      "sourceInfo": "kalkan sources: manifest-pin; locations: web/package.json"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-fb7868f5ca19ac174b4d",
+      "name": "flask",
+      "versionInfo": "3.0.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/flask@3.0.0"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:palletsprojects:flask:3.0.0:*:*:*:*:python:*:*"
+        }
+      ],
+      "sourceInfo": "kalkan sources: syft; locations: requirements.txt"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-a0a9109a64cf9e532420",
+      "name": "pyyaml",
+      "versionInfo": "5.3",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/pyyaml@5.3"
+        }
+      ],
+      "sourceInfo": "kalkan sources: syft; locations: requirements.txt"
+    },
+    {
+      "SPDXID": "SPDXRef-Package-fc1c4a0eae4aedee8706",
+      "name": "requests",
+      "versionInfo": "2.19.0",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "primaryPackagePurpose": "LIBRARY",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "Apache-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:pypi/requests@2.19.0"
+        }
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "5d1f7e0a6c3b4f6e9f21ad0b5c7d8e9fa1b2c3d4e5f60718293a4b5c6d7e8f90"
+        }
+      ],
+      "sourceInfo": "kalkan sources: syft; locations: requirements.txt"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-Target"
+    },
+    {
+      "spdxElementId": "SPDXRef-Target",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-9b08c8dcea7d919f6445"
+    },
+    {
+      "spdxElementId": "SPDXRef-Target",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-fa432c681217cd2cf4f8"
+    },
+    {
+      "spdxElementId": "SPDXRef-Target",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-fb7868f5ca19ac174b4d"
+    },
+    {
+      "spdxElementId": "SPDXRef-Target",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-a0a9109a64cf9e532420"
+    },
+    {
+      "spdxElementId": "SPDXRef-Target",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-Package-fc1c4a0eae4aedee8706"
+    }
+  ]
+}

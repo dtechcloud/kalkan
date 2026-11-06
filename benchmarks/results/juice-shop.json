@@ -1,0 +1,820 @@
+{
+  "schema_version": 1,
+  "target": "juice-shop",
+  "started_at": "2026-11-01T15:46:52Z",
+  "finished_at": "2026-11-01T16:06:37Z",
+  "offline": false,
+  "host": {
+    "platform": "Windows-11-10.0.26200-SP0",
+    "machine": "AMD64",
+    "python": "3.14.4",
+    "cpu_count": 20
+  },
+  "kalkan": {
+    "version": "1.7.3",
+    "commit": "783a2f529b53891bda7a628f256eb8cb07104b4d",
+    "dirty": false
+  },
+  "tools": {
+    "actionlint": "1.7.12",
+    "bandit": "1.9.4",
+    "checkov": "3.3.22",
+    "flawfinder": "2.0.20",
+    "gitleaks": "8.30.1",
+    "gixy": "0.2.55",
+    "go": "1.26.9",
+    "gosec": "2.29.0",
+    "govulncheck": "1.8.0",
+    "grype": "0.119.0",
+    "hadolint": "2.15.1",
+    "helm": "4.3.0",
+    "kingfisher": "2.11.1",
+    "opengrep": "1.30.1",
+    "osv-scanner": "2.6.0",
+    "poutine": "1.1.6",
+    "scorecard": "5.5.0",
+    "shellcheck": "0.11.0",
+    "syft": "1.54.0",
+    "trivy": "0.75.0",
+    "vacuum": "0.33.0",
+    "zizmor": "1.30.1"
+  },
+  "target_ref": {
+    "kind": "git",
+    "url": "https://github.com/juice-shop/juice-shop.git",
+    "ref": "refs/tags/v20.3.0",
+    "tag": "v20.3.0",
+    "tag_object": "aa81d67fdeb83d497d29912f5f632da0c392dc44",
+    "commit": "f189f521266f42c6bd05884468292000cee852ed",
+    "git_ref": "f189f521266f42c6bd05884468292000cee852ed"
+  },
+  "status": "ok",
+  "failure": null,
+  "prepare": {
+    "action": "fetched",
+    "duration_seconds": 14.59,
+    "history_commits": 23571,
+    "git_config": {
+      "core.symlinks": "false",
+      "core.longpaths": "true",
+      "core.autocrlf": "false"
+    },
+    "neutralized_now": 6,
+    "neutralized": [
+      ".claude.kalkan-neutralized",
+      ".claude.kalkan-neutralized/CLAUDE.md.kalkan-neutralized",
+      ".cursor.kalkan-neutralized",
+      ".github/copilot-instructions.md.kalkan-neutralized",
+      ".junie/AGENTS.md.kalkan-neutralized",
+      "AGENTS.md.kalkan-neutralized"
+    ]
+  },
+  "source_dir": ".bench-runs/_src/juice-shop",
+  "run_id": "20261101T154707Z-juice-shop-39f8",
+  "steps": [
+    {
+      "step": "init",
+      "command": "kalkan run init .bench-runs/_src/juice-shop --json",
+      "exit_code": 0,
+      "duration_seconds": 20.29,
+      "ok": true
+    },
+    {
+      "step": "scan",
+      "command": "kalkan scan all --run 20261101T154707Z-juice-shop-39f8 --json",
+      "exit_code": 0,
+      "duration_seconds": 1126.2,
+      "ok": true
+    },
+    {
+      "step": "sbom",
+      "command": "kalkan sca sbom --run 20261101T154707Z-juice-shop-39f8 --json",
+      "exit_code": 0,
+      "duration_seconds": 1.55,
+      "ok": true
+    },
+    {
+      "step": "match",
+      "command": "kalkan sca match --run 20261101T154707Z-juice-shop-39f8 --json",
+      "exit_code": 0,
+      "duration_seconds": 20.78,
+      "ok": true
+    },
+    {
+      "step": "merge",
+      "command": "kalkan merge --run 20261101T154707Z-juice-shop-39f8 --json",
+      "exit_code": 0,
+      "duration_seconds": 0.47,
+      "ok": true
+    },
+    {
+      "step": "report",
+      "command": "kalkan report --run 20261101T154707Z-juice-shop-39f8 --json",
+      "exit_code": 0,
+      "duration_seconds": 0.57,
+      "ok": true
+    }
+  ],
+  "pipeline_seconds": 1169.86,
+  "run_dir": ".bench-runs/20261101T154707Z-juice-shop-39f8",
+  "files": {
+    "copied": 1466,
+    "bytes": 31935006,
+    "directories": 182,
+    "skipped": 1
+  },
+  "excluded": {
+    ".git": 1
+  },
+  "neutralized_count": 0,
+  "tech": [
+    "angular",
+    "docker",
+    "docker-compose",
+    "express",
+    "github-actions",
+    "node",
+    "python",
+    "solidity",
+    "terraform"
+  ],
+  "long_paths": {
+    "count": 1,
+    "limit": 260,
+    "condition": "absolute Windows path of 260 or more characters; opengrep-core.exe is not long-path aware and skips such files without a warning, also with LongPathsEnabled=1",
+    "long_paths_enabled": true,
+    "root_length": 98,
+    "samples": [
+      "frontend/src/app/score-board/components/filter-settings/components/score-board-additional-settings-dialog/score-board-additional-settings-dialog.component.spec.ts"
+    ]
+  },
+  "engines": {
+    "actionlint": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 1.188,
+      "exit_code": 1,
+      "tool_version": "1.7.12",
+      "candidates": 13,
+      "message": "13 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "bandit": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.646,
+      "exit_code": 0,
+      "tool_version": "1.9.4",
+      "candidates": 0,
+      "message": "0 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "checkov": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 112.012,
+      "exit_code": 1,
+      "tool_version": "3.3.22",
+      "candidates": 143,
+      "message": "143 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "flawfinder": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.001,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "the target has no C or C++ code (tech tags 'c' and 'cpp' missing)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gitleaks-history": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 5.925,
+      "exit_code": 0,
+      "tool_version": "8.30.1",
+      "candidates": 184,
+      "message": "184 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gitleaks": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.991,
+      "exit_code": 0,
+      "tool_version": "8.30.1",
+      "candidates": 68,
+      "message": "68 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gixy": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.174,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "no nginx configuration found in the target",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gosec": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.001,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "the target has no Go code (tech tag 'go' missing)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "hadolint": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.543,
+      "exit_code": 0,
+      "tool_version": "2.15.1",
+      "candidates": 16,
+      "message": "16 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "helm-checkov": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.15,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "no Helm chart (Chart.yaml) in the target",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "kingfisher-history": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 5.578,
+      "exit_code": 200,
+      "tool_version": "2.11.1",
+      "candidates": 16,
+      "message": "16 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "kingfisher": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 3.218,
+      "exit_code": 200,
+      "tool_version": "2.11.1",
+      "candidates": 15,
+      "message": "15 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "matcher": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 8.414,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": 385,
+      "message": "385 candidates; 92 of 204 matchers applied, 962 files scanned",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "opengrep-packs": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 957.636,
+      "exit_code": 0,
+      "tool_version": "1.30.1",
+      "candidates": 99,
+      "message": "99 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "opengrep": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 18.378,
+      "exit_code": 0,
+      "tool_version": "1.30.1",
+      "candidates": 33,
+      "message": "33 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null,
+      "coverage": {
+        "files_scanned": 1464,
+        "partially_scanned_files": 31,
+        "partial_samples": [
+          "data/static/codefixes/chatbotPromptInjectionChallenge_1.ts",
+          "data/static/codefixes/chatbotPromptInjectionChallenge_2_correct.ts",
+          "data/static/codefixes/chatbotPromptInjectionChallenge_3.ts",
+          "data/static/codefixes/chatbotPromptInjectionChallenge_4.ts",
+          "data/static/codefixes/loginAdminChallenge_1.ts",
+          "data/static/codefixes/loginAdminChallenge_2.ts",
+          "data/static/codefixes/loginAdminChallenge_3.ts",
+          "data/static/codefixes/loginAdminChallenge_4_correct.ts",
+          "data/static/codefixes/loginBenderChallenge_1.ts",
+          "data/static/codefixes/loginBenderChallenge_2_correct.ts",
+          "data/static/codefixes/loginBenderChallenge_3.ts",
+          "data/static/codefixes/loginBenderChallenge_4.ts",
+          "data/static/codefixes/loginJimChallenge_1_correct.ts",
+          "data/static/codefixes/loginJimChallenge_2.ts",
+          "data/static/codefixes/loginJimChallenge_3.ts",
+          "data/static/codefixes/loginJimChallenge_4.ts",
+          "data/static/codefixes/registerAdminChallenge_1.ts",
+          "data/static/codefixes/registerAdminChallenge_2.ts",
+          "data/static/codefixes/registerAdminChallenge_3_correct.ts",
+          "data/static/codefixes/registerAdminChallenge_4.ts"
+        ],
+        "skipped_files": 3,
+        "skipped_reasons": {
+          "files larger than 1.0 MB": 2,
+          "files with an absolute path of 260 or more characters (not reported by Opengrep)": 1
+        },
+        "skipped_samples": [
+          "frontend/src/app/score-board/components/filter-settings/components/score-board-additional-settings-dialog/score-board-additional-settings-dialog.component.spec.ts",
+          "frontend/src/assets/public/videos/owasp_promo.mp4",
+          "screenshots/slideshow.gif"
+        ]
+      }
+    },
+    "poutine": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.179,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "poutine 1.1.6 on Windows reads only GitLab CI, Azure Pipelines and a root action.yml (it matches the other paths with '/'), and the target has none; zizmor and actionlint check the GitHub workflows",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "scorecard": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.944,
+      "exit_code": 0,
+      "tool_version": "5.5.0",
+      "candidates": 4,
+      "message": "4 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "shellcheck": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 1.021,
+      "exit_code": 0,
+      "tool_version": "0.11.0",
+      "candidates": 0,
+      "message": "0 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "trivy": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 6.564,
+      "exit_code": 0,
+      "tool_version": "0.75.0",
+      "candidates": 92,
+      "message": "92 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "vacuum": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.89,
+      "exit_code": 0,
+      "tool_version": "0.33.0",
+      "candidates": 18,
+      "message": "18 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "zizmor": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 1.347,
+      "exit_code": 0,
+      "tool_version": "1.30.1",
+      "candidates": 99,
+      "message": "99 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "grype-pins": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 1.712,
+      "exit_code": 0,
+      "tool_version": "0.119.0",
+      "candidates": null,
+      "message": "output written: sca/grype-pins.json (54566 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "grype": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 8.149,
+      "exit_code": 0,
+      "tool_version": "0.119.0",
+      "candidates": null,
+      "message": "output written: sca/grype.json (5993 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "osv-scanner-pins": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 9.501,
+      "exit_code": 1,
+      "tool_version": "2.6.0",
+      "candidates": null,
+      "message": "output written: sca/osv-pins.json (63306 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "osv-scanner": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 0.397,
+      "exit_code": 0,
+      "tool_version": "2.6.0",
+      "candidates": null,
+      "message": "output written: sca/osv.json (124 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "retirejs": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 0.497,
+      "exit_code": null,
+      "tool_version": "jsrepository-v5 2026-10-29 sha256:fbbd151177c5",
+      "candidates": null,
+      "message": "JavaScript files checked: 16; vendored library versions: 0 (files: 0)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "syft": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 1.21,
+      "exit_code": 0,
+      "tool_version": "1.54.0",
+      "candidates": null,
+      "message": "output written: sca/sbom.cdx.json (67830 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    }
+  },
+  "candidates": {
+    "present": true,
+    "total": 1200,
+    "by_engine": {
+      "actionlint": 13,
+      "checkov": 143,
+      "gitleaks": 68,
+      "gitleaks-history": 184,
+      "hadolint": 16,
+      "kingfisher": 15,
+      "kingfisher-history": 16,
+      "matcher": 385,
+      "opengrep": 33,
+      "opengrep-packs": 99,
+      "osv-scanner": 15,
+      "scorecard": 4,
+      "trivy": 92,
+      "vacuum": 18,
+      "zizmor": 99
+    },
+    "by_class": {
+      "authn": 12,
+      "code-injection": 12,
+      "code-quality": 16,
+      "cors": 2,
+      "crypto": 141,
+      "deserialization": 12,
+      "dos-redos": 10,
+      "hardcoded-secrets": 320,
+      "iac-cloud-container": 227,
+      "idor": 2,
+      "jwt": 5,
+      "mass-assignment": 3,
+      "nosqli": 56,
+      "null": 50,
+      "open-redirect": 11,
+      "os-command-injection": 6,
+      "path-traversal": 14,
+      "prototype-pollution": 1,
+      "race-condition": 21,
+      "rate-limit-bruteforce": 2,
+      "security-misconfig": 16,
+      "sensitive-data-exposure": 35,
+      "sqli": 43,
+      "ssrf": 7,
+      "ssti": 1,
+      "supply-chain-cicd": 125,
+      "vulnerable-dependency": 15,
+      "xss": 35
+    },
+    "by_severity": {
+      "critical": 22,
+      "high": 303,
+      "medium": 482,
+      "low": 208,
+      "info": 185
+    },
+    "by_engine_severity": {
+      "actionlint": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 0,
+        "info": 13
+      },
+      "checkov": {
+        "critical": 0,
+        "high": 143,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "gitleaks": {
+        "critical": 0,
+        "high": 0,
+        "medium": 68,
+        "low": 0,
+        "info": 0
+      },
+      "gitleaks-history": {
+        "critical": 0,
+        "high": 0,
+        "medium": 184,
+        "low": 0,
+        "info": 0
+      },
+      "hadolint": {
+        "critical": 0,
+        "high": 0,
+        "medium": 4,
+        "low": 12,
+        "info": 0
+      },
+      "kingfisher": {
+        "critical": 0,
+        "high": 15,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "kingfisher-history": {
+        "critical": 0,
+        "high": 16,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "matcher": {
+        "critical": 0,
+        "high": 0,
+        "medium": 92,
+        "low": 132,
+        "info": 161
+      },
+      "opengrep": {
+        "critical": 0,
+        "high": 31,
+        "medium": 2,
+        "low": 0,
+        "info": 0
+      },
+      "opengrep-packs": {
+        "critical": 0,
+        "high": 47,
+        "medium": 52,
+        "low": 0,
+        "info": 0
+      },
+      "osv-scanner": {
+        "critical": 2,
+        "high": 3,
+        "medium": 10,
+        "low": 0,
+        "info": 0
+      },
+      "scorecard": {
+        "critical": 0,
+        "high": 0,
+        "medium": 3,
+        "low": 0,
+        "info": 1
+      },
+      "trivy": {
+        "critical": 20,
+        "high": 23,
+        "medium": 9,
+        "low": 40,
+        "info": 0
+      },
+      "vacuum": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 10,
+        "info": 8
+      },
+      "zizmor": {
+        "critical": 0,
+        "high": 25,
+        "medium": 58,
+        "low": 14,
+        "info": 2
+      }
+    },
+    "suppressed_in_source": 0,
+    "warnings": 2,
+    "warnings_by_source": {
+      "sca": 2
+    },
+    "warning_samples": [
+      "sca: package.json: npm manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (110 version ranges not checked, 4 exact pins checked)",
+      "sca: frontend/package.json: npm manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (60 version ranges not checked, 2 exact pins checked)"
+    ]
+  },
+  "sca": {
+    "sbom": {
+      "engine": "syft",
+      "components": 23,
+      "by_ecosystem": {
+        "GitHub Actions": 23
+      },
+      "warnings": 0
+    },
+    "raw_records": 30,
+    "raw_by_engine": {
+      "osv-scanner": {
+        "status": "ok",
+        "records": 0
+      },
+      "grype": {
+        "status": "ok",
+        "records": 0
+      },
+      "retirejs": {
+        "status": "ok",
+        "records": 0
+      },
+      "osv-scanner-pins": {
+        "status": "ok",
+        "records": 15
+      },
+      "grype-pins": {
+        "status": "ok",
+        "records": 15
+      }
+    },
+    "merged_records": 15,
+    "merged_by_severity": {
+      "critical": 2,
+      "high": 3,
+      "medium": 10,
+      "low": 0,
+      "info": 0
+    },
+    "merged_by_engines": {
+      "grype+osv-scanner": 15
+    },
+    "merged_by_ecosystem": {
+      "npm": 15
+    },
+    "manifest_pins": 6,
+    "pin_records": 15,
+    "pin_records_by_severity": {
+      "critical": 2,
+      "high": 3,
+      "medium": 10,
+      "low": 0,
+      "info": 0
+    },
+    "pin_records_by_package": {
+      "npm/express-jwt@0.1.3": 1,
+      "npm/jsonwebtoken@0.4.0": 4,
+      "npm/sanitize-html@1.4.2": 10
+    },
+    "candidates": 15,
+    "warnings": 2,
+    "warning_samples": [
+      "package.json: npm manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (110 version ranges not checked, 4 exact pins checked)",
+      "frontend/package.json: npm manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (60 version ranges not checked, 2 exact pins checked)"
+    ]
+  },
+  "merge": {
+    "run_id": "20261101T154707Z-juice-shop-39f8",
+    "findings_file": "findings.json",
+    "written": true,
+    "findings": 0,
+    "by_verdict": {
+      "confirmed": 0,
+      "needs_validation": 0,
+      "rejected": 0
+    },
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "duplicates_folded": 0,
+    "merged_duplicates": 0,
+    "candidates": {
+      "available": true,
+      "total": 1200,
+      "linked": 0,
+      "unlinked": 1200
+    },
+    "poc": {
+      "applied": 0,
+      "promoted": 0,
+      "promotion_refused": 0
+    },
+    "reviews": {
+      "applied": 0,
+      "verified": 0,
+      "downgrade": 0,
+      "reject": 0
+    },
+    "consolidation": {
+      "groups": 0,
+      "duplicates": 0,
+      "skipped": 0
+    },
+    "polish_applied": 0,
+    "translations_applied": 0,
+    "sca_records": 15,
+    "inputs": {
+      "done_tasks": 0,
+      "finding_files": 0,
+      "poc_files": 0,
+      "translation_files": 0,
+      "review_files": 0,
+      "consolidate_files": 0,
+      "polish_files": 0
+    },
+    "warnings": []
+  },
+  "report": {
+    "present": true,
+    "files": {
+      "EXECUTIVE.html": 27482,
+      "findings.json": 3,
+      "findings.sarif": 27915,
+      "REPORT.html": 321616,
+      "REPORT.md": 185289,
+      "sbom.cdx.json": 19064,
+      "sbom.spdx.json": 30926,
+      "summary.json": 9716
+    },
+    "total_bytes": 622011
+  },
+  "dependency_manifests": {
+    "source": "sca/vulns.json",
+    "without_lockfile": [
+      "package.json",
+      "frontend/package.json"
+    ],
+    "details": [
+      {
+        "file": "package.json",
+        "ecosystem": "npm",
+        "reason": "version ranges without a lockfile",
+        "exact_pins": 4,
+        "ranges": 110
+      },
+      {
+        "file": "frontend/package.json",
+        "ecosystem": "npm",
+        "reason": "version ranges without a lockfile",
+        "exact_pins": 2,
+        "ranges": 60
+      }
+    ]
+  },
+  "wall_seconds": 1184.55
+}

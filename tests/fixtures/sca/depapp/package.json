@@ -1,0 +1,13 @@
+{
+  "name": "depapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "kalkan depapp fixture: versions with well-known advisories. Never install or deploy.",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "lodash": "4.17.20",
+    "minimist": "1.2.5",
+    "node-fetch": "2.6.0"
+  }
+}

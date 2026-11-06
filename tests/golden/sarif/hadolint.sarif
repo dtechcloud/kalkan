@@ -1,0 +1,114 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Hadolint",
+          "fullName": "Haskell Dockerfile Linter",
+          "downloadUri": "https://github.com/hadolint/hadolint",
+          "version": "2.15.1",
+          "shortDescription": {
+            "text": "Dockerfile linter, validate inline bash, written in Haskell"
+          }
+        }
+      },
+      "results": [
+        {
+          "ruleId": "DL3008",
+          "level": "warning",
+          "message": {
+            "text": "Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 4,
+                  "startColumn": 1,
+                  "endLine": 4,
+                  "endColumn": 1,
+                  "sourceLanguage": "dockerfile"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DL3015",
+          "level": "note",
+          "message": {
+            "text": "Avoid additional packages by specifying `--no-install-recommends`"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 4,
+                  "startColumn": 1,
+                  "endLine": 4,
+                  "endColumn": 1,
+                  "sourceLanguage": "dockerfile"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DL3042",
+          "level": "warning",
+          "message": {
+            "text": "Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 5,
+                  "startColumn": 1,
+                  "endLine": 5,
+                  "endColumn": 1,
+                  "sourceLanguage": "dockerfile"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "DL3025",
+          "level": "warning",
+          "message": {
+            "text": "Use arguments JSON notation for CMD and ENTRYPOINT arguments"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 1,
+                  "endLine": 8,
+                  "endColumn": 1,
+                  "sourceLanguage": "dockerfile"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "defaultSourceLanguage": "dockerfile"
+    }
+  ]
+}

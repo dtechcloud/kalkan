@@ -1,0 +1,164 @@
+{
+  "version": 1,
+  "slug": "test-header-bypass",
+  "description": "Test/debug headers that bypass security checks in production",
+  "class": "authn",
+  "cwe": [
+    "CWE-288"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "x-automated-test",
+      "flags": "i",
+      "label": "x-automated-test header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-test-",
+      "flags": "i",
+      "label": "x-test-* header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-debug",
+      "flags": "i",
+      "label": "x-debug header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-internal",
+      "flags": "i",
+      "label": "x-internal header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-bypass",
+      "flags": "i",
+      "label": "x-bypass header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-skip-auth",
+      "flags": "i",
+      "label": "x-skip-auth header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-no-rate-limit",
+      "flags": "i",
+      "label": "x-no-rate-limit header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "x-admin",
+      "flags": "i",
+      "label": "x-admin header — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "['\"]test['\"].{0,40}===.{0,40}headers",
+      "flags": "i",
+      "label": "test value in header check — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "headers.{0,80}['\"]test['\"]",
+      "flags": "i",
+      "label": "header compared to test — may bypass security in production",
+      "near": [
+        {
+          "regex": "if\\s*\\(|skip|bypass|disable|return\\s+(true|next)|continue",
+          "before": 3,
+          "after": 2
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "if (req.headers[\"x-automated-test\"]) skip();",
+    "if (req.headers[\"x-test-bypass\"]) return next();",
+    "if (headers.get(\"x-debug\")) bypass();",
+    "if (req.headers[\"x-internal\"]) skipAuth();",
+    "if (req.headers[\"x-bypass\"]) disable();",
+    "if (req.headers[\"x-skip-auth\"]) return next();",
+    "if (req.headers[\"x-no-rate-limit\"]) skip();",
+    "if (req.headers[\"x-admin\"]) bypass();",
+    "if (\"test\" === headers[\"x-mode\"]) return true;",
+    "if (headers[\"x-something\"] === \"test\") skip();"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/test-header-bypass.ts"
+  },
+  "notes": ""
+}

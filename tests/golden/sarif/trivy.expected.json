@@ -1,0 +1,132 @@
+{
+  "engine": "trivy",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/trivy.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-17FC978EE3343349",
+      "engine": "trivy",
+      "rule_id": "CVE-2023-32681",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "python-requests: Unintended leak of Proxy-Authorization header",
+      "message": "Package: requests\nInstalled Version: 2.25.1\nVulnerability CVE-2023-32681\nSeverity: MEDIUM\nFixed Version: 2.31.0\nLink: [CVE-2023-32681](https://avd.aquasec.com/nvd/cve-2023-32681)",
+      "file": "requirements.txt",
+      "start_line": 3,
+      "end_line": 3,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "6.1",
+      "confidence": "high",
+      "tags": [
+        "vulnerability",
+        "security",
+        "MEDIUM"
+      ],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "PyPI",
+        "package": "requests",
+        "version": "2.25.1",
+        "vuln_ids": [
+          "CVE-2023-32681"
+        ],
+        "fixed_versions": [
+          "2.31.0"
+        ],
+        "cvss_score": null,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/trivy.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-ABA273F969918397",
+      "engine": "trivy",
+      "rule_id": "DS002",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "Image user should not be 'root'",
+      "message": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS002\nSeverity: HIGH\nMessage: Specify at least 1 USER command in Dockerfile with non-root user as argument\nLink: [DS002](https://avd.aquasec.com/misconfig/ds002)",
+      "file": "Dockerfile",
+      "start_line": 1,
+      "end_line": 1,
+      "snippet": "",
+      "severity": "high",
+      "tool_severity": "8.0",
+      "confidence": "high",
+      "tags": [
+        "misconfiguration",
+        "security",
+        "HIGH"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/trivy.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-68407B2F76DE0E94",
+      "engine": "trivy",
+      "rule_id": "AVD-AWS-0107",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "An ingress security group rule allows traffic from /0.",
+      "message": "Artifact: infra/main.tf\nType: terraform\nVulnerability AVD-AWS-0107\nSeverity: CRITICAL\nMessage: Security group rule allows ingress from public internet.\nLink: [AVD-AWS-0107](https://avd.aquasec.com/misconfig/avd-aws-0107)",
+      "file": "infra/main.tf",
+      "start_line": 17,
+      "end_line": 17,
+      "snippet": "",
+      "severity": "critical",
+      "tool_severity": "9.5",
+      "confidence": "high",
+      "tags": [
+        "misconfiguration",
+        "security",
+        "CRITICAL"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/trivy.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    },
+    {
+      "id": "CAND-E130C72935B3ADD0",
+      "engine": "trivy",
+      "rule_id": "aws-access-key-id",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "AWS Access Key ID",
+      "message": "Artifact: config/settings.py\nType: \nSecret AWS Access Key ID\nSeverity: CRITICAL\nMatch: AWS_ACCESS_KEY_ID = \"********************\"",
+      "file": "config/settings.py",
+      "start_line": 12,
+      "end_line": 12,
+      "snippet": "",
+      "severity": "critical",
+      "tool_severity": "9.5",
+      "confidence": "high",
+      "tags": [
+        "secret",
+        "security",
+        "CRITICAL"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/trivy.sarif",
+        "run_index": 0,
+        "result_index": 3
+      }
+    }
+  ]
+}

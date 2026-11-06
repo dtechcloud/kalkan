@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "slug": "jvm-ktor-route",
+  "description": "Ktor routing DSL (gated on Ktor)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.kt"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "java",
+      "ktor"
+    ],
+    "sentinel_files": [
+      "**/pom.xml",
+      "**/build.gradle",
+      "**/build.gradle.kts"
+    ],
+    "sentinel_contains": [
+      "io\\.ktor|ktor-server"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\brouting\\s*\\{",
+      "flags": "",
+      "label": "routing { ... } block"
+    },
+    {
+      "regex": "\\b(?:get|post|put|patch|delete)\\s*\\(\\s*\"[^\"]+\"\\s*\\)\\s*\\{",
+      "flags": "",
+      "label": "<verb>('/path') { ... }"
+    },
+    {
+      "regex": "\\bauthenticate\\s*\\(\\s*\"[^\"]+\"\\s*\\)\\s*\\{",
+      "flags": "",
+      "label": "authenticate('jwt') { ... } scope"
+    },
+    {
+      "regex": "\\bcall\\.receive\\b",
+      "flags": "",
+      "label": "call.receive (untrusted body)"
+    }
+  ],
+  "examples": [
+    "routing {",
+    "routing { get(\"/\") { call.respondText(\"hi\") } }",
+    "get(\"/users\") {",
+    "post(\"/login\") {",
+    "put(\"/items/{id}\") {",
+    "patch(\"/items/{id}\") {",
+    "delete(\"/items/{id}\") {",
+    "authenticate(\"jwt\") {",
+    "authenticate(\"auth-session\") { get(\"/me\") { ... } }",
+    "val body = call.receive<UserDto>()",
+    "val multipart = call.receive<Multipart>()"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/jvm-ktor-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [ktor]; kalkan uses tech java (or ktor) and a manifest that names ktor."
+}

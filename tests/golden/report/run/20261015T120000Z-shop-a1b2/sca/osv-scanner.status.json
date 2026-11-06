@@ -1,0 +1,11 @@
+{
+  "engine": "osv-scanner",
+  "status": "ok",
+  "message": "",
+  "duration_seconds": 4.5,
+  "exit_code": 0,
+  "tool_version": "2.6.0",
+  "started_at": "2026-10-15T12:00:00Z",
+  "finished_at": "2026-10-15T12:00:00Z",
+  "command": []
+}

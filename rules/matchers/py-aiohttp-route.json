@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "slug": "py-aiohttp-route",
+  "description": "aiohttp route registrations (gated on aiohttp)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "aiohttp"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\baiohttp\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bapp\\.router\\.add_(?:get|post|put|patch|delete|route)\\s*\\(",
+      "flags": "",
+      "label": "app.router.add_*"
+    },
+    {
+      "regex": "^\\s*@routes\\.(?:get|post|put|patch|delete|view)\\s*\\(",
+      "flags": "m",
+      "label": "@routes.* decorator"
+    },
+    {
+      "regex": "\\bweb\\.Application\\s*\\(",
+      "flags": "",
+      "label": "web.Application() init"
+    },
+    {
+      "regex": "\\brequest\\.(?:query|match_info|json|post|read)\\b",
+      "flags": "",
+      "label": "request accessor"
+    }
+  ],
+  "examples": [
+    "app.router.add_get(\"/users\", handler)",
+    "app.router.add_post(\"/login\", login_handler)",
+    "app.router.add_put(\"/items/{id}\", update_item)",
+    "app.router.add_route(\"GET\", \"/x\", handle)",
+    "@routes.get(\"/health\")",
+    "@routes.post('/submit')",
+    "   @routes.view(\"/items\")",
+    "app = web.Application(middlewares=[auth_middleware])",
+    "data = await request.json()",
+    "q = request.query.get(\"q\")",
+    "pk = request.match_info[\"id\"]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-aiohttp-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [aiohttp]; kalkan uses tech python (or aiohttp) and a manifest that names aiohttp."
+}

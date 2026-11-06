@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "slug": "fs-write-symlink-boundary",
+  "description": "Filesystem write to dynamic path — verify symlink boundary check (realpath/canonical resolve)",
+  "class": "path-traversal",
+  "cwe": [
+    "CWE-22",
+    "CWE-59"
+  ],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bfs\\.(?:mkdir|writeFile|createWriteStream|copyFile|symlink|link|rename|appendFile|chmod|chown|truncate)(?:Sync)?\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "fs write to template-literal path",
+      "not_near": [
+        {
+          "regex": "\\b(?:realpath|fs\\.realpath|path\\.relative|startsWith\\s*\\(\\s*(?:root|base)|resolveWritablePathWithinRoot|withinRoot|insideRoot)\\b",
+          "before": 5,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "regex": "\\bfsp?\\.(?:mkdir|writeFile|copyFile|symlink|link|rename|appendFile|chmod|chown|truncate)\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "fsp/fs.promises write to template-literal path",
+      "not_near": [
+        {
+          "regex": "\\b(?:realpath|fs\\.realpath|path\\.relative|startsWith\\s*\\(\\s*(?:root|base)|resolveWritablePathWithinRoot|withinRoot|insideRoot)\\b",
+          "before": 5,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "regex": "\\bfs\\.(?:mkdir|writeFile|createWriteStream|copyFile|symlink|link|rename|appendFile)(?:Sync)?\\s*\\(\\s*[A-Za-z_$][\\w$]*\\s*\\+\\s*",
+      "flags": "",
+      "label": "fs write to concatenated path",
+      "not_near": [
+        {
+          "regex": "\\b(?:realpath|fs\\.realpath|path\\.relative|startsWith\\s*\\(\\s*(?:root|base)|resolveWritablePathWithinRoot|withinRoot|insideRoot)\\b",
+          "before": 5,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "regex": "\\bfs\\.(?:mkdir|writeFile|createWriteStream|copyFile|symlink|link|rename|appendFile)(?:Sync)?\\s*\\(\\s*path\\.join\\([^)]*req\\.",
+      "flags": "",
+      "label": "fs write to path.join with req.* component",
+      "not_near": [
+        {
+          "regex": "\\b(?:realpath|fs\\.realpath|path\\.relative|startsWith\\s*\\(\\s*(?:root|base)|resolveWritablePathWithinRoot|withinRoot|insideRoot)\\b",
+          "before": 5,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "regex": "\\bfs\\.(?:mkdir|writeFile|createWriteStream|copyFile|symlink|link|rename|appendFile)(?:Sync)?\\s*\\(\\s*path\\.resolve\\([^)]*req\\.",
+      "flags": "",
+      "label": "fs write to path.resolve with req.* component",
+      "not_near": [
+        {
+          "regex": "\\b(?:realpath|fs\\.realpath|path\\.relative|startsWith\\s*\\(\\s*(?:root|base)|resolveWritablePathWithinRoot|withinRoot|insideRoot)\\b",
+          "before": 5,
+          "after": 4
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "fs.writeFile(`/tmp/uploads/${name}`, data, () => {});",
+    "fs.mkdirSync(`/var/data/${userId}`);",
+    "fs.createWriteStream(`/cache/${id}.bin`);",
+    "fs.copyFileSync(`/tmp/${dest}`, src);",
+    "fs.symlinkSync(target, `/links/${name}`);\nfs.symlinkSync(`/links/${name}`, target);",
+    "fs.appendFileSync(`/logs/${name}.log`, line);",
+    "fsp.writeFile(`/data/${id}.json`, JSON.stringify(payload));",
+    "await fsp.copyFile(`/tmp/${dest}`, src);",
+    "fs.writeFileSync(rootDir + \"/\" + name, data);",
+    "fs.mkdirSync(baseDir + relative);",
+    "fs.writeFileSync(path.join(uploadDir, req.body.name), buf);",
+    "fs.writeFile(path.resolve(uploadDir, req.params.id), data, () => {});"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/fs-write-symlink-boundary.ts"
+  },
+  "notes": ""
+}

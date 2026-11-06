@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "slug": "js-hapi-route",
+  "description": "Hapi server.route configurations (gated on Hapi)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "hapi"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"(?:@hapi/hapi|hapi)\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bserver\\.route\\s*\\(\\s*\\{",
+      "flags": "",
+      "label": "server.route({ method, path, handler })"
+    },
+    {
+      "regex": "Hapi\\.server\\s*\\(",
+      "flags": "",
+      "label": "Hapi.server() init"
+    },
+    {
+      "regex": "options:\\s*\\{\\s*auth:",
+      "flags": "",
+      "label": "route auth option (verify scope)"
+    },
+    {
+      "regex": "strategy\\s*:\\s*['\"][^'\"]+['\"]",
+      "flags": "",
+      "label": "auth strategy declaration"
+    }
+  ],
+  "examples": [
+    "const server = Hapi.server({ port: 3000 });",
+    "server.route({ method: \"GET\", path: \"/\", handler });",
+    "server.route({\n  method: 'POST',\n  path: '/login',\n  handler,\n});",
+    "server.route({ method: \"GET\", path: \"/x\", options: { auth: false } });",
+    "options: { auth: 'jwt' }",
+    "strategy: \"session\""
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-hapi-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [hapi]; kalkan uses tech node (or hapi) and a manifest that names hapi."
+}

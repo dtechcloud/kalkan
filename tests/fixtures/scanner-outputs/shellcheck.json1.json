@@ -1,0 +1,58 @@
+{
+  "comments": [
+    {
+      "file": "@TARGET@/infra/scripts/release.sh",
+      "line": 19,
+      "endLine": 19,
+      "column": 10,
+      "endColumn": 21,
+      "level": "warning",
+      "code": 2115,
+      "message": "Use \"${var:?}\" to ensure this never expands to / .",
+      "fix": null
+    },
+    {
+      "file": "@TARGET@/infra/scripts/release.sh",
+      "line": 19,
+      "endLine": 19,
+      "column": 10,
+      "endColumn": 20,
+      "level": "info",
+      "code": 2086,
+      "message": "Double quote to prevent globbing and word splitting.",
+      "fix": {
+        "replacements": [
+          {
+            "column": 10,
+            "endColumn": 10,
+            "endLine": 19,
+            "insertionPoint": "afterEnd",
+            "line": 19,
+            "precedence": 11,
+            "replacement": "\""
+          },
+          {
+            "column": 20,
+            "endColumn": 20,
+            "endLine": 19,
+            "insertionPoint": "beforeStart",
+            "line": 19,
+            "precedence": 11,
+            "replacement": "\""
+          }
+        ]
+      }
+    },
+    {
+      "file": "@TARGET@/infra/scripts/release.sh",
+      "line": 27,
+      "endLine": 27,
+      "column": 45,
+      "endColumn": 47,
+      "level": "info",
+      "code": 2029,
+      "message": "Note that, unescaped, this expands on the client side.",
+      "fix": null
+    }
+  ]
+}

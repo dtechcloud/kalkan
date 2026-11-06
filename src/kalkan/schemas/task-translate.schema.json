@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan translate task result (docs/ENGINE-SPEC.md section 18).",
+  "required": [
+    "task_id",
+    "translations"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-translate$"
+    },
+    "translations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "description",
+          "remediation_strategy"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^KF-[0-9A-F]{16}$"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "remediation_strategy": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          }
+        }
+      }
+    }
+  }
+}

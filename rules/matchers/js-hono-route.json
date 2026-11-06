@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "slug": "js-hono-route",
+  "description": "Hono route registrations — entry points (weak candidate, gated on Hono)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "hono"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:app|router|hono)\\.(?:get|post|put|patch|delete|options|all|use)\\s*\\(",
+      "flags": "",
+      "label": "Hono method/use registration"
+    },
+    {
+      "regex": "new\\s+Hono\\s*\\(",
+      "flags": "",
+      "label": "new Hono() instantiation"
+    },
+    {
+      "regex": "\\bc\\.req\\.(?:query|param|json|formData|text|valid)\\b",
+      "flags": "",
+      "label": "Request data accessor"
+    }
+  ],
+  "examples": [
+    "const app = new Hono();",
+    "app.get(\"/users\", (c) => c.json({}))",
+    "app.post('/login', async (c) => {})",
+    "app.put(\"/items/:id\", handler);",
+    "app.delete(\"/x\", handler)",
+    "app.use(\"*\", authMiddleware);",
+    "router.all('/health', h)",
+    "c.req.query(\"page\")",
+    "await c.req.json()",
+    "c.req.param(\"id\")",
+    "await c.req.formData();"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-hono-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

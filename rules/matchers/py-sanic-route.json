@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "slug": "py-sanic-route",
+  "description": "Sanic route handlers and Blueprints (gated on Sanic)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "sanic"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\bsanic\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*@(?:app|bp|blueprint)\\.route\\s*\\(",
+      "flags": "m",
+      "label": "Sanic @app.route / @bp.route"
+    },
+    {
+      "regex": "^\\s*@(?:app|bp)\\.(?:get|post|put|patch|delete|head|options|websocket)\\s*\\(",
+      "flags": "m",
+      "label": "Sanic method-shortcut decorator"
+    },
+    {
+      "regex": "\\bSanic\\s*\\(\\s*['\"][^'\"]*['\"]\\s*\\)",
+      "flags": "",
+      "label": "Sanic() instance"
+    },
+    {
+      "regex": "\\brequest\\.(?:args|json|form|files|headers)\\b",
+      "flags": "",
+      "label": "request accessor"
+    }
+  ],
+  "examples": [
+    "@app.route(\"/\")",
+    "@bp.route(\"/items\", methods=[\"GET\", \"POST\"])",
+    "@blueprint.route(\"/x\")",
+    "@app.get(\"/health\")",
+    "@app.post('/login')",
+    "@bp.put(\"/items/<id:int>\")",
+    "@app.websocket(\"/ws\")",
+    "app = Sanic(\"my-app\")",
+    "data = request.json",
+    "name = request.args.get(\"name\")",
+    "f = request.files.get(\"upload\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-sanic-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [sanic]; kalkan uses tech python (or sanic) and a manifest that names sanic."
+}

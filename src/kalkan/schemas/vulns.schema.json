@@ -1,0 +1,341 @@
+{
+  "$comment": "kalkan sca/vulns.json (docs/ENGINE-SPEC.md section 17): merged vulnerability records of the SCA module and the manifests without a lockfile. kalkan.sca.merge.validate_vulns checks the records one by one and adds the ref, uniqueness and severity_original checks that the schema cannot express.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "records", "warnings"],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ref",
+          "ecosystem",
+          "package",
+          "version",
+          "vuln_id",
+          "aliases",
+          "summary",
+          "severity",
+          "severity_original",
+          "tool_severity",
+          "cvss_score",
+          "cvss_vector",
+          "cwe",
+          "fixed_versions",
+          "locations",
+          "engines",
+          "affected_symbols",
+          "vulnerable_ranges",
+          "reachability",
+          "reachability_reason",
+          "reachability_source",
+          "reach_evidence",
+          "reach_searched",
+          "reach_task_id"
+        ],
+        "properties": {
+          "ref": {
+            "type": "string",
+            "minLength": 1,
+            "description": "<ecosystem>/<package>@<version>/<vuln_id>"
+          },
+          "ecosystem": {
+            "type": "string",
+            "minLength": 1,
+            "description": "OSV ecosystem name, for example PyPI, npm, Go, Maven."
+          },
+          "package": {
+            "type": "string",
+            "minLength": 1
+          },
+          "version": {
+            "type": "string",
+            "minLength": 1
+          },
+          "vuln_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Primary ID: the first MAL- ID, else the first GHSA ID, else the first CVE ID, else the OSV ID."
+          },
+          "aliases": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "summary": {
+            "type": "string"
+          },
+          "severity": {
+            "enum": ["critical", "high", "medium", "low", "info"]
+          },
+          "severity_original": {
+            "enum": ["critical", "high", "medium", "low", "info", null],
+            "description": "The severity before a not_reachable decision lowered it; null otherwise."
+          },
+          "tool_severity": {
+            "type": "string",
+            "description": "The value that decided the severity: the CVSS score or the database label."
+          },
+          "cvss_score": {
+            "oneOf": [
+              {
+                "type": "number",
+                "minimum": 0
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cvss_vector": {
+            "oneOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "cwe": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^CWE-[0-9]+$"
+            }
+          },
+          "fixed_versions": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "locations": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Target-relative POSIX path of a manifest or lockfile."
+            }
+          },
+          "engines": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "enum": ["osv-scanner", "grype", "govulncheck", "retirejs"]
+            }
+          },
+          "affected_symbols": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["package", "symbols"],
+              "properties": {
+                "package": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Import path or package that holds the vulnerable symbols."
+                },
+                "symbols": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "vulnerable_ranges": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "reachability": {
+            "enum": ["reachable", "not_reachable", "unknown"]
+          },
+          "reachability_reason": {
+            "type": "string"
+          },
+          "reachability_source": {
+            "enum": ["govulncheck", "sca_reach", null]
+          },
+          "reach_evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["file", "line", "quote"],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          },
+          "reach_searched": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "reach_task_id": {
+            "oneOf": [
+              {
+                "type": "string",
+                "pattern": "^T[0-9]{4,}-sca_reach$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "pin_source": {
+            "enum": ["manifest", "vendored"],
+            "description": "Optional. manifest: the record comes only from the exact pins of a manifest without a lockfile (kalkan.sca.manifests). vendored: the record comes only from JavaScript library files copied into the target (kalkan.sca.vendored)."
+          },
+          "vendored": {
+            "type": "array",
+            "description": "Optional. The vendored JavaScript files of the package (kalkan.sca.vendored).",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["file", "line", "library", "version", "extractor"],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Target-relative POSIX path of the JavaScript file."
+                },
+                "line": {
+                  "oneOf": [
+                    {"type": "integer", "minimum": 1},
+                    {"type": "null"}
+                  ],
+                  "description": "The line of a content detection; null for a file name, path or hash detection."
+                },
+                "library": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The library name of the RetireJS repository."
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "extractor": {
+                  "enum": ["filename", "uri", "filecontent", "filecontentreplace", "hash"]
+                }
+              }
+            }
+          },
+          "references": {
+            "type": "array",
+            "description": "Optional. Advisory links of the vulnerability (the RetireJS repository info links).",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "class": {
+            "enum": ["vulnerable-dependency", "malicious-dependency"],
+            "description": "Optional; a missing class means vulnerable-dependency. malicious-dependency: a known malicious package version (an OSV MAL- ID, or a GitHub malware advisory of the Grype database). Such a record is critical, gets no sca_reach task and is never lowered by reachability (kalkan.sca.normalize.mark_malicious)."
+          }
+        }
+      }
+    },
+    "warnings": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "database_gaps": {
+      "type": "array",
+      "description": "Optional. Matchers that could not check some or all packages because a local vulnerability database was missing (sca match never queries an online API; docs/SECURITY.md).",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["engine", "ecosystem", "reason"],
+        "properties": {
+          "engine": {
+            "type": "string",
+            "minLength": 1
+          },
+          "ecosystem": {
+            "oneOf": [
+              {"type": "string", "minLength": 1},
+              {"type": "null"}
+            ],
+            "description": "The OSV ecosystem without a database, or null when the whole database is missing."
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "unchecked_manifests": {
+      "type": "array",
+      "description": "Optional. Dependency manifests without a lockfile: the matchers did not check their version ranges or transitive dependencies.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["file", "ecosystem", "reason"],
+        "properties": {
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Target-relative POSIX path of the manifest."
+          },
+          "ecosystem": {
+            "type": "string",
+            "minLength": 1
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1
+          },
+          "exact_pins": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Dependencies pinned to one exact version; sca match checked them (pin_source manifest)."
+          },
+          "ranges": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Dependencies with a version range or no version; not checked."
+          }
+        }
+      }
+    }
+  }
+}

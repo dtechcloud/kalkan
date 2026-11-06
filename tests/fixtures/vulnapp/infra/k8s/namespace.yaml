@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vulnapp
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: vulnapp-jobs
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: latest

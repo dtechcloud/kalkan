@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "soql-injection",
+  "description": "Salesforce SOQL built with template/string interpolation",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/package.json",
+      "**/sfdx-project.json"
+    ],
+    "sentinel_contains": [
+      "(?i:jsforce|@salesforce/|packageDirectories)"
+    ]
+  },
+  "file_contains": [
+    "\\bfrom\\s+[\"'](?:jsforce[^\"']*|@jsforce/[^\"']*|@salesforce/[^\"']*)[\"']|\\b(?:sf|salesforce|conn|sfConn)\\.\\s*query(?:All)?\\s*\\("
+  ],
+  "patterns": [
+    {
+      "regex": "\\b(?:sf|salesforce|conn|sfConn|tooling)\\.\\s*query(?:All|More)?\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "SOQL via template literal — possible SOQL injection"
+    },
+    {
+      "regex": "\\b(?:sf|salesforce|conn|sfConn|tooling)\\.\\s*query(?:All|More)?\\s*\\(\\s*[\"'][^\"']*[\"']\\s*\\+",
+      "flags": "",
+      "label": "SOQL via string concat — possible SOQL injection"
+    },
+    {
+      "regex": "`(?:[^`]*?\\bSELECT\\s+[^`]*?\\bFROM\\s+[A-Za-z_][A-Za-z0-9_]*[^`]*?)\\$\\{",
+      "flags": "i",
+      "label": "SOQL-shaped template literal with interpolation"
+    }
+  ],
+  "examples": [
+    "import jsforce from \"jsforce\";\nawait conn.query(`SELECT Id FROM Account WHERE Name = '${name}'`);",
+    "import jsforce from \"jsforce\";\nawait conn.queryAll(`SELECT Id FROM Lead WHERE Email = '${email}'`);",
+    "import jsforce from \"jsforce\";\nawait conn.query(\"SELECT Id FROM Account WHERE Id = \" + id);",
+    "import { Connection } from \"@jsforce/jsforce-node\";\nawait sf.query(`SELECT Id FROM Account WHERE Id = '${id}'`);",
+    "import jsforce from \"jsforce\";\nawait tooling.query(`SELECT Id FROM ApexClass WHERE Name = '${name}'`);",
+    "import { something } from \"@salesforce/api\";\nconst soql = `SELECT Id FROM Account WHERE Name = '${name}'`;",
+    "import jsforce from \"jsforce\";\nawait sfConn.queryMore(`SELECT Id FROM Lead WHERE Status = '${status}'`);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/soql-injection.ts"
+  },
+  "notes": "deepsec gates on the apex or salesforce tag; kalkan reads package.json (jsforce, @salesforce/*) and sfdx-project.json."
+}

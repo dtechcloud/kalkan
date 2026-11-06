@@ -1,0 +1,10 @@
+{
+  "translations": [
+    {
+      "id": "KF-CF0FB1E8E50E80FC",
+      "title": "SQL injection in user lookup",
+      "description": "GET /users puts the id parameter straight into a SQL query.",
+      "remediation_strategy": "Use a bound parameter."
+    }
+  ]
+}

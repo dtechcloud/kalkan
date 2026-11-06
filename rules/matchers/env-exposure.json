@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "env-exposure",
+  "description": "Environment variable patterns that may expose secrets to clients",
+  "class": "sensitive-data-exposure",
+  "cwe": [
+    "CWE-200"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}",
+    "**/.env",
+    "**/.env.*",
+    "**/next.config.*"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "NEXT_PUBLIC_.*(SECRET|KEY|TOKEN|PASSWORD|CREDENTIAL)",
+      "flags": "i",
+      "label": "NEXT_PUBLIC_ variable with secret-like name"
+    },
+    {
+      "regex": "process\\.env\\.\\w*(SECRET|KEY|TOKEN|PASSWORD|CREDENTIAL|PRIVATE)",
+      "flags": "i",
+      "label": "Secret env var accessed in 'use client' component",
+      "near": [
+        {
+          "regex": "['\"]use client['\"]",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^[A-Z_]+=.{8,}",
+      "flags": "",
+      "label": "Secret value in committed .env file",
+      "near": [
+        {
+          "regex": "SECRET|KEY|TOKEN|PASSWORD|CREDENTIAL|PRIVATE",
+          "flags": "i"
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "<|placeholder|example|xxx",
+          "flags": "i"
+        }
+      ],
+      "paths": [
+        "**/.env",
+        "**/.env.*"
+      ]
+    }
+  ],
+  "examples": [
+    "const k = process.env.NEXT_PUBLIC_API_SECRET;",
+    "const t = process.env.NEXT_PUBLIC_AUTH_TOKEN;",
+    "const p = process.env.NEXT_PUBLIC_USER_PASSWORD;",
+    "const c = process.env.NEXT_PUBLIC_OAUTH_CREDENTIAL;",
+    "const k = process.env.NEXT_PUBLIC_STRIPE_KEY;",
+    "\"use client\";\nconst s = process.env.API_SECRET;",
+    "'use client';\nconst k = process.env.PRIVATE_KEY;",
+    "\"use client\";\nconst t = process.env.AUTH_TOKEN;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/env-exposure.ts"
+  },
+  "notes": "The .env rule applies to .env and .env.* files (deepsec: any path that contains '.env')."
+}

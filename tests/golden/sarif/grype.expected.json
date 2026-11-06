@@ -1,0 +1,116 @@
+{
+  "engine": "grype",
+  "target_root": "/home/runner/work/kalkan/runs/20261015T120000Z-ab12/target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/grype.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-41F66413A17FF6DE",
+      "engine": "grype",
+      "rule_id": "GHSA-29mw-wpgm-hmr9-lodash",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "GHSA-29mw-wpgm-hmr9 medium vulnerability for lodash package",
+      "message": "A medium vulnerability in npm package: lodash, version 4.17.20 was found at: /package-lock.json",
+      "file": "package-lock.json",
+      "start_line": 1,
+      "end_line": 1,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "5.3",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "npm",
+        "package": "lodash",
+        "version": "4.17.20",
+        "vuln_ids": [
+          "GHSA-29mw-wpgm-hmr9"
+        ],
+        "fixed_versions": [
+          "4.17.21"
+        ],
+        "cvss_score": null,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/grype.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-C68F36005D179E4F",
+      "engine": "grype",
+      "rule_id": "GHSA-35jh-r3h4-6jhm-lodash",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "GHSA-35jh-r3h4-6jhm high vulnerability for lodash package",
+      "message": "A high vulnerability in npm package: lodash, version 4.17.20 was found at: /package-lock.json",
+      "file": "package-lock.json",
+      "start_line": 1,
+      "end_line": 1,
+      "snippet": "",
+      "severity": "high",
+      "tool_severity": "7.2",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "npm",
+        "package": "lodash",
+        "version": "4.17.20",
+        "vuln_ids": [
+          "GHSA-35jh-r3h4-6jhm"
+        ],
+        "fixed_versions": [
+          "4.17.21"
+        ],
+        "cvss_score": null,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/grype.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-923B11D21EBB8DFE",
+      "engine": "grype",
+      "rule_id": "GHSA-j8r2-6x86-q33q-requests",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "GHSA-j8r2-6x86-q33q medium vulnerability for requests package",
+      "message": "A medium vulnerability in python package: requests, version 2.25.1 was found at: /requirements.txt",
+      "file": "requirements.txt",
+      "start_line": 1,
+      "end_line": 1,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "6.1",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "PyPI",
+        "package": "requests",
+        "version": "2.25.1",
+        "vuln_ids": [
+          "GHSA-j8r2-6x86-q33q"
+        ],
+        "fixed_versions": [
+          "2.31.0"
+        ],
+        "cvss_score": null,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/grype.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    }
+  ]
+}

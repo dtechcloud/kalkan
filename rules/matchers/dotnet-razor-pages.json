@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "slug": "dotnet-razor-pages",
+  "description": "Razor Pages OnGet/OnPost handlers (gated on .NET)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/Pages/**/*.cshtml.cs",
+    "**/*.cshtml.cs"
+  ],
+  "exclude_file_patterns": [
+    "**/{Tests,UnitTests,IntegrationTests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "dotnet"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bclass\\s+\\w+\\s*:\\s*PageModel\\b",
+      "flags": "",
+      "label": "PageModel subclass"
+    },
+    {
+      "regex": "\\bpublic\\s+(?:async\\s+)?(?:Task<?[^>]*>?\\s+)?On(?:Get|Post|Put|Delete)(?:Async)?\\s*\\(",
+      "flags": "",
+      "label": "OnGet/OnPost handler"
+    },
+    {
+      "regex": "\\[\\s*BindProperty\\b",
+      "flags": "",
+      "label": "[BindProperty] (request-bound input)"
+    },
+    {
+      "regex": "\\[\\s*ValidateAntiForgeryToken\\s*\\]",
+      "flags": "",
+      "label": "[ValidateAntiForgeryToken] CSRF guard"
+    }
+  ],
+  "examples": [
+    "public class IndexModel : PageModel",
+    "public class LoginModel : PageModel {",
+    "public Task OnGet() {",
+    "public Task<IActionResult> OnPost() {",
+    "public async Task OnGetAsync() {",
+    "public async Task<IActionResult> OnPostAsync() {",
+    "public async Task OnPutAsync() {",
+    "public Task<IActionResult> OnDeleteAsync() {",
+    "[BindProperty]",
+    "[BindProperty(SupportsGet = true)]",
+    "[ValidateAntiForgeryToken]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dotnet-razor-pages.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

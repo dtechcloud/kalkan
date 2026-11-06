@@ -1,0 +1,52 @@
+{
+  "version": 1,
+  "slug": "go-command-injection",
+  "description": "Go exec.Command with potentially dynamic arguments",
+  "class": "os-command-injection",
+  "cwe": [
+    "CWE-78"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "exec\\.Command\\s*\\(",
+      "flags": "",
+      "label": "exec.Command"
+    },
+    {
+      "regex": "exec\\.CommandContext\\s*\\(",
+      "flags": "",
+      "label": "exec.CommandContext"
+    },
+    {
+      "regex": "syscall\\.Exec\\s*\\(",
+      "flags": "",
+      "label": "syscall.Exec"
+    }
+  ],
+  "examples": [
+    "cmd := exec.Command(\"sh\", \"-c\", userInput)",
+    "out, err := exec.Command(\"ls\", dir).Output()",
+    "cmd := exec.CommandContext(ctx, \"git\", \"clone\", repoURL)",
+    "err := syscall.Exec(\"/bin/sh\", args, env)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-command-injection.ts"
+  },
+  "notes": ""
+}

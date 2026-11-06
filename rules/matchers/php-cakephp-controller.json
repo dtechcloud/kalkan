@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "php-cakephp-controller",
+  "description": "CakePHP controllers and component callbacks (gated on CakePHP)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/src/Controller/**/*.php",
+    "**/Controller/**/*.php"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "php",
+      "cakephp"
+    ],
+    "sentinel_files": [
+      "**/composer.json"
+    ],
+    "sentinel_contains": [
+      "\"cakephp/cakephp\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "class\\s+\\w+Controller\\s+extends\\s+AppController\\b",
+      "flags": "",
+      "label": "CakePHP controller class"
+    },
+    {
+      "regex": "\\$this->Auth->allow\\s*\\(",
+      "flags": "",
+      "label": "Auth->allow() — opens public access"
+    },
+    {
+      "regex": "\\$this->loadComponent\\s*\\(\\s*['\"]Auth['\"]",
+      "flags": "",
+      "label": "Auth component wiring"
+    },
+    {
+      "regex": "\\$this->request->getData\\s*\\(",
+      "flags": "",
+      "label": "request data accessor"
+    },
+    {
+      "regex": "\\$this->Flash->",
+      "flags": "",
+      "label": "flash response (post-redirect-get)"
+    }
+  ],
+  "examples": [
+    "class UsersController extends AppController { }",
+    "class PostsController extends AppController\n{\n    public function index() {}\n}",
+    "$this->Auth->allow(['login', 'register']);",
+    "$this->Auth->allow();",
+    "$this->loadComponent('Auth', ['authenticate' => ['Form']]);",
+    "$this->loadComponent(\"Auth\");",
+    "$data = $this->request->getData();",
+    "$name = $this->request->getData('name');",
+    "$this->Flash->success(__('Saved.'));",
+    "$this->Flash->error('Failed');"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-cakephp-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [cakephp]; kalkan uses tech php (or cakephp) and a manifest that names cakephp."
+}

@@ -1,0 +1,20 @@
+{
+  "task_id": "T0040-poc_build",
+  "finding_id": "KF-2CC44B27C1508C41",
+  "feasible": true,
+  "level": "unit",
+  "base_image": "python:3.12-slim",
+  "files": [
+    {
+      "path": "poc.py",
+      "content": "import sqlite3, sys\nsys.path.insert(0, '/target')\nfrom app import db\n"
+    }
+  ],
+  "command": [
+    "python",
+    "/poc/poc.py"
+  ],
+  "success_regex": "KALKAN_POC_OK",
+  "expected_observation": "find_user returns every row for the payload 1 OR 1=1.",
+  "app": null
+}

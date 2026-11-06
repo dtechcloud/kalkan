@@ -1,0 +1,209 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan review task result (docs/ENGINE-SPEC.md section 18). The engine applies the decision.",
+  "required": [
+    "task_id",
+    "finding_id",
+    "decision",
+    "reason",
+    "checks",
+    "evidence"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-review$"
+    },
+    "finding_id": {
+      "type": "string",
+      "pattern": "^KF-[0-9A-F]{16}$"
+    },
+    "decision": {
+      "type": "string",
+      "enum": [
+        "verified",
+        "downgrade",
+        "reject"
+      ]
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1,
+      "visibleContent": true
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "item",
+          "ok",
+          "note"
+        ],
+        "properties": {
+          "item": {
+            "type": "string",
+            "enum": [
+              "trace_and_evidence",
+              "entry_interface",
+              "conditions_and_controls",
+              "impact",
+              "severity",
+              "remediation",
+              "source_path",
+              "blockers",
+              "boundary_and_result",
+              "validation_plan",
+              "fingerprint"
+            ]
+          },
+          "ok": {
+            "type": "boolean"
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "file",
+          "line",
+          "quote"
+        ],
+        "properties": {
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Target-relative POSIX path."
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Exact text from the cited line or the two lines around it."
+          }
+        }
+      }
+    },
+    "severity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "likelihood",
+        "impact",
+        "overall_severity"
+      ],
+      "properties": {
+        "likelihood": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "score",
+            "reason"
+          ],
+          "properties": {
+            "score": {
+              "type": "string",
+              "enum": [
+                "informational",
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            }
+          }
+        },
+        "impact": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "score",
+            "reason"
+          ],
+          "properties": {
+            "score": {
+              "type": "string",
+              "enum": [
+                "informational",
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            }
+          }
+        },
+        "overall_severity": {
+          "type": "string",
+          "enum": [
+            "informational",
+            "low",
+            "medium",
+            "high",
+            "critical"
+          ]
+        }
+      }
+    },
+    "remediation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy"
+      ],
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "minLength": 1,
+          "visibleContent": true
+        },
+        "code_changes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "file_name",
+              "fixed_code"
+            ],
+            "properties": {
+              "file_name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Target-relative POSIX path."
+              },
+              "fixed_code": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

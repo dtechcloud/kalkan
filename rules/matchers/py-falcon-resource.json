@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "slug": "py-falcon-resource",
+  "description": "Falcon resource classes with on_<method> handlers (gated on Falcon)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "falcon"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\bfalcon\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*def\\s+on_(get|post|put|patch|delete|head|options)\\s*\\(\\s*self\\b",
+      "flags": "m",
+      "label": "on_<method>(self, req, resp) handler"
+    },
+    {
+      "regex": "\\bfalcon\\.App\\s*\\(|\\bfalcon\\.API\\s*\\(",
+      "flags": "",
+      "label": "falcon.App/API instance"
+    },
+    {
+      "regex": "\\.add_route\\s*\\(\\s*['\"][^'\"]+['\"]",
+      "flags": "",
+      "label": "app.add_route() registration"
+    },
+    {
+      "regex": "\\breq\\.(?:params|media|context|get_param)\\b",
+      "flags": "",
+      "label": "req.* accessor"
+    }
+  ],
+  "examples": [
+    "    def on_get(self, req, resp):",
+    "    def on_post(self, req, resp):",
+    "    def on_put(self, req, resp, id):",
+    "    def on_delete(self, req, resp, id):",
+    "    def on_patch(self, req, resp):",
+    "app = falcon.App()",
+    "api = falcon.API()",
+    "app.add_route(\"/users\", UserResource())",
+    "name = req.params.get(\"name\")",
+    "data = req.media",
+    "q = req.get_param(\"q\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-falcon-resource.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [falcon]; kalkan uses tech python (or falcon) and a manifest that names falcon."
+}

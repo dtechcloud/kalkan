@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "slug": "catchall-router",
+  "description": "Catch-all route with internal router (Elysia/Hono/Express) — single auth entry point",
+  "class": "missing-authz",
+  "cwe": [
+    "CWE-862"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/[[][[]...rest[]][]]/route.{ts,tsx}",
+    "**/[[][[]...slug[]][]]/route.{ts,tsx}",
+    "**/[[]...rest[]]/route.{ts,tsx}",
+    "**/[[]...slug[]]/route.{ts,tsx}",
+    "**/[[][[]...catchAll[]][]]/route.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "from\\s+['\"]elysia['\"]|new\\s+Elysia",
+      "flags": "",
+      "label": "Elysia router in catch-all route"
+    },
+    {
+      "regex": "from\\s+['\"]hono['\"]|new\\s+Hono",
+      "flags": "",
+      "label": "Hono router in catch-all route"
+    },
+    {
+      "regex": "from\\s+['\"]express['\"]|express\\(\\)",
+      "flags": "",
+      "label": "Express router in catch-all route"
+    },
+    {
+      "regex": "from\\s+['\"]itty-router['\"]|Router\\(\\)",
+      "flags": "",
+      "label": "itty-router in catch-all route"
+    },
+    {
+      "regex": "createRouter|handleRequest",
+      "flags": "",
+      "label": "Custom router in catch-all route"
+    },
+    {
+      "regex": "export\\s+(const|async\\s+function|function)\\s+(GET|POST|PUT|PATCH|DELETE)\\b",
+      "flags": "",
+      "label": "Catch-all route handler — all sub-paths funneled here",
+      "not_near": [
+        {
+          "regex": "from\\s+['\"]elysia['\"]|new\\s+Elysia|from\\s+['\"]hono['\"]|new\\s+Hono|from\\s+['\"]express['\"]|express\\(\\)|from\\s+['\"]itty-router['\"]|Router\\(\\)|createRouter|handleRequest",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "import { Elysia } from 'elysia';\nconst app = new Elysia();\nexport const GET = app.handle;",
+    "import { Hono } from 'hono';\nconst app = new Hono();\nexport const GET = (req) => app.fetch(req);",
+    "import express from 'express';\nconst app = express();\nexport const POST = (req) => app(req);",
+    "import { Router } from 'itty-router';\nconst router = Router();\nexport const GET = (req) => router.handle(req);",
+    "const router = createRouter();\nexport const GET = (req) => handleRequest(req);",
+    "export async function GET(request) { return Response.json({}) }",
+    "export const POST = async (req) => Response.json({})"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-catchall-router.ts"
+  },
+  "notes": "deepsec globs such as '**/[[...rest]]/route.*' are minimatch character classes that never match the Next.js folder name; the port matches the folders literally with [[] and []]. deepsec reports the first line per router type; the port reports every line. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

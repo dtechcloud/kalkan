@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "slug": "js-express-route",
+  "description": "Express.js route registrations — entry points (weak candidate, gated on Express)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "express"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:app|router)\\.(?:get|post|put|patch|delete|all|use)\\s*\\(",
+      "flags": "",
+      "label": "app/router method registration"
+    },
+    {
+      "regex": "express\\.Router\\s*\\(",
+      "flags": "",
+      "label": "express.Router() factory"
+    },
+    {
+      "regex": "\\(\\s*req\\s*,\\s*res(?:\\s*,\\s*next)?\\s*\\)\\s*=>",
+      "flags": "",
+      "label": "(req, res) handler signature"
+    },
+    {
+      "regex": "function\\s+\\w+\\s*\\(\\s*req\\s*,\\s*res(?:\\s*,\\s*next)?\\s*\\)",
+      "flags": "",
+      "label": "function (req, res) handler"
+    }
+  ],
+  "examples": [
+    "app.get(\"/users\", (req, res) => res.json({}));",
+    "app.post('/login', async (req, res, next) => {})",
+    "app.put(\"/items/:id\", handler);",
+    "app.delete(\"/x\", handler)",
+    "app.all(\"*\", catchAll)",
+    "router.use(authMiddleware);",
+    "router.get(\"/health\", (req, res) => res.send(\"ok\"))",
+    "const r = express.Router();",
+    "function handle(req, res, next) { res.send(\"\"); }",
+    "const h = ( req , res , next ) => res.end();"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-express-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

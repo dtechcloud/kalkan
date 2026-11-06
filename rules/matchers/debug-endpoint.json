@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "slug": "debug-endpoint",
+  "description": "Dev/debug/test endpoints that might be reachable in production",
+  "class": "security-misconfig",
+  "cwe": [
+    "CWE-489"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/api/debug/**/*.{ts,tsx}",
+    "**/api/test/**/*.{ts,tsx}",
+    "**/api/dev/**/*.{ts,tsx}",
+    "**/api/**/debug*/*.{ts,tsx}",
+    "**/api/**/*.{ts,tsx,js}",
+    "**/app/api/**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE)\\s*=",
+      "flags": "",
+      "label": "Debug/test endpoint — verify an env gate keeps it unreachable in production",
+      "paths": [
+        "**/debug*/**",
+        "**/debug*",
+        "**/{test,dev,internal,admin}/**"
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE)\\s*=",
+      "flags": "",
+      "label": "Debug/test endpoint — verify an env gate keeps it unreachable in production",
+      "near": [
+        {
+          "regex": "debug.*endpoint",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE)\\s*=",
+      "flags": "",
+      "label": "Debug/test endpoint — verify an env gate keeps it unreachable in production",
+      "near": [
+        {
+          "regex": "test.*endpoint",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE)\\s*=",
+      "flags": "",
+      "label": "Debug/test endpoint — verify an env gate keeps it unreachable in production",
+      "near": [
+        {
+          "regex": "dev.*only",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE)\\s*=",
+      "flags": "",
+      "label": "Debug/test endpoint — verify an env gate keeps it unreachable in production",
+      "near": [
+        {
+          "regex": "development.*only",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE)\\s*=",
+      "flags": "",
+      "label": "Debug/test endpoint — verify an env gate keeps it unreachable in production",
+      "near": [
+        {
+          "regex": "x-debug|x-test-|x-internal",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "// debug endpoint for inspecting state\nexport async function GET(req: Request) {\n  return Response.json({ env: process.env });\n}",
+    "// test endpoint — internal use only\nexport const POST = async (req) => {\n  return new Response(\"ok\");\n};",
+    "// dev only handler\nexport function DELETE() {\n  return new Response(null, { status: 204 });\n}",
+    "// uses x-debug header to dump internals\nexport async function PUT(req) {\n  if (req.headers.get(\"x-debug\")) return Response.json(state);\n  return new Response(\"ok\");\n}",
+    "// development only — do not ship\nif (process.env.NODE_ENV !== 'production') {\n  console.log(\"debug\");\n}\nexport async function GET() { return new Response(\"ok\"); }",
+    "// x-internal toggles debug responses\nexport const GET = async (req) => new Response(\"hi\");"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/debug-endpoint.ts"
+  },
+  "notes": "The path-or-content gate becomes pattern variants. deepsec flags the first handler and words the label by the NODE_ENV gate; the port flags every handler line with one label."
+}

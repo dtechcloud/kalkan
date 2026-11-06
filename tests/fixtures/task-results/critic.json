@@ -1,0 +1,37 @@
+{
+  "task_id": "T0012-critic",
+  "missing_units": [
+    {
+      "surface_id": "http-proxy",
+      "class": "ssrf",
+      "reason": "The image proxy fetches a user-supplied URL and no unit covers it.",
+      "starting_paths": [
+        "app/proxy.py"
+      ]
+    }
+  ],
+  "reassign_ids": [
+    {
+      "coverage_id": "U0004",
+      "reason": "The unit closed without reading the admin variant of the route."
+    }
+  ],
+  "covered_ids": [
+    {
+      "coverage_id": "U0007",
+      "covered_by": [
+        "U0003"
+      ],
+      "reason": "The blocked unit needed the role check of the admin router. U0003 read that router: every admin route passes require_role(\"admin\").",
+      "evidence": [
+        {
+          "file": "app/admin.py",
+          "line": 12,
+          "quote": "router = APIRouter(dependencies=[Depends(require_role(\"admin\"))])"
+        }
+      ]
+    }
+  ],
+  "stop": false,
+  "notes": ""
+}

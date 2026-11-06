@@ -1,0 +1,2252 @@
+{
+  "results": [
+    {
+      "source": {
+        "path": "@TARGET@/go.mod",
+        "type": "lockfile"
+      },
+      "packages": [
+        {
+          "package": {
+            "name": "github.com/dgrijalva/jwt-go",
+            "version": "3.2.0+incompatible",
+            "ecosystem": "Go"
+          },
+          "groups": [
+            {
+              "ids": [
+                "GO-2020-0017",
+                "GHSA-w73w-5m7g-f7qc"
+              ],
+              "aliases": [
+                "CVE-2020-26160",
+                "GHSA-w73w-5m7g-f7qc",
+                "GO-2020-0017",
+                "SNYK-GOLANG-GITHUBCOMDGRIJALVAJWTGO-596515"
+              ],
+              "max_severity": "7.5"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://vuln.go.dev/ID/GO-2020-0017.json"
+                  },
+                  "ecosystem_specific": {
+                    "imports": [
+                      {
+                        "path": "github.com/dgrijalva/jwt-go",
+                        "symbols": [
+                          "MapClaims.VerifyAudience"
+                        ]
+                      }
+                    ]
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "github.com/dgrijalva/jwt-go",
+                    "purl": "pkg:golang/github.com/dgrijalva/jwt-go"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0.0.0-20150717181359-44718f8a89b0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://vuln.go.dev/ID/GO-2020-0017.json"
+                  },
+                  "ecosystem_specific": {
+                    "imports": [
+                      {
+                        "path": "github.com/dgrijalva/jwt-go/v4",
+                        "symbols": [
+                          "MapClaims.VerifyAudience"
+                        ]
+                      }
+                    ]
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "github.com/dgrijalva/jwt-go/v4",
+                    "purl": "pkg:golang/github.com/dgrijalva/jwt-go/v4"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "4.0.0-preview1"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-26160",
+                "GHSA-w73w-5m7g-f7qc",
+                "SNYK-GOLANG-GITHUBCOMDGRIJALVAJWTGO-596515"
+              ],
+              "database_specific": {
+                "review_status": "REVIEWED",
+                "url": "https://pkg.go.dev/vuln/GO-2020-0017"
+              },
+              "details": "If a JWT contains an audience claim with an array of strings, rather than a single string, and MapClaims.VerifyAudience is called with req set to false, then audience verification will be bypassed, allowing an invalid set of audiences to be provided.",
+              "id": "GO-2020-0017",
+              "modified": "2026-07-08T06:49:40.526819528Z",
+              "published": "2021-04-14T20:04:52Z",
+              "related": [
+                "CGA-hv4q-5g38-wjr8"
+              ],
+              "schema_version": "1.7.5",
+              "summary": "Authorization bypass in github.com/dgrijalva/jwt-go"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-w73w-5m7g-f7qc/GHSA-w73w-5m7g-f7qc.json"
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "github.com/dgrijalva/jwt-go",
+                    "purl": "pkg:golang/github.com/dgrijalva/jwt-go"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0.0.0-20150717181359-44718f8a89b0"
+                        },
+                        {
+                          "last_affected": "3.2.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-w73w-5m7g-f7qc/GHSA-w73w-5m7g-f7qc.json"
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "github.com/dgrijalva/jwt-go/v4",
+                    "purl": "pkg:golang/github.com/dgrijalva/jwt-go/v4"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "4.0.0-preview1"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-26160",
+                "GO-2020-0017",
+                "SNYK-GOLANG-GITHUBCOMDGRIJALVAJWTGO-596515"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-287",
+                  "CWE-755"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-05-18T20:54:59Z",
+                "nvd_published_at": "2020-09-30T18:15:00Z",
+                "severity": "HIGH"
+              },
+              "details": "jwt-go allows attackers to bypass intended access restrictions in situations with `[]string{}` for `m[\"aud\"]` (which is allowed by the specification). Because the type assertion fails, \"\" is the value of aud. This is a security problem if the JWT token is presented to a service that lacks its own audience check. There is no patch available and users of jwt-go are advised to migrate to [golang-jwt](https://github.com/golang-jwt/jwt) at version 3.2.1",
+              "id": "GHSA-w73w-5m7g-f7qc",
+              "modified": "2026-09-10T03:49:05.293395113Z",
+              "published": "2021-05-18T21:08:21Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "Authorization bypass in github.com/dgrijalva/jwt-go"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "golang.org/x/text",
+            "version": "0.3.5",
+            "ecosystem": "Go"
+          },
+          "groups": [
+            {
+              "ids": [
+                "GO-2021-0113",
+                "GHSA-ppp9-7jff-5vj2"
+              ],
+              "aliases": [
+                "CVE-2021-38561",
+                "GHSA-ppp9-7jff-5vj2",
+                "GO-2021-0113"
+              ],
+              "max_severity": "7.5"
+            },
+            {
+              "ids": [
+                "GO-2022-1059",
+                "GHSA-69ch-w2m2-3vjp"
+              ],
+              "aliases": [
+                "CVE-2022-32149",
+                "GHSA-69ch-w2m2-3vjp",
+                "GO-2022-1059"
+              ],
+              "max_severity": "7.5"
+            },
+            {
+              "ids": [
+                "GO-2026-5970"
+              ],
+              "aliases": [
+                "CVE-2026-56852",
+                "GO-2026-5970"
+              ],
+              "max_severity": ""
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://vuln.go.dev/ID/GO-2021-0113.json"
+                  },
+                  "ecosystem_specific": {
+                    "imports": [
+                      {
+                        "path": "golang.org/x/text/language",
+                        "symbols": [
+                          "MatchStrings",
+                          "MustParse",
+                          "Parse",
+                          "ParseAcceptLanguage"
+                        ]
+                      }
+                    ]
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "golang.org/x/text",
+                    "purl": "pkg:golang/golang.org/x/text"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.3.7"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2021-38561",
+                "GHSA-ppp9-7jff-5vj2"
+              ],
+              "database_specific": {
+                "review_status": "REVIEWED",
+                "url": "https://pkg.go.dev/vuln/GO-2021-0113"
+              },
+              "details": "Due to improper index calculation, an incorrectly formatted language tag can cause Parse to panic via an out of bounds read. If Parse is used to process untrusted user inputs, this may be used as a vector for a denial of service attack.",
+              "id": "GO-2021-0113",
+              "modified": "2026-02-04T02:31:07.297346Z",
+              "published": "2021-10-06T17:51:21Z",
+              "related": [
+                "CGA-rxmv-qq37-m2jc",
+                "RHBA-2023:1649",
+                "RHSA-2023:0407"
+              ],
+              "schema_version": "1.7.3",
+              "summary": "Out-of-bounds read in golang.org/x/text/language"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://vuln.go.dev/ID/GO-2022-1059.json"
+                  },
+                  "ecosystem_specific": {
+                    "imports": [
+                      {
+                        "path": "golang.org/x/text/language",
+                        "symbols": [
+                          "MatchStrings",
+                          "ParseAcceptLanguage"
+                        ]
+                      }
+                    ]
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "golang.org/x/text",
+                    "purl": "pkg:golang/golang.org/x/text"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.3.8"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2022-32149",
+                "GHSA-69ch-w2m2-3vjp"
+              ],
+              "database_specific": {
+                "review_status": "REVIEWED",
+                "url": "https://pkg.go.dev/vuln/GO-2022-1059"
+              },
+              "details": "An attacker may cause a denial of service by crafting an Accept-Language header which ParseAcceptLanguage will take significant time to parse.",
+              "id": "GO-2022-1059",
+              "modified": "2026-02-04T03:39:03.311488Z",
+              "published": "2022-10-11T18:16:24Z",
+              "related": [
+                "CGA-wf56-6rqf-4crj"
+              ],
+              "schema_version": "1.7.3",
+              "summary": "Denial of service via crafted Accept-Language header in golang.org/x/text/language"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://vuln.go.dev/ID/GO-2026-5970.json"
+                  },
+                  "ecosystem_specific": {
+                    "imports": [
+                      {
+                        "path": "golang.org/x/text/unicode/norm",
+                        "symbols": [
+                          "Form.Append",
+                          "Form.AppendString",
+                          "Form.Bytes",
+                          "Form.FirstBoundary",
+                          "Form.FirstBoundaryInString",
+                          "Form.IsNormal",
+                          "Form.IsNormalString",
+                          "Form.LastBoundary",
+                          "Form.NextBoundary",
+                          "Form.NextBoundaryInString",
+                          "Form.Properties",
+                          "Form.PropertiesString",
+                          "Form.QuickSpan",
+                          "Form.QuickSpanString",
+                          "Form.Span",
+                          "Form.SpanString",
+                          "Form.String",
+                          "Form.Transform",
+                          "Iter.Init",
+                          "Iter.InitString",
+                          "Iter.Next",
+                          "Iter.Seek",
+                          "nextComposed",
+                          "normReader.Read",
+                          "normWriter.Write"
+                        ]
+                      }
+                    ]
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "golang.org/x/text",
+                    "purl": "pkg:golang/golang.org/x/text"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.39.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2026-56852"
+              ],
+              "database_specific": {
+                "review_status": "REVIEWED",
+                "url": "https://pkg.go.dev/vuln/GO-2026-5970"
+              },
+              "details": "A norm.Iter can enter an infinite loop when handling input containing invalid UTF-8 bytes.",
+              "id": "GO-2026-5970",
+              "modified": "2026-09-23T10:41:39.386264978Z",
+              "published": "2026-07-14T17:29:56Z",
+              "related": [
+                "RHSA-2026:40964",
+                "RHSA-2026:41020",
+                "RHSA-2026:42083",
+                "RHSA-2026:42230",
+                "RHSA-2026:42241",
+                "RHSA-2026:43015",
+                "RHSA-2026:43119",
+                "RHSA-2026:43311",
+                "RHSA-2026:43554",
+                "RHSA-2026:43581",
+                "RHSA-2026:43716",
+                "RHSA-2026:43797",
+                "RHSA-2026:43799",
+                "RHSA-2026:43801",
+                "RHSA-2026:43803",
+                "RHSA-2026:43852",
+                "RHSA-2026:43866",
+                "RHSA-2026:43873",
+                "RHSA-2026:43906",
+                "RHSA-2026:44151",
+                "RHSA-2026:44152",
+                "RHSA-2026:44162",
+                "RHSA-2026:44430",
+                "RHSA-2026:44451",
+                "RHSA-2026:44479",
+                "RHSA-2026:46953",
+                "RHSA-2026:46960",
+                "RHSA-2026:46988",
+                "RHSA-2026:48306",
+                "RHSA-2026:49317",
+                "RHSA-2026:49360",
+                "RHSA-2026:51065",
+                "RHSA-2026:52912",
+                "RHSA-2026:54364",
+                "RHSA-2026:54549",
+                "RHSA-2026:68334",
+                "RHSA-2026:68335",
+                "RHSA-2026:69258",
+                "RHSA-2026:70201"
+              ],
+              "schema_version": "1.8.0",
+              "summary": "Infinite loop on invalid input in golang.org/x/text"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/10/GHSA-69ch-w2m2-3vjp/GHSA-69ch-w2m2-3vjp.json"
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "golang.org/x/text",
+                    "purl": "pkg:golang/golang.org/x/text"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.3.8"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2022-32149",
+                "GO-2022-1059"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-772"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2022-10-28T20:11:26Z",
+                "nvd_published_at": "2022-10-14T15:15:00Z",
+                "severity": "HIGH"
+              },
+              "details": "The BCP 47 tag parser has quadratic time complexity due to inherent aspects of its design. Since the parser is, by design, exposed to untrusted user input, this can be leveraged to force a program to consume significant time parsing Accept-Language headers. The parser cannot be easily rewritten to fix this behavior for various reasons. Instead the solution implemented in this CL is to limit the total complexity of tags passed into ParseAcceptLanguage by limiting the number of dashes in the string to 1000. This should be more than enough for the majority of real world use cases, where the number of tags being sent is likely to be in the single digits.\n\n### Specific Go Packages Affected\ngolang.org/x/text/language",
+              "id": "GHSA-69ch-w2m2-3vjp",
+              "modified": "2026-09-10T03:49:46.240531909Z",
+              "published": "2022-10-14T19:00:40Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "golang.org/x/text/language Denial of service via crafted Accept-Language header"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/12/GHSA-ppp9-7jff-5vj2/GHSA-ppp9-7jff-5vj2.json"
+                  },
+                  "package": {
+                    "ecosystem": "Go",
+                    "name": "golang.org/x/text",
+                    "purl": "pkg:golang/golang.org/x/text"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.3.7"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2021-38561",
+                "GO-2021-0113"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-125"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2023-01-09T20:02:12Z",
+                "nvd_published_at": "2022-12-26T06:15:00Z",
+                "severity": "HIGH"
+              },
+              "details": "golang.org/x/text/language in golang.org/x/text before 0.3.7 can panic with an out-of-bounds read during BCP 47 language tag parsing. Index calculation is mishandled. If parsing untrusted user input, this can be used as a vector for a denial-of-service attack.",
+              "id": "GHSA-ppp9-7jff-5vj2",
+              "modified": "2026-09-10T03:49:50.331764985Z",
+              "published": "2022-12-26T06:30:22Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "golang.org/x/text/language Out-of-bounds Read vulnerability"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": {
+        "path": "@TARGET@/package-lock.json",
+        "type": "lockfile"
+      },
+      "packages": [
+        {
+          "package": {
+            "name": "lodash",
+            "version": "4.17.20",
+            "ecosystem": "npm"
+          },
+          "groups": [
+            {
+              "ids": [
+                "GHSA-29mw-wpgm-hmr9"
+              ],
+              "aliases": [
+                "CVE-2020-28500",
+                "GHSA-29mw-wpgm-hmr9"
+              ],
+              "max_severity": "5.3"
+            },
+            {
+              "ids": [
+                "GHSA-35jh-r3h4-6jhm",
+                "GHSA-r5fr-rjxr-66jc"
+              ],
+              "aliases": [
+                "CVE-2021-23337",
+                "CVE-2026-4800",
+                "GHSA-35jh-r3h4-6jhm",
+                "GHSA-r5fr-rjxr-66jc"
+              ],
+              "max_severity": "8.1"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash",
+                    "purl": "pkg:npm/lodash"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.17.21"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash-es",
+                    "purl": "pkg:npm/lodash-es"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.17.21"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash.trimend",
+                    "purl": "pkg:npm/lodash.trimend"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "last_affected": "4.5.1"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash.trim",
+                    "purl": "pkg:npm/lodash.trim"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "last_affected": "4.5.1"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-29mw-wpgm-hmr9/GHSA-29mw-wpgm-hmr9.json"
+                  },
+                  "package": {
+                    "ecosystem": "RubyGems",
+                    "name": "lodash-rails",
+                    "purl": "pkg:gem/lodash-rails"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.17.21"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-28500"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-1333",
+                  "CWE-400"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-03-19T22:45:28Z",
+                "nvd_published_at": "2021-02-15T11:15:00Z",
+                "severity": "MODERATE"
+              },
+              "details": "All versions of package lodash prior to 4.17.21 are vulnerable to Regular Expression Denial of Service (ReDoS) via the `toNumber`, `trim` and `trimEnd` functions. \n\nSteps to reproduce (provided by reporter Liyuan Chen):\n```js\nvar lo = require('lodash');\n\nfunction build_blank(n) {\n    var ret = \"1\"\n    for (var i = 0; i < n; i++) {\n        ret += \" \"\n    }\n    return ret + \"1\";\n}\nvar s = build_blank(50000) var time0 = Date.now();\nlo.trim(s) \nvar time_cost0 = Date.now() - time0;\nconsole.log(\"time_cost0: \" + time_cost0);\nvar time1 = Date.now();\nlo.toNumber(s) var time_cost1 = Date.now() - time1;\nconsole.log(\"time_cost1: \" + time_cost1);\nvar time2 = Date.now();\nlo.trimEnd(s);\nvar time_cost2 = Date.now() - time2;\nconsole.log(\"time_cost2: \" + time_cost2);\n```",
+              "id": "GHSA-29mw-wpgm-hmr9",
+              "modified": "2025-09-29T21:12:31.102523Z",
+              "published": "2022-01-06T20:30:46Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "Regular Expression Denial of Service (ReDoS) in lodash"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash",
+                    "purl": "pkg:npm/lodash"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "4.17.21"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash-es",
+                    "purl": "pkg:npm/lodash-es"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "4.17.21"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash.template",
+                    "purl": "pkg:npm/lodash.template"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "last_affected": "4.5.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash-template",
+                    "purl": "pkg:npm/lodash-template"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "last_affected": "1.0.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/05/GHSA-35jh-r3h4-6jhm/GHSA-35jh-r3h4-6jhm.json"
+                  },
+                  "package": {
+                    "ecosystem": "RubyGems",
+                    "name": "lodash-rails",
+                    "purl": "pkg:gem/lodash-rails"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "4.17.21"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2021-23337",
+                "CVE-2026-4800",
+                "GHSA-r5fr-rjxr-66jc"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-77",
+                  "CWE-94"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-03-31T23:59:26Z",
+                "nvd_published_at": "2021-02-15T13:15:00Z",
+                "severity": "HIGH"
+              },
+              "details": "`lodash` versions prior to 4.17.21 are vulnerable to Command Injection via the template function.",
+              "id": "GHSA-35jh-r3h4-6jhm",
+              "modified": "2026-09-10T03:49:04.067984836Z",
+              "published": "2021-05-06T16:05:51Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "Command Injection in lodash"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "last_known_affected_version_range": "<= 4.17.23",
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash",
+                    "purl": "pkg:npm/lodash"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.18.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "last_known_affected_version_range": "<= 4.17.23",
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash-es",
+                    "purl": "pkg:npm/lodash-es"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.18.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "last_known_affected_version_range": "<= 4.17.23",
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash-amd",
+                    "purl": "pkg:npm/lodash-amd"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.18.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2026/04/GHSA-r5fr-rjxr-66jc/GHSA-r5fr-rjxr-66jc.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "lodash.template",
+                    "purl": "pkg:npm/lodash.template"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "4.0.0"
+                        },
+                        {
+                          "fixed": "4.18.0"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2021-23337",
+                "CVE-2026-4800",
+                "GHSA-35jh-r3h4-6jhm"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-94"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2026-04-01T23:51:12Z",
+                "nvd_published_at": "2026-03-31T20:16:29Z",
+                "severity": "HIGH"
+              },
+              "details": "### Impact\n\nThe fix for [CVE-2021-23337](https://github.com/advisories/GHSA-35jh-r3h4-6jhm) added validation for the `variable` option in `_.template` but did not apply the same validation to `options.imports` key names. Both paths flow into the same `Function()` constructor sink.\n\nWhen an application passes untrusted input as `options.imports` key names, an attacker can inject default-parameter expressions that execute arbitrary code at template compilation time.\n\nAdditionally, `_.template` uses `assignInWith` to merge imports, which enumerates inherited properties via `for..in`. If `Object.prototype` has been polluted by any other vector, the polluted keys are copied into the imports object and passed to `Function()`.\n\n### Patches\n\nUsers should upgrade to version 4.18.0.\n\nThe fix applies two changes:\n1. Validate `importsKeys` against the existing `reForbiddenIdentifierChars` regex (same check already used for the `variable` option)\n2. Replace `assignInWith` with `assignWith` when merging imports, so only own properties are enumerated\n\n### Workarounds\n\nDo not pass untrusted input as key names in `options.imports`. Only use developer-controlled, static key names.",
+              "id": "GHSA-r5fr-rjxr-66jc",
+              "modified": "2026-09-10T03:51:02.970455926Z",
+              "published": "2026-04-01T23:51:12Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "lodash vulnerable to Code Injection via `_.template` imports key names"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "minimist",
+            "version": "1.2.5",
+            "ecosystem": "npm"
+          },
+          "groups": [
+            {
+              "ids": [
+                "GHSA-xvch-5gv4-984h"
+              ],
+              "aliases": [
+                "CVE-2021-44906",
+                "GHSA-xvch-5gv4-984h"
+              ],
+              "max_severity": "9.8"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/03/GHSA-xvch-5gv4-984h/GHSA-xvch-5gv4-984h.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "minimist",
+                    "purl": "pkg:npm/minimist"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "1.0.0"
+                        },
+                        {
+                          "fixed": "1.2.6"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/03/GHSA-xvch-5gv4-984h/GHSA-xvch-5gv4-984h.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "minimist",
+                    "purl": "pkg:npm/minimist"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "0.2.4"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2021-44906"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-1321"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2022-03-18T23:13:40Z",
+                "nvd_published_at": "2022-03-17T16:15:00Z",
+                "severity": "CRITICAL"
+              },
+              "details": "Minimist prior to 1.2.6 and 0.2.4 is vulnerable to Prototype Pollution via file `index.js`, function `setKey()` (lines 69-95).",
+              "id": "GHSA-xvch-5gv4-984h",
+              "modified": "2026-03-13T22:11:59.523514Z",
+              "published": "2022-03-18T00:01:09Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "Prototype Pollution in minimist"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "node-fetch",
+            "version": "2.6.0",
+            "ecosystem": "npm"
+          },
+          "groups": [
+            {
+              "ids": [
+                "GHSA-r683-j2x4-v87g"
+              ],
+              "aliases": [
+                "CVE-2022-0235",
+                "GHSA-r683-j2x4-v87g"
+              ],
+              "max_severity": "8.8"
+            },
+            {
+              "ids": [
+                "GHSA-w7rc-rwvf-8q5r"
+              ],
+              "aliases": [
+                "CVE-2020-15168",
+                "GHSA-w7rc-rwvf-8q5r"
+              ],
+              "max_severity": "2.6"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-r683-j2x4-v87g/GHSA-r683-j2x4-v87g.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "node-fetch",
+                    "purl": "pkg:npm/node-fetch"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "3.0.0"
+                        },
+                        {
+                          "fixed": "3.1.1"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2022/01/GHSA-r683-j2x4-v87g/GHSA-r683-j2x4-v87g.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "node-fetch",
+                    "purl": "pkg:npm/node-fetch"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.6.7"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2022-0235"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-173",
+                  "CWE-200",
+                  "CWE-601"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2022-01-18T22:51:22Z",
+                "nvd_published_at": "2022-01-16T17:15:00Z",
+                "severity": "HIGH"
+              },
+              "details": "node-fetch forwards secure headers such as `authorization`, `www-authenticate`, `cookie`, & `cookie2` when redirecting to a untrusted site.",
+              "id": "GHSA-r683-j2x4-v87g",
+              "modified": "2023-11-08T04:07:30.211593Z",
+              "published": "2022-01-21T23:55:52Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.0/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "node-fetch forwards secure headers to untrusted sites"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/09/GHSA-w7rc-rwvf-8q5r/GHSA-w7rc-rwvf-8q5r.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "node-fetch",
+                    "purl": "pkg:npm/node-fetch"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "2.0.0"
+                        },
+                        {
+                          "fixed": "2.6.1"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                },
+                {
+                  "database_specific": {
+                    "last_known_affected_version_range": "<= 3.0.0-beta.8",
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2020/09/GHSA-w7rc-rwvf-8q5r/GHSA-w7rc-rwvf-8q5r.json"
+                  },
+                  "package": {
+                    "ecosystem": "npm",
+                    "name": "node-fetch",
+                    "purl": "pkg:npm/node-fetch"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "3.0.0-beta.1"
+                        },
+                        {
+                          "fixed": "3.0.0-beta.9"
+                        }
+                      ],
+                      "type": "SEMVER"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-15168"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-20",
+                  "CWE-770"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2020-09-10T17:44:09Z",
+                "nvd_published_at": null,
+                "severity": "LOW"
+              },
+              "details": "### Impact\nNode Fetch did not honor the `size` option after following a redirect, which means that when a content size was over the limit, a `FetchError` would never get thrown and the process would end without failure.\n\nFor most people, this fix will have a little or no impact. However, if you are relying on node-fetch to gate files above a size, the impact could be significant, for example: If you don't double-check the size of the data after `fetch()` has completed, your JS thread could get tied up doing work on a large file (DoS) and/or cost you money in computing.\n\n### Patches\nWe released patched versions for both stable and beta channels:\n\n- For `v2`: 2.6.1\n- For `v3`: 3.0.0-beta.9\n\n### Workarounds\nNone, it is strongly recommended to update as soon as possible.\n\n### For more information\nIf you have any questions or comments about this advisory:\n* Open an issue in [node-fetch](https://github.com/node-fetch/node-fetch/issues/new?assignees=&labels=question&template=support-or-usage.md&title=Question%3A+)\n* Contact one of the core maintainers.",
+              "id": "GHSA-w7rc-rwvf-8q5r",
+              "modified": "2026-07-08T06:00:29.567074454Z",
+              "published": "2020-09-10T17:46:21Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:H/PR:L/UI:R/S:U/C:N/I:N/A:L",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "The `size` option isn't honored after following a redirect in node-fetch"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": {
+        "path": "@TARGET@/requirements.txt",
+        "type": "lockfile"
+      },
+      "packages": [
+        {
+          "package": {
+            "name": "jinja2",
+            "version": "2.10.1",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "PYSEC-2021-66",
+                "GHSA-g3rq-g295-4j3m"
+              ],
+              "aliases": [
+                "CVE-2020-28493",
+                "GHSA-g3rq-g295-4j3m",
+                "PYSEC-2021-66",
+                "SNYK-PYTHON-JINJA2-1012994"
+              ],
+              "max_severity": "6.9"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2021-66.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "jinja2",
+                    "purl": "pkg:pypi/jinja2"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.11.3"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-28493",
+                "GHSA-g3rq-g295-4j3m",
+                "SNYK-PYTHON-JINJA2-1012994"
+              ],
+              "details": "This affects the package jinja2 from 0.0.0 and before 2.11.3. The ReDoS vulnerability is mainly due to the `_punctuation_re regex` operator and its use of multiple wildcards. The last wildcard is the most exploitable as it searches for trailing punctuation. This issue can be mitigated by Markdown to format user content instead of the urlize filter, or by implementing request timeouts and limiting process memory.",
+              "id": "PYSEC-2021-66",
+              "modified": "2023-11-08T04:03:28.543308Z",
+              "published": "2021-02-01T20:15:00Z",
+              "schema_version": "1.7.3"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/03/GHSA-g3rq-g295-4j3m/GHSA-g3rq-g295-4j3m.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "jinja2",
+                    "purl": "pkg:pypi/jinja2"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.11.3"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-28493",
+                "PYSEC-2021-66",
+                "SNYK-PYTHON-JINJA2-1012994"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-400"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-03-13T01:08:09Z",
+                "nvd_published_at": "2021-02-01T20:15:00Z",
+                "severity": "MODERATE"
+              },
+              "details": "This affects the package jinja2 from 0.0.0 and before 2.11.3. The ReDOS vulnerability of the regex is mainly due to the sub-pattern [a-zA-Z0-9._-]+.[a-zA-Z0-9._-]+ This issue can be mitigated by Markdown to format user content instead of the urlize filter, or by implementing request timeouts and limiting process memory.",
+              "id": "GHSA-g3rq-g295-4j3m",
+              "modified": "2025-02-14T05:26:14.565160Z",
+              "published": "2021-03-19T21:28:05Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Regular Expression Denial of Service (ReDoS) in Jinja2"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "pyyaml",
+            "version": "5.3",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "PYSEC-2020-96",
+                "GHSA-6757-jp84-gxfx"
+              ],
+              "aliases": [
+                "CVE-2020-1747",
+                "GHSA-6757-jp84-gxfx",
+                "PYSEC-2020-96"
+              ],
+              "max_severity": "9.8"
+            },
+            {
+              "ids": [
+                "PYSEC-2021-142",
+                "GHSA-8q59-q68h-6hv4"
+              ],
+              "aliases": [
+                "CVE-2020-14343",
+                "GHSA-8q59-q68h-6hv4",
+                "PYSEC-2021-142"
+              ],
+              "max_severity": "9.8"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/pyyaml/PYSEC-2020-96.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "5.1"
+                        },
+                        {
+                          "fixed": "5.3.1"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-1747",
+                "GHSA-6757-jp84-gxfx"
+              ],
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.3.1, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. An attacker could use this flaw to execute arbitrary code on the system by abusing the python/object/new constructor.",
+              "id": "PYSEC-2020-96",
+              "modified": "2026-05-04T08:57:14.897560893Z",
+              "published": "2020-03-24T15:15:00Z",
+              "schema_version": "1.7.5"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/pyyaml/PYSEC-2021-142.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "5.4"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-14343",
+                "GHSA-8q59-q68h-6hv4"
+              ],
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+              "id": "PYSEC-2021-142",
+              "modified": "2023-11-08T04:02:26.414885Z",
+              "published": "2021-02-09T21:15:00Z",
+              "schema_version": "1.7.3"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/04/GHSA-6757-jp84-gxfx/GHSA-6757-jp84-gxfx.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "5.1b7"
+                        },
+                        {
+                          "fixed": "5.3.1"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-1747",
+                "PYSEC-2020-96"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-20"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-04-07T22:29:00Z",
+                "nvd_published_at": "2020-03-24T15:15:00Z",
+                "severity": "CRITICAL"
+              },
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.3.1, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. An attacker could use this flaw to execute arbitrary code on the system by abusing the python/object/new constructor.",
+              "id": "GHSA-6757-jp84-gxfx",
+              "modified": "2026-05-04T08:57:14.897560893Z",
+              "published": "2021-04-20T16:14:24Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Improper Input Validation in PyYAML"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/03/GHSA-8q59-q68h-6hv4/GHSA-8q59-q68h-6hv4.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "5.4"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-14343",
+                "PYSEC-2021-142"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-20"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-03-25T21:15:23Z",
+                "nvd_published_at": "2021-02-09T21:15:00Z",
+                "severity": "CRITICAL"
+              },
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+              "id": "GHSA-8q59-q68h-6hv4",
+              "modified": "2026-02-04T03:33:10.792778Z",
+              "published": "2021-03-25T21:26:26Z",
+              "related": [
+                "CVE-2026-24009"
+              ],
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Improper Input Validation in PyYAML"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "requests",
+            "version": "2.19.1",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "PYSEC-2018-28",
+                "GHSA-x84v-xcm2-53pg"
+              ],
+              "aliases": [
+                "CVE-2018-18074",
+                "GHSA-x84v-xcm2-53pg",
+                "PYSEC-2018-28"
+              ],
+              "max_severity": "7.5"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/requests/PYSEC-2018-28.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "requests",
+                    "purl": "pkg:pypi/requests"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "c45d7c49ea75133e52ab22a8e9e13173938e36ff"
+                        }
+                      ],
+                      "repo": "https://github.com/requests/requests",
+                      "type": "GIT"
+                    },
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.20.0"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2018-18074",
+                "GHSA-x84v-xcm2-53pg"
+              ],
+              "details": "The Requests package before 2.20.0 for Python sends an HTTP Authorization header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier for remote attackers to discover credentials by sniffing the network.",
+              "id": "PYSEC-2018-28",
+              "modified": "2023-11-08T04:00:04.815794Z",
+              "published": "2018-10-09T17:29:00Z",
+              "schema_version": "1.7.3"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "last_known_affected_version_range": "<= 2.19.1",
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2018/10/GHSA-x84v-xcm2-53pg/GHSA-x84v-xcm2-53pg.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "requests",
+                    "purl": "pkg:pypi/requests"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.20.0"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2018-18074",
+                "PYSEC-2018-28"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-522"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2020-06-16T22:02:40Z",
+                "nvd_published_at": "2018-10-09T17:29:00Z",
+                "severity": "HIGH"
+              },
+              "details": "The Requests package through 2.19.1 before 2018-09-14 for Python sends an HTTP Authorization header to an http URI upon receiving a same-hostname https-to-http redirect, which makes it easier for remote attackers to discover credentials by sniffing the network.",
+              "id": "GHSA-x84v-xcm2-53pg",
+              "modified": "2024-10-21T21:42:55.896669Z",
+              "published": "2018-10-29T19:06:46Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+                  "type": "CVSS_V3"
+                }
+              ],
+              "summary": "Insufficiently Protected Credentials in Requests"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "source": {
+        "path": "@TARGET@/requirements.txt",
+        "type": "unknown"
+      },
+      "packages": [
+        {
+          "package": {
+            "name": "jinja2",
+            "version": "2.10.1",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "PYSEC-2021-66",
+                "GHSA-g3rq-g295-4j3m"
+              ],
+              "aliases": [
+                "CVE-2020-28493",
+                "GHSA-g3rq-g295-4j3m",
+                "PYSEC-2021-66",
+                "SNYK-PYTHON-JINJA2-1012994"
+              ],
+              "max_severity": "6.9"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/jinja2/PYSEC-2021-66.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "jinja2",
+                    "purl": "pkg:pypi/jinja2"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.11.3"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-28493",
+                "GHSA-g3rq-g295-4j3m",
+                "SNYK-PYTHON-JINJA2-1012994"
+              ],
+              "details": "This affects the package jinja2 from 0.0.0 and before 2.11.3. The ReDoS vulnerability is mainly due to the `_punctuation_re regex` operator and its use of multiple wildcards. The last wildcard is the most exploitable as it searches for trailing punctuation. This issue can be mitigated by Markdown to format user content instead of the urlize filter, or by implementing request timeouts and limiting process memory.",
+              "id": "PYSEC-2021-66",
+              "modified": "2023-11-08T04:03:28.543308Z",
+              "published": "2021-02-01T20:15:00Z",
+              "schema_version": "1.7.3"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/03/GHSA-g3rq-g295-4j3m/GHSA-g3rq-g295-4j3m.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "jinja2",
+                    "purl": "pkg:pypi/jinja2"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "2.11.3"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-28493",
+                "PYSEC-2021-66",
+                "SNYK-PYTHON-JINJA2-1012994"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-400"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-03-13T01:08:09Z",
+                "nvd_published_at": "2021-02-01T20:15:00Z",
+                "severity": "MODERATE"
+              },
+              "details": "This affects the package jinja2 from 0.0.0 and before 2.11.3. The ReDOS vulnerability of the regex is mainly due to the sub-pattern [a-zA-Z0-9._-]+.[a-zA-Z0-9._-]+ This issue can be mitigated by Markdown to format user content instead of the urlize filter, or by implementing request timeouts and limiting process memory.",
+              "id": "GHSA-g3rq-g295-4j3m",
+              "modified": "2025-02-14T05:26:14.565160Z",
+              "published": "2021-03-19T21:28:05Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Regular Expression Denial of Service (ReDoS) in Jinja2"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "pyyaml",
+            "version": "5.3.0",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "PYSEC-2020-96",
+                "GHSA-6757-jp84-gxfx"
+              ],
+              "aliases": [
+                "CVE-2020-1747",
+                "GHSA-6757-jp84-gxfx",
+                "PYSEC-2020-96"
+              ],
+              "max_severity": "9.8"
+            },
+            {
+              "ids": [
+                "PYSEC-2021-142",
+                "GHSA-8q59-q68h-6hv4"
+              ],
+              "aliases": [
+                "CVE-2020-14343",
+                "GHSA-8q59-q68h-6hv4",
+                "PYSEC-2021-142"
+              ],
+              "max_severity": "9.8"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/pyyaml/PYSEC-2020-96.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "5.1"
+                        },
+                        {
+                          "fixed": "5.3.1"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-1747",
+                "GHSA-6757-jp84-gxfx"
+              ],
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.3.1, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. An attacker could use this flaw to execute arbitrary code on the system by abusing the python/object/new constructor.",
+              "id": "PYSEC-2020-96",
+              "modified": "2026-05-04T08:57:14.897560893Z",
+              "published": "2020-03-24T15:15:00Z",
+              "schema_version": "1.7.5"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/pyyaml/PYSEC-2021-142.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "5.4"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-14343",
+                "GHSA-8q59-q68h-6hv4"
+              ],
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+              "id": "PYSEC-2021-142",
+              "modified": "2023-11-08T04:02:26.414885Z",
+              "published": "2021-02-09T21:15:00Z",
+              "schema_version": "1.7.3"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/04/GHSA-6757-jp84-gxfx/GHSA-6757-jp84-gxfx.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "5.1b7"
+                        },
+                        {
+                          "fixed": "5.3.1"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-1747",
+                "PYSEC-2020-96"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-20"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-04-07T22:29:00Z",
+                "nvd_published_at": "2020-03-24T15:15:00Z",
+                "severity": "CRITICAL"
+              },
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.3.1, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. An attacker could use this flaw to execute arbitrary code on the system by abusing the python/object/new constructor.",
+              "id": "GHSA-6757-jp84-gxfx",
+              "modified": "2026-05-04T08:57:14.897560893Z",
+              "published": "2021-04-20T16:14:24Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Improper Input Validation in PyYAML"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2021/03/GHSA-8q59-q68h-6hv4/GHSA-8q59-q68h-6hv4.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "pyyaml",
+                    "purl": "pkg:pypi/pyyaml"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "5.4"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2020-14343",
+                "PYSEC-2021-142"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-20"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2021-03-25T21:15:23Z",
+                "nvd_published_at": "2021-02-09T21:15:00Z",
+                "severity": "CRITICAL"
+              },
+              "details": "A vulnerability was discovered in the PyYAML library in versions before 5.4, where it is susceptible to arbitrary code execution when it processes untrusted YAML files through the full_load method or with the FullLoader loader. Applications that use the library to process untrusted input may be vulnerable to this flaw. This flaw allows an attacker to execute arbitrary code on the system by abusing the python/object/new constructor. This flaw is due to an incomplete fix for CVE-2020-1747.",
+              "id": "GHSA-8q59-q68h-6hv4",
+              "modified": "2026-02-04T03:33:10.792778Z",
+              "published": "2021-03-25T21:26:26Z",
+              "related": [
+                "CVE-2026-24009"
+              ],
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Improper Input Validation in PyYAML"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "urllib3",
+            "version": "1.23.0",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "PYSEC-2019-133",
+                "GHSA-mh33-7rrq-662w"
+              ],
+              "aliases": [
+                "CVE-2019-11324",
+                "GHSA-mh33-7rrq-662w",
+                "PYSEC-2019-133"
+              ],
+              "max_severity": "8.7"
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/pypa/advisory-database/blob/main/vulns/urllib3/PYSEC-2019-133.yaml"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "urllib3",
+                    "purl": "pkg:pypi/urllib3"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "1.24.2"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2019-11324",
+                "GHSA-mh33-7rrq-662w"
+              ],
+              "details": "The urllib3 library before 1.24.2 for Python mishandles certain cases where the desired set of CA certificates is different from the OS store of CA certificates, which results in SSL connections succeeding in situations where a verification failure is the correct outcome. This is related to use of the ssl_context, ca_certs, or ca_certs_dir argument.",
+              "id": "PYSEC-2019-133",
+              "modified": "2023-11-08T04:01:00.967964Z",
+              "published": "2019-04-18T21:29:00Z",
+              "schema_version": "1.7.3"
+            },
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/github/advisory-database/blob/main/advisories/github-reviewed/2019/04/GHSA-mh33-7rrq-662w/GHSA-mh33-7rrq-662w.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "urllib3",
+                    "purl": "pkg:pypi/urllib3"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        },
+                        {
+                          "fixed": "1.24.2"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "CVE-2019-11324",
+                "PYSEC-2019-133"
+              ],
+              "database_specific": {
+                "cwe_ids": [
+                  "CWE-295"
+                ],
+                "github_reviewed": true,
+                "github_reviewed_at": "2019-04-19T16:54:21Z",
+                "nvd_published_at": "2019-04-18T21:29:00Z",
+                "severity": "HIGH"
+              },
+              "details": "The urllib3 library before 1.24.2 for Python mishandles certain cases where the desired set of CA certificates is different from the OS store of CA certificates, which results in SSL connections succeeding in situations where a verification failure is the correct outcome. This is related to use of the `ssl_context`, `ca_certs`, or `ca_certs_dir` argument.",
+              "id": "GHSA-mh33-7rrq-662w",
+              "modified": "2024-11-18T22:25:21.266722Z",
+              "published": "2019-04-19T16:55:10Z",
+              "schema_version": "1.9.0",
+              "severity": [
+                {
+                  "score": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+                  "type": "CVSS_V3"
+                },
+                {
+                  "score": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:H/VA:N/SC:N/SI:N/SA:N",
+                  "type": "CVSS_V4"
+                }
+              ],
+              "summary": "Improper Certificate Validation in urllib3"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "experimental_config": {
+    "licenses": {
+      "summary": false,
+      "allowlist": null
+    }
+  }
+}

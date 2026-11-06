@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "go-http-handler",
+  "description": "Go HTTP handler functions — entry points for investigation (weak candidate)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "http\\.HandleFunc\\s*\\(",
+      "flags": "",
+      "label": "http.HandleFunc registration"
+    },
+    {
+      "regex": "http\\.Handle\\s*\\(",
+      "flags": "",
+      "label": "http.Handle registration"
+    },
+    {
+      "regex": "mux\\.Handle(Func)?\\s*\\(",
+      "flags": "",
+      "label": "mux handler registration"
+    },
+    {
+      "regex": "\\.GET\\s*\\(|\\.POST\\s*\\(|\\.PUT\\s*\\(|\\.DELETE\\s*\\(",
+      "flags": "",
+      "label": "HTTP method handler"
+    },
+    {
+      "regex": "func\\s+\\w+\\s*\\(\\s*w\\s+http\\.ResponseWriter.*r\\s+\\*http\\.Request",
+      "flags": "",
+      "label": "HTTP handler function signature"
+    },
+    {
+      "regex": "ServeHTTP\\s*\\(",
+      "flags": "",
+      "label": "ServeHTTP implementation"
+    }
+  ],
+  "examples": [
+    "http.HandleFunc(\"/users\", usersHandler)",
+    "http.Handle(\"/api/\", apiHandler)",
+    "mux.HandleFunc(\"/login\", loginHandler)",
+    "mux.Handle(\"/static/\", fs)",
+    "r.GET(\"/users/:id\", getUser)",
+    "router.POST(\"/items\", createItem)",
+    "app.PUT(\"/users/:id\", updateUser)",
+    "e.DELETE(\"/items/:id\", deleteItem)",
+    "func usersHandler(w http.ResponseWriter, r *http.Request) {",
+    "func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-http-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

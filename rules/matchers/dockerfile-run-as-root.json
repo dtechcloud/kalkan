@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "dockerfile-run-as-root",
+  "description": "Final Dockerfile stage runs as root (no USER directive, or USER root)",
+  "class": "iac-cloud-container",
+  "cwe": [
+    "CWE-250"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/Dockerfile",
+    "**/Dockerfile.*",
+    "**/*.Dockerfile"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "docker"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*FROM\\s+(?:--platform=\\S+\\s+)?(?!scratch(?:\\s|$))\\S",
+      "flags": "i",
+      "label": "Final stage has no USER directive",
+      "not_near": [
+        {
+          "regex": "^\\s*USER\\s+\\S",
+          "flags": "i",
+          "after": 10000
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*FROM\\s+(?:--platform=\\S+\\s+)?scratch(?:\\s|$)",
+      "flags": "i",
+      "label": "Final stage has no USER directive",
+      "near": [
+        {
+          "regex": "^\\s*(CMD|ENTRYPOINT|RUN)\\b",
+          "flags": "i",
+          "after": 10000
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "^\\s*USER\\s+\\S",
+          "flags": "i",
+          "after": 10000
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*USER\\s+(?:root|0)(?::|\\s|$)",
+      "flags": "i",
+      "label": "Final stage ends with USER root",
+      "not_near": [
+        {
+          "regex": "^\\s*USER\\s+(?!(?:root|0)(?::|\\s|$))\\S",
+          "flags": "i",
+          "after": 10000
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "FROM node:20\nWORKDIR /app\nCOPY . .\nCMD [\"node\", \"index.js\"]",
+    "FROM ubuntu:22.04\nRUN apt-get update\nUSER root\nCMD [\"bash\"]",
+    "FROM python:3.11\nUSER 0\nCMD [\"python\", \"app.py\"]",
+    "FROM alpine\nFROM debian:bookworm\nCOPY --from=0 /bin/app /bin/app\nCMD [\"/bin/app\"]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dockerfile-run-as-root.ts"
+  },
+  "notes": "Stage tracking is approximated: a FROM line is flagged when no USER line follows it, and a USER root line when no non-root USER line follows it. In a multi-stage file without USER every FROM line is listed (deepsec: the last FROM)."
+}

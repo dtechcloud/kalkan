@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "slug": "oauth-flow",
+  "description": "OAuth authorize/callback endpoints and token-bearing redirects",
+  "class": "oauth-oidc-saml",
+  "cwe": [
+    "CWE-287"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/oauth/**/*.{ts,tsx}",
+    "**/auth/**/*.{ts,tsx}",
+    "**/callback/**/*.{ts,tsx}",
+    "**/app/api/**/*.{ts,tsx}",
+    "**/api/**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "redirect_uri",
+      "flags": "",
+      "label": "OAuth redirect_uri handling"
+    },
+    {
+      "regex": "authorization_code|grant_type",
+      "flags": "",
+      "label": "OAuth authorization code flow"
+    },
+    {
+      "regex": "code_verifier|code_challenge",
+      "flags": "",
+      "label": "PKCE flow"
+    },
+    {
+      "regex": "state=.{0,80}redirect|redirect.{0,80}state=",
+      "flags": "",
+      "label": "OAuth state + redirect"
+    },
+    {
+      "regex": "\\?code=|&code=",
+      "flags": "",
+      "label": "Authorization code in URL"
+    },
+    {
+      "regex": "access_token.{0,80}redirect|redirect.{0,80}access_token",
+      "flags": "",
+      "label": "Token in redirect URL"
+    },
+    {
+      "regex": "callback.{0,80}token|token.{0,80}callback",
+      "flags": "",
+      "label": "Token in callback"
+    }
+  ],
+  "examples": [
+    "const redirect_uri = req.query.redirect_uri;",
+    "params.append(\"redirect_uri\", url);",
+    "body.set(\"grant_type\", \"authorization_code\");",
+    "const grantType = \"authorization_code\";",
+    "params.set(\"code_verifier\", verifier);",
+    "const code_challenge = sha256(code_verifier);",
+    "const u = \"https://idp/cb?state=\" + s + \"&redirect=\" + r;",
+    "// redirect handler with state= param parsing",
+    "const url = \"https://app/cb?code=\" + c;",
+    "if (qs.includes(\"&code=\")) handle();",
+    "// access_token in redirect URL",
+    "// access_token returned via callback URL token="
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/oauth-flow.ts"
+  },
+  "notes": ""
+}

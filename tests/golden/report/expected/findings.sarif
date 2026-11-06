@@ -1,0 +1,691 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "kalkan",
+          "version": "0.0.0-golden",
+          "rules": [
+            {
+              "id": "sqli",
+              "shortDescription": {
+                "text": "SQL injection"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-89"
+                ]
+              }
+            },
+            {
+              "id": "ssrf",
+              "shortDescription": {
+                "text": "Server-side request forgery"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-918"
+                ]
+              }
+            },
+            {
+              "id": "path-traversal",
+              "shortDescription": {
+                "text": "Path traversal / file read-write"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-22"
+                ]
+              }
+            },
+            {
+              "id": "missing-authz",
+              "shortDescription": {
+                "text": "Missing authorization"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-862"
+                ]
+              }
+            },
+            {
+              "id": "MAL-2025-41758",
+              "shortDescription": {
+                "text": "Malicious code in sample-module (PyPI)"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "sca",
+                  "malicious",
+                  "external/cwe/cwe-506"
+                ]
+              }
+            },
+            {
+              "id": "GHSA-8q59-q68h-6hv4",
+              "shortDescription": {
+                "text": "PyYAML arbitrary code execution through full_load"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "sca",
+                  "external/cwe/cwe-1395"
+                ]
+              }
+            },
+            {
+              "id": "GHSA-p6mc-m468-83gw",
+              "shortDescription": {
+                "text": "Prototype pollution in lodash zipObjectDeep"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "sca",
+                  "external/cwe/cwe-1395"
+                ]
+              }
+            },
+            {
+              "id": "GHSA-jpcq-cgw6-v4j6",
+              "shortDescription": {
+                "text": "jQuery runs untrusted code when HTML with option elements reaches DOM manipulation methods"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "sca",
+                  "external/cwe/cwe-1395"
+                ]
+              }
+            },
+            {
+              "id": "GHSA-x84v-xcm2-53pg",
+              "shortDescription": {
+                "text": "Requests sends credentials over an insecure redirect"
+              },
+              "properties": {
+                "tags": [
+                  "security",
+                  "sca",
+                  "external/cwe/cwe-1395"
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "automationDetails": {
+        "id": "kalkan/20261015T120000Z-shop-a1b2"
+      },
+      "results": [
+        {
+          "ruleId": "sqli",
+          "ruleIndex": 0,
+          "level": "error",
+          "message": {
+            "text": "Kullanıcı aramasında SQL injection\n\nGET /users, id parametresini SQL sorgusuna doğrudan ekliyor."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/db.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 8
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/routes.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 12
+                          }
+                        },
+                        "message": {
+                          "text": "id değerini query string'den okuyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "entrypoint",
+                        "scope": "get_user"
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/db.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 8
+                          }
+                        },
+                        "message": {
+                          "text": "Biçimlenmiş SQL metnini çalıştırıyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "sink",
+                        "scope": "find_user"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanFinding/v1": "cf0fb1e8e50e80fc2682fa670db39a79a753d6ef1bad55ee89e5b2e5835f4343"
+          },
+          "properties": {
+            "findingId": "KF-CF0FB1E8E50E80FC",
+            "verdict": "confirmed",
+            "severity": "high",
+            "confidence": "medium",
+            "engines": [
+              "hunter",
+              "verifier",
+              "opengrep",
+              "reviewer"
+            ],
+            "class": "sqli",
+            "cwe": [
+              "CWE-89"
+            ],
+            "security-severity": "8.0"
+          }
+        },
+        {
+          "ruleId": "ssrf",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "Görsel proxy'sinde SSRF\n\nGET /fetch, kullanıcının verdiği adrese sunucudan istek atıyor."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/routes.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 19
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/routes.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 18
+                          }
+                        },
+                        "message": {
+                          "text": "url değerini query string'den okuyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "entrypoint",
+                        "scope": "fetch"
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/routes.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 19
+                          }
+                        },
+                        "message": {
+                          "text": "Sunucu, kullanıcının verdiği adrese istek atıyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "sink",
+                        "scope": "fetch"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanFinding/v1": "760073988bed4cb8e973a343e8ca66f9dc9db18efe7b1bcd5abdba528f4042d7"
+          },
+          "properties": {
+            "findingId": "KF-760073988BED4CB8",
+            "verdict": "confirmed",
+            "severity": "medium",
+            "confidence": "high",
+            "engines": [
+              "hunter",
+              "verifier",
+              "poc-builder"
+            ],
+            "class": "ssrf",
+            "cwe": [
+              "CWE-918"
+            ],
+            "security-severity": "5.5"
+          }
+        },
+        {
+          "ruleId": "path-traversal",
+          "ruleIndex": 2,
+          "level": "warning",
+          "message": {
+            "text": "Dosya okumada path traversal\n\nGET /files, name parametresini dosya yoluna ekliyor."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/routes.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 25
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/routes.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 24
+                          }
+                        },
+                        "message": {
+                          "text": "name değerini query string'den okuyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "entrypoint",
+                        "scope": "read_file"
+                      }
+                    },
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/routes.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 25
+                          }
+                        },
+                        "message": {
+                          "text": "Birleştirilmiş yolu açıyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "sink",
+                        "scope": "read_file"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanFinding/v1": "32409fea7a491cfa0da995ceb4cac98494a143df3c1867459a36fe8b45d1d2f9"
+          },
+          "properties": {
+            "findingId": "KF-32409FEA7A491CFA",
+            "verdict": "needs_validation",
+            "engines": [
+              "hunter",
+              "verifier"
+            ],
+            "class": "path-traversal",
+            "cwe": [
+              "CWE-22"
+            ]
+          }
+        },
+        {
+          "ruleId": "missing-authz",
+          "ruleIndex": 3,
+          "level": "note",
+          "message": {
+            "text": "Router `admin` | <script>alert('x')</script> yetki atlatma\n\nAday, /admin rotasının yetkilendirmeyi atladığını iddia etti."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/routes.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "startLine": 31
+                }
+              }
+            }
+          ],
+          "codeFlows": [
+            {
+              "threadFlows": [
+                {
+                  "locations": [
+                    {
+                      "location": {
+                        "physicalLocation": {
+                          "artifactLocation": {
+                            "uri": "app/routes.py",
+                            "uriBaseId": "%SRCROOT%"
+                          },
+                          "region": {
+                            "startLine": 31
+                          }
+                        },
+                        "message": {
+                          "text": "Ayarları güncelliyor."
+                        }
+                      },
+                      "properties": {
+                        "kind": "sink",
+                        "scope": "admin"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanFinding/v1": "c4bcaa828c227419e885c5da31380bb7557bfddaba8a0bced1c6f91bb4e4f56a"
+          },
+          "suppressions": [
+            {
+              "kind": "external",
+              "status": "accepted",
+              "justification": "require_authorization, settings_update çağrısından önce çalışıyor."
+            }
+          ],
+          "properties": {
+            "findingId": "KF-C4BCAA828C227419",
+            "verdict": "rejected",
+            "engines": [
+              "hunter",
+              "verifier"
+            ],
+            "class": "missing-authz",
+            "cwe": [
+              "CWE-862"
+            ]
+          }
+        },
+        {
+          "ruleId": "MAL-2025-41758",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "sample-module 0.0.1 (PyPI) is a known malicious package version: MAL-2025-41758. Remove the package and this version, and regenerate the lockfile. Treat every machine that installed it (developer machines, CI runners, build images) as exposed, rotate the secrets that the install could read, and check the lockfile history for the commit that added it.\n\nMalicious code in sample-module (PyPI)"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "requirements.txt",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanSca/v1": "30fe326c0d1ed09f50080718a8f979d76f8931e6187c7bc419633fcd9ef7f0fa"
+          },
+          "properties": {
+            "kind": "sca",
+            "ecosystem": "PyPI",
+            "package": "sample-module",
+            "version": "0.0.1",
+            "vulnIds": [
+              "MAL-2025-41758",
+              "GHSA-2g5x-c76j-3h73"
+            ],
+            "fixedVersions": [],
+            "reachability": "unknown",
+            "severity": "critical",
+            "security-severity": "9.5",
+            "engines": [
+              "osv-scanner",
+              "grype"
+            ],
+            "class": "malicious-dependency",
+            "malicious": true
+          }
+        },
+        {
+          "ruleId": "GHSA-8q59-q68h-6hv4",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "pyyaml 5.3 (PyPI) is affected by GHSA-8q59-q68h-6hv4. Fixed versions: 5.4.\n\nPyYAML arbitrary code execution through full_load"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "requirements.txt",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanSca/v1": "fcd22afa7fe7a24ad494c68f4a44c4a66417dfc310b10616eef011419b533b1b"
+          },
+          "properties": {
+            "kind": "sca",
+            "ecosystem": "PyPI",
+            "package": "pyyaml",
+            "version": "5.3",
+            "vulnIds": [
+              "GHSA-8q59-q68h-6hv4",
+              "CVE-2020-14343"
+            ],
+            "fixedVersions": [
+              "5.4"
+            ],
+            "reachability": "reachable",
+            "severity": "critical",
+            "security-severity": "9.5",
+            "cvssScore": 9.8,
+            "cvssVector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "engines": [
+              "osv-scanner",
+              "grype"
+            ]
+          }
+        },
+        {
+          "ruleId": "GHSA-p6mc-m468-83gw",
+          "ruleIndex": 6,
+          "level": "error",
+          "message": {
+            "text": "lodash 4.17.15 (npm) is affected by GHSA-p6mc-m468-83gw. Fixed versions: 4.17.19.\n\nPrototype pollution in lodash zipObjectDeep"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "web/package.json",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanSca/v1": "c903f9e1e6a78c51acac37220bf0bd2ff3a9fed8c8906b23c83676eea391521a"
+          },
+          "properties": {
+            "kind": "sca",
+            "ecosystem": "npm",
+            "package": "lodash",
+            "version": "4.17.15",
+            "vulnIds": [
+              "GHSA-p6mc-m468-83gw",
+              "CVE-2020-8203"
+            ],
+            "fixedVersions": [
+              "4.17.19"
+            ],
+            "reachability": "unknown",
+            "severity": "high",
+            "security-severity": "8.0",
+            "cvssScore": 7.4,
+            "cvssVector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:H",
+            "engines": [
+              "osv-scanner",
+              "grype"
+            ],
+            "pinSource": "manifest"
+          }
+        },
+        {
+          "ruleId": "GHSA-jpcq-cgw6-v4j6",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "jquery 1.12.4 (npm) is affected by GHSA-jpcq-cgw6-v4j6. Fixed versions: 3.5.0.\n\njQuery runs untrusted code when HTML with option elements reaches DOM manipulation methods"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "web/static/js/jquery.min.js",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanSca/v1": "2bd9bbd9328345d3f88bf8904db038de2f28a35f2a52ac07b94987d9eca29e68"
+          },
+          "properties": {
+            "kind": "sca",
+            "ecosystem": "npm",
+            "package": "jquery",
+            "version": "1.12.4",
+            "vulnIds": [
+              "GHSA-jpcq-cgw6-v4j6",
+              "CVE-2020-11023"
+            ],
+            "fixedVersions": [
+              "3.5.0"
+            ],
+            "reachability": "unknown",
+            "severity": "medium",
+            "security-severity": "5.5",
+            "cvssScore": 6.9,
+            "engines": [
+              "osv-scanner",
+              "grype",
+              "retirejs"
+            ],
+            "pinSource": "vendored",
+            "vendoredFiles": [
+              "web/static/js/jquery.min.js"
+            ]
+          }
+        },
+        {
+          "ruleId": "GHSA-x84v-xcm2-53pg",
+          "ruleIndex": 8,
+          "level": "note",
+          "message": {
+            "text": "requests 2.19.0 (PyPI) is affected by GHSA-x84v-xcm2-53pg. Fixed versions: 2.20.0.\n\nRequests sends credentials over an insecure redirect"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "requirements.txt",
+                  "uriBaseId": "%SRCROOT%"
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "kalkanSca/v1": "e3dead21405002ef89695345e3087a34c76ecdb16683e2dacccab40e0dde5652"
+          },
+          "properties": {
+            "kind": "sca",
+            "ecosystem": "PyPI",
+            "package": "requests",
+            "version": "2.19.0",
+            "vulnIds": [
+              "GHSA-x84v-xcm2-53pg",
+              "CVE-2018-18074"
+            ],
+            "fixedVersions": [
+              "2.20.0"
+            ],
+            "reachability": "not_reachable",
+            "severity": "low",
+            "security-severity": "2.0",
+            "cvssScore": 3.7,
+            "engines": [
+              "osv-scanner"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

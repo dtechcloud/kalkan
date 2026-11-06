@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "slug": "agent-loop-no-cap",
+  "description": "Agent / LLM call without maxSteps / maxTurns / stopWhen — DoS + cost-burn risk",
+  "class": "llm-ai",
+  "cwe": [
+    "CWE-770"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "\\bfrom\\s+[\"']ai[\"']|\\bfrom\\s+[\"']@ai-sdk/[^\"']*[\"']|\\bfrom\\s+[\"']@anthropic-ai/claude-agent-sdk[\"']|\\bfrom\\s+[\"']@openai/codex-sdk[\"']"
+  ],
+  "patterns": [
+    {
+      "regex": "\\b(?:streamText|generateText|generateObject|streamObject)\\s*\\(|\\bawait\\s+query\\s*\\(|\\bclaude\\.\\s*query\\s*\\(",
+      "flags": "",
+      "label": "agent/LLM call without maxSteps/maxTurns/stopWhen/signal",
+      "not_near": [
+        {
+          "regex": "\\bmaxSteps\\s*:\\s*\\d|\\bmaxTurns\\s*:\\s*\\d|\\bstopWhen\\s*:|\\bsignal\\s*:|\\babortSignal\\s*:|\\btimeout\\s*:\\s*\\d",
+          "after": 29
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "import { streamText } from \"ai\";\nconst result = streamText({\n  model: openai(\"gpt-4\"),\n  prompt: \"hi\",\n});",
+    "import { generateText } from \"ai\";\nawait generateText({ model, prompt: \"hi\" });",
+    "import { generateObject } from \"ai\";\nawait generateObject({ model, schema, prompt });",
+    "import { streamObject } from \"ai\";\nawait streamObject({ model, schema, prompt });",
+    "import { query } from \"@anthropic-ai/claude-agent-sdk\";\nawait query({ prompt: \"hi\" });",
+    "import { Codex } from \"@openai/codex-sdk\";\nawait claude.query({ prompt: \"hi\" });",
+    "import { openai } from \"@ai-sdk/openai\";\nawait generateText({ model: openai(\"gpt-4\"), prompt: \"hi\" });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/agent-loop-no-cap.ts"
+  },
+  "notes": ""
+}

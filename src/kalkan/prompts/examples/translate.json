@@ -1,0 +1,11 @@
+{
+  "task_id": "T0050-translate",
+  "translations": [
+    {
+      "id": "KF-2CC44B27C1508C41",
+      "title": "SQL injection in user lookup",
+      "description": "GET /users formats the id parameter into a SQL statement.",
+      "remediation_strategy": "Bind user_id as a query parameter."
+    }
+  ]
+}

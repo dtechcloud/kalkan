@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "slug": "open-redirect",
+  "description": "Redirects with user-controlled URLs",
+  "class": "open-redirect",
+  "cwe": [
+    "CWE-601"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "redirect\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.)",
+      "flags": "",
+      "label": "redirect with request-derived URL"
+    },
+    {
+      "regex": "redirect\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "redirect with interpolated URL"
+    },
+    {
+      "regex": "res\\.redirect\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.)",
+      "flags": "",
+      "label": "res.redirect with request-derived URL"
+    },
+    {
+      "regex": "Location.*:\\s*(req\\.|request\\.|params\\.|query\\.|body\\.)",
+      "flags": "",
+      "label": "Location header from request data"
+    },
+    {
+      "regex": "window\\.location\\s*=\\s*(req|params|query|searchParams)",
+      "flags": "",
+      "label": "window.location from user input"
+    },
+    {
+      "regex": "returnUrl|redirectUrl|returnTo|next.*url",
+      "flags": "i",
+      "label": "redirect URL parameter"
+    }
+  ],
+  "examples": [
+    "redirect(req.body.next);",
+    "redirect(query.target);",
+    "redirect(`${origin}/${req.body.path}`);",
+    "res.redirect(req.body.url);",
+    "res.redirect(params.next);",
+    "headers: { Location: req.body.next }",
+    "window.location = params.next;",
+    "const u = returnUrl;",
+    "const r = redirectUrl;",
+    "const x = returnTo;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/open-redirect.ts"
+  },
+  "notes": ""
+}

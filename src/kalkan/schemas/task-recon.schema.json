@@ -1,0 +1,231 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan recon task result (docs/ENGINE-SPEC.md section 18).",
+  "required": [
+    "task_id",
+    "kind",
+    "summary_md",
+    "facts",
+    "surfaces",
+    "classes_of_interest",
+    "sensitive_data",
+    "uncertainties"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-recon$"
+    },
+    "kind": {
+      "type": "string",
+      "enum": [
+        "product",
+        "principals",
+        "surfaces",
+        "execution"
+      ]
+    },
+    "summary_md": {
+      "type": "string",
+      "minLength": 1,
+      "visibleContent": true
+    },
+    "facts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "statement",
+          "evidence"
+        ],
+        "properties": {
+          "statement": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "file",
+                "line",
+                "quote"
+              ],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Target-relative POSIX path."
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Exact text from the cited line or the two lines around it."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "surfaces": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "file",
+          "line",
+          "auth",
+          "trust_boundary",
+          "subsystem",
+          "notes"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "http",
+              "rpc",
+              "queue",
+              "cron",
+              "cli",
+              "webhook",
+              "agent-tool",
+              "file",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Target-relative POSIX path."
+          },
+          "line": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "auth": {
+            "type": "string",
+            "enum": [
+              "none",
+              "user",
+              "privileged",
+              "service",
+              "unknown"
+            ]
+          },
+          "trust_boundary": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "subsystem": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "notes": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "classes_of_interest": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "sqli",
+          "nosqli",
+          "os-command-injection",
+          "code-injection",
+          "ssti",
+          "xss",
+          "ssrf",
+          "path-traversal",
+          "file-upload",
+          "xxe",
+          "deserialization",
+          "authn",
+          "jwt",
+          "oauth-oidc-saml",
+          "missing-authz",
+          "idor",
+          "multi-tenant",
+          "csrf",
+          "open-redirect",
+          "cors",
+          "mass-assignment",
+          "business-logic",
+          "race-condition",
+          "crypto",
+          "hardcoded-secrets",
+          "sensitive-data-exposure",
+          "security-misconfig",
+          "graphql",
+          "prototype-pollution",
+          "dos-redos",
+          "request-smuggling-crlf-cache",
+          "webhook-replay",
+          "rate-limit-bruteforce",
+          "llm-ai",
+          "memory-safety",
+          "smart-contract",
+          "mobile-desktop-ipc",
+          "vulnerable-dependency",
+          "malicious-dependency",
+          "supply-chain-cicd",
+          "iac-cloud-container",
+          "code-quality"
+        ]
+      }
+    },
+    "sensitive_data": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "visibleContent": true
+      }
+    },
+    "uncertainties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "visibleContent": true
+      }
+    }
+  }
+}

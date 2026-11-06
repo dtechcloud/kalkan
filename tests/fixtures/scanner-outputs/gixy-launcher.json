@@ -1,0 +1,43 @@
+{
+  "gixy_version": "0.2.55",
+  "issues": [
+    {
+      "path": "@TARGET@/infra/nginx/shop.conf",
+      "plugin": "alias_traversal",
+      "severity": "HIGH",
+      "summary": "Path traversal via misconfigured alias.",
+      "description": "Using alias in a prefixed location that doesn't end with directory separator could lead to path traversal vulnerability.",
+      "reason": "",
+      "help_url": "https://gixy.getpagespeed.com/checks/alias-traversal/",
+      "places": [
+        {
+          "file": "@TARGET@/infra/nginx/shop.conf",
+          "line": 9,
+          "text": "alias /srv/vulnapp/static/;"
+        },
+        {
+          "file": "@TARGET@/infra/nginx/shop.conf",
+          "line": 8,
+          "text": "location /static {"
+        }
+      ]
+    },
+    {
+      "path": "@TARGET@/infra/nginx/shop.conf",
+      "plugin": "ssrf",
+      "severity": "HIGH",
+      "summary": "Possible SSRF (Server Side Request Forgery) vulnerability.",
+      "description": "The configuration may allow attacker to create a arbitrary requests from the vulnerable server.",
+      "reason": "At least variable \"$arg_host\" can contain untrusted user input",
+      "help_url": "https://gixy.getpagespeed.com/checks/ssrf/",
+      "places": [
+        {
+          "file": "@TARGET@/infra/nginx/shop.conf",
+          "line": 17,
+          "text": "proxy_pass http://$arg_host;"
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

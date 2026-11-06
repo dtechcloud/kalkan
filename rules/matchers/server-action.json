@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "server-action",
+  "description": "Next.js Server Actions — every export is a publicly callable POST endpoint",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/app/**/actions.{ts,tsx}",
+    "**/app/**/*action*.{ts,tsx}",
+    "**/**/actions/**/*.{ts,tsx}",
+    "**/components/**/*.{ts,tsx}",
+    "**/lib/**/*.{ts,tsx}",
+    "**/src/**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/{content,docs,Content,Docs}/**",
+    "**/*.{md,mdx}",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "['\"]use server['\"]"
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+\\w+|export\\s+(const|let)\\s+\\w+\\s*=\\s*(async\\s+)?\\(",
+      "flags": "",
+      "label": "Server Action (inline 'use server') — publicly callable POST endpoint",
+      "near": [
+        {
+          "regex": "['\"]use server['\"]",
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+\\w+|export\\s+(const|let)\\s+\\w+\\s*=\\s*(async\\s+)?\\(",
+      "flags": "",
+      "label": "Server Action (file-level 'use server') — publicly callable POST endpoint",
+      "near": [
+        {
+          "regex": "^['\"]use server['\"]",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "\"use server\";\nexport async function createPost(title: string) { return { title } }",
+    "'use server'\nexport function deleteRecord(id) { return id }",
+    "\"use server\";\nexport const updateUser = async (data) => ({ ok: true })",
+    "'use server'\nexport let saveDraft = (input) => input",
+    "export async function archiveItem(id) {\n  \"use server\";\n  return id\n}",
+    "export const submitForm = async (data) => {\n  'use server'\n  return data\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-server-action.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. A file-level directive is approximated by an unindented 'use server' line anywhere in the file (deepsec: the first statement of the file). Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

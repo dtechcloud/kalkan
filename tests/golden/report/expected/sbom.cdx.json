@@ -1,0 +1,178 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:d7cdee56-690f-594d-aa59-de62ad79aa3d",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-15T12:30:00Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "kalkan",
+          "version": "0.0.0-golden"
+        },
+        {
+          "type": "application",
+          "name": "syft",
+          "version": "1.54.0"
+        },
+        {
+          "type": "data",
+          "name": "RetireJS jsrepository-v5",
+          "version": "2026-10-15",
+          "hashes": [
+            {
+              "alg": "SHA-256",
+              "content": "c213444cbf88314fb7fd11c20f0541fb880245ddef07f90b7f437a25f533b081"
+            }
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "application",
+      "bom-ref": "kalkan:target",
+      "name": "shop"
+    },
+    "properties": [
+      {
+        "name": "kalkan:run-id",
+        "value": "20261015T120000Z-shop-a1b2"
+      },
+      {
+        "name": "kalkan:target",
+        "value": "shop"
+      },
+      {
+        "name": "kalkan:target-kind",
+        "value": "path"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:npm/jquery@1.12.4",
+      "name": "jquery",
+      "version": "1.12.4",
+      "purl": "pkg:npm/jquery@1.12.4",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "web/static/js/jquery.min.js"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "kalkan:source",
+          "value": "vendored"
+        },
+        {
+          "name": "kalkan:vendored:library",
+          "value": "jquery"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:npm/lodash@4.17.15",
+      "name": "lodash",
+      "version": "4.17.15",
+      "purl": "pkg:npm/lodash@4.17.15",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "web/package.json"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "kalkan:source",
+          "value": "manifest-pin"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/flask@3.0.0",
+      "name": "flask",
+      "version": "3.0.0",
+      "purl": "pkg:pypi/flask@3.0.0",
+      "cpe": "cpe:2.3:a:palletsprojects:flask:3.0.0:*:*:*:*:python:*:*",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "requirements.txt"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "kalkan:source",
+          "value": "syft"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/pyyaml@5.3",
+      "name": "pyyaml",
+      "version": "5.3",
+      "purl": "pkg:pypi/pyyaml@5.3",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "requirements.txt"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "kalkan:source",
+          "value": "syft"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:pypi/requests@2.19.0",
+      "name": "requests",
+      "version": "2.19.0",
+      "purl": "pkg:pypi/requests@2.19.0",
+      "licenses": [
+        {
+          "expression": "Apache-2.0"
+        }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "5d1f7e0a6c3b4f6e9f21ad0b5c7d8e9fa1b2c3d4e5f60718293a4b5c6d7e8f90"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "requirements.txt"
+          }
+        ]
+      },
+      "properties": [
+        {
+          "name": "kalkan:source",
+          "value": "syft"
+        }
+      ]
+    }
+  ]
+}

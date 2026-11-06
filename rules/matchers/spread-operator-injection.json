@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "spread-operator-injection",
+  "description": "Object spread of user input into payloads — prototype pollution or key injection risk",
+  "class": "mass-assignment",
+  "cwe": [
+    "CWE-915"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\.\\.\\.(req\\.body|request\\.body)",
+      "flags": "",
+      "label": "Spread of req.body"
+    },
+    {
+      "regex": "\\.\\.\\.(parsed\\.body|parsed\\.query)",
+      "flags": "",
+      "label": "Spread of parsed input"
+    },
+    {
+      "regex": "\\.\\.\\.searchParams",
+      "flags": "",
+      "label": "Spread of searchParams"
+    },
+    {
+      "regex": "\\.\\.\\.(params|query)\\b",
+      "flags": "",
+      "label": "Spread of params/query"
+    },
+    {
+      "regex": "Object\\.assign\\s*\\(\\s*\\{?\\s*\\}\\s*,\\s*(req|body|params|query)",
+      "flags": "",
+      "label": "Object.assign from user input"
+    }
+  ],
+  "examples": [
+    "const payload = { ...req.body, createdAt: new Date() };",
+    "await db.user.create({ data: { ...request.body } });",
+    "const merged = { ...parsed.body };",
+    "return { ...parsed.query, page: 1 };",
+    "const next = { ...searchParams };",
+    "function build(params) { return { ...params, role: \"user\" }; }",
+    "const out = { ...query };",
+    "Object.assign({}, req, { id: 1 })",
+    "Object.assign({ }, body, { extra: true })"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/spread-operator-injection.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "slug": "all-route-handlers",
+  "description": "All route.ts HTTP handlers — comprehensive entry point coverage (weak candidate)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/route.{ts,tsx,js,jsx}",
+    "**/route.*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+(?:const|async\\s+function|function)\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b",
+      "flags": "",
+      "label": "Route handler — HTTP entry point (weak candidate)"
+    },
+    {
+      "regex": "export\\s+default\\s+(async\\s+)?(function\\s*)?\\(",
+      "flags": "",
+      "label": "Default export route handler — HTTP entry point (weak candidate)"
+    }
+  ],
+  "examples": [
+    "export async function GET(request) { return Response.json({}) }",
+    "export async function POST(request: Request) { return Response.json({ ok: true }) }",
+    "export const PUT = async (req) => Response.json({})",
+    "export const PATCH = async (req: Request) => Response.json({})",
+    "export function DELETE(request) { return new Response(null, { status: 204 }) }",
+    "export async function HEAD(request) { return new Response() }",
+    "export const OPTIONS = (req) => new Response()",
+    "export default async function (req, res) { res.json({}) }",
+    "export default function (req, res) { res.send('ok') }"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-route-handlers.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. The deepsec label names the HTTP method; the port uses one fixed label. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

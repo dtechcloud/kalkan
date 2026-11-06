@@ -1,0 +1,135 @@
+{
+  "findings": [
+    {
+      "rule": {
+        "title": "PRIVATE-KEY => [BETTERLEAKS.PRIVATE-KEY]",
+        "name": "private-key",
+        "id": "betterleaks.private-key",
+        "description": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption."
+      },
+      "finding": {
+        "snippet": "[REDACTED:b595d653]",
+        "fingerprint": "3843550621297978616",
+        "confidence": "high",
+        "entropy": "5.50",
+        "validation": {
+          "outcome": "assumed",
+          "status": "Assumed Valid (Not Live-Validated)",
+          "response": "[REDACTED:1f0b6bb6]"
+        },
+        "language": "Unknown",
+        "line": 1,
+        "column_start": 0,
+        "column_end": 28,
+        "path": "@TARGET@/config/deploy_key.pem"
+      }
+    },
+    {
+      "rule": {
+        "title": "GENERIC-CREDENTIAL-URI => [BETTERLEAKS.GENERIC-CREDENTIAL-URI]",
+        "name": "generic-credential-uri",
+        "id": "betterleaks.generic-credential-uri",
+        "description": "Detected a password embedded in a service connection URI, which may expose direct access to the referenced service."
+      },
+      "finding": {
+        "snippet": "[REDACTED:41a50070]",
+        "fingerprint": "7003181870081966464",
+        "confidence": "medium",
+        "entropy": "4.32",
+        "validation": {
+          "outcome": "not_attempted",
+          "status": "Not Attempted",
+          "response": "[REDACTED:1f0b6bb6]"
+        },
+        "language": "INI",
+        "line": 24,
+        "column_start": 24,
+        "column_end": 43,
+        "path": "@TARGET@/config/settings.ini"
+      }
+    }
+  ],
+  "audit": {
+    "schema": "kingfisher.repository-audit.v1",
+    "run_id": "f565daea-ae8e-4e4a-bde1-0978a6c06899",
+    "started_at": "2026-10-25T18:24:31.166515+00:00",
+    "completed_at": "2026-10-25T18:24:31.299Z",
+    "duration_seconds": 0.1324886,
+    "summary": {
+      "discovered": 1,
+      "fetch_succeeded": 0,
+      "fetch_failed": 0,
+      "scan_succeeded": 1,
+      "scan_partial": 0,
+      "scan_failed": 0,
+      "pending": 0
+    },
+    "repositories": [
+      {
+        "key": "local:\\\\?\\@TARGET@",
+        "repository": "\\\\?\\@TARGET@",
+        "source": "local",
+        "discovered_at": "2026-10-25T18:24:31.191Z",
+        "fetch": {
+          "status": "not_applicable"
+        },
+        "scan": {
+          "status": "completed",
+          "started_at": "2026-10-25T18:24:31.191Z",
+          "completed_at": "2026-10-25T18:24:31.299Z",
+          "duration_seconds": 0.1074964
+        },
+        "stats": {
+          "findings": 3,
+          "blobs_scanned": 54,
+          "bytes_scanned": 90980
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "generated_at": "2026-10-25T21:24:31.300528900+03:00",
+    "scan_timestamp": "2026-10-25T21:24:31.166515+03:00",
+    "target": "@TARGET@",
+    "command_line_args": [
+      "@KALKAN@/.tools/kingfisher/2.11.1/bin/kingfisher.exe",
+      "scan",
+      "@TARGET@",
+      "--no-update-check",
+      "--quiet",
+      "--no-validate",
+      "--redact",
+      "--no-ignore",
+      "--confidence",
+      "medium",
+      "--no-rule-cache",
+      "--git-history",
+      "none",
+      "--no-dedup",
+      "--format",
+      "json",
+      "--output",
+      "@RUN@/scans/.work/kingfisher/kingfisher.json"
+    ],
+    "kingfisher_version": "2.11.1",
+    "update_check_status": "disabled",
+    "summary": {
+      "findings": 2,
+      "active_findings": 0,
+      "inactive_findings": 0,
+      "locally_derived_findings": 0,
+      "invalid_material_findings": 0,
+      "unknown_validation_findings": 2,
+      "access_map_identities": 0,
+      "rules_applied": 488,
+      "confidence_level": "medium",
+      "custom_rules_used": false,
+      "successful_validations": 0,
+      "failed_validations": 0,
+      "skipped_validations": 1,
+      "blobs_scanned": 54,
+      "bytes_scanned": 90980,
+      "scan_duration_seconds": 0.1325532
+    }
+  }
+}

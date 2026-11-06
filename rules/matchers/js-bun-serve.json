@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "slug": "js-bun-serve",
+  "description": "Bun.serve fetch handlers — entry-point surface (gated on bun)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/bun.lockb",
+      "**/bun.lock",
+      "**/bunfig.toml"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bBun\\.serve\\s*\\(\\s*\\{",
+      "flags": "",
+      "label": "Bun.serve({ fetch(req) ... })"
+    },
+    {
+      "regex": "(?:async\\s+)?fetch\\s*\\(\\s*req(?:uest)?\\s*[,)]",
+      "flags": "",
+      "label": "fetch(req) handler body"
+    },
+    {
+      "regex": "\\brequest\\.(?:url|headers|method)\\b",
+      "flags": "",
+      "label": "request.* accessor"
+    }
+  ],
+  "examples": [
+    "Bun.serve({\n  fetch(req) { return new Response(\"hi\") }\n})",
+    "Bun.serve({ port: 3000, async fetch(req) { return new Response() } })",
+    "async fetch(req) { return new Response(\"ok\") }",
+    "fetch(request, server) { return new Response() }",
+    "const url = request.url",
+    "const method = request.method",
+    "const auth = request.headers.get(\"authorization\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-bun-serve.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [bun]; kalkan uses a Bun lockfile or bunfig.toml."
+}

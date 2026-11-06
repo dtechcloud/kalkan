@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "slug": "lua-crypto-weakness",
+  "description": "Weak crypto patterns in Lua — hardcoded IVs, ECB mode, timing-unsafe comparisons",
+  "class": "crypto",
+  "cwe": [
+    "CWE-327"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.lua"
+  ],
+  "exclude_file_patterns": [
+    "**/*_{test,spec}.lua"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "aes.{0,40}ecb|ecb.{0,40}aes",
+      "flags": "i",
+      "label": "AES ECB mode (no IV, deterministic)"
+    },
+    {
+      "regex": "==\\s*.{0,40}hmac|hmac.{0,40}==",
+      "flags": "",
+      "label": "Timing-unsafe HMAC comparison (use constant-time)"
+    },
+    {
+      "regex": "==\\s*.{0,40}hash|hash.{0,40}==",
+      "flags": "",
+      "label": "Timing-unsafe hash comparison"
+    },
+    {
+      "regex": "md5\\s*\\(|\\.md5",
+      "flags": "",
+      "label": "MD5 usage"
+    },
+    {
+      "regex": "sha1\\s*\\(|\\.sha1\\b",
+      "flags": "",
+      "label": "SHA1 usage"
+    },
+    {
+      "regex": "local\\s+iv\\s*=\\s*[\"']",
+      "flags": "",
+      "label": "Hardcoded IV value"
+    }
+  ],
+  "examples": [
+    "local cipher = aes:new(key, \"cbc\", \"ecb\")",
+    "if computed_hmac == provided_hmac then end",
+    "if hmac_value == header_token then return true end",
+    "if hash_value == expected_hash then end",
+    "local digest = md5(payload)",
+    "local h = ngx.sha1(data)",
+    "local iv = \"0123456789abcdef\"",
+    "local d = ngx.md5(payload)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/lua-crypto-weakness.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "js-graphql-resolver",
+  "description": "GraphQL resolvers (Apollo / Yoga / Mercurius) — entry-point surface (gated on graphql)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "graphql"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"(?:graphql|@apollo/server|apollo-server[\\w-]*|graphql-yoga|type-graphql|mercurius|@nestjs/graphql)\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bresolvers?\\s*[:=]\\s*\\{\\s*Query\\s*:",
+      "flags": "",
+      "label": "resolvers Query map"
+    },
+    {
+      "regex": "\\bMutation\\s*:\\s*\\{",
+      "flags": "",
+      "label": "Mutation resolver map"
+    },
+    {
+      "regex": "\\bSubscription\\s*:\\s*\\{",
+      "flags": "",
+      "label": "Subscription resolver"
+    },
+    {
+      "regex": "@(?:Query|Mutation|Resolver)\\s*\\(",
+      "flags": "",
+      "label": "type-graphql / Nest GraphQL decorator"
+    },
+    {
+      "regex": "\\bcontext\\.\\w+",
+      "flags": "",
+      "label": "context.* (auth identity carrier — confirm wiring)"
+    }
+  ],
+  "examples": [
+    "const resolvers = { Query: { user: () => null } }",
+    "const resolver = { Query: { me: () => null } }",
+    "Mutation: { createUser: async (_p, args) => ({}) }",
+    "Subscription: { onMessage: { subscribe: () => pubsub.asyncIterator(\"MSG\") } }",
+    "@Query(() => User)\n  async user() {}",
+    "@Mutation(() => Boolean)\n  async deleteUser() {}",
+    "@Resolver(() => User)\nclass UserResolver {}",
+    "const userId = context.userId;",
+    "if (!context.user) throw new Error(\"unauth\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-graphql-resolver.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [graphql]; kalkan uses tech node (or graphql) and a manifest that names graphql."
+}

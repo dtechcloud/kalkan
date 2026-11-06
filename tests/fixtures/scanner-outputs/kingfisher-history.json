@@ -1,0 +1,136 @@
+{
+  "findings": [
+    {
+      "rule": {
+        "title": "GENERIC-CREDENTIAL-URI => [BETTERLEAKS.GENERIC-CREDENTIAL-URI]",
+        "name": "generic-credential-uri",
+        "id": "betterleaks.generic-credential-uri",
+        "description": "Detected a password embedded in a service connection URI, which may expose direct access to the referenced service."
+      },
+      "finding": {
+        "snippet": "[REDACTED:fe2a89de]",
+        "fingerprint": "15321250081390568332",
+        "confidence": "medium",
+        "entropy": "4.32",
+        "validation": {
+          "outcome": "not_attempted",
+          "status": "Not Attempted",
+          "response": "[REDACTED:695c9af1]"
+        },
+        "language": "Unknown",
+        "line": 1,
+        "column_start": 32,
+        "column_end": 51,
+        "path": "db.env",
+        "git_metadata": {
+          "repository_url": "@SOURCE@",
+          "commit": {
+            "id": "708aef8b8ba92131a85c2cbd29389e9171102bda",
+            "url": "@SOURCE@/commit/708aef8b8ba92131a85c2cbd29389e9171102bda",
+            "date": "2026-10-25",
+            "committer": {
+              "name": "kalkan test",
+              "email": "test@example.com"
+            },
+            "author": {
+              "name": "kalkan test",
+              "email": "test@example.com"
+            }
+          },
+          "file": {
+            "path": "db.env",
+            "url": "@SOURCE@/blob/708aef8b8ba92131a85c2cbd29389e9171102bda/db.env#L1",
+            "git_command": "git -C @SOURCE@ show 708aef8b8ba92131a85c2cbd29389e9171102bda:db.env"
+          }
+        }
+      }
+    }
+  ],
+  "audit": {
+    "schema": "kingfisher.repository-audit.v1",
+    "run_id": "a3e2f377-1995-4a67-9761-2860ec69bbbc",
+    "started_at": "2026-10-25T18:25:28.444434500+00:00",
+    "completed_at": "2026-10-25T18:25:28.579Z",
+    "duration_seconds": 0.1351213,
+    "summary": {
+      "discovered": 1,
+      "fetch_succeeded": 0,
+      "fetch_failed": 0,
+      "scan_succeeded": 1,
+      "scan_partial": 0,
+      "scan_failed": 0,
+      "pending": 0
+    },
+    "repositories": [
+      {
+        "key": "local:\\\\?\\@SOURCE@",
+        "repository": "\\\\?\\@SOURCE@",
+        "source": "local",
+        "discovered_at": "2026-10-25T18:25:28.447Z",
+        "fetch": {
+          "status": "not_applicable"
+        },
+        "scan": {
+          "status": "completed",
+          "started_at": "2026-10-25T18:25:28.512Z",
+          "completed_at": "2026-10-25T18:25:28.579Z",
+          "duration_seconds": 0.0671521
+        },
+        "git": {
+          "scope": "all_fetched_git_objects",
+          "tip_ref": "HEAD",
+          "tip_sha": "c6b2a82a65e0f4fdf9c340afbfc503ce00607525",
+          "shallow": false,
+          "fetched_commit_count": 2
+        },
+        "stats": {
+          "findings": 1,
+          "blobs_scanned": 7,
+          "bytes_scanned": 1340
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "generated_at": "2026-10-25T21:25:28.652775800+03:00",
+    "scan_timestamp": "2026-10-25T21:25:28.444434500+03:00",
+    "target": "@SOURCE@",
+    "command_line_args": [
+      "@KALKAN@/.tools/kingfisher/2.11.1/bin/kingfisher.exe",
+      "scan",
+      "@SOURCE@",
+      "--no-update-check",
+      "--quiet",
+      "--no-validate",
+      "--redact",
+      "--no-ignore",
+      "--confidence",
+      "medium",
+      "--no-rule-cache",
+      "--format",
+      "json",
+      "--output",
+      "@RUN@/scans/.work/kingfisher-history/kingfisher-history.json"
+    ],
+    "kingfisher_version": "2.11.1",
+    "update_check_status": "disabled",
+    "summary": {
+      "findings": 1,
+      "active_findings": 0,
+      "inactive_findings": 0,
+      "locally_derived_findings": 0,
+      "invalid_material_findings": 0,
+      "unknown_validation_findings": 1,
+      "access_map_identities": 0,
+      "rules_applied": 488,
+      "confidence_level": "medium",
+      "custom_rules_used": false,
+      "successful_validations": 0,
+      "failed_validations": 0,
+      "skipped_validations": 0,
+      "blobs_scanned": 7,
+      "bytes_scanned": 1340,
+      "scan_duration_seconds": 0.1351559
+    }
+  }
+}

@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "slug": "event-handler-mismatch",
+  "description": "Event handlers where function name contradicts event name",
+  "class": "business-logic",
+  "cwe": [
+    "CWE-840"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/event-consumer*.{ts,js}",
+    "**/handler*.{ts,js}",
+    "**/subscriber*.{ts,js}",
+    "**/consumer*.{ts,js}",
+    "**/dispatch*.{ts,js}",
+    "**/listener*.{ts,js}",
+    "**/webhook*.{ts,js}",
+    "**/*.{ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "(?i:switch\\s*\\(.*event|case\\s+['\"][^'\"]*\\.(?:created|updated|deleted|removed|added))"
+  ],
+  "patterns": [
+    {
+      "regex": "case\\s+['\"][\\w.]*(?:removed|deleted)[\\w.]*['\"]",
+      "flags": "i",
+      "label": "Event case calls a function with the opposite action — possible copy-paste bug",
+      "near": [
+        {
+          "regex": "\\b\\w*(?:add|create|insert)\\w*\\s*\\(",
+          "flags": "i",
+          "after": 5
+        }
+      ]
+    },
+    {
+      "regex": "case\\s+['\"][\\w.]*(?:added|created)[\\w.]*['\"]",
+      "flags": "i",
+      "label": "Event case calls a function with the opposite action — possible copy-paste bug",
+      "near": [
+        {
+          "regex": "\\b\\w*(?:remove|delete|destroy)\\w*\\s*\\(",
+          "flags": "i",
+          "after": 5
+        }
+      ]
+    },
+    {
+      "regex": "case\\s+['\"][\\w.]*updated[\\w.]*['\"]",
+      "flags": "i",
+      "label": "Event case calls a function with the opposite action — possible copy-paste bug",
+      "near": [
+        {
+          "regex": "\\b\\w*(?:create|delete)\\w*\\s*\\(",
+          "flags": "i",
+          "after": 5
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "switch (event.type) {\n  case \"user.removed\":\n    return userAdded(event.payload);\n  case \"user.added\":\n    return userRemoved(event.payload);\n}",
+    "switch (event) {\n  case \"team.deleted\":\n    return createTeam(event.id);\n}",
+    "switch (eventType) {\n  case \"membership.added\":\n    return removeMembership(id);\n}",
+    "switch (event.type) {\n  case \"post.created\":\n    return deletePost(post.id);\n}",
+    "switch (event.kind) {\n  case \"record.updated\":\n    return createRecord(input);\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/event-handler-mismatch.ts"
+  },
+  "notes": "The file gate 'case\\s+['\"].*\\.(created|...)' becomes 'case\\s+['\"][^'\"]*\\.(?:created|...)' (one wildcard). The 5-line window also covers the case line. When an event name holds several actions, deepsec uses the first action in the order removed, deleted, added, created, updated; the port checks each. The deepsec label names the event and the function; the port uses a fixed label."
+}

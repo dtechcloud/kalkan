@@ -1,0 +1,128 @@
+{
+  "engine": "checkov",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/checkov.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-7A4AEAAE92918E55",
+      "engine": "checkov",
+      "rule_id": "CKV_AWS_24",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+      "message": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+      "file": "infra/main.tf",
+      "start_line": 9,
+      "end_line": 19,
+      "snippet": "resource \"aws_security_group\" \"web\" {\n  name        = \"web\"\n  description = \"Web server\"\n\n  ingress {\n    from_port   = 22\n    to_port     = 22\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}\n",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/checkov.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-73BA5F99CF4EC364",
+      "engine": "checkov",
+      "rule_id": "CKV_DOCKER_3",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "Ensure that a user for the container has been created",
+      "message": "Ensure that a user for the container has been created",
+      "file": "Dockerfile",
+      "start_line": 1,
+      "end_line": 8,
+      "snippet": "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN apt-get update && apt-get install -y curl\nRUN pip install -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD python -m app\n",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/checkov.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-2B2253B250505D72",
+      "engine": "checkov",
+      "rule_id": "CKV_DOCKER_2",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "Ensure that HEALTHCHECK instructions have been added to container images",
+      "message": "Ensure that HEALTHCHECK instructions have been added to container images",
+      "file": "Dockerfile",
+      "start_line": 1,
+      "end_line": 8,
+      "snippet": "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN apt-get update && apt-get install -y curl\nRUN pip install -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD python -m app\n",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/checkov.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    },
+    {
+      "id": "CAND-41EC03488C0D9409",
+      "engine": "checkov",
+      "rule_id": "CKV_GHA_2",
+      "class": "supply-chain-cicd",
+      "cwe": [],
+      "title": "Ensure run commands are not vulnerable to shell injection",
+      "message": "Ensure run commands are not vulnerable to shell injection",
+      "file": ".github/workflows/greet.yml",
+      "start_line": 12,
+      "end_line": 14,
+      "snippet": "      - name: Greet the author\n        run: |\n          echo \"Hello ${{ github.event.issue.title }}\"\n",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/checkov.sarif",
+        "run_index": 0,
+        "result_index": 3
+      }
+    },
+    {
+      "id": "CAND-DE299912D9E64C93",
+      "engine": "checkov",
+      "rule_id": "CKV_SECRET_2",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "AWS Access Key",
+      "message": "AWS Access Key",
+      "file": "config/settings.py",
+      "start_line": 12,
+      "end_line": 12,
+      "snippet": "AWS_ACCESS_KEY_ID = \"AKIA****************\"\n",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/checkov.sarif",
+        "run_index": 0,
+        "result_index": 4
+      }
+    }
+  ]
+}

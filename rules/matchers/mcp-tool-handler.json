@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "slug": "mcp-tool-handler",
+  "description": "MCP server tool handlers — verify per-tool authz + input validation",
+  "class": "llm-ai",
+  "cwe": [],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "mcp"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"@modelcontextprotocol/sdk\""
+    ]
+  },
+  "file_contains": [
+    "\\bfrom\\s+[\"']@modelcontextprotocol/sdk[^\"']*[\"']|\\bMcpServer\\b|\\bMcpAgent\\b"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bserver\\.\\s*tool\\s*\\(",
+      "flags": "",
+      "label": "MCP tool registration: server.tool(...)"
+    },
+    {
+      "regex": "\\bregisterTool\\s*\\(",
+      "flags": "",
+      "label": "MCP registerTool(...)"
+    },
+    {
+      "regex": "setRequestHandler\\s*\\(\\s*CallToolRequestSchema",
+      "flags": "",
+      "label": "MCP CallTool handler"
+    },
+    {
+      "regex": "setRequestHandler\\s*\\(\\s*ListToolsRequestSchema",
+      "flags": "",
+      "label": "MCP ListTools handler — verify scope to authenticated client"
+    },
+    {
+      "regex": "\\bnew McpServer\\s*\\(",
+      "flags": "",
+      "label": "MCP server construction site"
+    },
+    {
+      "regex": "\\bnew McpAgent\\s*\\(",
+      "flags": "",
+      "label": "MCP agent construction site"
+    },
+    {
+      "regex": "\\bregisterResource\\s*\\(|\\bserver\\.\\s*resource\\s*\\(",
+      "flags": "",
+      "label": "MCP resource registration"
+    },
+    {
+      "regex": "\\bregisterPrompt\\s*\\(|\\bserver\\.\\s*prompt\\s*\\(",
+      "flags": "",
+      "label": "MCP prompt registration"
+    }
+  ],
+  "examples": [
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nserver.tool(\"read_file\", schema, async (args) => ({}));",
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nregisterTool(server, { name: \"exec\" });",
+    "import { CallToolRequestSchema } from \"@modelcontextprotocol/sdk/types.js\";\nserver.setRequestHandler(CallToolRequestSchema, async (req) => ({}));",
+    "import { ListToolsRequestSchema } from \"@modelcontextprotocol/sdk/types.js\";\nserver.setRequestHandler(ListToolsRequestSchema, async () => ({ tools: [] }));",
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nconst server = new McpServer({ name: \"x\", version: \"1\" });",
+    "import { McpAgent } from \"@modelcontextprotocol/sdk/server/index.js\";\nconst agent = new McpAgent({ name: \"x\" });",
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nserver.resource(\"memo\", uri, async () => ({}));",
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nserver.prompt(\"greet\", schema, async (args) => ({}));",
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nregisterResource(server, { uri: \"x\" });",
+    "import { McpServer } from \"@modelcontextprotocol/sdk/server/index.js\";\nregisterPrompt(server, { name: \"x\" });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/mcp-tool-handler.ts"
+  },
+  "notes": "Gate: deepsec tech [mcp]; kalkan uses tech node (or mcp) and a manifest that names mcp."
+}

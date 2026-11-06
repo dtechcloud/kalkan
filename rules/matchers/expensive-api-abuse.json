@@ -1,0 +1,170 @@
+{
+  "version": 1,
+  "slug": "expensive-api-abuse",
+  "description": "Endpoints calling expensive APIs (LLM, AI, paid services) that may lack abuse protection",
+  "class": "rate-limit-bruteforce",
+  "cwe": [
+    "CWE-770"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/app/api/**/route.{ts,tsx}",
+    "**/app/**/route.{ts,tsx}",
+    "**/pages/api/**/*.{ts,tsx}",
+    "**/routes/**/*.{ts,tsx}",
+    "**/server/**/*.{ts,tsx}",
+    "**/actions/**/*.{ts,tsx}",
+    "**/actions.{ts,tsx}",
+    "**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|PATCH|DELETE)\\b|export\\s+(const|let)\\s+(GET|POST|PUT|PATCH|DELETE)\\s*=|export\\s+default\\s+(async\\s+)?function|['\"]use server['\"]"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bgenerateText\\s*\\(",
+      "flags": "",
+      "label": "Expensive API call: AI SDK generateText — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bstreamText\\s*\\(",
+      "flags": "",
+      "label": "Expensive API call: AI SDK streamText — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bgenerateObject\\s*\\(",
+      "flags": "",
+      "label": "Expensive API call: AI SDK generateObject — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bstreamObject\\s*\\(",
+      "flags": "",
+      "label": "Expensive API call: AI SDK streamObject — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bembed\\s*\\(",
+      "flags": "",
+      "label": "Expensive API call: AI SDK embed — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bembedMany\\s*\\(",
+      "flags": "",
+      "label": "Expensive API call: AI SDK embedMany — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "openai\\.chat\\.completions\\.create",
+      "flags": "",
+      "label": "Expensive API call: OpenAI chat completion — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "openai\\.completions\\.create",
+      "flags": "",
+      "label": "Expensive API call: OpenAI completion — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "openai\\.embeddings\\.create",
+      "flags": "",
+      "label": "Expensive API call: OpenAI embedding — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "openai\\.images\\.generate",
+      "flags": "",
+      "label": "Expensive API call: OpenAI image generation — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "anthropic\\.messages\\.create",
+      "flags": "",
+      "label": "Expensive API call: Anthropic messages — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "anthropic\\.completions\\.create",
+      "flags": "",
+      "label": "Expensive API call: Anthropic completion — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "ai-gateway\\.vercel\\.sh",
+      "flags": "",
+      "label": "Expensive API call: Vercel AI Gateway — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "/v1/chat/completions",
+      "flags": "",
+      "label": "Expensive API call: Chat completions API — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "/v1/completions",
+      "flags": "",
+      "label": "Expensive API call: Completions API — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "/v1/embeddings",
+      "flags": "",
+      "label": "Expensive API call: Embeddings API — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "/v1/images/generations",
+      "flags": "",
+      "label": "Expensive API call: Image generation API — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bsendgrid\\b.*\\.send\\b",
+      "flags": "i",
+      "label": "Expensive API call: SendGrid email — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bresend\\b.*\\.send\\b",
+      "flags": "i",
+      "label": "Expensive API call: Resend email — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\btwilio\\b.*\\.create\\b",
+      "flags": "i",
+      "label": "Expensive API call: Twilio SMS — check for abuse protection (auth, rate limit, captcha)"
+    },
+    {
+      "regex": "\\bstripe\\b.*\\.create\\b",
+      "flags": "i",
+      "label": "Expensive API call: Stripe API — check for abuse protection (auth, rate limit, captcha)"
+    }
+  ],
+  "examples": [
+    "export async function POST(req: Request) {\n  const { text } = await generateText({ model, prompt: \"hi\" });\n  return Response.json({ text });\n}",
+    "export async function POST(req: Request) {\n  const result = streamText({ model, messages: [] });\n  return result.toAIStreamResponse();\n}",
+    "export async function POST() {\n  const out = await generateObject({ model, schema, prompt: \"x\" });\n  return Response.json(out);\n}",
+    "export const POST = async () => {\n  const stream = streamObject({ model, schema, prompt: \"y\" });\n  return new Response(stream.textStream);\n};",
+    "export async function POST() {\n  const v = await embed({ model, value: \"hello\" });\n  return Response.json(v);\n}",
+    "export async function POST() {\n  const vs = await embedMany({ model, values: [\"a\", \"b\"] });\n  return Response.json(vs);\n}",
+    "\"use server\";\nexport async function ask(prompt: string) {\n  return openai.chat.completions.create({ model: \"gpt-4\", messages: [] });\n}",
+    "export async function POST() {\n  return openai.completions.create({ model: \"gpt-3.5\", prompt: \"x\" });\n}",
+    "export async function POST() {\n  return openai.embeddings.create({ model: \"text-embed\", input: \"x\" });\n}",
+    "export async function POST() {\n  return openai.images.generate({ prompt: \"x\" });\n}",
+    "export async function POST() {\n  return anthropic.messages.create({ model: \"claude\", messages: [] });\n}",
+    "export async function POST() {\n  return anthropic.completions.create({ model: \"claude\", prompt: \"x\" });\n}",
+    "export async function POST() {\n  await fetch(\"https://ai-gateway.vercel.sh/v1/chat\", { method: \"POST\" });\n  return new Response(\"ok\");\n}",
+    "export async function POST() {\n  await fetch(\"https://api.openai.com/v1/chat/completions\", { method: \"POST\" });\n  return new Response(\"ok\");\n}",
+    "export async function POST() {\n  await fetch(\"https://api.openai.com/v1/completions\", { method: \"POST\" });\n  return new Response(\"ok\");\n}",
+    "export async function POST() {\n  await fetch(\"https://api.openai.com/v1/embeddings\", { method: \"POST\" });\n  return new Response(\"ok\");\n}",
+    "export async function POST() {\n  await fetch(\"https://api.openai.com/v1/images/generations\", { method: \"POST\" });\n  return new Response(\"ok\");\n}",
+    "\"use server\";\nexport async function notify() {\n  await sendgrid.send({ to: \"x@x.com\", subject: \"hi\" });\n}",
+    "\"use server\";\nexport async function notify() {\n  await resend.emails.send({ to: \"x@x.com\" });\n}",
+    "\"use server\";\nexport async function send() {\n  await twilio.messages.create({ to: \"+1\", body: \"hi\" });\n}",
+    "\"use server\";\nexport async function pay() {\n  await stripe.charges.create({ amount: 100, currency: \"usd\" });\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/expensive-api-abuse.ts"
+  },
+  "notes": ""
+}

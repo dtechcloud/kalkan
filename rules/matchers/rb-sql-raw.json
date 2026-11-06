@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "slug": "rb-sql-raw",
+  "description": "Raw SQL across Ruby DB libraries (ActiveRecord raw, Sequel.lit, pg gem) — string interpolation is SQL injection",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.rb"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,spec}/**"
+  ],
+  "requires": {
+    "tech": [
+      "ruby"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bfind_by_sql\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "find_by_sql with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\.where\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": ".where with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\.find_by_sql\\s*\\(\\s*\\[\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "find_by_sql array form with #{} (SQL injection)"
+    },
+    {
+      "regex": "\\.connection\\.execute\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "connection.execute with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\bActiveRecord::Base\\.connection\\.execute\\s*\\(",
+      "flags": "",
+      "label": "ActiveRecord::Base.connection.execute (raw SQL surface)"
+    },
+    {
+      "regex": "\\bSequel\\.lit\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "Sequel.lit with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\bDB\\.fetch\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "Sequel DB.fetch with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\bDB\\[:\\w+\\]\\.where\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "Sequel DB[:t].where with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\bconn\\.exec\\s*\\(\\s*\"[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "pg gem conn.exec with #{} interpolation (SQL injection)"
+    },
+    {
+      "regex": "\\bPG::Connection\\.new",
+      "flags": "",
+      "label": "PG::Connection.new (informational signal)"
+    },
+    {
+      "regex": "\"\\s*(?:SELECT|INSERT|UPDATE|DELETE)[^\"]{0,400}#\\{",
+      "flags": "m",
+      "label": "Raw SQL string with #{} interpolation (SQL injection)"
+    }
+  ],
+  "examples": [
+    "User.find_by_sql(\"SELECT * FROM users WHERE name = '#{name}'\")",
+    "User.where(\"name = '#{name}'\")",
+    "User.where(\"id = #{user_id}\")",
+    "User.connection.execute(\"DELETE FROM users WHERE id = #{id}\")",
+    "ActiveRecord::Base.connection.execute(\"UPDATE users SET role = '#{role}'\")",
+    "DB[:users].where(\"name = '#{q}'\")",
+    "DB.fetch(\"SELECT * FROM t WHERE col = '#{val}'\")",
+    "Sequel.lit(\"name = '#{user_input}'\")",
+    "conn.exec(\"SELECT * FROM users WHERE id = #{user_id}\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rb-sql-raw.ts"
+  },
+  "notes": ""
+}

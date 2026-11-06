@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "prompt-leaks-system-prompt",
+  "description": "System prompt embeds env-var secrets / API tokens — verify nothing leaks via traces or model output",
+  "class": "llm-ai",
+  "cwe": [
+    "CWE-200"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "\\b(?:streamText|generateText|generateObject|messages\\s*:\\s*\\[|system\\s*:\\s*[`\"']|instructions\\s*:\\s*[`\"'])"
+  ],
+  "patterns": [
+    {
+      "regex": "process\\.env\\.[A-Z_][A-Z0-9_]*(?:KEY|TOKEN|SECRET|PASSWORD|PASS|CREDS|CREDENTIAL|API_KEY|BYPASS|AUTH)\\b",
+      "flags": "",
+      "label": "system prompt references a secret env var",
+      "near": [
+        {
+          "regex": "\\b(?:system|instructions|prompt)\\s*:\\s*[`\"']|\\brole\\s*:\\s*[\"']system[\"']",
+          "before": 49
+        }
+      ]
+    },
+    {
+      "regex": "(?:sk-[A-Za-z0-9]{20,}|vck_[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{20,}|xoxb-[A-Za-z0-9-]+|xoxp-[A-Za-z0-9-]+|AIza[A-Za-z0-9_-]{30,}|AKIA[0-9A-Z]{16})",
+      "flags": "",
+      "label": "system prompt contains hardcoded secret-shaped string",
+      "near": [
+        {
+          "regex": "\\b(?:system|instructions|prompt)\\s*:\\s*[`\"']|\\brole\\s*:\\s*[\"']system[\"']",
+          "before": 49
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "await streamText({\n  system: `You are an agent. API key: ${process.env.OPENAI_API_KEY}`,\n  prompt: \"hi\",\n});",
+    "await generateText({\n  instructions: `Auth token is ${process.env.GITHUB_TOKEN}`,\n});",
+    "const config = {\n  messages: [\n    { role: \"system\", content: `Your secret: ${process.env.SLACK_SIGNING_SECRET}` },\n  ],\n};",
+    "await generateText({\n  system: `Bearer: ${process.env.AUTH_TOKEN}`,\n});",
+    "await streamText({\n  system: `Password: ${process.env.DB_PASSWORD}`,\n});"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/prompt-leaks-system-prompt.ts"
+  },
+  "notes": "Every secret line within 49 lines after a prompt opener is reported (deepsec reports the first per opener). The deepsec label quotes the variable; the port uses a fixed label."
+}

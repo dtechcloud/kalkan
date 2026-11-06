@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "slug": "agent-tool-definition",
+  "description": "AI agent tool definitions — prompt injection attack surface (code execution, API access)",
+  "class": "llm-ai",
+  "cwe": [],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/tools/**/*.{ts,tsx,js,jsx}",
+    "**/agent/**/*.{ts,tsx,js,jsx}",
+    "**/agents/**/*.{ts,tsx,js,jsx}",
+    "**/*tool*.{ts,tsx,js,jsx}",
+    "**/*agent*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "tool\\s*\\(\\s*\\{",
+      "flags": "",
+      "label": "AI SDK tool definition — agent-callable function"
+    },
+    {
+      "regex": "createTool|defineTool",
+      "flags": "",
+      "label": "Tool factory — agent-callable function"
+    },
+    {
+      "regex": "exec\\(|execSync\\(|spawn\\(|child_process",
+      "flags": "",
+      "label": "Tool executes shell commands — RCE via prompt injection"
+    },
+    {
+      "regex": "eval\\(|new Function\\(|vm\\.run",
+      "flags": "",
+      "label": "Tool evaluates code — RCE via prompt injection"
+    },
+    {
+      "regex": "writeFile|fs\\.write|fs\\.mkdir",
+      "flags": "",
+      "label": "Tool writes to filesystem"
+    },
+    {
+      "regex": "fetch\\(|axios|http\\.request",
+      "flags": "",
+      "label": "Tool makes HTTP requests — SSRF via prompt injection"
+    },
+    {
+      "regex": "sandbox|Sandbox|runCode|executeCode",
+      "flags": "",
+      "label": "Sandbox code execution tool"
+    },
+    {
+      "regex": "DynamicTool|StructuredTool|BaseTool",
+      "flags": "",
+      "label": "LangChain tool definition"
+    }
+  ],
+  "examples": [
+    "const myTool = tool({\n  description: \"do thing\",\n  parameters: z.object({}),\n  execute: async () => ({}),\n});",
+    "const t = createTool({ name: \"x\", execute: async () => ({}) });",
+    "const t = defineTool({ name: \"x\" });",
+    "import { exec } from \"child_process\";\nexec(userInput);",
+    "eval(userInput);",
+    "import fs from \"fs\";\nfs.writeFile(path, data, () => {});",
+    "await fetch(url);",
+    "import { sandbox } from \"sandbox\";\nawait sandbox.runCode(code);",
+    "import { DynamicTool } from \"langchain/tools\";\nconst t = new DynamicTool({ name: \"x\" });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/agent-tool-definition.ts"
+  },
+  "notes": ""
+}

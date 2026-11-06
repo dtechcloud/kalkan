@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "slug": "missing-auth",
+  "description": "All HTTP request entry points — flagged as weak candidates for auth review",
+  "class": "authn",
+  "cwe": [
+    "CWE-306"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/api/**/*.{ts,tsx,js,jsx}",
+    "**/app/api/**/*.{ts,tsx,js,jsx}",
+    "**/pages/api/**/*.{ts,tsx,js,jsx}",
+    "**/routes/**/*.{ts,tsx,js,jsx}",
+    "**/server/**/*.{ts,tsx,js,jsx}",
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_excludes": [
+    "withSchema\\s*\\(",
+    "withAuthentication\\s*\\(",
+    "authMiddleware",
+    "withAuth\\s*\\(",
+    "requireAuth",
+    "authTeamOrUserReq",
+    "performOIDCOrTeamOrUserAuth"
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\b",
+      "flags": "",
+      "label": "HTTP entry point: Next.js App Router handler (weak candidate)"
+    },
+    {
+      "regex": "export\\s+(const|let)\\s+(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)\\s*=",
+      "flags": "",
+      "label": "HTTP entry point: Next.js App Router handler (arrow) (weak candidate)"
+    },
+    {
+      "regex": "export\\s+default\\s+(async\\s+)?function",
+      "flags": "",
+      "label": "HTTP entry point: default export handler (weak candidate)"
+    },
+    {
+      "regex": "router\\.(get|post|put|patch|delete|all)\\s*\\(",
+      "flags": "",
+      "label": "HTTP entry point: router method handler (weak candidate)"
+    },
+    {
+      "regex": "app\\.(get|post|put|patch|delete|all)\\s*\\(",
+      "flags": "",
+      "label": "HTTP entry point: app method handler (weak candidate)"
+    },
+    {
+      "regex": "\\.route\\s*\\(\\s*['\"]/",
+      "flags": "",
+      "label": "HTTP entry point: route definition (weak candidate)"
+    }
+  ],
+  "examples": [
+    "export async function GET(req) { return Response.json({}); }",
+    "export function POST(req) { return new Response(\"\"); }",
+    "export const GET = async () => Response.json({});",
+    "export let PUT = (req) => new Response(\"\");",
+    "export default async function handler(req, res) { res.json({}); }",
+    "export default function (req, res) { res.end(); }",
+    "router.get(\"/items\", (req, res) => res.json([]));",
+    "app.post(\"/login\", handler);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/missing-auth.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "tf-iam-wildcard",
+  "description": "Terraform IAM/KMS/S3/SNS policy with wildcard Action/Resource/Principal",
+  "class": "iac-cloud-container",
+  "cwe": [
+    "CWE-732"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.tf",
+    "**/*.tf.json",
+    "**/*.hcl"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "terraform"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*actions\\s*=\\s*\\[\\s*['\"]\\*['\"]\\s*\\]",
+      "flags": "i",
+      "label": "actions = [\"*\"]"
+    },
+    {
+      "regex": "['\"]Action['\"]\\s*:\\s*['\"]\\*['\"]",
+      "flags": "i",
+      "label": "Action = \"*\" (JSON)"
+    },
+    {
+      "regex": "^\\s*resources\\s*=\\s*\\[\\s*['\"]\\*['\"]\\s*\\]",
+      "flags": "i",
+      "label": "resources = [\"*\"]"
+    },
+    {
+      "regex": "['\"]Resource['\"]\\s*:\\s*['\"]\\*['\"]",
+      "flags": "i",
+      "label": "Resource = \"*\" (JSON)"
+    },
+    {
+      "regex": "['\"]Principal['\"]\\s*:\\s*['\"]\\*['\"]",
+      "flags": "i",
+      "label": "Principal = \"*\" (JSON)"
+    },
+    {
+      "regex": "['\"]AWS['\"]\\s*:\\s*['\"]\\*['\"]",
+      "flags": "i",
+      "label": "\"AWS\": \"*\" trust"
+    },
+    {
+      "regex": "\\bidentifiers\\s*=\\s*\\[\\s*['\"]\\*['\"]\\s*\\]",
+      "flags": "i",
+      "label": "identifiers = [\"*\"]"
+    },
+    {
+      "regex": "\\bassume_role_policy\\s*=\\s*[^\"]*\\bAWS['\"]\\s*:\\s*['\"]\\*['\"]",
+      "flags": "i",
+      "label": "assume_role with AWS:*"
+    }
+  ],
+  "examples": [
+    "    actions = [\"*\"]",
+    "\"Action\": \"*\",",
+    "    resources = [\"*\"]",
+    "\"Resource\": \"*\",",
+    "\"Principal\": \"*\",",
+    "\"AWS\": \"*\"",
+    "    identifiers = [\"*\"]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/tf-iam-wildcard.ts"
+  },
+  "notes": ""
+}

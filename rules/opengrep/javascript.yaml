@@ -1,0 +1,919 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for JavaScript and TypeScript (Node.js, Express, Koa).
+# Original rules written for kalkan. Rule ID form: kalkan.javascript.<class>.<name>.
+rules:
+  - id: kalkan.javascript.sqli.tainted-sql-string
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is concatenated into a SQL statement. An attacker can change the
+      query. Use placeholders and pass the values separately, for example
+      db.query("... WHERE id = ?", [id]).
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html
+      category: security
+      technology: [javascript, typescript, express, mysql, pg, knex, sequelize, prisma]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+              - pattern: $REQ.url
+              - pattern: $REQ.originalUrl
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+              - pattern: $CTX.params
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: parseInt(...)
+          - pattern: parseFloat(...)
+          - pattern: Number(...)
+          - pattern: $DRIVER.escape(...)
+          - pattern: $DRIVER.format(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.query($QUERY, ...)
+              - pattern: $DB.execute($QUERY, ...)
+              - pattern: $KNEX.raw($QUERY, ...)
+              - pattern: $KNEX.whereRaw($QUERY, ...)
+              - pattern: $PRISMA.$queryRawUnsafe($QUERY, ...)
+              - pattern: $PRISMA.$executeRawUnsafe($QUERY, ...)
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.javascript.os-command-injection.tainted-shell-command
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a shell command. An attacker can run other commands on the
+      server. Use child_process.execFile() or spawn() with a fixed program and an argument list,
+      without the shell option.
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://nodejs.org/api/child_process.html
+      category: security
+      technology: [javascript, typescript, node]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+              - pattern: $REQ.url
+              - pattern: $REQ.originalUrl
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+              - pattern: $CTX.params
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: parseInt(...)
+          - pattern: Number(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: child_process.exec($CMD, ...)
+              - pattern: child_process.execSync($CMD, ...)
+              - pattern: 'child_process.spawn($CMD, ..., {..., shell: true, ...}, ...)'
+              - pattern: 'child_process.spawnSync($CMD, ..., {..., shell: true, ...}, ...)'
+              - pattern: child_process.execFile($CMD, ...)
+              - pattern: child_process.execFileSync($CMD, ...)
+              - pattern: child_process.spawn($CMD, ...)
+              - pattern: child_process.spawnSync($CMD, ...)
+              - pattern: child_process.spawn($SHELL, ["-c", $CMD, ...], ...)
+              - pattern: child_process.execFile($SHELL, ["-c", $CMD, ...], ...)
+              - pattern: shelljs.exec($CMD, ...)
+              - patterns:
+                  - pattern-inside: |
+                      $CP = require("node:child_process");
+                      ...
+                  - pattern-either:
+                      - pattern: $CP.exec($CMD, ...)
+                      - pattern: $CP.execSync($CMD, ...)
+          - focus-metavariable: $CMD
+
+  - id: kalkan.javascript.code-injection.tainted-eval
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is evaluated as JavaScript code. An attacker can run code in the
+      server process. Parse the input with a strict parser (JSON.parse() or a small expression
+      parser) instead of eval(), Function() or the vm module.
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+        - "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://nodejs.org/api/vm.html
+      category: security
+      technology: [javascript, typescript, node]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+              - pattern: $CTX.params
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: eval($CODE)
+              - pattern: Function(..., $CODE)
+              - pattern: new Function(..., $CODE)
+              - pattern: vm.runInContext($CODE, ...)
+              - pattern: vm.runInNewContext($CODE, ...)
+              - pattern: vm.runInThisContext($CODE, ...)
+              - pattern: vm.compileFunction($CODE, ...)
+              - pattern: new vm.Script($CODE, ...)
+          - focus-metavariable: $CODE
+
+  - id: kalkan.javascript.ssti.tainted-template-source
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is compiled as a template. Template engines such as lodash,
+      EJS, Pug and Handlebars compile templates to JavaScript, so an attacker can run code on the
+      server. Keep the template text constant and pass user data only as template variables.
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://portswigger.net/web-security/server-side-template-injection
+      category: security
+      technology: [javascript, typescript, lodash, ejs, pug, handlebars, nunjucks]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+              - pattern: $CTX.params
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: lodash.template($SOURCE, ...)
+              - pattern: underscore.template($SOURCE, ...)
+              - pattern: ejs.render($SOURCE, ...)
+              - pattern: ejs.compile($SOURCE, ...)
+              - pattern: pug.render($SOURCE, ...)
+              - pattern: pug.compile($SOURCE, ...)
+              - pattern: handlebars.compile($SOURCE, ...)
+              - pattern: nunjucks.renderString($SOURCE, ...)
+              - pattern: dot.template($SOURCE, ...)
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.javascript.xss.tainted-html-response
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is sent back in the response body without HTML escaping.
+      Express sends strings as text/html, so an attacker can run script in the browser of another
+      user. Escape the value (for example with escape-html) or render it through an
+      auto-escaping template.
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [javascript, typescript, express, koa]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ESCAPE(...)
+              - pattern: $LIB.$ESCAPE(...)
+          - metavariable-regex:
+              metavariable: $ESCAPE
+              regex: (?i)^(escape|escapeHtml|htmlEscape|escapeHTML|encode|encodeHTML|sanitize|sanitizeHtml|filterXSS|xss|encodeURIComponent)$
+      - pattern-either:
+          - pattern: parseInt(...)
+          - pattern: Number(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $RES.send($BODY, ...)
+              - pattern: $RES.write($BODY, ...)
+              - pattern: $RES.end($BODY, ...)
+          - metavariable-regex:
+              metavariable: $RES
+              regex: ^(res|response)$
+          - focus-metavariable: $BODY
+      - patterns:
+          - pattern: $CTX.body = $BODY
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+          - focus-metavariable: $BODY
+
+  - id: kalkan.javascript.ssrf.tainted-request-url
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound HTTP request. An attacker can
+      reach internal services or cloud metadata endpoints. Map the input to a fixed allowlist of
+      URLs, or check the scheme and host against an allowlist before the request.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [javascript, typescript, node, axios, got, fetch]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+              - pattern: $CTX.params
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sanitizers:
+      - patterns:
+          - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+      - patterns:
+          - pattern: $ALLOWLIST.get(...)
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: fetch($URL, ...)
+              - pattern: axios($URL, ...)
+              - pattern: axios.$METHOD($URL, ...)
+              - pattern: got($URL, ...)
+              - pattern: got.$METHOD($URL, ...)
+              - pattern: http.get($URL, ...)
+              - pattern: http.request($URL, ...)
+              - pattern: https.get($URL, ...)
+              - pattern: https.request($URL, ...)
+              - pattern: needle.get($URL, ...)
+              - pattern: superagent.get($URL, ...)
+              - pattern: superagent.post($URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.javascript.path-traversal.tainted-file-path
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. An attacker can use "../" or an
+      absolute path to read or change files outside the intended folder. Reduce the name with
+      path.basename(), or resolve the path and check that it stays inside the base folder.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://owasp.org/www-community/attacks/Path_Traversal
+      category: security
+      technology: [javascript, typescript, node, express]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+              - pattern: $CTX.params
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: path.basename(...)
+          - pattern: parseInt(...)
+          - pattern: Number(...)
+      - patterns:
+          - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: fs.$FUNC($PATH, ...)
+              - pattern: fs.promises.$FUNC($PATH, ...)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ^(readFile|readFileSync|createReadStream|writeFile|writeFileSync|appendFile|appendFileSync|createWriteStream|unlink|unlinkSync|rm|rmSync|open|openSync|copyFile|copyFileSync|readdir|readdirSync)$
+          - focus-metavariable: $PATH
+      - patterns:
+          - pattern-either:
+              - pattern: $RES.sendFile($PATH)
+              - pattern: $RES.sendFile($PATH, $CALLBACK)
+              - pattern: $RES.download($PATH, ...)
+          - pattern-not: '$RES.sendFile($PATH, {..., root: $ROOT, ...}, ...)'
+          - metavariable-regex:
+              metavariable: $RES
+              regex: ^(res|response)$
+          - focus-metavariable: $PATH
+
+  - id: kalkan.javascript.deserialization.unsafe-deserializer
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a deserializer that can rebuild functions
+      (node-serialize, funcster, cryo). A crafted payload runs code during the load. Use
+      JSON.parse() and validate the result.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/advisories/GHSA-q4v7-4rhw-9hqm
+      category: security
+      technology: [javascript, typescript, node-serialize, funcster, cryo]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+              - pattern: $REQ.headers
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - patterns:
+                  - pattern-inside: |
+                      $SERIALIZER = require("node-serialize");
+                      ...
+                  - pattern: $SERIALIZER.unserialize($DATA, ...)
+              - pattern: funcster.deepDeserialize($DATA, ...)
+              - pattern: cryo.parse($DATA, ...)
+          - focus-metavariable: $DATA
+
+  - id: kalkan.javascript.xxe.libxml-entity-expansion
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      libxmljs parses this document with entity substitution (noent: true) or with network
+      access. A crafted document can read local files or reach internal hosts (XXE). Parse with
+      noent: false and nonet: true.
+    metadata:
+      cwe:
+        - "CWE-611: Improper Restriction of XML External Entity Reference"
+      kalkan_class: xxe
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [javascript, typescript, libxmljs]
+    pattern-either:
+      - pattern: 'libxmljs.parseXml($XML, {..., noent: true, ...})'
+      - pattern: 'libxmljs.parseXmlString($XML, {..., noent: true, ...})'
+      - pattern: 'libxmljs2.parseXml($XML, {..., noent: true, ...})'
+      - pattern: 'libxmljs2.parseXmlString($XML, {..., noent: true, ...})'
+
+  - id: kalkan.javascript.open-redirect.tainted-redirect-target
+    mode: taint
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Map the input to a fixed set of internal paths, or
+      accept only relative paths that start with a single "/".
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+      category: security
+      technology: [javascript, typescript, express, koa]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - pattern-either:
+          - pattern: req.get(...)
+          - pattern: req.header(...)
+          - pattern: req.param(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sanitizers:
+      - patterns:
+          - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+      - patterns:
+          - pattern: $ALLOWLIST.get(...)
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $RES.redirect($URL)
+              - pattern: $RES.redirect($STATUS, $URL)
+              - pattern: $RES.location($URL)
+          - metavariable-regex:
+              metavariable: $RES
+              regex: ^(res|response|ctx)$
+          - focus-metavariable: $URL
+
+  - id: kalkan.javascript.nosqli.tainted-mongo-filter
+    mode: taint
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: >-
+      Request data is used inside a MongoDB query filter without a type check. JSON bodies, query
+      strings parsed by qs and JSON cookies can carry objects, so an attacker can send operators
+      such as {"$ne": null} and bypass the filter. Convert each value with String() or Number(),
+      or validate the request with a schema.
+    metadata:
+      cwe:
+        - "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      kalkan_class: nosqli
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05.6-Testing_for_NoSQL_Injection
+      category: security
+      technology: [javascript, typescript, mongodb, mongoose]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.cookies
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: String(...)
+          - pattern: Number(...)
+          - pattern: parseInt(...)
+          - pattern: parseFloat(...)
+          - pattern: Boolean(...)
+          - pattern: $VALUE.toString()
+          - pattern: new ObjectId(...)
+          - pattern: ObjectId(...)
+      - patterns:
+          - pattern: $SANITIZE(...)
+          - metavariable-regex:
+              metavariable: $SANITIZE
+              regex: (?i)^(mongoSanitize|sanitize|sanitizeFilter)$
+    pattern-sinks:
+      - patterns:
+          - pattern: $COLLECTION.$OPERATION($FILTER, ...)
+          - metavariable-regex:
+              metavariable: $OPERATION
+              regex: ^(find|findOne|findOneAndUpdate|findOneAndDelete|findOneAndReplace|updateOne|updateMany|deleteOne|deleteMany|replaceOne|countDocuments|count|aggregate|where)$
+          - focus-metavariable: $FILTER
+
+  - id: kalkan.javascript.prototype-pollution.unguarded-recursive-merge
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      This recursive merge walks into target[key] for every key of the source object, and no
+      check blocks the keys "__proto__", "constructor" and "prototype". A JSON body such as
+      {"__proto__": {"isAdmin": true}} then changes Object.prototype for the whole process.
+      Skip these keys, or merge into objects created with Object.create(null).
+    metadata:
+      cwe:
+        - "CWE-1321: Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')"
+      kalkan_class: prototype-pollution
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/1321.html
+        - https://portswigger.net/web-security/prototype-pollution
+      category: security
+      technology: [javascript, typescript]
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              function $MERGE($TARGET, $SOURCE, ...) { ... }
+          - pattern-inside: |
+              $MERGE = function ($TARGET, $SOURCE, ...) { ... }
+          - pattern-inside: |
+              $MERGE = ($TARGET, $SOURCE, ...) => { ... }
+      - pattern-either:
+          - pattern-inside: |
+              for (const $KEY in $SOURCE) { ... }
+          - pattern-inside: |
+              for (let $KEY in $SOURCE) { ... }
+          - pattern-inside: |
+              for (var $KEY in $SOURCE) { ... }
+          - pattern-inside: |
+              for (const $KEY of Object.keys($SOURCE)) { ... }
+          - pattern-inside: |
+              for (let $KEY of Object.keys($SOURCE)) { ... }
+          - pattern-inside: |
+              Object.keys($SOURCE).forEach(($KEY) => { ... })
+          - pattern-inside: |
+              Object.keys($SOURCE).forEach(function ($KEY) { ... })
+      - pattern: $MERGE($TARGET[$KEY], ...)
+      - pattern-not-inside: |
+          if (<... "__proto__" ...>) { ... }
+          ...
+      - pattern-not-inside: |
+          if ($BLOCKLIST.has($KEY)) { ... }
+          ...
+      - pattern-not-inside: |
+          if (!$ALLOWLIST.has($KEY)) { ... }
+          ...
+      - pattern-not-inside: |
+          if ($BLOCKLIST.includes($KEY)) { ... }
+          ...
+
+  - id: kalkan.javascript.prototype-pollution.tainted-nested-property-write
+    mode: taint
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      Request data selects the first key in a two-level property write (obj[a][b] = value). With
+      a = "__proto__" the write lands on Object.prototype and changes every object of the
+      process. Use a Map, or check the key against an allowlist with Object.hasOwn().
+    metadata:
+      cwe:
+        - "CWE-1321: Improperly Controlled Modification of Object Prototype Attributes ('Prototype Pollution')"
+      kalkan_class: prototype-pollution
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/1321.html
+        - https://portswigger.net/web-security/prototype-pollution
+      category: security
+      technology: [javascript, typescript, express]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern: $REQ.query
+              - pattern: $REQ.body
+              - pattern: $REQ.params
+              - pattern: $REQ.cookies
+          - metavariable-regex:
+              metavariable: $REQ
+              regex: ^(req|request)$
+      - patterns:
+          - pattern-either:
+              - pattern: $CTX.request.body
+              - pattern: $CTX.request.query
+              - pattern: $CTX.query
+          - metavariable-regex:
+              metavariable: $CTX
+              regex: ^ctx$
+    pattern-sinks:
+      - patterns:
+          - pattern: $OBJECT[$KEY][$PROPERTY] = $VALUE
+          - focus-metavariable: $KEY
+
+  - id: kalkan.javascript.jwt.verify-without-algorithms
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      jwt.verify() runs without a fixed "algorithms" list, or allows "none". Older jsonwebtoken
+      versions then accept the algorithm named in the token header, and an attacker can sign a
+      token with the public key as an HMAC secret. Pass the expected algorithms, for example
+      { algorithms: ["RS256"] }.
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://github.com/auth0/node-jsonwebtoken#jwtverifytoken-secretorpublickey-options-callback
+      category: security
+      technology: [javascript, typescript, jsonwebtoken]
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern: jsonwebtoken.verify($TOKEN, $KEY)
+              - pattern: jsonwebtoken.verify($TOKEN, $KEY, function (...) { ... })
+              - pattern: jsonwebtoken.verify($TOKEN, $KEY, (...) => { ... })
+              - pattern: jsonwebtoken.verify($TOKEN, $KEY, {...}, ...)
+          - pattern-not: 'jsonwebtoken.verify($TOKEN, $KEY, {..., algorithms: $ALGORITHMS, ...}, ...)'
+      - pattern: 'jsonwebtoken.verify($TOKEN, $KEY, {..., algorithms: [..., "none", ...], ...}, ...)'
+      - pattern: 'jsonwebtoken.sign($PAYLOAD, $KEY, {..., algorithm: "none", ...}, ...)'
+
+  - id: kalkan.javascript.crypto.weak-hash-algorithm
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      MD5 and SHA-1 are broken for security use. Do not use them for passwords, signatures or
+      integrity checks. Hash passwords with crypto.scrypt(), argon2 or bcrypt, and use SHA-256 or
+      better elsewhere.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-328: Use of Weak Hash"
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+      category: security
+      technology: [javascript, typescript, node]
+    pattern-either:
+      - pattern: crypto.createHash("md5")
+      - pattern: crypto.createHash("MD5")
+      - pattern: crypto.createHash("md4")
+      - pattern: crypto.createHash("sha1")
+      - pattern: crypto.createHash("SHA1")
+      - pattern: crypto.createHash("sha-1")
+      - pattern: crypto.createHash("ripemd160")
+
+  - id: kalkan.javascript.crypto.weak-cipher
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      This code encrypts with a broken cipher or mode (DES, 3DES, RC2, RC4, Blowfish, ECB) or with
+      crypto.createCipher(), which derives the key with MD5 and uses no IV. Use
+      crypto.createCipheriv("aes-256-gcm", key, iv) with a random IV.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      kalkan_class: crypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://nodejs.org/api/crypto.html#cryptocreatecipherivalgorithm-key-iv-options
+      category: security
+      technology: [javascript, typescript, node]
+    pattern-either:
+      - pattern: crypto.createCipher(...)
+      - pattern: crypto.createDecipher(...)
+      - patterns:
+          - pattern-either:
+              - pattern: crypto.createCipheriv($ALGORITHM, ...)
+              - pattern: crypto.createDecipheriv($ALGORITHM, ...)
+          - metavariable-regex:
+              metavariable: $ALGORITHM
+              regex: (?i)^["'`]?(des|des-.*|des3|rc2.*|rc4.*|bf.*|blowfish.*|.*-ecb)["'`]?$
+
+  - id: kalkan.javascript.cors.permissive-origin-with-credentials
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: >-
+      The cors middleware allows every origin (or reflects the request origin) and also allows
+      credentials. Any web site can then send authenticated requests and read the answers. List
+      the trusted origins explicitly when credentials are allowed.
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://github.com/expressjs/cors#configuration-options
+      category: security
+      technology: [javascript, typescript, express, cors]
+    patterns:
+      - pattern: 'cors({..., credentials: true, ...})'
+      - pattern-either:
+          - pattern: 'cors({..., origin: "*", ...})'
+          - pattern: 'cors({..., origin: true, ...})'
+          - pattern: 'cors({..., origin: /.*/, ...})'
+          - pattern: 'cors({..., origin: ($ORIGIN, $CALLBACK) => $CALLBACK(null, true), ...})'
+          - pattern: 'cors({..., origin: function ($ORIGIN, $CALLBACK) { $CALLBACK(null, true); }, ...})'

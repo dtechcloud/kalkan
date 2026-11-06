@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "slug": "streaming-endpoint",
+  "description": "AI streaming endpoints — auth bypass, prompt injection, state leakage risk",
+  "class": "llm-ai",
+  "cwe": [],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/route.{ts,tsx,js,jsx}",
+    "**/api/**/*.{ts,tsx,js,jsx}",
+    "**/app/**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "streamText\\s*\\(",
+      "flags": "",
+      "label": "AI SDK streamText — streaming LLM endpoint"
+    },
+    {
+      "regex": "streamObject\\s*\\(",
+      "flags": "",
+      "label": "AI SDK streamObject — streaming structured output"
+    },
+    {
+      "regex": "generateText\\s*\\(",
+      "flags": "",
+      "label": "AI SDK generateText — LLM generation endpoint"
+    },
+    {
+      "regex": "StreamingTextResponse",
+      "flags": "",
+      "label": "StreamingTextResponse — legacy streaming pattern"
+    },
+    {
+      "regex": "new\\s+ReadableStream",
+      "flags": "",
+      "label": "ReadableStream — raw streaming response"
+    },
+    {
+      "regex": "TransformStream",
+      "flags": "",
+      "label": "TransformStream — streaming pipeline"
+    },
+    {
+      "regex": "openai.{0,80}stream.{0,40}true|stream:\\s*true",
+      "flags": "i",
+      "label": "LLM API call with streaming enabled"
+    },
+    {
+      "regex": "\\.chat\\.completions\\.create[^)]{0,200}stream",
+      "flags": "i",
+      "label": "OpenAI chat completion stream"
+    },
+    {
+      "regex": "/api/chat|/api/completion|/api/generate",
+      "flags": "i",
+      "label": "AI chat/completion API route"
+    }
+  ],
+  "examples": [
+    "const result = streamText({ model, messages });",
+    "const stream = streamObject({ model, schema, prompt });",
+    "const out = await generateText({ model, prompt });",
+    "return new StreamingTextResponse(stream);",
+    "const stream = new ReadableStream({ start(c) { c.enqueue(\"hi\"); } });",
+    "const tx = new TransformStream();",
+    "const res = await openai.chat.completions.create({ model: \"gpt-4\", stream: true });",
+    "const r = await client.chat.completions.create({ model, messages, stream: true });",
+    "fetch(\"/api/chat\", { method: \"POST\" });",
+    "app.post(\"/api/completion\", handler);",
+    "await fetch(\"/api/generate\", { method: \"POST\" });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/streaming-endpoint.ts"
+  },
+  "notes": ""
+}

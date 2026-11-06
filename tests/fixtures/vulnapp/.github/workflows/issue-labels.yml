@@ -1,0 +1,31 @@
+name: Issue labels
+
+on:
+  issues:
+    types: [opened, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Label the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          NUMBER: ${{ github.event.issue.number }}
+          TITLE: ${{ github.event.issue.title }}
+        run: |
+          echo "Triage request: $TITLE"
+          gh issue edit "$NUMBER" --add-label triage
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: label
+    steps:
+      - name: Write the job summary
+        run: echo "Issue labeled" >> "$GITHUB_STEP_SUMMARY"

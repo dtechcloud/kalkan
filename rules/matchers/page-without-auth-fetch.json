@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "slug": "page-without-auth-fetch",
+  "description": "Server Component pages fetching resources by URL params without verifying user access",
+  "class": "idor",
+  "cwe": [
+    "CWE-639"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/app/**/page.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "params\\.\\w+",
+    "fetch|fetchApi|getServerSession"
+  ],
+  "patterns": [
+    {
+      "regex": "params\\.\\w+",
+      "flags": "",
+      "label": "Page fetches by URL param with auth (verify scoping)",
+      "near": [
+        {
+          "regex": "fetch|Api|query",
+          "after": 7
+        },
+        {
+          "regex": "auth|getSession|requireAuth|withAuthentication|checkAccess|verifyAccess|can\\s*\\(",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "params\\.\\w+",
+      "flags": "",
+      "label": "Page fetches by URL param WITHOUT access check — IDOR risk",
+      "near": [
+        {
+          "regex": "fetch|Api|query",
+          "after": 7
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "auth|getSession|requireAuth|withAuthentication|checkAccess|verifyAccess|can\\s*\\(",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "export default async function Page({ params }) {\n  const data = await fetch('/api/orders/' + params.id);\n  return null\n}",
+    "export default async function Page({ params }) {\n  const r = await fetchApi('/users/' + params.userId);\n  return null\n}",
+    "export default async function Page({ params }) {\n  const session = await getServerSession();\n  const r = await fetch('/api/x/' + params.id);\n  return null\n}",
+    "export default async function Page({ params }) {\n  const session = await auth();\n  const data = await fetch('/api/items/' + params.id);\n  return null\n}",
+    "export default async function Page({ params }) {\n  await requireAuth();\n  const r = await fetch('/api/orgs/' + params.orgId);\n  return null\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-page-without-auth-fetch.ts"
+  },
+  "notes": "deepsec reports the first line per file; the port reports every line. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

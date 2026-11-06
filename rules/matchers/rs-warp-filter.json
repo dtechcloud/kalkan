@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "slug": "rs-warp-filter",
+  "description": "Warp filter compositions (gated on Warp)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "warp"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\bwarp\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bwarp::path!\\s*\\(",
+      "flags": "",
+      "label": "warp::path!() filter"
+    },
+    {
+      "regex": "\\bwarp::(?:get|post|put|patch|delete)\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "warp::<verb>()"
+    },
+    {
+      "regex": "\\.and_then\\s*\\(",
+      "flags": "",
+      "label": ".and_then(handler)"
+    },
+    {
+      "regex": "\\bwarp::filters::body::json\\s*\\(",
+      "flags": "",
+      "label": "json body extractor"
+    }
+  ],
+  "examples": [
+    "let route = warp::path!(\"hello\" / String);",
+    "warp::path!(\"api\" / \"v1\" / \"users\")",
+    "let users = warp::get();",
+    "warp::post()",
+    "warp::delete()",
+    ".and_then(handle_request)",
+    ".and(warp::filters::body::json())",
+    "let api = warp::path!(\"login\").and(warp::post()).and(warp::filters::body::json()).and_then(login);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-warp-filter.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [warp]; kalkan uses tech rust (or warp) and a manifest that names warp."
+}

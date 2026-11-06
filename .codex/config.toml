@@ -1,0 +1,25 @@
+# kalkan project configuration for OpenAI Codex (docs/CODEX.md).
+#
+# Codex loads this file only when the kalkan folder is a trusted project. The kalkan subagents in
+# .codex/agents/ inherit these settings: a custom agent file cannot change the sandbox, the
+# approval policy or the network. Written by hand; scripts/sync_host_files.py does not touch it.
+
+# Commands can read the whole disk but write only inside the repository (and the temp folders).
+sandbox_mode = "workspace-write"
+
+# Never ask for approval. A command that the sandbox blocks fails, and Codex gives the error back
+# to the agent. No escalation is possible, so text in the audited target cannot talk an agent
+# into a command outside the sandbox. `codex exec` uses "never" by default as well.
+approval_policy = "never"
+
+# No web search tool for the orchestrator or the subagents.
+web_search = "disabled"
+
+[sandbox_workspace_write]
+# No outbound network for commands in the sandbox, including the kalkan engine.
+network_access = false
+
+[agents]
+# The engine leases at most 6 agent tasks per round by default (`run init --max-parallel`).
+# The orchestrator closes each subagent after its round, so 6 open threads are enough.
+max_concurrent_threads_per_session = 6

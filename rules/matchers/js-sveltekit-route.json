@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "js-sveltekit-route",
+  "description": "SvelteKit endpoint and load handlers (gated on SvelteKit)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/+page.server.{ts,js}",
+    "**/+server.{ts,js}",
+    "**/+layout.server.{ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "sveltekit"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"@sveltejs/kit\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+(?:async\\s+)?(?:const|function)\\s+(GET|POST|PUT|PATCH|DELETE|OPTIONS|HEAD)\\b",
+      "flags": "",
+      "label": "+server method handler"
+    },
+    {
+      "regex": "export\\s+(?:async\\s+)?(?:const|function)\\s+load\\b",
+      "flags": "",
+      "label": "+page.server.ts / +layout.server.ts load function"
+    },
+    {
+      "regex": "export\\s+const\\s+actions\\s*[:=]",
+      "flags": "",
+      "label": "+page.server.ts actions export (form actions)"
+    },
+    {
+      "regex": "\\b(?:fail|redirect|error)\\s*\\(",
+      "flags": "",
+      "label": "SvelteKit response helper"
+    }
+  ],
+  "examples": [
+    "export const GET = async ({ request }) => json({});",
+    "export async function POST({ request }) { return new Response(); }",
+    "export const PUT = async () => json({});",
+    "export async function DELETE({ params }) {}",
+    "export const load = async ({ locals }) => ({ user: locals.user });",
+    "export async function load({ params, fetch }) {}",
+    "export const actions = { default: async ({ request }) => {} };",
+    "throw redirect(302, \"/login\");",
+    "throw error(401, \"unauthorized\");",
+    "return fail(400, { message });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-sveltekit-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [sveltekit]; kalkan uses tech node (or sveltekit) and a manifest that names sveltekit."
+}

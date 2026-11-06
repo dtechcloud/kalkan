@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "slug": "ssrf",
+  "description": "HTTP requests with dynamic/user-controlled URLs",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "fetch\\s*\\(\\s*(?:req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|input\\.|ctx\\.|payload\\.|searchParams|nextUrl|formData|headers\\(\\)|cookies\\(\\))",
+      "flags": "",
+      "label": "fetch with request-derived URL"
+    },
+    {
+      "regex": "axios\\.(get|post|put|delete|patch|request)\\s*\\(\\s*(?:req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|input\\.|ctx\\.|payload\\.|searchParams|nextUrl|formData|headers\\(\\)|cookies\\(\\))",
+      "flags": "",
+      "label": "axios with request-derived URL"
+    },
+    {
+      "regex": "\\b(axios|got|ky|superagent)\\s*\\(\\s*(?:req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|input\\.|ctx\\.|payload\\.|searchParams|nextUrl|formData|headers\\(\\)|cookies\\(\\))",
+      "flags": "",
+      "label": "HTTP client call with request-derived URL"
+    },
+    {
+      "regex": "https?\\.(get|request)\\s*\\(\\s*(?:req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|input\\.|ctx\\.|payload\\.|searchParams|nextUrl|formData|headers\\(\\)|cookies\\(\\))",
+      "flags": "",
+      "label": "http(s).get/request with request-derived URL"
+    },
+    {
+      "regex": "\\b(page|browser)\\.(goto|setContent)\\s*\\(\\s*(?:req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|input\\.|ctx\\.|payload\\.|searchParams|nextUrl|formData|headers\\(\\)|cookies\\(\\))",
+      "flags": "",
+      "label": "browser navigation with request-derived URL"
+    },
+    {
+      "regex": "https?\\.request\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "http.request with interpolated URL"
+    },
+    {
+      "regex": "new\\s+URL\\s*\\(\\s*(?:req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.|input\\.|ctx\\.|payload\\.|searchParams|nextUrl|formData|headers\\(\\)|cookies\\(\\))",
+      "flags": "",
+      "label": "new URL from request data"
+    },
+    {
+      "regex": "(?:const|let|var)\\s+\\w*[uU]rl\\w*\\s*=\\s*[^;\\n]*\\b(?:req|request|params|query|body|searchParams|nextUrl|input)\\b",
+      "flags": "",
+      "label": "URL-named variable assigned from request data"
+    },
+    {
+      "regex": "fetch\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "fetch with interpolated URL (non-constant base)",
+      "not_near": [
+        {
+          "regex": "VERCEL_API_URL|API_BASE|API_URL|INTERNAL_URL|process\\.env\\.\\w+_URL"
+        }
+      ]
+    },
+    {
+      "regex": "https?://[^`]*\\$\\{",
+      "flags": "",
+      "label": "string-built URL via template interpolation",
+      "not_near": [
+        {
+          "regex": "VERCEL_API_URL|API_BASE|API_URL|INTERNAL_URL|process\\.env\\.\\w+_URL"
+        }
+      ]
+    },
+    {
+      "regex": "[\"']https?://[\"']\\s*\\+",
+      "flags": "",
+      "label": "string-built URL via concatenation",
+      "not_near": [
+        {
+          "regex": "VERCEL_API_URL|API_BASE|API_URL|INTERNAL_URL|process\\.env\\.\\w+_URL"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "fetch(req.body.url);",
+    "fetch(query.target);",
+    "fetch(searchParams.get('u'));",
+    "fetch(input.url);",
+    "axios.get(req.body.endpoint);",
+    "axios.post(params.url, data);",
+    "axios(query.target);",
+    "got(body.url);",
+    "ky(payload.url);",
+    "superagent(ctx.url);",
+    "https.get(req.query.target);",
+    "https.request(`https://api/${req.body.host}`);",
+    "page.goto(req.body.url);",
+    "browser.goto(params.target);",
+    "page.setContent(req.body.html);",
+    "fetch(headers().get('x-target'));",
+    "fetch(cookies().get('redirect')?.value);",
+    "axios.post(formData.get('url'));",
+    "new URL(req.query.target);",
+    "new URL(nextUrl.searchParams.get('href'));",
+    "fetch(`${userBase}/items`);",
+    "const target = `https://${req.body.host}`;",
+    "const url = \"http://\" + req.query.host;",
+    "const targetUrl = req.query.url;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/ssrf.ts"
+  },
+  "notes": "The three string-built URL rules skip lines that name a constant base URL (VERCEL_API_URL, API_BASE, ...), as upstream."
+}

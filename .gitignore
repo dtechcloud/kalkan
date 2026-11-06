@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# kalkan runtime data (audit runs, downloaded tools)
+# The wheel build places knowledge/ and rules/ here; a checkout never holds this folder.
+/src/kalkan/_data/
+/runs/
+/.tools/
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+
+# Claude Code local settings (per user)
+.claude/settings.local.json
+/.bench-runs/
+/.dev-runs/
+
+# .NET build output (C# Dev Kit restores the test fixtures)
+obj/
+bin/Debug/
+bin/Release/
+.claude/worktrees/

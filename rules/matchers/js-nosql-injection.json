@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "js-nosql-injection",
+  "description": "NoSQL injection — Mongoose / MongoDB driver raw operators ($where, JSON.parse(input)) and unsafe aggregations",
+  "class": "nosqli",
+  "cwe": [
+    "CWE-943"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\$where\\s*:\\s*\"[^\"]{0,200}\"\\s*\\+|\\$where\\s*:\\s*'[^']{0,200}'\\s*\\+|\\$where\\s*:\\s*function|\\$where\\s*:\\s*`[^`]{0,200}\\$\\{",
+      "flags": "",
+      "label": "MongoDB $where with concatenation/function/template — server-side JS execution, injection"
+    },
+    {
+      "regex": "\\.find\\s*\\(\\s*JSON\\.parse\\s*\\(\\s*req\\.",
+      "flags": "",
+      "label": "find(JSON.parse(req.*)) — operator injection via raw user JSON"
+    },
+    {
+      "regex": "\\.aggregate\\s*\\(\\s*\\[?\\s*\\{[^}]{0,400}\\$where",
+      "flags": "",
+      "label": "MongoDB aggregate() pipeline using $where — server-side JS execution"
+    },
+    {
+      "regex": "\\bnew\\s+RegExp\\s*\\(\\s*req\\.",
+      "flags": "",
+      "label": "new RegExp from req.* — ReDoS and NoSQL query-shape injection"
+    },
+    {
+      "regex": "\\.find(?:One)?\\s*\\(\\s*\\{[^}]{0,200}:\\s*req\\.\\w+\\.\\w+",
+      "flags": "",
+      "label": "find/findOne with untyped req.* value — coerce to string or operator injection (e.g. { $ne: null })"
+    }
+  ],
+  "examples": [
+    "User.find({ $where: \"this.name == '\" + name + \"'\" })",
+    "db.collection.find({ $where: `this.x == '${input}'` })",
+    "Model.find({ $where: function() { return this.x == y; } })",
+    "Model.find(JSON.parse(req.body.filter))",
+    "coll.aggregate([{ $match: { $where: \"this.score > \" + score } }])",
+    "User.find({ name: new RegExp(req.query.q) })",
+    "Model.findOne({ email: req.body.email })",
+    "User.find({ username: req.query.username })"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nosql-injection.ts"
+  },
+  "notes": ""
+}

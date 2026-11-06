@@ -1,0 +1,20 @@
+# Store text with LF line endings on every platform.
+* text=auto eol=lf
+
+# Windows scripts keep CRLF.
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# Binary files.
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.gz binary
+*.whl binary
+
+# vulnapp: header-only ELF test files of the committed-binary rule (no code, never run).
+tests/fixtures/vulnapp/native/bin/labelprint binary
+tests/fixtures/vulnapp/native/testdata/labelprint.elf binary

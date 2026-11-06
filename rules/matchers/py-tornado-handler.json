@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "slug": "py-tornado-handler",
+  "description": "Tornado RequestHandler subclasses and routing (gated on Tornado)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "tornado"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\btornado\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^class\\s+\\w+\\s*\\(\\s*(?:tornado\\.web\\.)?RequestHandler\\s*\\)",
+      "flags": "m",
+      "label": "RequestHandler subclass"
+    },
+    {
+      "regex": "^\\s*def\\s+(get|post|put|patch|delete|head|options)\\s*\\(\\s*self\\b",
+      "flags": "m",
+      "label": "method handler"
+    },
+    {
+      "regex": "Application\\s*\\(\\s*\\[",
+      "flags": "",
+      "label": "Application([(...handler...)])"
+    },
+    {
+      "regex": "@tornado\\.web\\.authenticated\\b",
+      "flags": "",
+      "label": "@authenticated decorator"
+    }
+  ],
+  "examples": [
+    "class MainHandler(RequestHandler):",
+    "class UserHandler(tornado.web.RequestHandler):",
+    "    def get(self, user_id):",
+    "    def post(self):",
+    "    def put(self, id):",
+    "    def delete(self, id):",
+    "app = Application([(r\"/\", MainHandler), (r\"/users/(.*)\", UserHandler)])",
+    "    @tornado.web.authenticated"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-tornado-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [tornado]; kalkan uses tech python (or tornado) and a manifest that names tornado."
+}

@@ -1,0 +1,47 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "metadata": {
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "kalkan"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "pkg:npm/lodash@4.17.15",
+      "name": "lodash",
+      "version": "4.17.15",
+      "purl": "pkg:npm/lodash@4.17.15",
+      "properties": [
+        {
+          "name": "kalkan:manifest:path",
+          "value": "web/package.json"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "pkg:npm/jquery@1.12.4",
+      "name": "jquery",
+      "version": "1.12.4",
+      "purl": "pkg:npm/jquery@1.12.4",
+      "properties": [
+        {
+          "name": "kalkan:vendored:path",
+          "value": "web/static/js/jquery.min.js"
+        },
+        {
+          "name": "kalkan:vendored:library",
+          "value": "jquery"
+        }
+      ]
+    }
+  ]
+}

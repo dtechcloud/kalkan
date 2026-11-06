@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="generator" content="kalkan 0.0.0-golden">
+<title>Security audit report · 20261015T120000Z-shop-a1b2</title>
+<style>
+:root {
+  --bg: #f3f5f8; --panel: #ffffff; --head: #f6f8fa; --line: #e1e5ea; --line-strong: #c5ccd6;
+  --text: #17202b; --text-2: #44505f; --text-3: #5f6b7a;
+  --accent: #1d5bb8; --accent-ink: #123e7a; --accent-soft: #d6e4f7; --accent-wash: #eef4fc;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b;
+  --warn-wash: #fff7e0;
+  --sev-critical: #a61b1b; --sev-critical-wash: #fbe9e9;
+  --sev-high: #a84300; --sev-high-wash: #fdeee2;
+  --sev-medium: #7d5800; --sev-medium-wash: #fdf5dc;
+  --sev-low: #1d5bb8; --sev-low-wash: #e8f0fb;
+  --sev-info: #4f5b69; --sev-info-wash: #eef1f4;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131a; --panel: #141a23; --head: #19212c; --line: #253041; --line-strong: #344256;
+    --text: #e4e9f0; --text-2: #b3bdca; --text-3: #93a0b1;
+    --accent: #6ea8ff; --accent-ink: #cfe0ff; --accent-soft: #1e3a5f;
+    --accent-wash: rgba(110, 168, 255, 0.10); --warn-wash: rgba(250, 178, 25, 0.10);
+    --sev-critical: #ff8a80; --sev-critical-wash: rgba(208, 59, 59, 0.18);
+    --sev-high: #ffb27a; --sev-high-wash: rgba(229, 112, 26, 0.18);
+    --sev-medium: #f5cf6b; --sev-medium-wash: rgba(250, 178, 25, 0.15);
+    --sev-low: #8fb8ff; --sev-low-wash: rgba(110, 168, 255, 0.15);
+    --sev-info: #b3bdca; --sev-info-wash: rgba(179, 189, 202, 0.12);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131a; --panel: #141a23; --head: #19212c; --line: #253041; --line-strong: #344256;
+  --text: #e4e9f0; --text-2: #b3bdca; --text-3: #93a0b1;
+  --accent: #6ea8ff; --accent-ink: #cfe0ff; --accent-soft: #1e3a5f;
+  --accent-wash: rgba(110, 168, 255, 0.10); --warn-wash: rgba(250, 178, 25, 0.10);
+  --sev-critical: #ff8a80; --sev-critical-wash: rgba(208, 59, 59, 0.18);
+  --sev-high: #ffb27a; --sev-high-wash: rgba(229, 112, 26, 0.18);
+  --sev-medium: #f5cf6b; --sev-medium-wash: rgba(250, 178, 25, 0.15);
+  --sev-low: #8fb8ff; --sev-low-wash: rgba(110, 168, 255, 0.15);
+  --sev-info: #b3bdca; --sev-info-wash: rgba(179, 189, 202, 0.12);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans);
+  font-size: 15px; line-height: 1.55;
+  padding: 24px 16px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+p { margin: 10px 0 0; max-width: 92ch; }
+code, .mono { font-family: var(--font-mono); font-size: 0.86em; overflow-wrap: anywhere; }
+.layout {
+  max-width: 1320px; margin-inline: auto; display: grid; grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+@media (min-width: 1120px) { .layout { grid-template-columns: 232px minmax(0, 1fr); gap: 28px; } }
+.toc {
+  align-self: start; background: var(--panel); border: 1px solid var(--line); padding: 14px;
+  font-size: 13.5px; min-width: 0;
+}
+@media (min-width: 1120px) { .toc { position: sticky; top: 24px; } }
+.toc-doc {
+  font-family: var(--font-mono); font-size: 11.5px; color: var(--text-3); padding: 0 8px 10px;
+  border-bottom: 1px solid var(--line); margin-bottom: 8px; overflow-wrap: anywhere;
+}
+.toc-doc b {
+  display: block; color: var(--text); font-family: var(--font-sans); font-size: 13.5px;
+  font-weight: 600; margin-top: 2px;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 1px; }
+@media (max-width: 1119px) {
+  .toc ol {
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  }
+}
+.toc a {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px; padding: 5px 8px;
+  text-decoration: none; color: var(--text-2); border-radius: 3px;
+}
+.toc a span { font-family: var(--font-mono); font-size: 12px; color: var(--text-3); }
+.toc a:hover { background: var(--head); color: var(--text); }
+.doc {
+  background: var(--panel); border: 1px solid var(--line); padding: clamp(18px, 3.2vw, 44px);
+  min-width: 0;
+}
+.doc-head { border-bottom: 2px solid var(--text); padding-bottom: 18px; position: relative; }
+.kicker {
+  font-family: var(--font-mono); font-size: 12px; color: var(--accent); font-weight: 600;
+  letter-spacing: 0.03em; margin: 0; padding-right: 72px; overflow-wrap: anywhere;
+}
+h1 {
+  font-size: clamp(1.45rem, 2.7vw, 2.05rem); font-weight: 700; line-height: 1.2; margin: 6px 0 0;
+  letter-spacing: -0.01em; overflow-wrap: anywhere;
+}
+.subtitle { color: var(--text-2); margin-top: 6px; font-size: 1.02rem; }
+.meta {
+  margin: 18px 0 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 1px; background: var(--line); border: 1px solid var(--line);
+}
+.meta div { background: var(--panel); padding: 9px 12px; min-width: 0; }
+.meta dt {
+  font-family: var(--font-mono); font-size: 11px; color: var(--text-3); letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.meta dd { margin: 2px 0 0; font-size: 13.5px; font-weight: 500; overflow-wrap: anywhere; }
+.theme-toggle {
+  position: absolute; top: 0; right: 0; font: inherit; font-size: 12px; color: var(--text-2);
+  background: var(--head); border: 1px solid var(--line-strong); border-radius: 3px;
+  padding: 3px 9px; cursor: pointer;
+}
+section { margin-top: 42px; scroll-margin-top: 20px; }
+h2 {
+  font-size: 1.25rem; font-weight: 700; margin: 0; display: flex; gap: 10px;
+  align-items: baseline; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+}
+h2 .num {
+  font-family: var(--font-mono); font-size: 0.95rem; color: var(--accent); font-weight: 600;
+  flex: none;
+}
+h3 { font-size: 1rem; font-weight: 600; margin: 26px 0 0; overflow-wrap: anywhere; }
+h3 .num {
+  font-family: var(--font-mono); font-size: 0.9rem; color: var(--text-3); margin-right: 6px;
+  font-weight: 500;
+}
+h4 { font-size: 0.92rem; font-weight: 600; margin: 18px 0 0; color: var(--text-2); }
+.intro { color: var(--text-2); max-width: 84ch; }
+.note { color: var(--text-3); font-size: 13px; max-width: 90ch; }
+.kpis {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1px;
+  background: var(--line); border: 1px solid var(--line); margin-top: 16px;
+}
+.kpi {
+  background: var(--panel); padding: 12px 14px; display: grid; gap: 4px; align-content: start;
+}
+.kpi b { font-size: 1.6rem; font-weight: 600; line-height: 1.1; }
+.kpi span { font-size: 13px; color: var(--text-2); }
+.kpi.sev-critical b { color: var(--sev-critical); } .kpi.sev-high b { color: var(--sev-high); }
+.kpi.sev-medium b { color: var(--sev-medium); } .kpi.sev-low b { color: var(--sev-low); }
+.kpi.sev-info b { color: var(--sev-info); }
+.callout {
+  margin-top: 16px; border: 1px solid var(--line-strong); border-left: 4px solid var(--warn);
+  background: var(--warn-wash); padding: 12px 16px; max-width: 92ch;
+}
+.callout p { margin: 0; }
+.callout ul { margin: 8px 0 0; padding-left: 20px; display: grid; gap: 4px; }
+.callout.ok { border-left-color: var(--good); background: var(--head); }
+.callout.crit { border-left-color: var(--crit); background: var(--sev-critical-wash); }
+.callout.crit ol { margin: 8px 0 0; padding-left: 22px; display: grid; gap: 4px; }
+.tbl-wrap { overflow-x: auto; margin-top: 14px; border: 1px solid var(--line); max-width: 100%; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+.tbl th, .tbl td {
+  padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top;
+  overflow-wrap: anywhere;
+}
+.tbl thead th {
+  background: var(--head); color: var(--text-2); font-weight: 600; font-size: 12.5px;
+  border-bottom: 1px solid var(--line-strong); white-space: nowrap; vertical-align: bottom;
+  overflow-wrap: normal;
+}
+.tbl tbody th { font-weight: 600; }
+.tbl tbody tr:hover > td, .tbl tbody tr:hover > th { background: var(--accent-wash); }
+.tbl tr:last-child > * { border-bottom: 0; }
+.tbl .num-col { text-align: right; font-family: var(--font-mono); white-space: nowrap; }
+.tbl .id {
+  font-family: var(--font-mono); font-size: 12.5px; color: var(--text-3); white-space: nowrap;
+}
+.tbl tfoot th, .tbl tfoot td {
+  border-top: 1px solid var(--line-strong); background: var(--head); font-weight: 600;
+}
+.w-560 { min-width: 560px; } .w-720 { min-width: 720px; } .w-860 { min-width: 860px; }
+.sev {
+  display: inline-block; padding: 1px 8px; border-radius: 3px; font-size: 12px; font-weight: 600;
+  line-height: 1.6; white-space: nowrap;
+}
+.sev-critical { color: var(--sev-critical); background: var(--sev-critical-wash); }
+.sev-high { color: var(--sev-high); background: var(--sev-high-wash); }
+.sev-medium { color: var(--sev-medium); background: var(--sev-medium-wash); }
+.sev-low { color: var(--sev-low); background: var(--sev-low-wash); }
+.sev-info, .sev-none { color: var(--sev-info); background: var(--sev-info-wash); }
+.st { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.st::before { content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.st-good::before { background: var(--good); } .st-warn::before { background: var(--warn); }
+.st-crit::before {
+  background: var(--crit); } .st-neutral::before { background: var(--line-strong);
+}
+.finding {
+  margin-top: 30px; padding-top: 18px; border-top: 1px solid var(--line);
+  scroll-margin-top: 20px;
+}
+.finding h3 { margin-top: 0; display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.facts {
+  margin: 14px 0 0; display: grid; grid-template-columns: max-content minmax(0, 1fr);
+  gap: 6px 18px; font-size: 14px; border: 1px solid var(--line); background: var(--head);
+  padding: 12px 14px;
+}
+.facts dt {
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-3); padding-top: 2px;
+}
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 520px) {
+  .facts {
+    grid-template-columns: minmax(0, 1fr); gap: 2px;
+  }
+  .facts dd {
+    margin-bottom: 6px;
+  }
+}
+.prose p:first-child { margin-top: 6px; }
+.label { font-weight: 600; }
+.nw { white-space: nowrap; }
+ul.plain, ol.plain {
+  margin: 8px 0 0; padding-left: 22px; display: grid; gap: 4px; max-width: 92ch;
+}
+pre.code {
+  margin: 8px 0 0; background: var(--head); border: 1px solid var(--line); padding: 10px 12px;
+  overflow-x: auto; font-family: var(--font-mono); font-size: 13px; line-height: 1.45;
+  white-space: pre; max-width: 100%;
+}
+.nt { color: var(--text-3); font-style: italic; font-size: 0.9em; }
+footer.foot {
+  margin-top: 44px; padding-top: 12px; border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 12px; color: var(--text-3); display: flex;
+  flex-wrap: wrap; gap: 6px 22px;
+}
+footer.foot span { overflow-wrap: anywhere; }
+@media print {
+  :root:not([data-print]):not([data-x]) {
+    --bg: #ffffff; --panel: #ffffff; --head: #f4f5f7; --line: #d5d9de; --line-strong: #aab2bd;
+    --text: #000000; --text-2: #222222; --text-3: #444444; --accent: #123e7a;
+    --accent-wash: transparent; --warn-wash: #fff7e0;
+    --sev-critical: #8a1010; --sev-high: #8a3800; --sev-medium: #6b4b00; --sev-low: #123e7a;
+    --sev-info: #333333; color-scheme: light;
+  }
+  body { padding: 0; font-size: 10.5pt; background: #ffffff; }
+  .toc, .theme-toggle { display: none !important; }
+  .layout { display: block; max-width: none; }
+  .doc { border: 0; padding: 0; }
+  .tbl-wrap { overflow: visible; }
+  table.tbl { min-width: 0 !important; font-size: 9.5pt; }
+  .tbl tbody tr:hover > td, .tbl tbody tr:hover > th { background: transparent; }
+  pre.code { white-space: pre-wrap; overflow-wrap: anywhere; }
+  h2, h3, h4 { break-after: avoid; }
+  .facts, .callout, tr { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside class="toc" aria-label="Contents"><div class="toc-doc">20261015T120000Z-shop-a1b2<b>Security audit report</b></div><ol><li><a href="#summary"><span>1</span>Executive summary</a></li><li><a href="#scope"><span>2</span>Scope</a></li><li><a href="#confirmed"><span>3</span>Confirmed findings</a></li><li><a href="#needs-validation"><span>4</span>Findings that need validation</a></li><li><a href="#rejected"><span>5</span>Rejected findings</a></li><li><a href="#hardening"><span>6</span>Hardening notes</a></li><li><a href="#tool-results"><span>7</span>Tool results (unverified)</a></li><li><a href="#sca"><span>8</span>Vulnerable dependencies (SCA)</a></li><li><a href="#appendix"><span>App. A</span>Appendix A. Method and sources</a></li></ol></aside>
+<main class="doc">
+<header class="doc-head"><button type="button" class="theme-toggle" id="theme-toggle" hidden>Theme</button><p class="kicker">SECURITY AUDIT · 20261015T120000Z-shop-a1b2</p><h1>Security audit report: shop</h1><p class="subtitle">kalkan audit output: confirmed findings, tool results and coverage.</p><dl class="meta"><div><dt>Run ID</dt><dd><code>20261015T120000Z-shop-a1b2</code></dd></div><div><dt>Target</dt><dd><code>C:/projects/shop</code></dd></div><div><dt>Target kind</dt><dd>Local folder</dd></div><div><dt>Git commit</dt><dd>—</dd></div><div><dt>Profile</dt><dd>standard</dd></div><div><dt>Run language</dt><dd>tr</dd></div><div><dt>Started</dt><dd>2026-10-15 09:30 UTC</dd></div><div><dt>Last update</dt><dd>2026-10-15 12:00 UTC</dd></div><div><dt>Report date</dt><dd>2026-10-15 12:30 UTC</dd></div><div><dt>Phase</dt><dd>Report</dd></div><div><dt>Status</dt><dd>Complete</dd></div><div><dt>Technologies</dt><dd><code>docker</code>, <code>flask</code>, <code>python</code></dd></div></dl></header>
+<section id="summary" aria-labelledby="h-summary"><h2 id="h-summary"><span class="num">1</span>Executive summary</h2>
+<p class="intro">Confirmed findings: 2. Highest severity: High. Findings that need validation: 1. Candidate findings that the verifier rejected: 1. Unverified tool results: 2. Warning: known malicious package versions in the dependencies: 1. These packages run code when they are installed. Do the steps of section 8.1 now. Vulnerable dependencies (SCA): 5. Reachable records: 1.</p>
+<div class="kpis" aria-label="Severity"><div class="kpi"><b>0</b><span>Critical</span></div><div class="kpi sev-high"><b>1</b><span>High</span></div><div class="kpi sev-medium"><b>1</b><span>Medium</span></div><div class="kpi"><b>0</b><span>Low</span></div><div class="kpi"><b>0</b><span>Info</span></div></div>
+<div class="kpis"><div class="kpi"><b>2</b><span>Confirmed findings</span></div><div class="kpi"><b>1</b><span>Need validation</span></div><div class="kpi"><b>1</b><span>Rejected</span></div><div class="kpi"><b>2</b><span>Unverified tool results</span></div><div class="kpi"><b>5</b><span>SCA records</span></div><div class="kpi sev-critical"><b>1</b><span>Malicious dependencies</span></div></div>
+<p class="note">The severity counts cover confirmed findings only.</p>
+<div class="callout"><p><b>Partial pass.</b> This report may not cover the whole target. Section 2 gives the reasons.</p></div>
+<h3><span class="num">1.1</span>Finding list</h3>
+<div class="tbl-wrap"><table class="tbl w-720"><thead><tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Severity</th><th scope="col">Verdict</th><th scope="col">Location</th></tr></thead><tbody><tr><td><a class="id" href="#f-KF-CF0FB1E8E50E80FC">KF-CF0FB1E8E50E80FC</a></td><td>SQL injection in user lookup</td><td><span class="sev sev-high">High</span></td><td><span class="st st-crit">Confirmed</span></td><td><code>app/db.py:8</code></td></tr><tr><td><a class="id" href="#f-KF-760073988BED4CB8">KF-760073988BED4CB8</a></td><td>Görsel proxy&#x27;sinde SSRF</td><td><span class="sev sev-medium">Medium</span></td><td><span class="st st-crit">Confirmed</span></td><td><code>app/routes.py:19</code></td></tr><tr><td><a class="id" href="#f-KF-32409FEA7A491CFA">KF-32409FEA7A491CFA</a></td><td>Dosya okumada path traversal</td><td><span class="sev sev-none">—</span></td><td><span class="st st-warn">Needs validation</span></td><td><code>app/routes.py:25</code></td></tr><tr><td><a class="id" href="#f-KF-C4BCAA828C227419">KF-C4BCAA828C227419</a></td><td>Router `admin` | &lt;script&gt;alert(&#x27;x&#x27;)&lt;/script&gt; yetki atlatma</td><td><span class="sev sev-none">—</span></td><td><span class="st st-neutral">Rejected</span></td><td><code>app/routes.py:31</code></td></tr></tbody></table></div>
+</section>
+<section id="scope" aria-labelledby="h-scope"><h2 id="h-scope"><span class="num">2</span>Scope</h2>
+<div class="callout"><p><b>Partial pass.</b> This report may not cover the whole target. Reasons:</p><ul><li>Open coverage units (planned, in_progress, deferred or blocked): 1.</li><li>Dependency manifests without a lockfile: 1. SCA did not check their version ranges or transitive dependencies.</li></ul></div>
+<h3><span class="num">2.1</span>Profile and budget</h3>
+<p>Profile: standard. Agent task budget: 13 / 150 used.</p>
+<h3><span class="num">2.2</span>Phases</h3>
+<div class="tbl-wrap"><table class="tbl w-560"><thead><tr><th scope="col">Phase</th><th scope="col">Status</th><th scope="col">Started</th><th scope="col">Finished</th></tr></thead><tbody><tr><td>Preparation</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Deterministic scan</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>SCA</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Reconnaissance</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Plan</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Hunt</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Validation</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>PoC</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Merge</td><td>Done</td><td>2026-10-15 12:00 UTC</td><td>2026-10-15 12:00 UTC</td></tr><tr><td>Report</td><td>Running</td><td>2026-10-15 12:00 UTC</td><td>—</td></tr></tbody></table></div>
+<h3><span class="num">2.3</span>Scanners</h3>
+<div class="tbl-wrap"><table class="tbl w-720"><thead><tr><th scope="col">Engine</th><th scope="col">Group</th><th scope="col">Status</th><th scope="col">Version</th><th scope="col">Duration</th><th scope="col">Note</th></tr></thead><tbody><tr><td><code>bandit</code></td><td>Scan</td><td><span class="st st-good">Ran</span></td><td><code>1.9.4</code></td><td>3.0 s</td><td>—</td></tr><tr><td><code>gitleaks</code></td><td>Scan</td><td><span class="st st-good">Ran</span></td><td><code>8.30.1</code></td><td>1.2 s</td><td>—</td></tr><tr><td><code>opengrep</code></td><td>Scan</td><td><span class="st st-good">Ran</span></td><td><code>1.30.1</code></td><td>12.4 s</td><td>—</td></tr><tr><td><code>trivy</code></td><td>Scan</td><td><span class="st st-neutral">Skipped</span></td><td>—</td><td>0.0 s</td><td>tool not installed: trivy</td></tr><tr><td><code>grype</code></td><td>SCA</td><td><span class="st st-neutral">Skipped</span></td><td>—</td><td>0.0 s</td><td>offline: no vulnerability database</td></tr><tr><td><code>osv-scanner</code></td><td>SCA</td><td><span class="st st-good">Ran</span></td><td><code>2.6.0</code></td><td>4.5 s</td><td>—</td></tr><tr><td><code>retirejs</code></td><td>SCA</td><td><span class="st st-good">Ran</span></td><td><code>jsrepository-v5 2026-10-15 sha256:c213444cbf88</code></td><td>0.4 s</td><td>JavaScript files checked: 1; vendored library versions: 1 (files: 1)</td></tr><tr><td><code>syft</code></td><td>SCA</td><td><span class="st st-good">Ran</span></td><td><code>1.54.0</code></td><td>3.2 s</td><td>—</td></tr></tbody></table></div>
+<h3><span class="num">2.4</span>Coverage ledger</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Unit status</th><th scope="col">Count</th></tr></thead><tbody><tr><td>Candidate found</td><td><span class="mono">2</span></td></tr><tr><td>Covered</td><td><span class="mono">1</span></td></tr><tr><td>Deferred</td><td><span class="mono">1</span></td></tr><tr><td>Not applicable</td><td><span class="mono">1</span></td></tr></tbody><tfoot><tr><td>Total</td><td><span class="mono">5</span></td></tr></tfoot></table></div>
+<p><strong>Final review.</strong> 2 records passed a second, independent review: 1 verified, 1 downgraded, 0 rejected. Confirmed or needs-validation records without a review: 1.</p>
+<h3><span class="num">2.5</span>Missing inputs</h3>
+<p class="note">All inputs were read.</p>
+<h3><span class="num">2.6</span>Scan gaps</h3>
+<div class="callout"><p>The tools could not scan these files completely. A file without results here is not necessarily clean.</p></div>
+<p>These manifests have no lockfile next to them. The SCA tools read the package versions and the transitive dependencies from a lockfile. kalkan checked the exact versions (exact pins) of these manifests separately.</p>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">File</th><th scope="col">Ecosystem</th><th scope="col">Exact pins checked</th><th scope="col">Ranges not checked</th><th scope="col">Reason</th></tr></thead><tbody><tr><td><code>web/package.json</code></td><td>npm</td><td><span class="mono">1</span></td><td><span class="mono">2</span></td><td>Version ranges without a lockfile</td></tr></tbody></table></div>
+<p><code>opengrep</code>: files analyzed only partially (parse errors or internal tool errors): 1.</p>
+<ul class="plain"><li><code>app/helpers.py</code></li></ul>
+<p><code>opengrep</code>: files skipped: 1.</p>
+<ul class="plain"><li>files larger than 1.0 MB: 1</li></ul>
+<ul class="plain"><li><code>static/bundle.min.js</code></li></ul>
+<p>Files with an absolute path of 260 or more characters: 1. Opengrep may skip them without a warning. Cause: the Opengrep core program is not long-path aware. LongPathsEnabled=1 does not lift this limit. LongPathsEnabled on this host: on. Fix: set <code>KALKAN_RUNS_DIR</code> to a short folder (for example <code>C:/kr</code>). Then start a new run.</p>
+</section>
+<section id="confirmed" aria-labelledby="h-confirmed"><h2 id="h-confirmed"><span class="num">3</span>Confirmed findings</h2>
+<p class="intro">The engine confirms a finding in one of two ways: the three questions are established with quotes that the engine found in the source, or a sandbox PoC demonstrates the vulnerability. The findings are ordered by severity.</p>
+<p class="note">kalkan translates the title, the description and the remediation of each finding. Other fields keep the language of the run.</p>
+<article class="finding" id="f-KF-CF0FB1E8E50E80FC">
+<h3><span class="num">3.1</span><span class="sev sev-high">High</span><span>SQL injection in user lookup</span></h3>
+<dl class="facts"><dt>ID</dt><dd><code>KF-CF0FB1E8E50E80FC</code></dd><dt>Severity</dt><dd>High (likelihood: High, impact: High)</dd><dt>Confidence</dt><dd>Medium</dd><dt>Class</dt><dd>SQL injection (<code>sqli</code>)</dd><dt>CWE</dt><dd>CWE-89</dd><dt>OWASP</dt><dd>A03:2021</dd><dt>Location</dt><dd><code>app/db.py:8</code></dd><dt>Engines</dt><dd><code>hunter</code>, <code>verifier</code>, <code>opengrep</code>, <code>reviewer</code></dd><dt>Final review</dt><dd>Verified: Kayıttaki her yol ve satır kaynakla uyuşuyor; f-string, id değerini SQL metnine koyuyor.</dd><dt>Linked candidates</dt><dd><code>CAND-7FB0BF0A3BDA3C13</code></dd><dt>PoC</dt><dd>No PoC record</dd><dt>Runtime validation</dt><dd>Not performed</dd><dt>Fingerprint</dt><dd><code>sqli:app/db.py:find_user</code></dd></dl>
+<h4>Description</h4><div class="prose"><p>GET /users puts the id parameter straight into a SQL query.</p></div>
+<h4>Root cause</h4><div class="prose"><p>find_user, SQL metnini f-string ile kuruyor.</p></div>
+<h4>Intended behavior</h4><div class="prose"><p>Sorgu, user_id değerini parametre olarak bağlamalı.</p></div>
+<h4>Trace</h4>
+<div class="tbl-wrap"><table class="tbl w-720"><thead><tr><th scope="col">#</th><th scope="col">Kind</th><th scope="col">Location</th><th scope="col">Scope</th><th scope="col">Description</th></tr></thead><tbody><tr><td><span class="mono">1</span></td><td>Entrypoint</td><td><code>app/routes.py:12</code></td><td><code>get_user</code></td><td>id değerini query string&#x27;den okuyor.</td></tr><tr><td><span class="mono">2</span></td><td>Sink</td><td><code>app/db.py:8</code></td><td><code>find_user</code></td><td>Biçimlenmiş SQL metnini çalıştırıyor.</td></tr></tbody></table></div>
+<h4>Evidence</h4>
+<ul class="plain"><li><code>app/db.py:8</code>: f-string, user_id değerini SQL metnine koyuyor.</li></ul>
+<h4>Three questions</h4>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">Question</th><th scope="col">Answer</th><th scope="col">Reason</th><th scope="col">Quotes</th></tr></thead><tbody><tr><td>Does the attacker control the input?</td><td><span class="nw">Established</span></td><td>id değeri HTTP isteğinin query string&#x27;inden geliyor.</td><td><code>app/routes.py:12</code> <code>user_id = request.args.get(&quot;id&quot;)</code></td></tr><tr><td>Does the flow cross a privilege boundary?</td><td><span class="nw">Established</span></td><td>Oturum açmış her kullanıcı başka kullanıcıların satırlarını okuyabilir.</td><td><code>app/routes.py:10</code> <code>@login_required</code></td></tr><tr><td>Is an effective mitigation missing?</td><td><span class="nw">Established</span></td><td>Değer bağlama veya doğrulama olmadan SQL metnine giriyor.</td><td><code>app/db.py:8</code> <code>cur.execute(f&quot;SELECT * FROM users WHERE id = {user_id}&quot;)</code></td></tr></tbody></table></div>
+<h4>Conditions</h4>
+<ul class="plain"><li><span class="label">Authentication level</span>: Saldırganın normal bir kullanıcı hesabı olmalı.</li></ul>
+<h4>Attack scenario: Attacker</h4><div class="prose"><p>Normal hesabı olan, oturum açmış bir kullanıcı.</p></div>
+<h4>Steps</h4>
+<ol class="plain"><li>Normal kullanıcı olarak oturum aç.</li><li>GET /users?id=1%20OR%201=1 isteğini gönder.</li></ol>
+<h4>Payload</h4>
+<pre class="code"><code>1 OR 1=1</code></pre>
+<h4>Observed result</h4><div class="prose"><p>Yalnızca statik analiz: payload cur.execute çağrısına değişmeden ulaşıyor.</p></div>
+<h4>Remediation</h4><div class="prose"><p>Use a bound parameter.</p></div>
+<p class="note">Code change: <code>app/db.py</code></p>
+<pre class="code"><code>cur.execute(&quot;SELECT * FROM users WHERE id = ?&quot;, (user_id,))</code></pre>
+</article>
+<article class="finding" id="f-KF-760073988BED4CB8">
+<h3><span class="num">3.2</span><span class="sev sev-medium">Medium</span><span>Görsel proxy&#x27;sinde SSRF</span> <span class="nt">(not translated)</span></h3>
+<dl class="facts"><dt>ID</dt><dd><code>KF-760073988BED4CB8</code></dd><dt>Severity</dt><dd>Medium (likelihood: High, impact: Medium)</dd><dt>Confidence</dt><dd>High</dd><dt>Class</dt><dd>Server-side request forgery (<code>ssrf</code>)</dd><dt>CWE</dt><dd>CWE-918</dd><dt>OWASP</dt><dd>A10:2021</dd><dt>Location</dt><dd><code>app/routes.py:19</code></dd><dt>Engines</dt><dd><code>hunter</code>, <code>verifier</code>, <code>poc-builder</code></dd><dt>Final review</dt><dd>Not reviewed</dd><dt>PoC</dt><dd>Passed · unit</dd><dt>Runtime validation</dt><dd>Reproduced: the PoC showed the effect in the sandbox</dd><dt>Fingerprint</dt><dd><code>ssrf:app/routes.py:fetch</code></dd></dl>
+<h4>Description</h4><div class="prose"><p>GET /fetch, kullanıcının verdiği adrese sunucudan istek atıyor.</p> <span class="nt">(not translated)</span></div>
+<h4>Root cause</h4><div class="prose"><p>fetch, url değerini doğrulamadan http_get&#x27;e veriyor.</p></div>
+<h4>Intended behavior</h4><div class="prose"><p>Sunucu yalnızca izin listesindeki adreslere istek atmalı.</p></div>
+<h4>Trace</h4>
+<div class="tbl-wrap"><table class="tbl w-720"><thead><tr><th scope="col">#</th><th scope="col">Kind</th><th scope="col">Location</th><th scope="col">Scope</th><th scope="col">Description</th></tr></thead><tbody><tr><td><span class="mono">1</span></td><td>Entrypoint</td><td><code>app/routes.py:18</code></td><td><code>fetch</code></td><td>url değerini query string&#x27;den okuyor.</td></tr><tr><td><span class="mono">2</span></td><td>Sink</td><td><code>app/routes.py:19</code></td><td><code>fetch</code></td><td>Sunucu, kullanıcının verdiği adrese istek atıyor.</td></tr></tbody></table></div>
+<h4>Evidence</h4>
+<ul class="plain"><li><code>app/routes.py:19</code>: http_get, doğrulanmamış url değerini kullanıyor.</li></ul>
+<h4>Three questions</h4>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">Question</th><th scope="col">Answer</th><th scope="col">Reason</th><th scope="col">Quotes</th></tr></thead><tbody><tr><td>Does the attacker control the input?</td><td><span class="nw">Established</span></td><td>url değeri query string&#x27;den geliyor.</td><td><code>app/routes.py:18</code> <code>url = request.args.get(&quot;url&quot;)</code></td></tr><tr><td>Does the flow cross a privilege boundary?</td><td><span class="nw">Unknown</span></td><td>unverified_evidence</td><td>—</td></tr><tr><td>Is an effective mitigation missing?</td><td><span class="nw">Established</span></td><td>Adres doğrulaması yok.</td><td><code>app/routes.py:19</code> <code>return http_get(url)</code></td></tr></tbody></table></div>
+<h4>Attack scenario: Attacker</h4><div class="prose"><p>Kimliği doğrulanmamış uzak bir saldırgan.</p></div>
+<h4>Steps</h4>
+<ol class="plain"><li>GET /fetch?url=http://169.254.169.254/latest/meta-data/ gönder.</li></ol>
+<h4>Payload</h4>
+<pre class="code"><code>http://169.254.169.254/latest/meta-data/</code></pre>
+<h4>Observed result</h4><div class="prose"><p>Harness, 169.254.169.254 adresine giden isteği yakaladı.</p></div>
+<h4>PoC result (Passed · unit)</h4><div class="prose"><p>Harness, 169.254.169.254 adresine giden isteği yakaladı.</p></div>
+<p class="note">PoC files: <code>poc/KF-760073988BED4CB8/out/stdout.txt</code></p>
+<h4>Remediation</h4><div class="prose"><p>Hedef adresi bir allowlist ile sınırla.</p> <span class="nt">(not translated)</span></div>
+</article>
+</section>
+<section id="needs-validation" aria-labelledby="h-needs-validation"><h2 id="h-needs-validation"><span class="num">4</span>Findings that need validation</h2>
+<p class="intro">The evidence for these findings is incomplete. They have no severity. Read the blockers and the validation plan.</p>
+<article class="finding" id="f-KF-32409FEA7A491CFA">
+<h3><span class="num">4.1</span><span class="st st-warn">Needs validation</span><span>Dosya okumada path traversal</span> <span class="nt">(not translated)</span></h3>
+<dl class="facts"><dt>ID</dt><dd><code>KF-32409FEA7A491CFA</code></dd><dt>Class</dt><dd>Path traversal / file read-write (<code>path-traversal</code>)</dd><dt>CWE</dt><dd>CWE-22</dd><dt>Location</dt><dd><code>app/routes.py:25</code></dd><dt>Engines</dt><dd><code>hunter</code>, <code>verifier</code></dd><dt>Final review</dt><dd>Downgraded: Uygulama dosya adını hiç normalize etmiyor; tek açık soru, önündeki reverse proxy&#x27;nin ../ dizilerini engelleyip engellemediği.</dd><dt>PoC</dt><dd>Not run · unit</dd><dt>Runtime validation</dt><dd>Not performed</dd><dt>Fingerprint</dt><dd><code>path-traversal:app/routes.py:read_file</code></dd></dl>
+<h4>Description</h4><div class="prose"><p>GET /files, name parametresini dosya yoluna ekliyor.</p> <span class="nt">(not translated)</span></div>
+<h4>Claimed root cause</h4><div class="prose"><p>read_file, name değerini normalleştirmeden yola ekliyor.</p></div>
+<h4>Blockers</h4>
+<ul class="plain"><li>Bir reverse proxy ../ dizilerini engelliyor olabilir.</li><li>Uygulama dosya adını hiç normalize etmiyor; tek açık soru, önündeki reverse proxy&#x27;nin ../ dizilerini engelleyip engellemediği.</li><li><code>sandbox_unavailable</code>: The PoC verification sandbox did not run (Docker was off or not available).</li></ul>
+<h4>Validation plan</h4>
+<ul class="plain"><li><span class="label">Local</span>: Uygulamayı çalıştır ve name=../../etc/passwd gönder.</li><li><span class="label">Deployment</span>: Onaylı test ortamında proxy davranışını kontrol et.</li></ul>
+<h4>Trace</h4>
+<div class="tbl-wrap"><table class="tbl w-720"><thead><tr><th scope="col">#</th><th scope="col">Kind</th><th scope="col">Location</th><th scope="col">Scope</th><th scope="col">Description</th></tr></thead><tbody><tr><td><span class="mono">1</span></td><td>Entrypoint</td><td><code>app/routes.py:24</code></td><td><code>read_file</code></td><td>name değerini query string&#x27;den okuyor.</td></tr><tr><td><span class="mono">2</span></td><td>Sink</td><td><code>app/routes.py:25</code></td><td><code>read_file</code></td><td>Birleştirilmiş yolu açıyor.</td></tr></tbody></table></div>
+<h4>Evidence</h4>
+<ul class="plain"><li><code>app/routes.py:25</code>: open çağrısı birleştirilmiş yolu kullanıyor.</li></ul>
+<h4>PoC result (Not run · unit)</h4><div class="prose"><p>Çalışmadı: Docker sandbox yok.</p></div>
+</article>
+</section>
+<section id="rejected" aria-labelledby="h-rejected"><h2 id="h-rejected"><span class="num">5</span>Rejected findings</h2>
+<p class="intro">The verifier or the final review rejected these candidates. The records stay for the audit trail.</p>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">ID</th><th scope="col">Title</th><th scope="col">Class</th><th scope="col">Location</th><th scope="col">Reason</th></tr></thead><tbody><tr><td><span class="id" id="f-KF-C4BCAA828C227419">KF-C4BCAA828C227419</span></td><td>Router `admin` | &lt;script&gt;alert(&#x27;x&#x27;)&lt;/script&gt; yetki atlatma <span class="nt">(not translated)</span></td><td><code>missing-authz</code></td><td><code>app/routes.py:31</code></td><td>require_authorization, settings_update çağrısından önce çalışıyor.</td></tr></tbody></table></div>
+</section>
+<section id="hardening" aria-labelledby="h-hardening"><h2 id="h-hardening"><span class="num">6</span>Hardening notes</h2>
+<p class="intro">These notes are not vulnerabilities. They are improvements that raise security.</p>
+<div class="tbl-wrap"><table class="tbl w-560"><thead><tr><th scope="col">Title</th><th scope="col">Location</th><th scope="col">Note</th></tr></thead><tbody><tr><td>Konteyner root olarak çalışıyor</td><td><code>Dockerfile</code></td><td>Dockerfile&#x27;a bir USER satırı ekle.</td></tr><tr><td>Hata ayıklama | &lt;b&gt;modu&lt;/b&gt;</td><td><code>app/routes.py:6</code></td><td>`app.debug` üretimde kapalı olmalı.</td></tr></tbody></table></div>
+</section>
+<section id="tool-results" aria-labelledby="h-tool-results"><h2 id="h-tool-results"><span class="num">7</span>Tool results (unverified)</h2>
+<div class="callout"><p>Deterministic tools produced these results. No agent verified them. They can contain false positives.</p></div>
+<h3 id="tool-1"><span class="num">7.1</span>bandit <span class="note">(1)</span></h3>
+<p><span class="sev sev-medium">Medium</span> <span class="mono">1</span></p>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Title</th><th scope="col">Location</th><th scope="col">Class</th></tr></thead><tbody><tr><td><span class="sev sev-medium">Medium</span></td><td><code>B506</code></td><td>Hostile | title with `back`ticks`` and &lt;script&gt;alert(1)&lt;/script&gt;</td><td><code>app/config.py:7</code></td><td><code>deserialization</code></td></tr></tbody></table></div>
+<h3 id="tool-2"><span class="num">7.2</span>gitleaks <span class="note">(1)</span></h3>
+<p><span class="sev sev-high">High</span> <span class="mono">1</span></p>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">Severity</th><th scope="col">Rule</th><th scope="col">Title</th><th scope="col">Location</th><th scope="col">Class</th></tr></thead><tbody><tr><td><span class="sev sev-high">High</span></td><td><code>generic-api-key</code></td><td>Generic API key</td><td><code>app/config.py:3</code></td><td><code>hardcoded-secrets</code></td></tr></tbody></table></div>
+</section>
+<section id="sca" aria-labelledby="h-sca"><h2 id="h-sca"><span class="num">8</span>Vulnerable dependencies (SCA)</h2>
+<div class="callout"><p>Manifests without a lockfile: 1. SCA checked only their exact pins. Section 2.6 lists them.</p></div>
+<h3><span class="num">8.1</span>Malicious dependency</h3>
+<div class="callout crit" role="note"><p><b>Package versions that match a known malicious package record (OSV <code>MAL-</code>, GitHub malware advisory): 1. The malicious code runs when the package is installed. Thus the reachability result does not matter, and the severity stays Critical.</b></p><p>Do these steps:</p><ol><li>Remove the package and this version. Regenerate the lockfile.</li><li>Treat every machine that installed the package as exposed: developer machines, CI runners and build images.</li><li>Rotate the secrets that the install could read: CI secrets, tokens, cloud credentials and SSH keys.</li><li>Find the commit that added this version in the lockfile history. Check the builds after it.</li></ol></div>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">Package</th><th scope="col">Version</th><th scope="col">Ecosystem</th><th scope="col">Record IDs</th><th scope="col">Severity</th><th scope="col">Location</th></tr></thead><tbody><tr><td><code>sample-module</code></td><td><code>0.0.1</code></td><td>PyPI</td><td><code>MAL-2025-41758</code>, <code>GHSA-2g5x-c76j-3h73</code></td><td><span class="sev sev-critical">Critical</span></td><td><code>requirements.txt</code></td></tr></tbody></table></div>
+<h3><span class="num">8.2</span>Known vulnerabilities</h3>
+<p class="intro">These records show known vulnerable dependencies. The reachability result can lower the severity.</p>
+<p class="note">Records from an exact pin in a manifest without a lockfile: 1. The table marks them with <code>manifest</code>.</p>
+<p class="note">Records from JavaScript files that the project copied into its tree (vendored): 1. No package manager lists these files. The table marks the records with <code>vendored</code>. Files:</p>
+<ul class="plain"><li><code>web/static/js/jquery.min.js</code> (<code>jquery 1.12.4</code>)</li></ul>
+<div class="tbl-wrap"><table class="tbl w-860"><thead><tr><th scope="col">Package</th><th scope="col">Version</th><th scope="col">Ecosystem</th><th scope="col">Vulnerability ID</th><th scope="col">Severity</th><th scope="col">Fixed version</th><th scope="col">Reachability</th></tr></thead><tbody><tr><td><code>pyyaml</code></td><td><code>5.3</code></td><td>PyPI</td><td><code>GHSA-8q59-q68h-6hv4</code>, <code>CVE-2020-14343</code></td><td><span class="sev sev-critical">Critical</span></td><td><code>5.4</code></td><td><span class="st st-crit">Reachable</span></td></tr><tr><td><code>lodash</code></td><td><code>4.17.15</code> <span class="st st-warn">manifest</span></td><td>npm</td><td><code>GHSA-p6mc-m468-83gw</code>, <code>CVE-2020-8203</code></td><td><span class="sev sev-high">High</span></td><td><code>4.17.19</code></td><td><span class="st st-warn">Unknown</span></td></tr><tr><td><code>jquery</code></td><td><code>1.12.4</code> <span class="st st-warn">vendored</span></td><td>npm</td><td><code>GHSA-jpcq-cgw6-v4j6</code>, <code>CVE-2020-11023</code></td><td><span class="sev sev-medium">Medium</span></td><td><code>3.5.0</code></td><td><span class="st st-warn">Unknown</span></td></tr><tr><td><code>requests</code></td><td><code>2.19.0</code></td><td>PyPI</td><td><code>GHSA-x84v-xcm2-53pg</code>, <code>CVE-2018-18074</code></td><td><span class="sev sev-low">Low</span></td><td><code>2.20.0</code></td><td><span class="st st-good">Not reachable</span></td></tr></tbody></table></div>
+<p class="note">SBOM: <code>report/sbom.cdx.json</code> (CycloneDX 1.6), <code>report/sbom.spdx.json</code> (SPDX 2.3). Components: 5 (Syft 3, manifest pin 1, vendored JavaScript 1).</p>
+</section>
+<section id="appendix" aria-labelledby="h-appendix"><h2 id="h-appendix"><span class="num">App. A</span>Appendix A. Method and sources</h2>
+<h3><span class="num">A.1</span>Method</h3>
+<ul class="plain"><li>For each candidate finding, kalkan asks three questions: does the attacker control the input, does the flow cross a privilege boundary, is an effective mitigation missing.</li><li>The verifier agent supports each answer with a quote from the source code.</li><li>The engine looks for each quote in the source: the cited line and two lines before and after it. A quote that is not in the source does not count.</li><li>The engine, not the agent, gives the verdict. Three established answers confirm the finding. One answer refuted with a quote rejects it. Otherwise the finding needs validation.</li><li>Without a PoC run, a confirmed finding rests on static evidence. A passed PoC raises the confidence. When the verifier supplied the required fields, a passed PoC also confirms a finding that needs validation.</li><li>Tool results and SCA records come from deterministic engines. They do not become findings without agent verification.</li></ul>
+<h3><span class="num">A.2</span>Tool versions</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Tool</th><th scope="col">Version</th><th scope="col">Install kind</th></tr></thead><tbody><tr><td><code>bandit</code></td><td><code>1.9.4</code></td><td>pip</td></tr><tr><td><code>gitleaks</code></td><td><code>8.30.1</code></td><td>binary</td></tr><tr><td><code>opengrep</code></td><td><code>1.30.1</code></td><td>binary</td></tr><tr><td><code>osv-scanner</code></td><td><code>2.6.0</code></td><td>binary</td></tr></tbody></table></div>
+<h3><span class="num">A.3</span>Run</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead><tbody><tr><td>Run ID</td><td><code>20261015T120000Z-shop-a1b2</code></td></tr><tr><td>kalkan version</td><td><code>0.0.0-golden</code></td></tr><tr><td>Report date</td><td>2026-10-15 12:30 UTC</td></tr><tr><td>Report files</td><td><code>REPORT.md</code>, <code>REPORT.html</code>, <code>REPORT.en.md</code>, <code>REPORT.en.html</code>, <code>EXECUTIVE.html</code>, <code>EXECUTIVE.en.html</code>, <code>findings.sarif</code>, <code>findings.json</code>, <code>sbom.cdx.json</code>, <code>sbom.spdx.json</code>, <code>summary.json</code></td></tr></tbody></table></div>
+<h3><span class="num">A.4</span>Warnings</h3>
+<ul class="plain"><li>Files with an absolute path of 260 or more characters: 1. Opengrep may skip them without a warning: its core program is not long-path aware, also with LongPathsEnabled=1. Set KALKAN_RUNS_DIR to a short folder (for example C:/kr) and start a new run.</li></ul>
+</section>
+<footer class="foot"><span>20261015T120000Z-shop-a1b2</span><span>kalkan 0.0.0-golden · 2026-10-15 12:30 UTC</span><span>Static audit. The kalkan engine produced this report.</span><span>The Turkish version of this report is <code>REPORT.md</code>.</span></footer>
+</main>
+</div>
+<script>
+(function () {
+  var button = document.getElementById("theme-toggle");
+  if (!button) { return; }
+  var root = document.documentElement;
+  try {
+    var saved = window.localStorage.getItem("kalkan-theme");
+    if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+  } catch (e) {}
+  button.hidden = false;
+  button.addEventListener("click", function () {
+    var current = root.getAttribute("data-theme");
+    var dark = current ? current === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { window.localStorage.setItem("kalkan-theme", next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

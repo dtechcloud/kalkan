@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "trpc-public-procedure",
+  "description": "tRPC publicProcedure used in a router that looks authenticated — verify it should not be authedProcedure",
+  "class": "authn",
+  "cwe": [
+    "CWE-306"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx}",
+    "**/*.d.ts",
+    "**/procedures/publicProcedure.*",
+    "**/publicViewer/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "trpc"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"@trpc/server\""
+    ]
+  },
+  "file_contains": [
+    "\\bpublicProcedure\\b"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bpublicProcedure\\s*\\.\\s*(?:input|query|mutation|use)\\b",
+      "flags": "",
+      "label": "publicProcedure handler reads ctx.session/user — verify it should not be authedProcedure",
+      "near": [
+        {
+          "regex": "\\bctx\\.(?:session|user|userId|currentUser|prisma)|getSession\\s*\\(\\s*ctx",
+          "before": 2,
+          "after": 11
+        }
+      ]
+    },
+    {
+      "regex": "\\bpublicProcedure\\s*\\.\\s*(?:input|query|mutation|use)\\b",
+      "flags": "",
+      "label": "publicProcedure used in router that looks authenticated — verify intent",
+      "paths": [
+        "**/{viewer,admin,organization,organizations,team,teams,settings,billing}/**",
+        "**/{payment,payments,workflow,workflows}/**"
+      ]
+    }
+  ],
+  "examples": [
+    "export const listUsers = publicProcedure.query(({ ctx }) => {\n  return ctx.prisma.user.findMany({ where: { id: ctx.session.user.id } });\n});",
+    "publicProcedure.input(z.object({})).mutation(({ ctx }) => {\n  return ctx.user.id;\n});",
+    "publicProcedure.input(schema).query(async ({ ctx, input }) => {\n  const userId = ctx.userId;\n  return userId;\n});",
+    "publicProcedure.use(async ({ ctx, next }) => {\n  if (!ctx.session) throw new Error();\n  return next();\n});",
+    "export const getMe = publicProcedure.query(({ ctx }) => {\n  return ctx.currentUser;\n});",
+    "publicProcedure.mutation(async ({ ctx }) => {\n  return getSession(ctx);\n});"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/trpc-public-procedure.ts"
+  },
+  "notes": "Gate: deepsec tech [trpc]; kalkan uses tech node (or trpc) and a manifest that names trpc."
+}

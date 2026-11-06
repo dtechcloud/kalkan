@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "slug": "connectrpc-handler-impl",
+  "description": "Go file implementing one or more ConnectRPC handler methods (entry-point surface)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go",
+    "**/gen/**"
+  ],
+  "requires": {
+    "tech": [
+      "go",
+      "connectrpc"
+    ],
+    "sentinel_files": [
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "connectrpc\\.com/connect|github\\.com/bufbuild/connect-go"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*func\\s*\\([^)]+\\)\\s+[A-Z]\\w*\\s*\\(",
+      "flags": "",
+      "label": "ConnectRPC handler method body",
+      "near": [
+        {
+          "regex": "\\bcontext\\.Context\\b",
+          "after": 7
+        },
+        {
+          "regex": "\\bconnect\\.(?:Request|ClientStream|BidiStream|ServerStream)\\b",
+          "after": 7
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "func (s *Service) ExecCommand(ctx context.Context, req *connect.Request[ExecRequest]) (*connect.Response[ExecResponse], error) {\n  return nil, nil\n}",
+    "func (cs *ControllerService) Run(\n  ctx context.Context,\n  req *connect.Request[RunRequest],\n) (*connect.Response[RunResponse], error) {\n  return nil, nil\n}",
+    "func (s *Server) Stream(ctx context.Context, stream *connect.ServerStream[Event]) error {\n  return nil\n}",
+    "func (h *Handler) BidiChat(ctx context.Context, stream *connect.BidiStream[Msg, Msg]) error {\n  return nil\n}",
+    "func (s *Service) Upload(ctx context.Context, stream *connect.ClientStream[Chunk]) (*connect.Response[Ack], error) {\n  return nil, nil\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/connectrpc-handler-impl.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [connectrpc]; kalkan uses tech go (or connectrpc) and a manifest that names connectrpc."
+}

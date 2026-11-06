@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "ecosystem": "PyPI",
+      "package": "sample-module",
+      "version": "0.0.1",
+      "vuln_id": "MAL-2025-41758",
+      "aliases": [
+        "GHSA-2g5x-c76j-3h73"
+      ],
+      "summary": "Malicious code in sample-module (PyPI)",
+      "severity": "critical",
+      "cvss_score": null,
+      "cvss_vector": null,
+      "fixed_versions": [],
+      "locations": [
+        "requirements.txt"
+      ],
+      "engines": [
+        "osv-scanner",
+        "grype"
+      ],
+      "reachability": "unknown",
+      "class": "malicious-dependency"
+    },
+    {
+      "ecosystem": "PyPI",
+      "package": "pyyaml",
+      "version": "5.3",
+      "vuln_id": "GHSA-8q59-q68h-6hv4",
+      "aliases": [
+        "CVE-2020-14343"
+      ],
+      "summary": "PyYAML arbitrary code execution through full_load",
+      "severity": "critical",
+      "cvss_score": 9.8,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+      "fixed_versions": [
+        "5.4"
+      ],
+      "locations": [
+        "requirements.txt"
+      ],
+      "engines": [
+        "osv-scanner",
+        "grype"
+      ],
+      "reachability": "reachable"
+    },
+    {
+      "ecosystem": "PyPI",
+      "package": "requests",
+      "version": "2.19.0",
+      "vuln_id": "GHSA-x84v-xcm2-53pg",
+      "aliases": [
+        "CVE-2018-18074"
+      ],
+      "summary": "Requests sends credentials over an insecure redirect",
+      "severity": "low",
+      "cvss_score": 3.7,
+      "cvss_vector": null,
+      "fixed_versions": [
+        "2.20.0"
+      ],
+      "locations": [
+        "requirements.txt"
+      ],
+      "engines": [
+        "osv-scanner"
+      ],
+      "reachability": "not_reachable"
+    },
+    {
+      "ecosystem": "npm",
+      "package": "lodash",
+      "version": "4.17.15",
+      "vuln_id": "GHSA-p6mc-m468-83gw",
+      "aliases": [
+        "CVE-2020-8203"
+      ],
+      "summary": "Prototype pollution in lodash zipObjectDeep",
+      "severity": "high",
+      "cvss_score": 7.4,
+      "cvss_vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:N/I:H/A:H",
+      "fixed_versions": [
+        "4.17.19"
+      ],
+      "locations": [
+        "web/package.json"
+      ],
+      "engines": [
+        "osv-scanner",
+        "grype"
+      ],
+      "reachability": "unknown",
+      "pin_source": "manifest"
+    },
+    {
+      "ecosystem": "npm",
+      "package": "jquery",
+      "version": "1.12.4",
+      "vuln_id": "GHSA-jpcq-cgw6-v4j6",
+      "aliases": [
+        "CVE-2020-11023"
+      ],
+      "summary": "jQuery runs untrusted code when HTML with option elements reaches DOM manipulation methods",
+      "severity": "medium",
+      "cvss_score": 6.9,
+      "cvss_vector": null,
+      "fixed_versions": [
+        "3.5.0"
+      ],
+      "locations": [
+        "web/static/js/jquery.min.js"
+      ],
+      "engines": [
+        "osv-scanner",
+        "grype",
+        "retirejs"
+      ],
+      "reachability": "unknown",
+      "pin_source": "vendored",
+      "vendored": [
+        {
+          "file": "web/static/js/jquery.min.js",
+          "line": 1,
+          "library": "jquery",
+          "version": "1.12.4",
+          "extractor": "filecontent"
+        }
+      ]
+    }
+  ],
+  "unchecked_manifests": [
+    {
+      "file": "web/package.json",
+      "ecosystem": "npm",
+      "reason": "version ranges without a lockfile",
+      "exact_pins": 1,
+      "ranges": 2
+    }
+  ]
+}

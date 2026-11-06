@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "slug": "dangerous-html",
+  "description": "dangerouslySetInnerHTML and innerHTML with source classification",
+  "class": "xss",
+  "cwe": [
+    "CWE-79"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{tsx,jsx,ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "dangerouslySetInnerHTML|\\.innerHTML\\s*=",
+      "flags": "",
+      "label": "dangerouslySetInnerHTML from URL/request params (HIGH RISK)",
+      "near": [
+        {
+          "regex": "searchParams|query|params|req\\.",
+          "flags": "i",
+          "before": 3,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "regex": "dangerouslySetInnerHTML|\\.innerHTML\\s*=",
+      "flags": "",
+      "label": "dangerouslySetInnerHTML from fetched data (MEDIUM RISK)",
+      "near": [
+        {
+          "regex": "data\\.|response\\.|result\\.|await|fetch",
+          "flags": "i",
+          "before": 3,
+          "after": 4
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "searchParams|query|params|req\\.",
+          "flags": "i",
+          "before": 3,
+          "after": 4
+        }
+      ]
+    },
+    {
+      "regex": "dangerouslySetInnerHTML|\\.innerHTML\\s*=",
+      "flags": "",
+      "label": "dangerouslySetInnerHTML from props (trace source)",
+      "not_near": [
+        {
+          "regex": "searchParams|query|params|req\\.",
+          "flags": "i",
+          "before": 3,
+          "after": 4
+        },
+        {
+          "regex": "data\\.|response\\.|result\\.|await|fetch",
+          "flags": "i",
+          "before": 3,
+          "after": 4
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "<div dangerouslySetInnerHTML={{ __html: html }} />",
+    "<span dangerouslySetInnerHTML={{ __html: props.body }} />",
+    "el.innerHTML = data;",
+    "node.innerHTML = result;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dangerous-html.ts"
+  },
+  "notes": "The upstream label chain is kept. Its 'props' test also matches 'html' and thus every hit line, so the 'static/safe' and 'classify source' labels never occur upstream and are not ported."
+}

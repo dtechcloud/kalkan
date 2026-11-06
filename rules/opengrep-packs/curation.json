@@ -1,0 +1,155 @@
+{
+  "schema": 1,
+  "about": "Hand-written curation of the vendored Opengrep rule packs (ADR-0005 K.8, docs/ENGINE-SPEC.md section 13). scripts/build_opengrep_packs.py reads it with third_party/ and writes index.json and the pack folders. A drop group names rules by full rule ID (rules) or by path glob below this folder (paths); its kind and reason go into index.json.",
+  "priority": ["kalkan", "gitlab", "trailofbits", "0xdea"],
+  "changed": "2026-10-27",
+  "packs": [
+    {
+      "name": "gitlab",
+      "component": "gitlab-sast-rules",
+      "group": "osi",
+      "license": "MIT and LGPL-3.0-only (the license header of each source file)",
+      "bundle_skip": ["rules"],
+      "filters": {"category": ["security"], "confidence": ["HIGH", "MEDIUM", null]}
+    },
+    {
+      "name": "trailofbits",
+      "component": "trailofbits-semgrep-rules",
+      "group": "agpl",
+      "license": "AGPL-3.0-only",
+      "filters": {"category": ["security"], "confidence": ["HIGH", "MEDIUM", null]}
+    },
+    {
+      "name": "0xdea",
+      "component": "0xdea-semgrep-rules",
+      "group": "osi",
+      "license": "MIT",
+      "bundle_skip": ["rules"],
+      "filters": {"category": ["security"], "confidence": ["HIGH", "MEDIUM", null]}
+    }
+  ],
+  "cwe_classes": [
+    {"cwe": ["CWE-15", "CWE-358", "CWE-451", "CWE-489", "CWE-554", "CWE-668", "CWE-779", "CWE-1173", "CWE-1327", "CWE-276", "CWE-732"], "class": "security-misconfig", "reason": "configuration and debug settings, open listeners, permissions"},
+    {"cwe": ["CWE-297", "CWE-300", "CWE-310", "CWE-311", "CWE-320", "CWE-322", "CWE-323", "CWE-329", "CWE-353", "CWE-757", "CWE-780", "CWE-1204", "CWE-208"], "class": "crypto", "reason": "cryptography and transport security"},
+    {"cwe": ["CWE-185", "CWE-606", "CWE-774", "CWE-460"], "class": "dos-redos", "reason": "regular expressions and resource exhaustion"},
+    {"cwe": ["CWE-93", "CWE-644"], "class": "request-smuggling-crlf-cache", "reason": "CRLF and header injection"},
+    {"cwe": ["CWE-1275", "CWE-650"], "class": "csrf", "reason": "SameSite cookies and HTTP verb confusion"},
+    {"cwe": ["CWE-272", "CWE-749"], "class": "mobile-desktop-ipc", "reason": "Electron, WebView and app sandbox settings"},
+    {"cwe": ["CWE-305", "CWE-289", "CWE-477"], "class": "authn", "reason": "authentication bypass and weak authentication mechanisms"},
+    {"cwe": ["CWE-377", "CWE-364", "CWE-479", "CWE-828", "CWE-667", "CWE-833"], "class": "race-condition", "reason": "temporary files, signal handlers, locking"},
+    {"cwe": ["CWE-539", "CWE-921"], "class": "sensitive-data-exposure", "reason": "sensitive data in cookies and headers"},
+    {"cwe": ["CWE-540", "CWE-538"], "class": "hardcoded-secrets", "reason": "credentials and keys in source code"},
+    {"cwe": ["CWE-155"], "class": "os-command-injection", "reason": "shell wildcard injection"},
+    {"cwe": ["CWE-91", "CWE-1236", "CWE-427", "CWE-454"], "class": "code-injection", "reason": "XSLT and XML injection, spreadsheet formulas, library search paths, environment from requests"},
+    {"cwe": ["CWE-172"], "class": "mass-assignment", "reason": "Go struct tags that let a client set a field"},
+    {"cwe": ["CWE-250", "CWE-264", "CWE-262", "CWE-778"], "class": "iac-cloud-container", "reason": "container and cloud privileges, logging and key rotation"},
+    {"cwe": ["CWE-1357", "CWE-494"], "class": "supply-chain-cicd", "reason": "unpinned or unverified third-party code"},
+    {"cwe": ["CWE-501", "CWE-176"], "class": "business-logic", "reason": "trust boundary and Unicode handling"},
+    {"cwe": ["CWE-1022"], "class": "open-redirect", "reason": "reverse tabnabbing navigates the opener page"},
+    {"cwe": ["CWE-252", "CWE-170", "CWE-126", "CWE-242", "CWE-467", "CWE-469", "CWE-562", "CWE-590", "CWE-683", "CWE-690", "CWE-806", "CWE-839", "CWE-1260", "CWE-1325"], "class": "memory-safety", "reason": "C and C++ memory handling"}
+  ],
+  "language_classes": [
+    {"languages": ["solidity"], "class": "smart-contract", "reason": "every Solidity rule is a smart contract finding; the CWE (access control, input validation) would give a web class"}
+  ],
+  "drop": [
+    {
+      "name": "twin-false-positive",
+      "kind": "twin-fp",
+      "reason": "reports the secure twin of a planted item in tests/fixtures/vulnapp (Opengrep 1.30.1, 2026-10-25): the rule does not see the mitigation, and a verbatim pack cannot tune the rule text",
+      "rules": [
+        "0xdea.c.raptor-write-into-stack-buffer",
+        "0xdea.c.raptor-interesting-api-calls",
+        "gitlab.csharp.csharp_injection_rule-CommandInjection",
+        "gitlab.csharp.csharp_injection_rule-XmlDocumentXXEInjection",
+        "gitlab.java.java_inject_rule-SpotbugsPathTraversalAbsolute",
+        "gitlab.java.java_script_rule-SpringSpelExpressionParser",
+        "gitlab.lgpl.rules_lgpl_javascript_redirect_rule-express-open-redirect",
+        "gitlab.lgpl.rules_lgpl_javascript_ssrf_rule-node-ssrf",
+        "gitlab.lgpl.rules_lgpl_javascript_xml_rule-node-xxe",
+        "gitlab.lgpl.rules_lgpl_javascript_xss_rule-express-xss",
+        "gitlab.python.python_xml_rule-etree"
+      ]
+    },
+    {
+      "name": "noisy-comparisons-and-arguments",
+      "kind": "noisy",
+      "reason": "reports every comparison with a token-like name, or every fs call and RegExp with a non-literal argument, without data flow (eslint-plugin-security ports); on vulnapp the token comparisons of an arithmetic parser (node/lib/arith.js lines 24 and 31)",
+      "rules": [
+        "gitlab.javascript.javascript_timing_rule-possible-timing-attacks",
+        "gitlab.lgpl.rules_lgpl_javascript_crypto_rule-node-timing-attack",
+        "gitlab.javascript.javascript_pathtraversal_rule-non-literal-fs-filename",
+        "gitlab.javascript.javascript_dos_rule-non-literal-regexp"
+      ]
+    },
+    {
+      "name": "noisy-every-use",
+      "kind": "noisy",
+      "reason": "reports every assert statement (Bandit B101), every use of the random module (Bandit B311) or every http:// link in HTML",
+      "rules": [
+        "gitlab.python.python_assert_rule-assert-used",
+        "gitlab.python.python_random_rule-random"
+      ]
+    },
+    {
+      "name": "audit-markers",
+      "kind": "audit",
+      "reason": "marks an endpoint, an import or a process start for manual review, without a dangerous argument or data flow (Bandit B4xx, B603, B605; find-sec-bugs JAXRS_ENDPOINT, JAXWS_ENDPOINT, COOKIE_USAGE, FORM_VALIDATE; any use of std::env::args, current_exe, temp_dir, argv or envp)",
+      "rules": [
+        "gitlab.scala.scala_endpoint_rule-JaxRsEndpoint",
+        "gitlab.scala.scala_endpoint_rule-JaxWsEndpoint",
+        "gitlab.scala.scala_cookie_rule-CookieUsage",
+        "gitlab.scala.scala_form_rule-FormValidate",
+        "gitlab.python.python_telnet_rule-import-telnib",
+        "gitlab.python.python_ftp_rule-ftplib",
+        "gitlab.python.python_crypto_rule-import-pycrypto",
+        "gitlab.python.python_exec_rule-subprocess-call",
+        "gitlab.python.python_exec_rule-subprocess-shell-TRUE",
+        "gitlab.python.python_exec_rule-os-path",
+        "gitlab.python.python_exec_rule-os-popen2",
+        "0xdea.c.raptor-argv-envp-access"
+      ]
+    },
+    {
+      "name": "not-security",
+      "kind": "non-security",
+      "reason": "performance, training correctness or code correctness without a security impact (PyTorch memory pinning and distributed waits, numpy distutils, data loader seeds, Go nil checks and map iteration, Rust panics, Ruby division by zero)",
+      "rules": [
+        "trailofbits.python.automatic-memory-pinning",
+        "trailofbits.python.numpy-distutils",
+        "trailofbits.python.waiting-with-pytorch-distributed",
+        "trailofbits.python.numpy-in-pytorch-datasets",
+        "trailofbits.go.invalid-usage-of-modified-variable",
+        "trailofbits.go.iterate-over-empty-map",
+        "trailofbits.go.nil-check-after-call",
+        "trailofbits.rs.panic-in-function-returning-result"
+      ]
+    }
+  ],
+  "keep": [],
+  "scope": [
+    {
+      "rules": [
+        "gitlab.lgpl.rules_lgpl_javascript_dos_rule-regex-dos"
+      ],
+      "exclude": [
+        "*.min.js"
+      ],
+      "reason": "An Express request-handler rule (njsscan origin): in minified bundles almost every function of two or more parameters matches function($REQ, $RES, ...), and the match explodes. Measured 2026-10-27 on a large code base with Opengrep 1.30.1: this one rule took most of the pack matching time, and its only results in *.min.js were false positives inside vendored katex and bootstrap code (library-internal RegExp.test calls, no request input). The exclusion kept every other result and removed many timeouts. Vendored libraries stay covered by the vendored JavaScript check of sca match."
+    }
+  ],
+  "classes": [
+    {"class": "oauth-oidc-saml", "reason": "SAML response validation turned off", "rules": ["trailofbits.ruby.ruby-saml-skip-validation"]},
+    {"class": "authn", "reason": "an unsigned cookie session store lets a client change its session", "rules": ["trailofbits.ruby.insecure-rails-cookie-session-store"]},
+    {"class": "security-misconfig", "reason": "cookie attributes and privilege drop order (CWE-345 maps to webhook-replay, CWE-696, CWE-706 and CWE-115 map to no class)", "rules": ["trailofbits.ruby.rails-cookie-attributes", "0xdea.c.raptor-incorrect-order-setuid-setgid"]},
+    {"class": "supply-chain-cicd", "reason": "an AWS IAM role for GitHub OIDC that any repository can assume", "rules": ["trailofbits.hcl.aws-oidc-role-policy-duplicate-condition", "trailofbits.hcl.aws-oidc-role-policy-missing-sub"]},
+    {"class": "crypto", "reason": "a wrong hex conversion of a digest weakens the hash value (CWE-704 maps to no class)", "rules": ["gitlab.java.java_strings_rule-BadHexConversion", "gitlab.lgpl.kotlin_strings_rule-BadHexConversion", "gitlab.scala.scala_strings_rule-BadHexConversion"]},
+    {"class": "business-logic", "reason": "validation before modification or normalization (CWE-180, CWE-182, CWE-704, CWE-20)", "rules": ["gitlab.java.java_strings_rule-ModifyAfterValidation", "gitlab.java.java_strings_rule-NormalizeAfterValidation", "gitlab.lgpl.kotlin_strings_rule-ModifyAfterValidation", "gitlab.lgpl.kotlin_strings_rule-NormalizeAfterValidation", "gitlab.scala.scala_strings_rule-ModifyAfterValidation", "gitlab.scala.scala_strings_rule-NormalizeAfterValidation"]},
+    {"class": "request-smuggling-crlf-cache", "reason": "host header injection (CWE-348 maps to no class)", "rules": ["gitlab.lgpl.rules_lgpl_javascript_headers_rule-host-header-injection"]},
+    {"class": "mobile-desktop-ipc", "reason": "Electron webSecurity turned off (CWE-346 maps to no class)", "rules": ["gitlab.lgpl.rules_lgpl_javascript_electronjs_rule-electron-disable-websecurity"]},
+    {"class": "race-condition", "reason": "a copied sync.Mutex value (CWE-688 maps to no class)", "rules": ["trailofbits.go.sync-mutex-value-copied"]},
+    {"class": "graphql", "reason": "Apollo GraphQL schema directives (CWE-686 maps to no class)", "rules": ["trailofbits.javascript.schema-directives"]},
+    {"class": "code-injection", "reason": "loading a native library, custom operators or compiled code from a path (CWE-676, CWE-706)", "rules": ["trailofbits.python.numpy-f2py-compile", "trailofbits.python.numpy-load-library", "trailofbits.python.onnx-session-options", "trailofbits.python.pytorch-classes-load-library", "trailofbits.python.tensorflow-load-library"]},
+    {"class": "open-redirect", "reason": "a host check with hasSuffix lets other domains pass (CWE-697 maps to no class)", "rules": ["trailofbits.swift.insecure-url-host-hassuffix-check"]},
+    {"class": "memory-safety", "reason": "C comparisons and asserts (CWE-697, CWE-754, CWE-676)", "rules": ["0xdea.c.raptor-incorrect-unsigned-comparison", "0xdea.c.raptor-suspicious-assert"]}
+  ]
+}

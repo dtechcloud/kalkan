@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "php-codeigniter-controller",
+  "description": "CodeIgniter 4 controllers and route mappings (gated on CodeIgniter)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/app/Controllers/**/*.php",
+    "**/Controllers/**/*.php"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "php",
+      "codeigniter"
+    ],
+    "sentinel_files": [
+      "**/composer.json"
+    ],
+    "sentinel_contains": [
+      "\"codeigniter4?/(?:framework|appstarter)\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "class\\s+\\w+\\s+extends\\s+(?:BaseController|ResourceController|Controller)\\b",
+      "flags": "",
+      "label": "CI Controller class"
+    },
+    {
+      "regex": "\\$this->request->getVar\\s*\\(|\\$this->request->getPost\\s*\\(",
+      "flags": "",
+      "label": "request var accessor"
+    },
+    {
+      "regex": "\\$routes->(?:get|post|put|patch|delete|add)\\s*\\(",
+      "flags": "",
+      "label": "$routes-> registration"
+    },
+    {
+      "regex": "helper\\s*\\(\\s*['\"][^'\"]+['\"]\\s*\\)",
+      "flags": "",
+      "label": "helper() — review for unsafe loaders"
+    }
+  ],
+  "examples": [
+    "class Home extends BaseController { public function index() {} }",
+    "class Users extends ResourceController\n{\n    protected $modelName = 'App\\Models\\UserModel';\n}",
+    "class Auth extends Controller { }",
+    "$name = $this->request->getVar('name');",
+    "$body = $this->request->getPost();",
+    "$id = $this->request->getPost(\"id\");",
+    "$routes->get('/', 'Home::index');",
+    "$routes->post(\"/login\", 'Auth::login');",
+    "$routes->add('/x', 'X::y', ['GET', 'POST']);",
+    "helper('form');",
+    "helper(\"url\");"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-codeigniter-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [codeigniter]; kalkan uses tech php (or codeigniter) and a manifest that names codeigniter."
+}

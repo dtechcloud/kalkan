@@ -1,0 +1,6466 @@
+[
+  {
+    "id": "python-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 28,
+    "snippet": "cur.execute(f\"SELECT id, name, price",
+    "twin": "python-sqli-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit"
+    ],
+    "rules": {
+      "bandit": [
+        "B608"
+      ],
+      "opengrep": [
+        "kalkan.python.sqli.tainted-sql-string"
+      ]
+    },
+    "title": "SQL injection: f-string query in cursor.execute()"
+  },
+  {
+    "id": "python-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 36,
+    "snippet": "cur.execute(\"SELECT id, name, price FROM products WHERE name LIKE ?\"",
+    "twin_of": [
+      "python-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Parameterized query"
+  },
+  {
+    "id": "python-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 43,
+    "snippet": "make_response(f\"<h2>Results for {query}</h2>\")",
+    "twin": "python-xss-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.xss.tainted-html-response"
+      ]
+    },
+    "title": "Reflected XSS: query parameter in make_response() HTML"
+  },
+  {
+    "id": "python-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 49,
+    "snippet": "make_response(f\"<h2>Results for {escape(query)}</h2>\")",
+    "twin_of": [
+      "python-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value escaped with markupsafe.escape()"
+  },
+  {
+    "id": "python-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 55,
+    "snippet": "render_template_string(f\"<h1>Hello {name}!</h1>\")",
+    "twin": "python-ssti-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.ssti.tainted-template-source"
+      ]
+    },
+    "title": "SSTI: user input inside a render_template_string() template"
+  },
+  {
+    "id": "python-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 61,
+    "snippet": "render_template_string(\"<h1>Hello {{ name }}!</h1>\", name=name)",
+    "twin_of": [
+      "python-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant template, value passed as variable"
+  },
+  {
+    "id": "python-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 67,
+    "snippet": "return redirect(target)",
+    "twin": "python-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.open-redirect.tainted-redirect-target"
+      ]
+    },
+    "title": "Open redirect: next parameter passed to redirect()"
+  },
+  {
+    "id": "python-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 73,
+    "snippet": "return redirect(url_for(\"landing\", section=section))",
+    "twin_of": [
+      "python-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "Redirect to an internal route via url_for()"
+  },
+  {
+    "id": "python-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 77,
+    "snippet": "@cross_origin(origins=\"*\", supports_credentials=True)",
+    "twin": "python-cors-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.cors.wildcard-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: any origin with credentials (flask-cors)"
+  },
+  {
+    "id": "python-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "python",
+    "file": "python/shop/app.py",
+    "line": 83,
+    "snippet": "@cross_origin(origins=[\"https://shop.vulnapp.internal\"], supports_credentials=True)",
+    "twin_of": [
+      "python-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Explicit trusted origin with credentials"
+  },
+  {
+    "id": "python-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 25,
+    "snippet": "subprocess.run(f\"ping -c 1 {host}\", shell=True",
+    "twin": "python-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "bandit": [
+        "B602"
+      ],
+      "opengrep": [
+        "kalkan.python.os-command-injection.tainted-shell-command"
+      ],
+      "opengrep-packs": [
+        "gitlab.python.python_exec_rule-subprocess-popen-shell-true"
+      ]
+    },
+    "title": "Command injection: request data in a shell=True command"
+  },
+  {
+    "id": "python-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 32,
+    "snippet": "subprocess.run([\"ping\", \"-c\", \"1\", \"--\", host]",
+    "twin_of": [
+      "python-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Argument list without a shell"
+  },
+  {
+    "id": "python-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 39,
+    "snippet": "resp = requests.get(url, timeout=5)",
+    "twin": "python-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: url parameter passed to requests.get()"
+  },
+  {
+    "id": "python-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 48,
+    "snippet": "resp = requests.get(feed_url, timeout=5)",
+    "twin_of": [
+      "python-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target taken from a fixed allowlist map"
+  },
+  {
+    "id": "python-code-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 55,
+    "snippet": "return str(eval(expression))",
+    "twin": "python-code-injection-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "bandit": [
+        "B307"
+      ],
+      "opengrep": [
+        "kalkan.python.code-injection.tainted-eval"
+      ],
+      "opengrep-packs": [
+        "gitlab.python.python_eval_rule-eval"
+      ]
+    },
+    "title": "Code injection: request data in eval()"
+  },
+  {
+    "id": "python-code-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 61,
+    "snippet": "return str(ast.literal_eval(expression))",
+    "twin_of": [
+      "python-code-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "ast.literal_eval() accepts literals only"
+  },
+  {
+    "id": "python-xxe-01",
+    "kind": "vulnerable",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 66,
+    "snippet": "etree.XMLParser(resolve_entities=True, no_network=False)",
+    "twin": "python-xxe-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.xxe.lxml-entity-resolution"
+      ]
+    },
+    "title": "XXE: lxml parser resolves entities and allows network access"
+  },
+  {
+    "id": "python-xxe-01-twin",
+    "kind": "secure-twin",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 73,
+    "snippet": "etree.XMLParser(resolve_entities=False, no_network=True)",
+    "twin_of": [
+      "python-xxe-01"
+    ],
+    "expected_engines": [],
+    "title": "Entity resolution and network access off"
+  },
+  {
+    "id": "python-deserialization-01",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 80,
+    "snippet": "config = yaml.load(request.data, Loader=yaml.Loader)",
+    "twin": "python-deserialization-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "bandit": [
+        "B506"
+      ],
+      "opengrep": [
+        "kalkan.python.deserialization.unsafe-yaml-load"
+      ],
+      "opengrep-packs": [
+        "gitlab.python.python_deserialization_rule-yaml-load"
+      ]
+    },
+    "title": "Insecure deserialization: yaml.load() with the full Loader"
+  },
+  {
+    "id": "python-deserialization-01-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 86,
+    "snippet": "yaml.load(request.data, Loader=yaml.SafeLoader)",
+    "twin_of": [
+      "python-deserialization-01"
+    ],
+    "expected_engines": [],
+    "title": "yaml.SafeLoader"
+  },
+  {
+    "id": "python-deserialization-02",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 92,
+    "snippet": "state = pickle.loads(",
+    "twin": "python-deserialization-02-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "bandit": [
+        "B301"
+      ],
+      "opengrep": [
+        "kalkan.python.deserialization.tainted-pickle"
+      ],
+      "opengrep-packs": [
+        "gitlab.python.python_deserialization_rule-pickle"
+      ]
+    },
+    "title": "Insecure deserialization: pickle.loads() of request data"
+  },
+  {
+    "id": "python-deserialization-02-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "python",
+    "file": "python/shop/tools.py",
+    "line": 98,
+    "snippet": "state = json.loads(",
+    "twin_of": [
+      "python-deserialization-02"
+    ],
+    "expected_engines": [],
+    "title": "JSON instead of pickle"
+  },
+  {
+    "id": "python-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "python",
+    "file": "python/shop/files.py",
+    "line": 19,
+    "snippet": "return send_file(os.path.join(INVOICE_DIR, filename))",
+    "twin": "python-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: request file name in send_file()"
+  },
+  {
+    "id": "python-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "python",
+    "file": "python/shop/files.py",
+    "line": 25,
+    "snippet": "return send_file(os.path.join(INVOICE_DIR, safe_name))",
+    "twin_of": [
+      "python-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Name reduced with secure_filename()"
+  },
+  {
+    "id": "python-path-traversal-02",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "python",
+    "file": "python/shop/files.py",
+    "line": 31,
+    "snippet": "with open(os.path.join(NOTES_DIR, name), encoding=\"utf-8\") as handle:",
+    "twin": "python-path-traversal-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: request file name in open()"
+  },
+  {
+    "id": "python-path-traversal-02-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "python",
+    "file": "python/shop/files.py",
+    "line": 41,
+    "snippet": "with open(path, encoding=\"utf-8\") as handle:",
+    "twin_of": [
+      "python-path-traversal-02"
+    ],
+    "expected_engines": [],
+    "title": "Path built with werkzeug safe_join() and checked for None"
+  },
+  {
+    "id": "python-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 19,
+    "snippet": "return hashlib.md5(password.encode(\"utf-8\")).hexdigest()",
+    "twin": "python-crypto-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "bandit": [
+        "B324"
+      ],
+      "opengrep": [
+        "kalkan.python.crypto.weak-hash-algorithm"
+      ],
+      "opengrep-packs": [
+        "gitlab.python.python_crypto_rule-hash-md5"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "python-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 23,
+    "snippet": "return hashlib.pbkdf2_hmac(",
+    "twin_of": [
+      "python-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "PBKDF2-HMAC-SHA256 with salt"
+  },
+  {
+    "id": "python-idor-01",
+    "kind": "vulnerable",
+    "class": "idor",
+    "cwe": [
+      "CWE-639"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 45,
+    "snippet": "row = get_db().execute(\"SELECT * FROM orders WHERE id = ?\", (order_id,)).fetchone()",
+    "twin": "python-idor-01-twin",
+    "expected_engines": [
+      "hunter"
+    ],
+    "title": "IDOR: order fetched by ID without an ownership check"
+  },
+  {
+    "id": "python-idor-01-twin",
+    "kind": "secure-twin",
+    "class": "idor",
+    "cwe": [
+      "CWE-639"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 55,
+    "snippet": "sql = \"SELECT * FROM orders WHERE id = ? AND owner_id = ?\"",
+    "twin_of": [
+      "python-idor-01"
+    ],
+    "expected_engines": [],
+    "title": "Query filtered by the owner of the session"
+  },
+  {
+    "id": "python-missing-authz-01",
+    "kind": "vulnerable",
+    "class": "missing-authz",
+    "cwe": [
+      "CWE-862"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 64,
+    "snippet": "def delete_user(user_id):",
+    "twin": "python-missing-authz-01-twin",
+    "expected_engines": [
+      "hunter"
+    ],
+    "title": "Missing authorization: admin endpoint needs only a login"
+  },
+  {
+    "id": "python-missing-authz-01-twin",
+    "kind": "secure-twin",
+    "class": "missing-authz",
+    "cwe": [
+      "CWE-862"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 71,
+    "snippet": "def lock_user(user_id):",
+    "twin_of": [
+      "python-missing-authz-01"
+    ],
+    "expected_engines": [],
+    "title": "Admin endpoint protected with @admin_required"
+  },
+  {
+    "id": "python-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 79,
+    "snippet": "claims = jwt.decode(token, options={\"verify_signature\": False})",
+    "twin": "python-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.jwt.signature-not-verified"
+      ]
+    },
+    "title": "JWT decoded without signature verification"
+  },
+  {
+    "id": "python-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 86,
+    "snippet": "claims = jwt.decode(token, JWT_KEY, algorithms=[\"HS256\"])",
+    "twin_of": [
+      "python-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "Key and fixed algorithm list"
+  },
+  {
+    "id": "python-nosqli-01",
+    "kind": "vulnerable",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 93,
+    "snippet": "users = get_mongo().users.find(request.get_json(), PUBLIC_FIELDS)",
+    "twin": "python-nosqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.python.nosqli.tainted-mongo-filter"
+      ]
+    },
+    "title": "NoSQL injection: JSON body used as Mongo filter"
+  },
+  {
+    "id": "python-nosqli-01-twin",
+    "kind": "secure-twin",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "python",
+    "file": "python/shop/accounts.py",
+    "line": 101,
+    "snippet": "users = get_mongo().users.find({\"username\": str(",
+    "twin_of": [
+      "python-nosqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Single field converted with str()"
+  },
+  {
+    "id": "python-crypto-02",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "python",
+    "file": "python/shop/vault.py",
+    "line": 12,
+    "snippet": "Cipher(algorithms.AES(CARD_KEY), modes.ECB())",
+    "twin": "python-crypto-02-twin",
+    "expected_engines": [
+      "opengrep",
+      "bandit"
+    ],
+    "rules": {
+      "bandit": [
+        "B305"
+      ],
+      "opengrep": [
+        "kalkan.python.crypto.weak-cipher"
+      ]
+    },
+    "title": "Weak crypto: AES in ECB mode"
+  },
+  {
+    "id": "python-crypto-02-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "python",
+    "file": "python/shop/vault.py",
+    "line": 19,
+    "snippet": "AESGCM(CARD_KEY).encrypt(",
+    "twin_of": [
+      "python-crypto-02"
+    ],
+    "expected_engines": [],
+    "title": "AES-GCM with a random nonce"
+  },
+  {
+    "id": "javascript-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 40,
+    "snippet": "cors({ origin: \"*\", credentials: true })",
+    "twin": "javascript-cors-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.cors.permissive-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: wildcard origin with credentials"
+  },
+  {
+    "id": "javascript-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 214,
+    "snippet": "cors({ origin: [\"https://shop.vulnapp.internal\"], credentials: true })",
+    "twin_of": [
+      "javascript-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Explicit trusted origin"
+  },
+  {
+    "id": "javascript-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 43,
+    "snippet": "crypto.createHash(\"md5\").update(password)",
+    "twin": "javascript-crypto-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.crypto.weak-hash-algorithm"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "javascript-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 47,
+    "snippet": "crypto.scryptSync(password, salt, 64)",
+    "twin_of": [
+      "javascript-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "scrypt with salt"
+  },
+  {
+    "id": "javascript-crypto-02",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 51,
+    "snippet": "crypto.createCipheriv(\"aes-256-ecb\"",
+    "twin": "javascript-crypto-02-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.crypto.weak-cipher"
+      ],
+      "opengrep-packs": [
+        "gitlab.lgpl.rules_lgpl_javascript_crypto_rule-node-aes-ecb"
+      ]
+    },
+    "title": "Weak crypto: AES in ECB mode"
+  },
+  {
+    "id": "javascript-crypto-02-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 57,
+    "snippet": "crypto.createCipheriv(\"aes-256-gcm\"",
+    "twin_of": [
+      "javascript-crypto-02"
+    ],
+    "expected_engines": [],
+    "title": "AES-GCM with a random IV"
+  },
+  {
+    "id": "javascript-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 63,
+    "snippet": "res.send(`<p>Hello ${req.query.name}!</p>`)",
+    "twin": "javascript-xss-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.xss.tainted-html-response"
+      ]
+    },
+    "title": "Reflected XSS: query data in res.send()"
+  },
+  {
+    "id": "javascript-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 67,
+    "snippet": "res.send(`<p>Hello ${escapeHtml(req.query.name)}!</p>`)",
+    "twin_of": [
+      "javascript-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value escaped with escape-html"
+  },
+  {
+    "id": "javascript-nosqli-01",
+    "kind": "vulnerable",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 71,
+    "snippet": "users.findOne({ username: req.body.username })",
+    "twin": "javascript-nosqli-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.nosqli.tainted-mongo-filter"
+      ],
+      "opengrep-packs": [
+        "gitlab.lgpl.rules_lgpl_javascript_database_rule-node-nosqli-injection"
+      ]
+    },
+    "title": "NoSQL injection: request body value in a Mongo filter"
+  },
+  {
+    "id": "javascript-nosqli-01-twin",
+    "kind": "secure-twin",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 76,
+    "snippet": "users.findOne({ username: String(req.body.username) })",
+    "twin_of": [
+      "javascript-nosqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Value converted with String()"
+  },
+  {
+    "id": "javascript-prototype-pollution-01",
+    "kind": "vulnerable",
+    "class": "prototype-pollution",
+    "cwe": [
+      "CWE-1321"
+    ],
+    "language": "javascript",
+    "file": "node/lib/merge.js",
+    "line": 15,
+    "snippet": "deepMerge(target[key], source[key]);",
+    "twin": "javascript-prototype-pollution-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.prototype-pollution.unguarded-recursive-merge"
+      ]
+    },
+    "title": "Prototype pollution: recursive merge of user JSON without key guard"
+  },
+  {
+    "id": "javascript-prototype-pollution-01-twin",
+    "kind": "secure-twin",
+    "class": "prototype-pollution",
+    "cwe": [
+      "CWE-1321"
+    ],
+    "language": "javascript",
+    "file": "node/lib/merge.js",
+    "line": 32,
+    "snippet": "mergeSettings(target[key], source[key]);",
+    "twin_of": [
+      "javascript-prototype-pollution-01"
+    ],
+    "expected_engines": [],
+    "title": "Merge skips __proto__, constructor and prototype"
+  },
+  {
+    "id": "javascript-prototype-pollution-02",
+    "kind": "vulnerable",
+    "class": "prototype-pollution",
+    "cwe": [
+      "CWE-1321"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 93,
+    "snippet": "preferences[section][key] = value;",
+    "twin": "javascript-prototype-pollution-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.prototype-pollution.tainted-nested-property-write"
+      ]
+    },
+    "title": "Prototype pollution: request keys in a two-level property write"
+  },
+  {
+    "id": "javascript-prototype-pollution-02-twin",
+    "kind": "secure-twin",
+    "class": "prototype-pollution",
+    "cwe": [
+      "CWE-1321"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 103,
+    "snippet": "store.set(String(key), value);",
+    "twin_of": [
+      "javascript-prototype-pollution-02"
+    ],
+    "expected_engines": [],
+    "title": "Map-based store"
+  },
+  {
+    "id": "javascript-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 108,
+    "snippet": "res.redirect(req.query.next);",
+    "twin": "javascript-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.open-redirect.tainted-redirect-target"
+      ]
+    },
+    "title": "Open redirect: next parameter in res.redirect()"
+  },
+  {
+    "id": "javascript-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 112,
+    "snippet": "res.redirect(RETURN_PAGES[req.query.page] || \"/\");",
+    "twin_of": [
+      "javascript-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "javascript-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 116,
+    "snippet": "childProcess.exec(`ping -c 1 ${req.query.host}`",
+    "twin": "javascript-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.os-command-injection.tainted-shell-command"
+      ]
+    },
+    "title": "Command injection: template string in child_process.exec()"
+  },
+  {
+    "id": "javascript-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 122,
+    "snippet": "childProcess.execFile(\"ping\", [\"-c\", \"1\", \"--\",",
+    "twin_of": [
+      "javascript-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "execFile() with an argument list"
+  },
+  {
+    "id": "javascript-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 129,
+    "snippet": "const claims = jwt.verify(token, PUBLIC_KEY);",
+    "twin": "javascript-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.jwt.verify-without-algorithms"
+      ]
+    },
+    "title": "JWT: jwt.verify() without an algorithms list"
+  },
+  {
+    "id": "javascript-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 135,
+    "snippet": "jwt.verify(token, PUBLIC_KEY, { algorithms: [\"RS256\"] })",
+    "twin_of": [
+      "javascript-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "Fixed algorithms list"
+  },
+  {
+    "id": "javascript-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 140,
+    "snippet": "db.query(\"SELECT * FROM orders WHERE id = \" + req.params.id",
+    "twin": "javascript-sqli-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.sqli.tainted-sql-string"
+      ],
+      "opengrep-packs": [
+        "gitlab.lgpl.rules_lgpl_javascript_database_rule-node-sqli-injection"
+      ]
+    },
+    "title": "SQL injection: route parameter concatenated into db.query()"
+  },
+  {
+    "id": "javascript-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 146,
+    "snippet": "db.query(\"SELECT * FROM order_items WHERE order_id = ?\", [req.params.id]",
+    "twin_of": [
+      "javascript-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Placeholder with bound value"
+  },
+  {
+    "id": "javascript-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336",
+      "CWE-94"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 152,
+    "snippet": "const render = _.template(req.body.template);",
+    "twin": "javascript-ssti-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.ssti.tainted-template-source"
+      ]
+    },
+    "title": "SSTI: request body compiled with lodash template()"
+  },
+  {
+    "id": "javascript-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336",
+      "CWE-94"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 157,
+    "snippet": "const render = _.template(GREETING_TEMPLATE);",
+    "twin_of": [
+      "javascript-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant template"
+  },
+  {
+    "id": "javascript-code-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 162,
+    "snippet": "const result = eval(req.query.expr);",
+    "twin": "javascript-code-injection-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.code-injection.tainted-eval"
+      ],
+      "opengrep-packs": [
+        "gitlab.javascript.javascript_eval_rule-eval-with-expression",
+        "gitlab.lgpl.rules_lgpl_javascript_eval_rule-eval-nodejs"
+      ]
+    },
+    "title": "Code injection: query data in eval()"
+  },
+  {
+    "id": "javascript-code-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 167,
+    "snippet": "const result = evaluateArithmetic(String(req.query.expr));",
+    "twin_of": [
+      "javascript-code-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Small arithmetic parser"
+  },
+  {
+    "id": "javascript-deserialization-01",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 172,
+    "snippet": "serialize.unserialize(Buffer.from(req.cookies.profile",
+    "twin": "javascript-deserialization-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.deserialization.unsafe-deserializer"
+      ],
+      "opengrep-packs": [
+        "gitlab.lgpl.rules_lgpl_javascript_eval_rule-node-deserialize"
+      ]
+    },
+    "title": "Insecure deserialization: node-serialize unserialize() of a cookie"
+  },
+  {
+    "id": "javascript-deserialization-01-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 177,
+    "snippet": "JSON.parse(Buffer.from(req.cookies.profile",
+    "twin_of": [
+      "javascript-deserialization-01"
+    ],
+    "expected_engines": [],
+    "title": "JSON.parse()"
+  },
+  {
+    "id": "javascript-xxe-01",
+    "kind": "vulnerable",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 182,
+    "snippet": "libxmljs.parseXml(req.body, { noent: true, nonet: false })",
+    "twin": "javascript-xxe-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.xxe.libxml-entity-expansion"
+      ]
+    },
+    "title": "XXE: libxmljs with noent: true"
+  },
+  {
+    "id": "javascript-xxe-01-twin",
+    "kind": "secure-twin",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "javascript",
+    "file": "node/server.js",
+    "line": 187,
+    "snippet": "libxmljs.parseXml(req.body, { noent: false, nonet: true })",
+    "twin_of": [
+      "javascript-xxe-01"
+    ],
+    "expected_engines": [],
+    "title": "Entity substitution and network off"
+  },
+  {
+    "id": "typescript-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "typescript",
+    "file": "node/src/fetcher.ts",
+    "line": 14,
+    "snippet": "const upstream = await fetch(target);",
+    "twin": "typescript-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: url parameter passed to fetch()"
+  },
+  {
+    "id": "typescript-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "typescript",
+    "file": "node/src/fetcher.ts",
+    "line": 24,
+    "snippet": "const upstream = await fetch(feed);",
+    "twin_of": [
+      "typescript-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "typescript-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "typescript",
+    "file": "node/src/fetcher.ts",
+    "line": 29,
+    "snippet": "path.join(EXPORT_DIR, String(req.query.name))",
+    "twin": "typescript-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.javascript.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: request file name in fs.readFile()"
+  },
+  {
+    "id": "typescript-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "typescript",
+    "file": "node/src/fetcher.ts",
+    "line": 35,
+    "snippet": "path.join(EXPORT_DIR, path.basename(String(req.query.name)))",
+    "twin_of": [
+      "typescript-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Name reduced with path.basename()"
+  },
+  {
+    "id": "go-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 50,
+    "snippet": "rows, err := db.Query(fmt.Sprintf(",
+    "twin": "go-sqli-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G701"
+      ],
+      "opengrep": [
+        "kalkan.go.sqli.tainted-sql-string"
+      ]
+    },
+    "title": "SQL injection: fmt.Sprintf() query in db.Query()"
+  },
+  {
+    "id": "go-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 60,
+    "snippet": "rows, err := db.Query(\"SELECT id, name FROM items WHERE name = ?\", name)",
+    "twin_of": [
+      "go-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Placeholder with bound value"
+  },
+  {
+    "id": "go-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 70,
+    "snippet": "exec.Command(\"sh\", \"-c\", \"ping -c 1 \"+host)",
+    "twin": "go-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G702",
+        "G204"
+      ],
+      "opengrep": [
+        "kalkan.go.os-command-injection.tainted-shell-command"
+      ]
+    },
+    "title": "Command injection: exec.Command(\"sh\", \"-c\", ...) with request data"
+  },
+  {
+    "id": "go-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 79,
+    "snippet": "exec.Command(\"ping\", \"-c\", \"1\", \"--\", host)",
+    "twin_of": [
+      "go-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Fixed program and argument list"
+  },
+  {
+    "id": "go-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 88,
+    "snippet": "resp, err := http.Get(target)",
+    "twin": "go-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G704",
+        "G107"
+      ],
+      "opengrep": [
+        "kalkan.go.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: url parameter passed to http.Get()"
+  },
+  {
+    "id": "go-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 103,
+    "snippet": "resp, err := http.Get(feedURL)",
+    "twin_of": [
+      "go-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "go-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 115,
+    "snippet": "fmt.Fprintf(w, \"<h2>Results for %s</h2>\", query)",
+    "twin": "go-xss-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G705"
+      ],
+      "opengrep": [
+        "kalkan.go.xss.tainted-html-response"
+      ]
+    },
+    "title": "Reflected XSS: query data written into HTML"
+  },
+  {
+    "id": "go-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 121,
+    "snippet": "fmt.Fprintf(w, \"<h2>Results for %s</h2>\", html.EscapeString(query))",
+    "twin_of": [
+      "go-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value escaped with html.EscapeString()"
+  },
+  {
+    "id": "go-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 125,
+    "snippet": "http.Redirect(w, r, r.URL.Query().Get(\"next\"), http.StatusFound)",
+    "twin": "go-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G710"
+      ],
+      "opengrep": [
+        "kalkan.go.open-redirect.tainted-redirect-target"
+      ]
+    },
+    "title": "Open redirect: next parameter in http.Redirect()"
+  },
+  {
+    "id": "go-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 133,
+    "snippet": "http.Redirect(w, r, target, http.StatusFound)",
+    "twin_of": [
+      "go-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "go-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 137,
+    "snippet": "http.ServeFile(w, r, filepath.Join(reportDir, r.URL.Query().Get(\"name\")))",
+    "twin": "go-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G703"
+      ],
+      "opengrep": [
+        "kalkan.go.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: request file name in http.ServeFile()"
+  },
+  {
+    "id": "go-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 141,
+    "snippet": "filepath.Base(r.URL.Query()",
+    "twin_of": [
+      "go-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Name reduced with filepath.Base()"
+  },
+  {
+    "id": "go-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 145,
+    "snippet": "template.New(\"note\").Parse(r.FormValue(\"template\"))",
+    "twin": "go-ssti-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G708"
+      ],
+      "opengrep": [
+        "kalkan.go.ssti.tainted-template-source"
+      ]
+    },
+    "title": "SSTI: request data parsed as text/template"
+  },
+  {
+    "id": "go-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 155,
+    "snippet": "template.New(\"note\").Parse(noteTemplate)",
+    "twin_of": [
+      "go-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant template"
+  },
+  {
+    "id": "go-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 165,
+    "snippet": "sum := md5.Sum([]byte(password))",
+    "twin": "go-crypto-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "gosec"
+    ],
+    "rules": {
+      "gosec": [
+        "G401"
+      ],
+      "opengrep": [
+        "kalkan.go.crypto.weak-hash-or-cipher"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "go-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 170,
+    "snippet": "key, err := pbkdf2.Key(",
+    "twin_of": [
+      "go-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "PBKDF2-HMAC-SHA256 with salt"
+  },
+  {
+    "id": "go-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 206,
+    "snippet": "w.Header().Set(\"Access-Control-Allow-Origin\", r.Header.Get(\"Origin\"))",
+    "twin": "go-cors-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.go.cors.reflected-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: reflected Origin with credentials"
+  },
+  {
+    "id": "go-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "go",
+    "file": "go/main.go",
+    "line": 214,
+    "snippet": "w.Header().Set(\"Access-Control-Allow-Origin\", \"https://shop.vulnapp.internal\")",
+    "twin_of": [
+      "go-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant trusted origin"
+  },
+  {
+    "id": "go-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "go",
+    "file": "go/jwtauth.go",
+    "line": 25,
+    "snippet": "jwt.NewParser().ParseUnverified(raw, jwt.MapClaims{})",
+    "twin": "go-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.go.jwt.unverified-token"
+      ]
+    },
+    "title": "JWT: ParseUnverified() claims used for the account"
+  },
+  {
+    "id": "go-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "go",
+    "file": "go/jwtauth.go",
+    "line": 37,
+    "snippet": "jwt.WithValidMethods([]string{\"HS256\"})",
+    "twin_of": [
+      "go-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "jwt.Parse() with key function and fixed method"
+  },
+  {
+    "id": "java-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 100,
+    "snippet": "stmt.executeQuery(\"SELECT id, name FROM items WHERE name = '\" + name + \"'\")",
+    "twin": "java-sqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.sqli.tainted-sql-string"
+      ]
+    },
+    "title": "SQL injection: string concatenation in Statement.executeQuery()"
+  },
+  {
+    "id": "java-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 108,
+    "snippet": "conn.prepareStatement(\"SELECT id, name FROM items WHERE name = ?\")",
+    "twin_of": [
+      "java-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "PreparedStatement with placeholder"
+  },
+  {
+    "id": "java-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 116,
+    "snippet": "new ProcessBuilder(\"sh\", \"-c\", \"ping -c 1 \" + host)",
+    "twin": "java-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.os-command-injection.tainted-process-command"
+      ]
+    },
+    "title": "Command injection: request data in \"sh -c\""
+  },
+  {
+    "id": "java-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 122,
+    "snippet": "new ProcessBuilder(\"ping\", \"-c\", \"1\", \"--\", host)",
+    "twin_of": [
+      "java-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Fixed program and argument list"
+  },
+  {
+    "id": "java-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 128,
+    "snippet": "Files.readAllBytes(REPORT_DIR.resolve(name))",
+    "twin": "java-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: request file name in Files.readAllBytes()"
+  },
+  {
+    "id": "java-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 134,
+    "snippet": "Files.readAllBytes(REPORT_DIR.resolve(Paths.get(name).getFileName()))",
+    "twin_of": [
+      "java-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Only the file name is kept"
+  },
+  {
+    "id": "java-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 140,
+    "snippet": "HttpRequest.newBuilder(URI.create(target))",
+    "twin": "java-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: url parameter in HttpClient request"
+  },
+  {
+    "id": "java-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 147,
+    "snippet": "HttpRequest.newBuilder(URI.create(STATUS_FEEDS.get(feed)))",
+    "twin_of": [
+      "java-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "java-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 155,
+    "snippet": "response.getWriter().write(\"<h2>Results for \" + query + \"</h2>\")",
+    "twin": "java-xss-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.xss.tainted-servlet-response"
+      ]
+    },
+    "title": "Reflected XSS: query data written to the servlet response"
+  },
+  {
+    "id": "java-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 161,
+    "snippet": "Html.escape(query) + \"</h2>\"",
+    "twin_of": [
+      "java-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value escaped for HTML"
+  },
+  {
+    "id": "java-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 165,
+    "snippet": "response.sendRedirect(request.getParameter(\"next\"))",
+    "twin": "java-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.open-redirect.tainted-redirect-target"
+      ]
+    },
+    "title": "Open redirect: next parameter in sendRedirect()"
+  },
+  {
+    "id": "java-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 169,
+    "snippet": "response.sendRedirect(RETURN_PAGES.getOrDefault(",
+    "twin_of": [
+      "java-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "java-deserialization-01",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 175,
+    "snippet": "Object state = in.readObject();",
+    "twin": "java-deserialization-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.deserialization.unfiltered-object-input-stream"
+      ]
+    },
+    "title": "Insecure deserialization: ObjectInputStream.readObject() of the request body"
+  },
+  {
+    "id": "java-deserialization-01-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 184,
+    "snippet": "in.setObjectInputFilter(CART_FILTER);",
+    "twin_of": [
+      "java-deserialization-01"
+    ],
+    "expected_engines": [],
+    "title": "ObjectInputFilter allowlist"
+  },
+  {
+    "id": "java-xxe-01",
+    "kind": "vulnerable",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 194,
+    "snippet": "DocumentBuilder parser = factory.newDocumentBuilder();",
+    "twin": "java-xxe-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.xxe.xml-parser-without-hardening"
+      ]
+    },
+    "title": "XXE: DocumentBuilderFactory without disallow-doctype-decl"
+  },
+  {
+    "id": "java-xxe-01-twin",
+    "kind": "secure-twin",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 202,
+    "snippet": "factory.setFeature(\"http://apache.org/xml/features/disallow-doctype-decl\", true);",
+    "twin_of": [
+      "java-xxe-01"
+    ],
+    "expected_engines": [],
+    "title": "DOCTYPE declarations disallowed"
+  },
+  {
+    "id": "java-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 209,
+    "snippet": "response.setHeader(\"Access-Control-Allow-Origin\", request.getHeader(\"Origin\"))",
+    "twin": "java-cors-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.cors.permissive-origin-with-credentials"
+      ],
+      "opengrep-packs": [
+        "gitlab.java.java_cors_rule-PermissiveCORSInjection"
+      ]
+    },
+    "title": "CORS: reflected Origin with credentials (servlet)"
+  },
+  {
+    "id": "java-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/InventoryServlet.java",
+    "line": 214,
+    "snippet": "response.setHeader(\"Access-Control-Allow-Origin\", \"https://shop.vulnapp.internal\")",
+    "twin_of": [
+      "java-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant trusted origin"
+  },
+  {
+    "id": "java-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 44,
+    "snippet": "new Template(\"preview\", new StringReader(template), freemarker)",
+    "twin": "java-ssti-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.ssti.tainted-template-source"
+      ]
+    },
+    "title": "SSTI: request parameter compiled as a FreeMarker template"
+  },
+  {
+    "id": "java-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 52,
+    "snippet": "freemarker.getTemplate(\"preview.ftl\")",
+    "twin_of": [
+      "java-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Template loaded from a fixed file"
+  },
+  {
+    "id": "java-code-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-917"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 60,
+    "snippet": "return expressions.parseExpression(expr).getValue();",
+    "twin": "java-code-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.code-injection.tainted-expression"
+      ]
+    },
+    "title": "Code injection: request parameter evaluated as SpEL"
+  },
+  {
+    "id": "java-code-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-917"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 65,
+    "snippet": "expressions.parseExpression(FORMULAS.getOrDefault(",
+    "twin_of": [
+      "java-code-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Expression selected from a fixed map"
+  },
+  {
+    "id": "java-nosqli-01",
+    "kind": "vulnerable",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 71,
+    "snippet": "reports.find(Document.parse(filter))",
+    "twin": "java-nosqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.nosqli.tainted-mongo-query"
+      ]
+    },
+    "title": "NoSQL injection: request body parsed as a Mongo query"
+  },
+  {
+    "id": "java-nosqli-01-twin",
+    "kind": "secure-twin",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 78,
+    "snippet": "reports.find(Filters.eq(\"owner\", owner))",
+    "twin_of": [
+      "java-nosqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Filter built with Filters.eq()"
+  },
+  {
+    "id": "java-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 84,
+    "snippet": "DecodedJWT token = JWT.decode(",
+    "twin": "java-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.jwt.unverified-token"
+      ]
+    },
+    "title": "JWT decoded without signature verification (java-jwt)"
+  },
+  {
+    "id": "java-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 90,
+    "snippet": "JWT.require(JWT_ALGORITHM).build().verify(",
+    "twin_of": [
+      "java-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "JWT.require(...).verify()"
+  },
+  {
+    "id": "java-cors-02",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 94,
+    "snippet": "@CrossOrigin(originPatterns = \"*\", allowCredentials = \"true\")",
+    "twin": "java-cors-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.cors.permissive-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: any origin pattern with credentials (Spring)"
+  },
+  {
+    "id": "java-cors-02-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/ReportController.java",
+    "line": 100,
+    "snippet": "@CrossOrigin(origins = \"https://shop.vulnapp.internal\", allowCredentials = \"true\")",
+    "twin_of": [
+      "java-cors-02"
+    ],
+    "expected_engines": [],
+    "title": "Explicit trusted origin"
+  },
+  {
+    "id": "java-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/Passwords.java",
+    "line": 15,
+    "snippet": "MessageDigest.getInstance(\"MD5\")",
+    "twin": "java-crypto-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.crypto.weak-hash-algorithm"
+      ],
+      "opengrep-packs": [
+        "gitlab.java.java_crypto_rule-WeakMessageDigest"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "java-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/Passwords.java",
+    "line": 20,
+    "snippet": "SecretKeyFactory.getInstance(\"PBKDF2WithHmacSHA256\")",
+    "twin_of": [
+      "java-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "PBKDF2WithHmacSHA256"
+  },
+  {
+    "id": "java-crypto-02",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/CardVault.java",
+    "line": 21,
+    "snippet": "Cipher.getInstance(\"AES/ECB/PKCS5Padding\")",
+    "twin": "java-crypto-02-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.java.crypto.weak-cipher"
+      ],
+      "opengrep-packs": [
+        "gitlab.java.java_crypto_rule-CipherECBMode",
+        "gitlab.java.java_crypto_rule-CipherIntegrity"
+      ]
+    },
+    "title": "Weak crypto: AES in ECB mode"
+  },
+  {
+    "id": "java-crypto-02-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "java",
+    "file": "java/src/main/java/com/vulnapp/inventory/CardVault.java",
+    "line": 29,
+    "snippet": "Cipher.getInstance(\"AES/GCM/NoPadding\")",
+    "twin_of": [
+      "java-crypto-02"
+    ],
+    "expected_engines": [],
+    "title": "AES-GCM with a random IV"
+  },
+  {
+    "id": "php-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 24,
+    "snippet": "mysqli_query($db, \"SELECT id, name FROM items WHERE name = '\" . $_GET['name']",
+    "twin": "php-sqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.sqli.tainted-sql-string"
+      ]
+    },
+    "title": "SQL injection: $_GET concatenated into mysqli_query()"
+  },
+  {
+    "id": "php-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 32,
+    "snippet": "mysqli_prepare($db, 'SELECT id, name FROM items WHERE name = ?')",
+    "twin_of": [
+      "php-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Prepared statement with bound value"
+  },
+  {
+    "id": "php-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 42,
+    "snippet": "system('ping -c 1 ' . $_GET['host']);",
+    "twin": "php-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.os-command-injection.tainted-shell-command"
+      ]
+    },
+    "title": "Command injection: $_GET in system()"
+  },
+  {
+    "id": "php-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 47,
+    "snippet": "system('ping -c 1 ' . escapeshellarg($_GET['host']));",
+    "twin_of": [
+      "php-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Value quoted with escapeshellarg()"
+  },
+  {
+    "id": "php-code-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-98"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 52,
+    "snippet": "include($_GET['page'] . '.php');",
+    "twin": "php-code-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.code-injection.tainted-file-inclusion"
+      ]
+    },
+    "title": "File inclusion: $_GET selects the included file"
+  },
+  {
+    "id": "php-code-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-98"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 57,
+    "snippet": "include(__DIR__ . '/pages/' . basename($_GET['page']) . '.php');",
+    "twin_of": [
+      "php-code-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Page name reduced with basename()"
+  },
+  {
+    "id": "php-deserialization-01",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 62,
+    "snippet": "return unserialize($_GET['prefs']);",
+    "twin": "php-deserialization-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.deserialization.tainted-unserialize"
+      ]
+    },
+    "title": "Insecure deserialization: unserialize() of $_GET"
+  },
+  {
+    "id": "php-deserialization-01-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 67,
+    "snippet": "unserialize($_GET['prefs'], ['allowed_classes' => false])",
+    "twin_of": [
+      "php-deserialization-01"
+    ],
+    "expected_engines": [],
+    "title": "allowed_classes => false"
+  },
+  {
+    "id": "php-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 72,
+    "snippet": "echo '<h2>Results for ' . $_GET['q'] . '</h2>';",
+    "twin": "php-xss-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.xss.tainted-echo"
+      ]
+    },
+    "title": "Reflected XSS: $_GET echoed into HTML"
+  },
+  {
+    "id": "php-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 77,
+    "snippet": "htmlspecialchars($_GET['q'], ENT_QUOTES, 'UTF-8') . '</h2>'",
+    "twin_of": [
+      "php-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value escaped with htmlspecialchars()"
+  },
+  {
+    "id": "php-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 82,
+    "snippet": "$ch = curl_init($_GET['url']);",
+    "twin": "php-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: $_GET url passed to curl_init()"
+  },
+  {
+    "id": "php-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 89,
+    "snippet": "$ch = curl_init(STATUS_FEEDS[$_GET['feed']]",
+    "twin_of": [
+      "php-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "php-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 96,
+    "snippet": "readfile(REPORT_DIR . '/' . $_GET['name']);",
+    "twin": "php-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: $_GET file name in readfile()"
+  },
+  {
+    "id": "php-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 101,
+    "snippet": "readfile(REPORT_DIR . '/' . basename($_GET['name']));",
+    "twin_of": [
+      "php-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Name reduced with basename()"
+  },
+  {
+    "id": "php-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 106,
+    "snippet": "header('Location: ' . $_GET['next']);",
+    "twin": "php-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.open-redirect.tainted-location-header"
+      ]
+    },
+    "title": "Open redirect: $_GET in a Location header"
+  },
+  {
+    "id": "php-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 111,
+    "snippet": "header('Location: ' . (RETURN_PAGES[$_GET['page']] ?? '/'));",
+    "twin_of": [
+      "php-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "php-code-injection-02",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 116,
+    "snippet": "return eval('return ' . $_GET['expr'] . ';');",
+    "twin": "php-code-injection-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.code-injection.tainted-eval"
+      ]
+    },
+    "title": "Code injection: $_GET in eval()"
+  },
+  {
+    "id": "php-code-injection-02-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 122,
+    "snippet": "return eval('return ' . $formula . ';');",
+    "twin_of": [
+      "php-code-injection-02"
+    ],
+    "expected_engines": [],
+    "title": "Expression selected from a fixed map"
+  },
+  {
+    "id": "php-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 127,
+    "snippet": "$template = $twig->createTemplate($_POST['template']);",
+    "twin": "php-ssti-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.ssti.tainted-template-source"
+      ]
+    },
+    "title": "SSTI: $_POST compiled as a Twig template"
+  },
+  {
+    "id": "php-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 133,
+    "snippet": "$template = $twig->load('note.twig');",
+    "twin_of": [
+      "php-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Template loaded from a fixed file"
+  },
+  {
+    "id": "php-xxe-01",
+    "kind": "vulnerable",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 139,
+    "snippet": "'SimpleXMLElement', LIBXML_NOENT);",
+    "twin": "php-xxe-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.xxe.libxml-entity-substitution"
+      ]
+    },
+    "title": "XXE: simplexml_load_string() with LIBXML_NOENT"
+  },
+  {
+    "id": "php-xxe-01-twin",
+    "kind": "secure-twin",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 145,
+    "snippet": "'SimpleXMLElement', LIBXML_NONET);",
+    "twin_of": [
+      "php-xxe-01"
+    ],
+    "expected_engines": [],
+    "title": "No entity substitution, network off"
+  },
+  {
+    "id": "php-nosqli-01",
+    "kind": "vulnerable",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 151,
+    "snippet": "$users->findOne(['username' => $_POST['username']])",
+    "twin": "php-nosqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.nosqli.tainted-mongo-filter"
+      ]
+    },
+    "title": "NoSQL injection: $_POST array in a Mongo filter"
+  },
+  {
+    "id": "php-nosqli-01-twin",
+    "kind": "secure-twin",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 156,
+    "snippet": "$users->findOne(['username' => (string) $_POST['username']])",
+    "twin_of": [
+      "php-nosqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Value cast with (string)"
+  },
+  {
+    "id": "php-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 162,
+    "snippet": "json_decode(base64_decode(strtr(explode('.', $token)[1]",
+    "twin": "php-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.jwt.unverified-token"
+      ]
+    },
+    "title": "JWT payload decoded without signature verification"
+  },
+  {
+    "id": "php-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 168,
+    "snippet": "JWT::decode($token, new Key(",
+    "twin_of": [
+      "php-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "firebase/php-jwt decode() with key and algorithm"
+  },
+  {
+    "id": "php-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 173,
+    "snippet": "return md5($password);",
+    "twin": "php-crypto-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.crypto.weak-password-hash"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "php-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 178,
+    "snippet": "return password_hash($password, PASSWORD_DEFAULT);",
+    "twin_of": [
+      "php-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "password_hash()"
+  },
+  {
+    "id": "php-crypto-02",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 183,
+    "snippet": "openssl_encrypt($number, 'aes-256-ecb'",
+    "twin": "php-crypto-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.crypto.weak-cipher"
+      ]
+    },
+    "title": "Weak crypto: AES in ECB mode"
+  },
+  {
+    "id": "php-crypto-02-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 189,
+    "snippet": "openssl_encrypt($number, 'aes-256-gcm'",
+    "twin_of": [
+      "php-crypto-02"
+    ],
+    "expected_engines": [],
+    "title": "AES-GCM with a random IV"
+  },
+  {
+    "id": "php-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 195,
+    "snippet": "header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);",
+    "twin": "php-cors-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.php.cors.reflected-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: reflected Origin with credentials"
+  },
+  {
+    "id": "php-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "php",
+    "file": "php/public/index.php",
+    "line": 201,
+    "snippet": "header('Access-Control-Allow-Origin: https://shop.vulnapp.internal');",
+    "twin_of": [
+      "php-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant trusted origin"
+  },
+  {
+    "id": "ruby-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 37,
+    "snippet": "Digest::MD5.hexdigest(password)",
+    "twin": "ruby-crypto-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.crypto.weak-hash-algorithm"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "ruby-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 41,
+    "snippet": "BCrypt::Password.create(password).to_s",
+    "twin_of": [
+      "ruby-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "bcrypt"
+  },
+  {
+    "id": "ruby-crypto-02",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 45,
+    "snippet": "OpenSSL::Cipher.new(\"aes-256-ecb\")",
+    "twin": "ruby-crypto-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.crypto.weak-cipher"
+      ]
+    },
+    "title": "Weak crypto: AES in ECB mode"
+  },
+  {
+    "id": "ruby-crypto-02-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 52,
+    "snippet": "OpenSSL::Cipher.new(\"aes-256-gcm\")",
+    "twin_of": [
+      "ruby-crypto-02"
+    ],
+    "expected_engines": [],
+    "title": "AES-GCM with a random IV"
+  },
+  {
+    "id": "ruby-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 61,
+    "snippet": "response.headers[\"Access-Control-Allow-Origin\"] = request.env[\"HTTP_ORIGIN\"]",
+    "twin": "ruby-cors-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.cors.reflected-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: reflected Origin with credentials"
+  },
+  {
+    "id": "ruby-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 66,
+    "snippet": "response.headers[\"Access-Control-Allow-Origin\"] = \"https://shop.vulnapp.internal\"",
+    "twin_of": [
+      "ruby-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant trusted origin"
+  },
+  {
+    "id": "ruby-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 71,
+    "snippet": "db.execute(\"SELECT id, name FROM items WHERE name = '#{params[:name]}'\")",
+    "twin": "ruby-sqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.sqli.tainted-sql-string"
+      ]
+    },
+    "title": "SQL injection: params interpolated into db.execute()"
+  },
+  {
+    "id": "ruby-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 76,
+    "snippet": "db.execute(\"SELECT id, name FROM items WHERE name = ?\", [params[:name]])",
+    "twin_of": [
+      "ruby-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Placeholder with bound value"
+  },
+  {
+    "id": "ruby-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 81,
+    "snippet": "system(\"ping -c 1 #{params[:host]}\")",
+    "twin": "ruby-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.os-command-injection.tainted-shell-command"
+      ]
+    },
+    "title": "Command injection: params in a single-string system()"
+  },
+  {
+    "id": "ruby-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 86,
+    "snippet": "system(\"ping\", \"-c\", \"1\", \"--\", params[:host].to_s)",
+    "twin_of": [
+      "ruby-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Program and arguments passed separately"
+  },
+  {
+    "id": "ruby-code-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 91,
+    "snippet": "JSON.generate(result: eval(params[:expr]))",
+    "twin": "ruby-code-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.code-injection.tainted-eval"
+      ]
+    },
+    "title": "Code injection: params in eval()"
+  },
+  {
+    "id": "ruby-code-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 95,
+    "snippet": "eval(FORMULAS.fetch(params[:formula], \"0\"))",
+    "twin_of": [
+      "ruby-code-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Expression selected from a fixed map"
+  },
+  {
+    "id": "ruby-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336",
+      "CWE-94"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 99,
+    "snippet": "ERB.new(params[:template]).result_with_hash",
+    "twin": "ruby-ssti-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.ssti.tainted-template-source"
+      ]
+    },
+    "title": "SSTI: params compiled as an ERB template"
+  },
+  {
+    "id": "ruby-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336",
+      "CWE-94"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 103,
+    "snippet": "ERB.new(NOTE_TEMPLATE).result_with_hash",
+    "twin_of": [
+      "ruby-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant template"
+  },
+  {
+    "id": "ruby-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 107,
+    "snippet": "Net::HTTP.get(URI(params[:url]))",
+    "twin": "ruby-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: url parameter passed to Net::HTTP.get()"
+  },
+  {
+    "id": "ruby-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 111,
+    "snippet": "Net::HTTP.get(URI(STATUS_FEEDS.fetch(",
+    "twin_of": [
+      "ruby-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "ruby-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 115,
+    "snippet": "send_file File.join(REPORT_DIR, params[:name])",
+    "twin": "ruby-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: params file name in send_file"
+  },
+  {
+    "id": "ruby-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 119,
+    "snippet": "File.basename(params[:name].to_s)",
+    "twin_of": [
+      "ruby-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Name reduced with File.basename()"
+  },
+  {
+    "id": "ruby-deserialization-01",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 123,
+    "snippet": "cart = Marshal.load(Base64.decode64(params[:state]))",
+    "twin": "ruby-deserialization-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.deserialization.tainted-unsafe-load"
+      ]
+    },
+    "title": "Insecure deserialization: Marshal.load() of params"
+  },
+  {
+    "id": "ruby-deserialization-01-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 128,
+    "snippet": "cart = JSON.parse(Base64.decode64(params[:state]))",
+    "twin_of": [
+      "ruby-deserialization-01"
+    ],
+    "expected_engines": [],
+    "title": "JSON.parse()"
+  },
+  {
+    "id": "ruby-xxe-01",
+    "kind": "vulnerable",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 133,
+    "snippet": "{ |config| config.noent.dtdload }",
+    "twin": "ruby-xxe-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.xxe.nokogiri-entity-substitution"
+      ]
+    },
+    "title": "XXE: Nokogiri with NOENT and DTDLOAD"
+  },
+  {
+    "id": "ruby-xxe-01-twin",
+    "kind": "secure-twin",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 138,
+    "snippet": "{ |config| config.nonet }",
+    "twin_of": [
+      "ruby-xxe-01"
+    ],
+    "expected_engines": [],
+    "title": "Network access off, no entity substitution"
+  },
+  {
+    "id": "ruby-nosqli-01",
+    "kind": "vulnerable",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 143,
+    "snippet": "mongo[:users].find(username: params[:username]).first",
+    "twin": "ruby-nosqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.nosqli.tainted-mongo-filter"
+      ]
+    },
+    "title": "NoSQL injection: params hash in a Mongo filter"
+  },
+  {
+    "id": "ruby-nosqli-01-twin",
+    "kind": "secure-twin",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 148,
+    "snippet": "mongo[:users].find(username: params[:username].to_s).first",
+    "twin_of": [
+      "ruby-nosqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Value converted with to_s"
+  },
+  {
+    "id": "ruby-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 154,
+    "snippet": "claims, = JWT.decode(token, nil, false)",
+    "twin": "ruby-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.jwt.signature-not-verified"
+      ]
+    },
+    "title": "JWT decoded with verification turned off"
+  },
+  {
+    "id": "ruby-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "ruby",
+    "file": "ruby/app.rb",
+    "line": 160,
+    "snippet": "claims, = JWT.decode(token, JWT_KEY, true, algorithm: \"HS256\")",
+    "twin_of": [
+      "ruby-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "Key, verification and fixed algorithm"
+  },
+  {
+    "id": "ruby-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "ruby",
+    "file": "ruby/app/controllers/greetings_controller.rb",
+    "line": 8,
+    "snippet": "render html: \"<p>Hello #{params[:name]}</p>\".html_safe",
+    "twin": "ruby-xss-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.xss.tainted-html-safe"
+      ]
+    },
+    "title": "Reflected XSS: params marked html_safe"
+  },
+  {
+    "id": "ruby-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "ruby",
+    "file": "ruby/app/controllers/greetings_controller.rb",
+    "line": 12,
+    "snippet": "ERB::Util.html_escape(params[:name])",
+    "twin_of": [
+      "ruby-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value escaped before html_safe"
+  },
+  {
+    "id": "ruby-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "ruby",
+    "file": "ruby/app/controllers/greetings_controller.rb",
+    "line": 16,
+    "snippet": "redirect_to params[:return_to], allow_other_host: true",
+    "twin": "ruby-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.ruby.open-redirect.tainted-redirect-target"
+      ]
+    },
+    "title": "Open redirect: params in redirect_to"
+  },
+  {
+    "id": "ruby-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "ruby",
+    "file": "ruby/app/controllers/greetings_controller.rb",
+    "line": 20,
+    "snippet": "redirect_to RETURN_PAGES.fetch(params[:page], \"/\")",
+    "twin_of": [
+      "ruby-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "csharp-sqli-01",
+    "kind": "vulnerable",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 59,
+    "snippet": "new SqlCommand(\"SELECT id, name FROM items WHERE name = '\" + name + \"'\", conn)",
+    "twin": "csharp-sqli-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.sqli.tainted-sql-string"
+      ],
+      "opengrep-packs": [
+        "gitlab.csharp.csharp_injection_rule-SQLInjection"
+      ]
+    },
+    "title": "SQL injection: string concatenation in SqlCommand"
+  },
+  {
+    "id": "csharp-sqli-01-twin",
+    "kind": "secure-twin",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 68,
+    "snippet": "new SqlCommand(\"SELECT id, name FROM items WHERE name = @name\", conn)",
+    "twin_of": [
+      "csharp-sqli-01"
+    ],
+    "expected_engines": [],
+    "title": "SQL parameter"
+  },
+  {
+    "id": "csharp-os-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 76,
+    "snippet": "Process.Start(\"/bin/sh\", \"-c \\\"ping -c 1 \" + host",
+    "twin": "csharp-os-command-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.os-command-injection.tainted-process-start"
+      ]
+    },
+    "title": "Command injection: request data in /bin/sh -c"
+  },
+  {
+    "id": "csharp-os-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 89,
+    "snippet": "using var process = Process.Start(start)!;",
+    "twin_of": [
+      "csharp-os-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Fixed program, values in ArgumentList"
+  },
+  {
+    "id": "csharp-code-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 97,
+    "snippet": "await CSharpScript.EvaluateAsync<double>(expr);",
+    "twin": "csharp-code-injection-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.code-injection.tainted-script"
+      ]
+    },
+    "title": "Code injection: request data run as C# script"
+  },
+  {
+    "id": "csharp-code-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 108,
+    "snippet": "await CSharpScript.EvaluateAsync<double>(source);",
+    "twin_of": [
+      "csharp-code-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Script selected from a fixed map"
+  },
+  {
+    "id": "csharp-ssti-01",
+    "kind": "vulnerable",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336",
+      "CWE-94"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 116,
+    "snippet": "var compiled = await engine.CompileAsync(template);",
+    "twin": "csharp-ssti-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.ssti.tainted-razor-template"
+      ]
+    },
+    "title": "SSTI: request data compiled as a Razor template"
+  },
+  {
+    "id": "csharp-ssti-01-twin",
+    "kind": "secure-twin",
+    "class": "ssti",
+    "cwe": [
+      "CWE-1336",
+      "CWE-94"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 124,
+    "snippet": "var compiled = await engine.CompileAsync(NoteTemplate);",
+    "twin_of": [
+      "csharp-ssti-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant template"
+  },
+  {
+    "id": "csharp-xss-01",
+    "kind": "vulnerable",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 131,
+    "snippet": "return Content(\"<h2>Results for \" + q + \"</h2>\", \"text/html\");",
+    "twin": "csharp-xss-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.xss.tainted-html-content"
+      ]
+    },
+    "title": "Reflected XSS: query data returned as text/html"
+  },
+  {
+    "id": "csharp-xss-01-twin",
+    "kind": "secure-twin",
+    "class": "xss",
+    "cwe": [
+      "CWE-79"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 137,
+    "snippet": "HtmlEncoder.Default.Encode(q)",
+    "twin_of": [
+      "csharp-xss-01"
+    ],
+    "expected_engines": [],
+    "title": "Value HTML-encoded"
+  },
+  {
+    "id": "csharp-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 143,
+    "snippet": "var body = await _http.GetStringAsync(url);",
+    "twin": "csharp-ssrf-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.ssrf.tainted-request-url"
+      ]
+    },
+    "title": "SSRF: url parameter passed to HttpClient"
+  },
+  {
+    "id": "csharp-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 154,
+    "snippet": "var body = await _http.GetStringAsync(target);",
+    "twin_of": [
+      "csharp-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Target from a fixed map"
+  },
+  {
+    "id": "csharp-path-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 161,
+    "snippet": "System.IO.File.ReadAllBytes(Path.Combine(ReportDir, name))",
+    "twin": "csharp-path-traversal-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.path-traversal.tainted-file-path"
+      ]
+    },
+    "title": "Path traversal: request file name in File.ReadAllBytes()"
+  },
+  {
+    "id": "csharp-path-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 168,
+    "snippet": "Path.GetFileName(name)",
+    "twin_of": [
+      "csharp-path-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Name reduced with Path.GetFileName()"
+  },
+  {
+    "id": "csharp-open-redirect-01",
+    "kind": "vulnerable",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 175,
+    "snippet": "return Redirect(returnUrl);",
+    "twin": "csharp-open-redirect-01-twin",
+    "expected_engines": [
+      "opengrep",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.open-redirect.tainted-redirect-target"
+      ],
+      "opengrep-packs": [
+        "gitlab.csharp.csharp_endpoint_rule-UnvalidatedRedirect"
+      ]
+    },
+    "title": "Open redirect: returnUrl in Redirect()"
+  },
+  {
+    "id": "csharp-open-redirect-01-twin",
+    "kind": "secure-twin",
+    "class": "open-redirect",
+    "cwe": [
+      "CWE-601"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 181,
+    "snippet": "return LocalRedirect(",
+    "twin_of": [
+      "csharp-open-redirect-01"
+    ],
+    "expected_engines": [],
+    "title": "LocalRedirect() with Url.IsLocalUrl()"
+  },
+  {
+    "id": "csharp-deserialization-01",
+    "kind": "vulnerable",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 187,
+    "snippet": "TypeNameHandling = TypeNameHandling.All",
+    "twin": "csharp-deserialization-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.deserialization.unsafe-deserializer"
+      ]
+    },
+    "title": "Insecure deserialization: Newtonsoft TypeNameHandling.All"
+  },
+  {
+    "id": "csharp-deserialization-01-twin",
+    "kind": "secure-twin",
+    "class": "deserialization",
+    "cwe": [
+      "CWE-502"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 195,
+    "snippet": "TypeNameHandling = TypeNameHandling.None",
+    "twin_of": [
+      "csharp-deserialization-01"
+    ],
+    "expected_engines": [],
+    "title": "TypeNameHandling.None"
+  },
+  {
+    "id": "csharp-xxe-01",
+    "kind": "vulnerable",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 203,
+    "snippet": "DtdProcessing = DtdProcessing.Parse",
+    "twin": "csharp-xxe-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.xxe.dtd-processing-enabled"
+      ]
+    },
+    "title": "XXE: DTD processing with XmlUrlResolver"
+  },
+  {
+    "id": "csharp-xxe-01-twin",
+    "kind": "secure-twin",
+    "class": "xxe",
+    "cwe": [
+      "CWE-611"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 213,
+    "snippet": "DtdProcessing = DtdProcessing.Prohibit",
+    "twin_of": [
+      "csharp-xxe-01"
+    ],
+    "expected_engines": [],
+    "title": "DTD prohibited, no resolver"
+  },
+  {
+    "id": "csharp-nosqli-01",
+    "kind": "vulnerable",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 223,
+    "snippet": "_reports.Find(BsonDocument.Parse(filter))",
+    "twin": "csharp-nosqli-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.nosqli.tainted-mongo-query"
+      ]
+    },
+    "title": "NoSQL injection: request body parsed as a Mongo query"
+  },
+  {
+    "id": "csharp-nosqli-01-twin",
+    "kind": "secure-twin",
+    "class": "nosqli",
+    "cwe": [
+      "CWE-943"
+    ],
+    "language": "csharp",
+    "file": "csharp/Controllers/StoreController.cs",
+    "line": 230,
+    "snippet": "Builders<BsonDocument>.Filter.Eq(\"owner\", owner)",
+    "twin_of": [
+      "csharp-nosqli-01"
+    ],
+    "expected_engines": [],
+    "title": "Filter built with Builders.Filter.Eq()"
+  },
+  {
+    "id": "csharp-cors-01",
+    "kind": "vulnerable",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "csharp",
+    "file": "csharp/Program.cs",
+    "line": 16,
+    "snippet": "policy.SetIsOriginAllowed(origin => true)",
+    "twin": "csharp-cors-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.cors.any-origin-with-credentials"
+      ]
+    },
+    "title": "CORS: any origin with credentials"
+  },
+  {
+    "id": "csharp-cors-01-twin",
+    "kind": "secure-twin",
+    "class": "cors",
+    "cwe": [
+      "CWE-942"
+    ],
+    "language": "csharp",
+    "file": "csharp/Program.cs",
+    "line": 21,
+    "snippet": "policy.WithOrigins(\"https://shop.vulnapp.internal\")",
+    "twin_of": [
+      "csharp-cors-01"
+    ],
+    "expected_engines": [],
+    "title": "Explicit trusted origin"
+  },
+  {
+    "id": "csharp-jwt-01",
+    "kind": "vulnerable",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "csharp",
+    "file": "csharp/Program.cs",
+    "line": 33,
+    "snippet": "RequireSignedTokens = false,",
+    "twin": "csharp-jwt-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.jwt.signature-validation-disabled"
+      ]
+    },
+    "title": "JWT: unsigned tokens accepted, custom SignatureValidator"
+  },
+  {
+    "id": "csharp-jwt-01-twin",
+    "kind": "secure-twin",
+    "class": "jwt",
+    "cwe": [
+      "CWE-347"
+    ],
+    "language": "csharp",
+    "file": "csharp/Program.cs",
+    "line": 43,
+    "snippet": "RequireSignedTokens = true,",
+    "twin_of": [
+      "csharp-jwt-01"
+    ],
+    "expected_engines": [],
+    "title": "Signed tokens required"
+  },
+  {
+    "id": "csharp-crypto-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "csharp",
+    "file": "csharp/Security/Passwords.cs",
+    "line": 10,
+    "snippet": "var digest = MD5.HashData(",
+    "twin": "csharp-crypto-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.crypto.weak-hash-algorithm"
+      ]
+    },
+    "title": "Weak crypto: MD5 password hash"
+  },
+  {
+    "id": "csharp-crypto-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-916"
+    ],
+    "language": "csharp",
+    "file": "csharp/Security/Passwords.cs",
+    "line": 16,
+    "snippet": "Rfc2898DeriveBytes.Pbkdf2(",
+    "twin_of": [
+      "csharp-crypto-01"
+    ],
+    "expected_engines": [],
+    "title": "PBKDF2-HMAC-SHA256"
+  },
+  {
+    "id": "csharp-crypto-02",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "csharp",
+    "file": "csharp/Security/Passwords.cs",
+    "line": 24,
+    "snippet": "return aes.EncryptEcb(",
+    "twin": "csharp-crypto-02-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.csharp.crypto.weak-cipher"
+      ]
+    },
+    "title": "Weak crypto: AES in ECB mode"
+  },
+  {
+    "id": "csharp-crypto-02-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327"
+    ],
+    "language": "csharp",
+    "file": "csharp/Security/Passwords.cs",
+    "line": 34,
+    "snippet": "gcm.Encrypt(nonce, plain, sealedBytes, tag);",
+    "twin_of": [
+      "csharp-crypto-02"
+    ],
+    "expected_engines": [],
+    "title": "AES-GCM"
+  },
+  {
+    "id": "docker-latest-tag-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-1357"
+    ],
+    "language": "dockerfile",
+    "file": "infra/Dockerfile",
+    "line": 1,
+    "snippet": "FROM python:latest",
+    "twin": "docker-latest-tag-01-twin",
+    "expected_engines": [
+      "hadolint",
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "hadolint": [
+        "DL3007"
+      ],
+      "trivy": [
+        "DS-0001"
+      ],
+      "checkov": [
+        "CKV_DOCKER_7"
+      ]
+    },
+    "title": "Dockerfile: base image uses the latest tag"
+  },
+  {
+    "id": "docker-latest-tag-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-1357"
+    ],
+    "language": "dockerfile",
+    "file": "infra/worker.Dockerfile",
+    "line": 1,
+    "snippet": "FROM python:3.12.7-slim@sha256:60d9996b6a8a3689d36db740b49f4327be3be09a21122bd02fb8895abb38b50d",
+    "twin_of": [
+      "docker-latest-tag-01"
+    ],
+    "expected_engines": [],
+    "title": "Base image pinned by a version tag and a digest"
+  },
+  {
+    "id": "docker-from-digest-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-1357"
+    ],
+    "language": "dockerfile",
+    "file": "infra/Dockerfile",
+    "line": 1,
+    "snippet": "FROM python:latest",
+    "twin": "docker-from-digest-01-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "dockerfile-from-mutable-tag"
+      ]
+    },
+    "title": "Dockerfile: base image without an @sha256 digest"
+  },
+  {
+    "id": "docker-from-digest-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-1357"
+    ],
+    "language": "dockerfile",
+    "file": "infra/worker.Dockerfile",
+    "line": 1,
+    "snippet": "@sha256:60d9996b6a8a3689d36db740b49f4327be3be09a21122bd02fb8895abb38b50d",
+    "twin_of": [
+      "docker-from-digest-01"
+    ],
+    "expected_engines": [],
+    "title": "Base image pinned by an @sha256 digest"
+  },
+  {
+    "id": "docker-curl-pipe-sh-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-494"
+    ],
+    "language": "dockerfile",
+    "file": "infra/Dockerfile",
+    "line": 4,
+    "snippet": "RUN curl -fsSL https://get.vulnapp.internal/install.sh | sh",
+    "twin": "docker-curl-pipe-sh-01-twin",
+    "expected_engines": [
+      "hadolint"
+    ],
+    "rules": {
+      "hadolint": [
+        "DL4006"
+      ]
+    },
+    "title": "Dockerfile: remote script piped into sh"
+  },
+  {
+    "id": "docker-curl-pipe-sh-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-494"
+    ],
+    "language": "dockerfile",
+    "file": "infra/worker.Dockerfile",
+    "line": 8,
+    "snippet": "RUN curl -fsSLo /tmp/install.sh",
+    "twin_of": [
+      "docker-curl-pipe-sh-01"
+    ],
+    "expected_engines": [],
+    "title": "Script downloaded and checked with sha256sum before it runs"
+  },
+  {
+    "id": "docker-add-url-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-494"
+    ],
+    "language": "dockerfile",
+    "file": "infra/Dockerfile",
+    "line": 5,
+    "snippet": "ADD https://downloads.vulnapp.internal/agent-1.4.2.tar.gz",
+    "twin": "docker-add-url-01-twin",
+    "expected_engines": [
+      "checkov"
+    ],
+    "rules": {
+      "checkov": [
+        "CKV_DOCKER_4"
+      ]
+    },
+    "title": "Dockerfile: ADD of a remote URL without checksum"
+  },
+  {
+    "id": "docker-add-url-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-494"
+    ],
+    "language": "dockerfile",
+    "file": "infra/worker.Dockerfile",
+    "line": 13,
+    "snippet": "RUN curl -fsSLo /tmp/agent.tar.gz",
+    "twin_of": [
+      "docker-add-url-01"
+    ],
+    "expected_engines": [],
+    "title": "Archive downloaded and checked with sha256sum"
+  },
+  {
+    "id": "docker-root-user-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-250"
+    ],
+    "language": "dockerfile",
+    "file": "infra/Dockerfile",
+    "line": 9,
+    "snippet": "USER root",
+    "twin": "docker-root-user-01-twin",
+    "expected_engines": [
+      "hadolint",
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "hadolint": [
+        "DL3002"
+      ],
+      "trivy": [
+        "DS-0002"
+      ],
+      "checkov": [
+        "CKV_DOCKER_8"
+      ]
+    },
+    "title": "Dockerfile: container runs as root"
+  },
+  {
+    "id": "docker-root-user-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-250"
+    ],
+    "language": "dockerfile",
+    "file": "infra/worker.Dockerfile",
+    "line": 23,
+    "snippet": "USER 10001",
+    "twin_of": [
+      "docker-root-user-01"
+    ],
+    "expected_engines": [],
+    "title": "Non-root numeric user"
+  },
+  {
+    "id": "terraform-open-ssh-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-284"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 29,
+    "snippet": "cidr_blocks = [\"0.0.0.0/0\"]",
+    "twin": "terraform-open-ssh-01-twin",
+    "expected_engines": [
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "trivy": [
+        "AWS-0107"
+      ],
+      "checkov": [
+        "CKV_AWS_24"
+      ]
+    },
+    "title": "Terraform: security group opens port 22 to 0.0.0.0/0"
+  },
+  {
+    "id": "terraform-open-ssh-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-284"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 43,
+    "snippet": "cidr_blocks = [\"10.20.0.0/16\"]",
+    "twin_of": [
+      "terraform-open-ssh-01"
+    ],
+    "expected_engines": [],
+    "title": "SSH limited to the office network"
+  },
+  {
+    "id": "terraform-public-bucket-acl-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-284"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 61,
+    "snippet": "acl    = \"public-read\"",
+    "twin": "terraform-public-bucket-acl-01-twin",
+    "expected_engines": [
+      "trivy"
+    ],
+    "rules": {
+      "trivy": [
+        "AWS-0092"
+      ]
+    },
+    "title": "Terraform: S3 bucket ACL is public-read"
+  },
+  {
+    "id": "terraform-public-bucket-acl-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-284"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 78,
+    "snippet": "acl    = \"private\"",
+    "twin_of": [
+      "terraform-public-bucket-acl-01"
+    ],
+    "expected_engines": [],
+    "title": "Private bucket ACL"
+  },
+  {
+    "id": "terraform-public-access-block-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-284"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 53,
+    "snippet": "block_public_acls       = false",
+    "twin": "terraform-public-access-block-01-twin",
+    "expected_engines": [
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "trivy": [
+        "AWS-0086"
+      ],
+      "checkov": [
+        "CKV_AWS_53"
+      ]
+    },
+    "title": "Terraform: S3 public access block turned off"
+  },
+  {
+    "id": "terraform-public-access-block-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-284"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 70,
+    "snippet": "block_public_acls       = true",
+    "twin_of": [
+      "terraform-public-access-block-01"
+    ],
+    "expected_engines": [],
+    "title": "S3 public access block turned on"
+  },
+  {
+    "id": "terraform-unencrypted-ebs-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-311"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 89,
+    "snippet": "encrypted         = false",
+    "twin": "terraform-unencrypted-ebs-01-twin",
+    "expected_engines": [
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "trivy": [
+        "AWS-0026"
+      ],
+      "checkov": [
+        "CKV_AWS_3"
+      ]
+    },
+    "title": "Terraform: EBS volume not encrypted"
+  },
+  {
+    "id": "terraform-unencrypted-ebs-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-311"
+    ],
+    "language": "terraform",
+    "file": "infra/terraform/main.tf",
+    "line": 95,
+    "snippet": "encrypted         = true",
+    "twin_of": [
+      "terraform-unencrypted-ebs-01"
+    ],
+    "expected_engines": [],
+    "title": "EBS volume encrypted with KMS"
+  },
+  {
+    "id": "kubernetes-privileged-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-250"
+    ],
+    "language": "kubernetes",
+    "file": "infra/k8s/deployment.yaml",
+    "line": 22,
+    "snippet": "privileged: true",
+    "twin": "kubernetes-privileged-01-twin",
+    "expected_engines": [
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "trivy": [
+        "KSV-0017"
+      ],
+      "checkov": [
+        "CKV_K8S_16"
+      ]
+    },
+    "title": "Kubernetes: privileged container"
+  },
+  {
+    "id": "kubernetes-privileged-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-250"
+    ],
+    "language": "kubernetes",
+    "file": "infra/k8s/deployment.yaml",
+    "line": 52,
+    "snippet": "privileged: false",
+    "twin_of": [
+      "kubernetes-privileged-01"
+    ],
+    "expected_engines": [],
+    "title": "Unprivileged container"
+  },
+  {
+    "id": "kubernetes-no-limits-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-770"
+    ],
+    "language": "kubernetes",
+    "file": "infra/k8s/deployment.yaml",
+    "line": 17,
+    "snippet": "- name: web",
+    "twin": "kubernetes-no-limits-01-twin",
+    "expected_engines": [
+      "trivy",
+      "checkov"
+    ],
+    "rules": {
+      "trivy": [
+        "KSV-0011",
+        "KSV-0018"
+      ],
+      "checkov": [
+        "CKV_K8S_11",
+        "CKV_K8S_13"
+      ]
+    },
+    "title": "Kubernetes: container without CPU and memory limits"
+  },
+  {
+    "id": "kubernetes-no-limits-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-770"
+    ],
+    "language": "kubernetes",
+    "file": "infra/k8s/deployment.yaml",
+    "line": 59,
+    "snippet": "limits:",
+    "twin_of": [
+      "kubernetes-no-limits-01"
+    ],
+    "expected_engines": [],
+    "title": "CPU and memory limits set"
+  },
+  {
+    "id": "kubernetes-namespace-psa-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-1188"
+    ],
+    "language": "kubernetes",
+    "file": "infra/k8s/namespace.yaml",
+    "line": 2,
+    "snippet": "kind: Namespace",
+    "twin": "kubernetes-namespace-psa-01-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "k8s-namespace-no-pod-security"
+      ]
+    },
+    "title": "Kubernetes: Namespace without an enforced Pod Security Admission level"
+  },
+  {
+    "id": "kubernetes-namespace-psa-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-1188"
+    ],
+    "language": "kubernetes",
+    "file": "infra/k8s/namespace.yaml",
+    "line": 11,
+    "snippet": "pod-security.kubernetes.io/enforce: restricted",
+    "twin_of": [
+      "kubernetes-namespace-psa-01"
+    ],
+    "expected_engines": [],
+    "title": "Namespace enforces the restricted Pod Security level"
+  },
+  {
+    "id": "shell-code-injection-eval-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "shell",
+    "file": "infra/scripts/release.sh",
+    "line": 7,
+    "snippet": "eval \"$1\"",
+    "twin": "shell-code-injection-eval-01-twin",
+    "expected_engines": [
+      "hunter"
+    ],
+    "title": "Shell: eval of a function argument (ShellCheck 0.11.0 has no check for it)"
+  },
+  {
+    "id": "shell-code-injection-eval-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94",
+      "CWE-95"
+    ],
+    "language": "shell",
+    "file": "infra/scripts/release.sh",
+    "line": 11,
+    "snippet": "case \"$1\" in",
+    "twin_of": [
+      "shell-code-injection-eval-01"
+    ],
+    "expected_engines": [],
+    "title": "Allow list of hook names"
+  },
+  {
+    "id": "shell-rm-unset-variable-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22",
+      "CWE-73"
+    ],
+    "language": "shell",
+    "file": "infra/scripts/release.sh",
+    "line": 19,
+    "snippet": "rm -rf $STAGE_DIR/",
+    "twin": "shell-rm-unset-variable-01-twin",
+    "expected_engines": [
+      "shellcheck"
+    ],
+    "rules": {
+      "shellcheck": [
+        "SC2115",
+        "SC2086"
+      ]
+    },
+    "title": "Shell: rm -rf of an unquoted variable that can be empty (deletes /)"
+  },
+  {
+    "id": "shell-rm-unset-variable-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22",
+      "CWE-73"
+    ],
+    "language": "shell",
+    "file": "infra/scripts/release.sh",
+    "line": 23,
+    "snippet": "rm -rf -- \"${STAGE_DIR:?}/\"",
+    "twin_of": [
+      "shell-rm-unset-variable-01"
+    ],
+    "expected_engines": [],
+    "title": "Quoted variable that must not be empty"
+  },
+  {
+    "id": "shell-ssh-command-injection-01",
+    "kind": "vulnerable",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "shell",
+    "file": "infra/scripts/release.sh",
+    "line": 27,
+    "snippet": "ssh deploy@web.vulnapp.internal \"tar -xzf $1",
+    "twin": "shell-ssh-command-injection-01-twin",
+    "expected_engines": [
+      "shellcheck"
+    ],
+    "rules": {
+      "shellcheck": [
+        "SC2029"
+      ]
+    },
+    "title": "Shell: remote ssh command string built from an argument"
+  },
+  {
+    "id": "shell-ssh-command-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "os-command-injection",
+    "cwe": [
+      "CWE-78"
+    ],
+    "language": "shell",
+    "file": "infra/scripts/release.sh",
+    "line": 32,
+    "snippet": "ssh deploy@web.vulnapp.internal 'tar -xzf /srv/incoming/release.tgz",
+    "twin_of": [
+      "shell-ssh-command-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Constant remote command; the file is uploaded under a fixed name"
+  },
+  {
+    "id": "nginx-alias-traversal-01",
+    "kind": "vulnerable",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "nginx",
+    "file": "infra/nginx/shop.conf",
+    "line": 9,
+    "snippet": "alias /srv/vulnapp/static/;",
+    "twin": "nginx-alias-traversal-01-twin",
+    "expected_engines": [
+      "gixy"
+    ],
+    "rules": {
+      "gixy": [
+        "alias_traversal"
+      ]
+    },
+    "title": "nginx: alias in a location without a trailing slash (path traversal)"
+  },
+  {
+    "id": "nginx-alias-traversal-01-twin",
+    "kind": "secure-twin",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "language": "nginx",
+    "file": "infra/nginx/shop.conf",
+    "line": 13,
+    "snippet": "alias /srv/vulnapp/media/;",
+    "twin_of": [
+      "nginx-alias-traversal-01"
+    ],
+    "expected_engines": [],
+    "title": "Location and alias both end with a slash"
+  },
+  {
+    "id": "nginx-ssrf-01",
+    "kind": "vulnerable",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "nginx",
+    "file": "infra/nginx/shop.conf",
+    "line": 17,
+    "snippet": "proxy_pass http://$arg_host;",
+    "twin": "nginx-ssrf-01-twin",
+    "expected_engines": [
+      "gixy"
+    ],
+    "rules": {
+      "gixy": [
+        "ssrf"
+      ]
+    },
+    "title": "nginx: proxy_pass to a host from a query argument (SSRF)"
+  },
+  {
+    "id": "nginx-ssrf-01-twin",
+    "kind": "secure-twin",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "language": "nginx",
+    "file": "infra/nginx/shop.conf",
+    "line": 21,
+    "snippet": "proxy_pass http://api.vulnapp.internal:8080;",
+    "twin_of": [
+      "nginx-ssrf-01"
+    ],
+    "expected_engines": [],
+    "title": "Fixed upstream"
+  },
+  {
+    "id": "c-strcpy-overflow-01",
+    "kind": "vulnerable",
+    "class": "memory-safety",
+    "cwe": [
+      "CWE-787",
+      "CWE-120"
+    ],
+    "language": "c",
+    "file": "native/labels.c",
+    "line": 8,
+    "snippet": "strcpy(buf, name);",
+    "twin": "c-strcpy-overflow-01-twin",
+    "expected_engines": [
+      "flawfinder",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "flawfinder": [
+        "FF1001"
+      ],
+      "opengrep-packs": [
+        "0xdea.c.raptor-insecure-api-strcpy-strcat"
+      ]
+    },
+    "title": "C: strcpy of an argument into a fixed buffer"
+  },
+  {
+    "id": "c-strcpy-overflow-01-twin",
+    "kind": "secure-twin",
+    "class": "memory-safety",
+    "cwe": [
+      "CWE-787",
+      "CWE-120"
+    ],
+    "language": "c",
+    "file": "native/labels.c",
+    "line": 15,
+    "snippet": "snprintf(buf, sizeof buf, \"%s\", name);",
+    "twin_of": [
+      "c-strcpy-overflow-01"
+    ],
+    "expected_engines": [],
+    "title": "Bounded copy with snprintf"
+  },
+  {
+    "id": "c-sprintf-overflow-01",
+    "kind": "vulnerable",
+    "class": "memory-safety",
+    "cwe": [
+      "CWE-787",
+      "CWE-120"
+    ],
+    "language": "c",
+    "file": "native/labels.c",
+    "line": 22,
+    "snippet": "sprintf(label, \"customer: %s\", name);",
+    "twin": "c-sprintf-overflow-01-twin",
+    "expected_engines": [
+      "flawfinder",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "flawfinder": [
+        "FF1015"
+      ],
+      "opengrep-packs": [
+        "0xdea.c.raptor-insecure-api-sprintf-vsprintf"
+      ]
+    },
+    "title": "C: sprintf of an argument into a fixed buffer"
+  },
+  {
+    "id": "c-sprintf-overflow-01-twin",
+    "kind": "secure-twin",
+    "class": "memory-safety",
+    "cwe": [
+      "CWE-787",
+      "CWE-120"
+    ],
+    "language": "c",
+    "file": "native/labels.c",
+    "line": 29,
+    "snippet": "snprintf(label, sizeof label, \"customer: %s\", name);",
+    "twin_of": [
+      "c-sprintf-overflow-01"
+    ],
+    "expected_engines": [],
+    "title": "Bounded formatting with snprintf"
+  },
+  {
+    "id": "c-gets-overflow-01",
+    "kind": "vulnerable",
+    "class": "memory-safety",
+    "cwe": [
+      "CWE-787",
+      "CWE-120",
+      "CWE-242"
+    ],
+    "language": "c",
+    "file": "native/labels.c",
+    "line": 36,
+    "snippet": "gets(note);",
+    "twin": "c-gets-overflow-01-twin",
+    "expected_engines": [
+      "flawfinder",
+      "opengrep-packs"
+    ],
+    "rules": {
+      "flawfinder": [
+        "FF1014"
+      ],
+      "opengrep-packs": [
+        "0xdea.c.raptor-insecure-api-gets"
+      ]
+    },
+    "title": "C: gets into a fixed buffer"
+  },
+  {
+    "id": "c-gets-overflow-01-twin",
+    "kind": "secure-twin",
+    "class": "memory-safety",
+    "cwe": [
+      "CWE-787",
+      "CWE-120",
+      "CWE-242"
+    ],
+    "language": "c",
+    "file": "native/labels.c",
+    "line": 43,
+    "snippet": "if (fgets(note, sizeof note, stdin) != NULL) {",
+    "twin_of": [
+      "c-gets-overflow-01"
+    ],
+    "expected_engines": [],
+    "title": "fgets with the buffer size"
+  },
+  {
+    "id": "native-committed-binary-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-1357"
+    ],
+    "language": "c",
+    "file": "native/bin/labelprint",
+    "line": 1,
+    "snippet": "ELF",
+    "twin": "native-committed-binary-01-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "committed-binary"
+      ]
+    },
+    "title": "Executable committed to the repository (ELF header; a header-only test file)"
+  },
+  {
+    "id": "native-committed-binary-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-1357"
+    ],
+    "language": "c",
+    "file": "native/testdata/labelprint.elf",
+    "line": 1,
+    "snippet": "ELF",
+    "twin_of": [
+      "native-committed-binary-01"
+    ],
+    "expected_engines": [],
+    "title": "The same header in a test data folder, which the rule leaves out"
+  },
+  {
+    "id": "secret-aws-access-key-id-01",
+    "kind": "vulnerable",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 5,
+    "snippet": "aws_access_key_id = AKIA",
+    "twin": "secret-aws-access-key-id-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.generic.hardcoded-secrets.aws-access-key-id",
+        "kalkan.generic.hardcoded-secrets.aws-secret-access-key"
+      ]
+    },
+    "title": "Hardcoded AWS access key ID (AWS documentation example)"
+  },
+  {
+    "id": "secret-aws-access-key-id-01-twin",
+    "kind": "secure-twin",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 10,
+    "snippet": "aws_access_key_id = ${AWS_ACCESS_KEY_ID}",
+    "twin_of": [
+      "secret-aws-access-key-id-01"
+    ],
+    "expected_engines": [],
+    "title": "Key read from the environment"
+  },
+  {
+    "id": "secret-aws-secret-access-key-01",
+    "kind": "vulnerable",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 6,
+    "snippet": "aws_secret_access_key = wJalr",
+    "twin": "secret-aws-secret-access-key-01-twin",
+    "expected_engines": [
+      "opengrep"
+    ],
+    "rules": {
+      "opengrep": [
+        "kalkan.generic.hardcoded-secrets.aws-access-key-id",
+        "kalkan.generic.hardcoded-secrets.aws-secret-access-key"
+      ]
+    },
+    "title": "Hardcoded AWS secret access key (AWS documentation example)"
+  },
+  {
+    "id": "secret-aws-secret-access-key-01-twin",
+    "kind": "secure-twin",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 11,
+    "snippet": "aws_secret_access_key = ${AWS_SECRET_ACCESS_KEY}",
+    "twin_of": [
+      "secret-aws-secret-access-key-01"
+    ],
+    "expected_engines": [],
+    "title": "Secret read from the environment"
+  },
+  {
+    "id": "secret-password-01",
+    "kind": "vulnerable",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 16,
+    "snippet": "password = \"Kq7v",
+    "twin": "secret-password-01-twin",
+    "expected_engines": [
+      "gitleaks"
+    ],
+    "rules": {
+      "gitleaks": [
+        "generic-api-key"
+      ]
+    },
+    "title": "Hardcoded SMTP password in a config file"
+  },
+  {
+    "id": "secret-password-01-twin",
+    "kind": "secure-twin",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 21,
+    "snippet": "password = ${VULNAPP_DB_PASSWORD}",
+    "twin_of": [
+      "secret-password-01"
+    ],
+    "expected_engines": [],
+    "title": "Password read from the environment"
+  },
+  {
+    "id": "secret-private-key-01",
+    "kind": "vulnerable",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798",
+      "CWE-321"
+    ],
+    "language": "config",
+    "file": "config/deploy_key.pem",
+    "line": 1,
+    "snippet": "BEGIN RSA PRIVATE KEY",
+    "twin": "secret-private-key-01-twin",
+    "expected_engines": [
+      "gitleaks",
+      "trivy",
+      "kingfisher"
+    ],
+    "rules": {
+      "gitleaks": [
+        "private-key"
+      ],
+      "trivy": [
+        "private-key"
+      ],
+      "kingfisher": [
+        "betterleaks.private-key"
+      ]
+    },
+    "title": "Private key file in the repository (fake body)"
+  },
+  {
+    "id": "secret-private-key-01-twin",
+    "kind": "secure-twin",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798",
+      "CWE-321"
+    ],
+    "language": "config",
+    "file": "config/deploy_key.pub.pem",
+    "line": 1,
+    "snippet": "BEGIN PUBLIC KEY",
+    "twin_of": [
+      "secret-private-key-01"
+    ],
+    "expected_engines": [],
+    "title": "Public key file (not a secret)"
+  },
+  {
+    "id": "secret-credential-uri-01",
+    "kind": "vulnerable",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 24,
+    "snippet": "url = postgres://report:",
+    "twin": "secret-credential-uri-01-twin",
+    "expected_engines": [
+      "kingfisher"
+    ],
+    "rules": {
+      "kingfisher": [
+        "betterleaks.generic-credential-uri"
+      ]
+    },
+    "title": "Hardcoded database password in a connection URI"
+  },
+  {
+    "id": "secret-credential-uri-01-twin",
+    "kind": "secure-twin",
+    "class": "hardcoded-secrets",
+    "cwe": [
+      "CWE-798"
+    ],
+    "language": "config",
+    "file": "config/settings.ini",
+    "line": 27,
+    "snippet": "url = postgres://report@analytics.vulnapp.internal:5432/reports",
+    "twin_of": [
+      "secret-credential-uri-01"
+    ],
+    "expected_engines": [],
+    "title": "Connection URI without a password (PGPASSWORD from the environment)"
+  },
+  {
+    "id": "python-dep-django-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 2,
+    "snippet": "Django==3.2.0",
+    "twin": "python-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "PyPI",
+      "name": "django",
+      "version": "3.2.0"
+    },
+    "title": "Vulnerable dependency: Django 3.2.0 (not imported by the app)"
+  },
+  {
+    "id": "python-dep-flask-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 3,
+    "snippet": "Flask==0.12",
+    "twin": "python-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "PyPI",
+      "name": "flask",
+      "version": "0.12"
+    },
+    "title": "Vulnerable dependency: Flask 0.12"
+  },
+  {
+    "id": "python-dep-pyyaml-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 4,
+    "snippet": "PyYAML==5.3",
+    "twin": "python-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "PyPI",
+      "name": "pyyaml",
+      "version": "5.3"
+    },
+    "title": "Vulnerable dependency: PyYAML 5.3"
+  },
+  {
+    "id": "python-dep-twin",
+    "kind": "secure-twin",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 5,
+    "snippet": "MarkupSafe==3.0.2",
+    "twin_of": [
+      "python-dep-django-01",
+      "python-dep-flask-01",
+      "python-dep-pyyaml-01"
+    ],
+    "expected_engines": [],
+    "package": {
+      "ecosystem": "PyPI",
+      "name": "markupsafe",
+      "version": "3.0.2"
+    },
+    "title": "Dependency pinned to a version without known advisories"
+  },
+  {
+    "id": "python-dep-malicious-01",
+    "kind": "vulnerable",
+    "class": "malicious-dependency",
+    "cwe": [
+      "CWE-506"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 6,
+    "snippet": "sample-module==0.0.1",
+    "twin": "python-dep-malicious-01-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "rules": {
+      "osv-scanner": [
+        "MAL-2025-41758"
+      ],
+      "grype": [
+        "GHSA-2g5x-c76j-3h73"
+      ]
+    },
+    "package": {
+      "ecosystem": "PyPI",
+      "name": "sample-module",
+      "version": "0.0.1"
+    },
+    "title": "Malicious dependency: sample-module 0.0.1 (OpenSSF MAL-2025-41758; never installed)"
+  },
+  {
+    "id": "python-dep-malicious-01-twin",
+    "kind": "secure-twin",
+    "class": "malicious-dependency",
+    "cwe": [
+      "CWE-506"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 7,
+    "snippet": "itsdangerous==2.2.0",
+    "twin_of": [
+      "python-dep-malicious-01"
+    ],
+    "expected_engines": [],
+    "package": {
+      "ecosystem": "PyPI",
+      "name": "itsdangerous",
+      "version": "2.2.0"
+    },
+    "title": "Dependency pinned to a version that no malware or advisory record lists"
+  },
+  {
+    "id": "python-pip-index-http-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-319"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 8,
+    "snippet": "--extra-index-url http://pypi.vulnapp.internal/simple/",
+    "twin": "python-pip-index-http-01-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "pip-index-insecure"
+      ]
+    },
+    "title": "pip requirements: extra package index over plain HTTP"
+  },
+  {
+    "id": "python-pip-index-http-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-319"
+    ],
+    "language": "python",
+    "file": "python/requirements.txt",
+    "line": 1,
+    "snippet": "--index-url https://pypi.org/simple/",
+    "twin_of": [
+      "python-pip-index-http-01"
+    ],
+    "expected_engines": [],
+    "title": "pip requirements: one package index over HTTPS"
+  },
+  {
+    "id": "javascript-dep-lodash-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 24,
+    "snippet": "\"node_modules/lodash\": {",
+    "twin": "javascript-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "npm",
+      "name": "lodash",
+      "version": "4.17.15"
+    },
+    "title": "Vulnerable dependency: lodash 4.17.15"
+  },
+  {
+    "id": "javascript-dep-minimist-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 30,
+    "snippet": "\"node_modules/minimist\": {",
+    "twin": "javascript-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "npm",
+      "name": "minimist",
+      "version": "1.2.0"
+    },
+    "title": "Vulnerable dependency: minimist 1.2.0"
+  },
+  {
+    "id": "javascript-dep-node-serialize-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 36,
+    "snippet": "\"node_modules/node-serialize\": {",
+    "twin": "javascript-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "npm",
+      "name": "node-serialize",
+      "version": "0.0.4"
+    },
+    "title": "Vulnerable dependency: node-serialize 0.0.4"
+  },
+  {
+    "id": "javascript-dep-twin",
+    "kind": "secure-twin",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 18,
+    "snippet": "\"node_modules/escape-html\": {",
+    "twin_of": [
+      "javascript-dep-lodash-01",
+      "javascript-dep-minimist-01",
+      "javascript-dep-node-serialize-01"
+    ],
+    "expected_engines": [],
+    "package": {
+      "ecosystem": "npm",
+      "name": "escape-html",
+      "version": "1.0.3"
+    },
+    "title": "Dependency pinned to a version without known advisories"
+  },
+  {
+    "id": "javascript-lockfile-registry-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-1357"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 26,
+    "snippet": "\"resolved\": \"https://npm.vulnapp-mirror.net/lodash/-/lodash-4.17.15.tgz\"",
+    "twin": "javascript-lockfile-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "lockfile-unexpected-registry"
+      ]
+    },
+    "title": "Lockfile entry from a registry other than registry.npmjs.org"
+  },
+  {
+    "id": "javascript-lockfile-http-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-319"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 32,
+    "snippet": "\"resolved\": \"http://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz\"",
+    "twin": "javascript-lockfile-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "lockfile-insecure-url"
+      ]
+    },
+    "title": "Lockfile entry downloaded over plain HTTP"
+  },
+  {
+    "id": "javascript-lockfile-integrity-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-494"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 38,
+    "snippet": "\"resolved\": \"https://registry.npmjs.org/node-serialize/-/node-serialize-0.0.4.tgz\"",
+    "twin": "javascript-lockfile-twin",
+    "expected_engines": [
+      "matcher"
+    ],
+    "rules": {
+      "matcher": [
+        "lockfile-missing-integrity"
+      ]
+    },
+    "title": "Lockfile entry without an integrity hash"
+  },
+  {
+    "id": "javascript-lockfile-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-1357"
+    ],
+    "language": "javascript",
+    "file": "node/package-lock.json",
+    "line": 20,
+    "snippet": "\"resolved\": \"https://registry.npmjs.org/escape-html/-/escape-html-1.0.3.tgz\"",
+    "twin_of": [
+      "javascript-lockfile-registry-01",
+      "javascript-lockfile-http-01",
+      "javascript-lockfile-integrity-01"
+    ],
+    "expected_engines": [],
+    "title": "Lockfile entry from registry.npmjs.org over HTTPS with an integrity hash"
+  },
+  {
+    "id": "javascript-vendored-bootstrap-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "javascript",
+    "file": "csharp/wwwroot/lib/bootstrap/js/bootstrap.min.js",
+    "line": 2,
+    "snippet": "Bootstrap v3.3.7",
+    "twin": "javascript-vendored-twin",
+    "expected_engines": [
+      "retirejs",
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "npm",
+      "name": "bootstrap",
+      "version": "3.3.7"
+    },
+    "title": "Vendored JavaScript library without a manifest: Bootstrap 3.3.7"
+  },
+  {
+    "id": "javascript-vendored-twin",
+    "kind": "secure-twin",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "javascript",
+    "file": "csharp/wwwroot/lib/bootstrap-current/js/bootstrap.bundle.min.js",
+    "line": 2,
+    "snippet": "Bootstrap v5.3.8",
+    "twin_of": [
+      "javascript-vendored-bootstrap-01"
+    ],
+    "expected_engines": [],
+    "package": {
+      "ecosystem": "npm",
+      "name": "bootstrap",
+      "version": "5.3.8"
+    },
+    "title": "Vendored JavaScript library of a version without known advisories"
+  },
+  {
+    "id": "go-dep-x-text-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "go",
+    "file": "go/go.mod",
+    "line": 7,
+    "snippet": "golang.org/x/text v0.3.7",
+    "twin": "go-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "Go",
+      "name": "golang.org/x/text",
+      "version": "0.3.7"
+    },
+    "title": "Vulnerable dependency: golang.org/x/text v0.3.7 (required, not imported)"
+  },
+  {
+    "id": "go-dep-twin",
+    "kind": "secure-twin",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "go",
+    "file": "go/go.mod",
+    "line": 6,
+    "snippet": "github.com/google/uuid v1.6.0",
+    "twin_of": [
+      "go-dep-x-text-01"
+    ],
+    "expected_engines": [],
+    "package": {
+      "ecosystem": "Go",
+      "name": "github.com/google/uuid",
+      "version": "1.6.0"
+    },
+    "title": "Dependency pinned to a version without known advisories"
+  },
+  {
+    "id": "java-dep-commons-collections-01",
+    "kind": "vulnerable",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "java",
+    "file": "java/pom.xml",
+    "line": 47,
+    "snippet": "<artifactId>commons-collections</artifactId>",
+    "twin": "java-dep-twin",
+    "expected_engines": [
+      "osv-scanner",
+      "grype"
+    ],
+    "package": {
+      "ecosystem": "Maven",
+      "name": "commons-collections:commons-collections",
+      "version": "3.2.1"
+    },
+    "title": "Vulnerable dependency: commons-collections 3.2.1 (deserialization gadget chain)"
+  },
+  {
+    "id": "java-dep-twin",
+    "kind": "secure-twin",
+    "class": "vulnerable-dependency",
+    "cwe": [
+      "CWE-1395"
+    ],
+    "language": "java",
+    "file": "java/pom.xml",
+    "line": 32,
+    "snippet": "<artifactId>java-jwt</artifactId>",
+    "twin_of": [
+      "java-dep-commons-collections-01"
+    ],
+    "expected_engines": [],
+    "package": {
+      "ecosystem": "Maven",
+      "name": "com.auth0:java-jwt",
+      "version": "4.6.2"
+    },
+    "title": "Dependency pinned to a version without known advisories"
+  },
+  {
+    "id": "cicd-permissions-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-250"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/issue-triage.yml",
+    "line": 7,
+    "snippet": "permissions: write-all",
+    "twin": "cicd-permissions-01-twin",
+    "expected_engines": [
+      "zizmor"
+    ],
+    "rules": {
+      "zizmor": [
+        "zizmor/excessive-permissions"
+      ]
+    },
+    "title": "Workflow token with write-all permissions"
+  },
+  {
+    "id": "cicd-permissions-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829",
+      "CWE-250"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/issue-labels.yml",
+    "line": 8,
+    "snippet": "contents: read",
+    "twin_of": [
+      "cicd-permissions-01"
+    ],
+    "expected_engines": [],
+    "title": "Read-only token at the top level; write access only in the job that needs it"
+  },
+  {
+    "id": "cicd-template-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/issue-triage.yml",
+    "line": 19,
+    "snippet": "echo \"Triage request: ${{ github.event.issue.title }}\"",
+    "twin": "cicd-template-injection-01-twin",
+    "expected_engines": [
+      "zizmor",
+      "actionlint"
+    ],
+    "rules": {
+      "zizmor": [
+        "zizmor/template-injection"
+      ],
+      "actionlint": [
+        "expression/untrusted-input"
+      ]
+    },
+    "title": "Template injection: the issue title expands into a run script"
+  },
+  {
+    "id": "cicd-template-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/issue-labels.yml",
+    "line": 23,
+    "snippet": "echo \"Triage request: $TITLE\"",
+    "twin_of": [
+      "cicd-template-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Issue title passed to the script through an environment variable"
+  },
+  {
+    "id": "cicd-untrusted-checkout-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/pr-preview.yml",
+    "line": 4,
+    "snippet": "pull_request_target:",
+    "twin": "cicd-untrusted-checkout-01-twin",
+    "expected_engines": [
+      "zizmor"
+    ],
+    "rules": {
+      "zizmor": [
+        "zizmor/dangerous-triggers"
+      ]
+    },
+    "title": "pull_request_target workflow checks out and builds the pull request head"
+  },
+  {
+    "id": "cicd-untrusted-checkout-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/pr-checks.yml",
+    "line": 4,
+    "snippet": "pull_request:",
+    "twin_of": [
+      "cicd-untrusted-checkout-01"
+    ],
+    "expected_engines": [],
+    "title": "Pull request head built under the unprivileged pull_request trigger"
+  },
+  {
+    "id": "cicd-unpinned-action-01",
+    "kind": "vulnerable",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/pr-preview.yml",
+    "line": 23,
+    "snippet": "uses: shopkit-actions/preview-comment@v2",
+    "twin": "cicd-unpinned-action-01-twin",
+    "expected_engines": [
+      "zizmor"
+    ],
+    "rules": {
+      "zizmor": [
+        "zizmor/unpinned-uses"
+      ]
+    },
+    "title": "Third-party action referenced by a mutable tag"
+  },
+  {
+    "id": "cicd-unpinned-action-01-twin",
+    "kind": "secure-twin",
+    "class": "supply-chain-cicd",
+    "cwe": [
+      "CWE-829"
+    ],
+    "language": "github-actions",
+    "file": ".github/workflows/pr-checks.yml",
+    "line": 23,
+    "snippet": "uses: shopkit-actions/preview-comment@5e2b9c7a41d06f38c1a9e4b7d2f05c83a6e19b70",
+    "twin_of": [
+      "cicd-unpinned-action-01"
+    ],
+    "expected_engines": [],
+    "title": "Third-party action pinned to a full commit SHA"
+  },
+  {
+    "id": "cicd-azure-injection-01",
+    "kind": "vulnerable",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94"
+    ],
+    "language": "azure-pipelines",
+    "file": "azure-pipelines.yml",
+    "line": 14,
+    "snippet": "- script: echo \"Building $(Build.SourceBranchName)\"",
+    "twin": "cicd-azure-injection-01-twin",
+    "expected_engines": [
+      "poutine"
+    ],
+    "rules": {
+      "poutine": [
+        "injection"
+      ]
+    },
+    "title": "Azure Pipelines macro: the source branch name expands into a script"
+  },
+  {
+    "id": "cicd-azure-injection-01-twin",
+    "kind": "secure-twin",
+    "class": "code-injection",
+    "cwe": [
+      "CWE-94"
+    ],
+    "language": "azure-pipelines",
+    "file": "azure-pipelines.yml",
+    "line": 17,
+    "snippet": "- script: echo \"Building $BRANCH_NAME\"",
+    "twin_of": [
+      "cicd-azure-injection-01"
+    ],
+    "expected_engines": [],
+    "title": "Source branch name passed to the script through an environment variable"
+  },
+  {
+    "id": "helm-privileged-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-250"
+    ],
+    "language": "helm",
+    "file": "infra/helm/shop/templates/log-agent.yaml",
+    "line": 26,
+    "snippet": "privileged: {{ .Values.logAgent.privileged }}",
+    "twin": "helm-privileged-01-twin",
+    "expected_engines": [
+      "helm-checkov"
+    ],
+    "rules": {
+      "helm-checkov": [
+        "CKV_K8S_16"
+      ]
+    },
+    "title": "Helm chart: privileged container (true from values.yaml)"
+  },
+  {
+    "id": "helm-privileged-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-250"
+    ],
+    "language": "helm",
+    "file": "infra/helm/shop/templates/web.yaml",
+    "line": 25,
+    "snippet": "privileged: {{ .Values.web.privileged }}",
+    "twin_of": [
+      "helm-privileged-01"
+    ],
+    "expected_engines": [],
+    "title": "Unprivileged container (false from values.yaml)"
+  },
+  {
+    "id": "helm-host-network-01",
+    "kind": "vulnerable",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-653"
+    ],
+    "language": "helm",
+    "file": "infra/helm/shop/templates/log-agent.yaml",
+    "line": 17,
+    "snippet": "hostNetwork: {{ .Values.logAgent.hostNetwork }}",
+    "twin": "helm-host-network-01-twin",
+    "expected_engines": [
+      "helm-checkov"
+    ],
+    "rules": {
+      "helm-checkov": [
+        "CKV_K8S_19"
+      ]
+    },
+    "title": "Helm chart: pod shares the host network namespace (true from values.yaml)"
+  },
+  {
+    "id": "helm-host-network-01-twin",
+    "kind": "secure-twin",
+    "class": "iac-cloud-container",
+    "cwe": [
+      "CWE-16",
+      "CWE-653"
+    ],
+    "language": "helm",
+    "file": "infra/helm/shop/templates/web.yaml",
+    "line": 17,
+    "snippet": "hostNetwork: {{ .Values.web.hostNetwork }}",
+    "twin_of": [
+      "helm-host-network-01"
+    ],
+    "expected_engines": [],
+    "title": "Pod in its own network namespace (false from values.yaml)"
+  },
+  {
+    "id": "openapi-http-server-01",
+    "kind": "vulnerable",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-319"
+    ],
+    "language": "openapi",
+    "file": "api/shop-api.yaml",
+    "line": 7,
+    "snippet": "- url: http://shop.vulnapp.internal/v1",
+    "twin": "openapi-http-server-01-twin",
+    "expected_engines": [
+      "vacuum"
+    ],
+    "rules": {
+      "vacuum": [
+        "owasp-security-hosts-https-oas3"
+      ]
+    },
+    "title": "OpenAPI: server URL without TLS"
+  },
+  {
+    "id": "openapi-http-server-01-twin",
+    "kind": "secure-twin",
+    "class": "crypto",
+    "cwe": [
+      "CWE-327",
+      "CWE-319"
+    ],
+    "language": "openapi",
+    "file": "api/partner-api.yaml",
+    "line": 7,
+    "snippet": "- url: https://partners.vulnapp.internal/v1",
+    "twin_of": [
+      "openapi-http-server-01"
+    ],
+    "expected_engines": [],
+    "title": "Server URL with TLS"
+  },
+  {
+    "id": "openapi-no-auth-01",
+    "kind": "vulnerable",
+    "class": "authn",
+    "cwe": [
+      "CWE-287",
+      "CWE-306"
+    ],
+    "language": "openapi",
+    "file": "api/shop-api.yaml",
+    "line": 10,
+    "snippet": "post:",
+    "twin": "openapi-no-auth-01-twin",
+    "expected_engines": [
+      "vacuum",
+      "checkov"
+    ],
+    "rules": {
+      "vacuum": [
+        "owasp-protection-global-unsafe",
+        "owasp-protection-global-unsafe-strict"
+      ],
+      "checkov": [
+        "CKV_OPENAPI_4"
+      ]
+    },
+    "title": "OpenAPI: operation that changes data without a security requirement"
+  },
+  {
+    "id": "openapi-no-auth-01-twin",
+    "kind": "secure-twin",
+    "class": "authn",
+    "cwe": [
+      "CWE-287",
+      "CWE-306"
+    ],
+    "language": "openapi",
+    "file": "api/partner-api.yaml",
+    "line": 14,
+    "snippet": "security:",
+    "twin_of": [
+      "openapi-no-auth-01"
+    ],
+    "expected_engines": [],
+    "title": "Operation with a security requirement"
+  },
+  {
+    "id": "openapi-api-key-in-query-01",
+    "kind": "vulnerable",
+    "class": "sensitive-data-exposure",
+    "cwe": [
+      "CWE-200",
+      "CWE-598"
+    ],
+    "language": "openapi",
+    "file": "api/shop-api.yaml",
+    "line": 61,
+    "snippet": "in: query",
+    "twin": "openapi-api-key-in-query-01-twin",
+    "expected_engines": [
+      "vacuum"
+    ],
+    "rules": {
+      "vacuum": [
+        "owasp-no-api-keys-in-url"
+      ]
+    },
+    "title": "OpenAPI: API key passed in the query string"
+  },
+  {
+    "id": "openapi-api-key-in-query-01-twin",
+    "kind": "secure-twin",
+    "class": "sensitive-data-exposure",
+    "cwe": [
+      "CWE-200",
+      "CWE-598"
+    ],
+    "language": "openapi",
+    "file": "api/partner-api.yaml",
+    "line": 40,
+    "snippet": "in: header",
+    "twin_of": [
+      "openapi-api-key-in-query-01"
+    ],
+    "expected_engines": [],
+    "title": "API key passed in a header"
+  },
+  {
+    "id": "openapi-unbounded-string-01",
+    "kind": "vulnerable",
+    "class": "dos-redos",
+    "cwe": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "language": "openapi",
+    "file": "api/shop-api.yaml",
+    "line": 136,
+    "snippet": "giftMessage:",
+    "twin": "openapi-unbounded-string-01-twin",
+    "expected_engines": [
+      "vacuum"
+    ],
+    "rules": {
+      "vacuum": [
+        "owasp-string-limit"
+      ]
+    },
+    "title": "OpenAPI: request string without maxLength"
+  },
+  {
+    "id": "openapi-unbounded-string-01-twin",
+    "kind": "secure-twin",
+    "class": "dos-redos",
+    "cwe": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "language": "openapi",
+    "file": "api/partner-api.yaml",
+    "line": 117,
+    "snippet": "maxLength: 200",
+    "twin_of": [
+      "openapi-unbounded-string-01"
+    ],
+    "expected_engines": [],
+    "title": "Request string with maxLength"
+  },
+  {
+    "id": "openapi-mass-assignment-01",
+    "kind": "vulnerable",
+    "class": "mass-assignment",
+    "cwe": [
+      "CWE-915"
+    ],
+    "language": "openapi",
+    "file": "api/shop-api.yaml",
+    "line": 139,
+    "snippet": "CheckoutInput:",
+    "twin": "openapi-mass-assignment-01-twin",
+    "expected_engines": [
+      "vacuum"
+    ],
+    "rules": {
+      "vacuum": [
+        "owasp-no-additionalProperties"
+      ]
+    },
+    "title": "OpenAPI: request object accepts additional properties"
+  },
+  {
+    "id": "openapi-mass-assignment-01-twin",
+    "kind": "secure-twin",
+    "class": "mass-assignment",
+    "cwe": [
+      "CWE-915"
+    ],
+    "language": "openapi",
+    "file": "api/partner-api.yaml",
+    "line": 103,
+    "snippet": "additionalProperties: false",
+    "twin_of": [
+      "openapi-mass-assignment-01"
+    ],
+    "expected_engines": [],
+    "title": "Request object with additionalProperties: false"
+  }
+]

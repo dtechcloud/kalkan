@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "slug": "dotnet-azure-function",
+  "description": "Azure Functions C# entry points (gated on Azure Functions)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.cs"
+  ],
+  "exclude_file_patterns": [
+    "**/{Tests,UnitTests,IntegrationTests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "dotnet",
+      "azure-functions"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\[\\s*FunctionName\\s*\\(\\s*\"[^\"]+\"\\s*\\)\\s*\\]",
+      "flags": "",
+      "label": "[FunctionName(...)] attribute"
+    },
+    {
+      "regex": "\\[\\s*Function\\s*\\(\\s*\"[^\"]+\"\\s*\\)\\s*\\]",
+      "flags": "",
+      "label": "[Function(...)] attribute"
+    },
+    {
+      "regex": "\\[\\s*HttpTrigger\\s*\\(\\s*AuthorizationLevel\\.(Anonymous|Function|Admin)\\b",
+      "flags": "",
+      "label": "[HttpTrigger(AuthorizationLevel.X)] — verify Anonymous is intentional"
+    },
+    {
+      "regex": "\\[\\s*ServiceBusTrigger\\b|\\[\\s*QueueTrigger\\b",
+      "flags": "",
+      "label": "queue trigger entry"
+    }
+  ],
+  "examples": [
+    "[FunctionName(\"HttpTriggerCSharp\")]",
+    "[ FunctionName ( \"ProcessOrder\" ) ]",
+    "[Function(\"MyIsolatedFunction\")]",
+    "[Function ( \"QueueProcessor\" )]",
+    "[HttpTrigger(AuthorizationLevel.Anonymous, \"get\", \"post\")]",
+    "[HttpTrigger(AuthorizationLevel.Function, \"post\", Route = \"items\")]",
+    "[HttpTrigger(AuthorizationLevel.Admin, \"delete\")]",
+    "[ServiceBusTrigger(\"orders\", Connection = \"ServiceBus\")]",
+    "[QueueTrigger(\"myqueue\", Connection = \"AzureWebJobsStorage\")]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dotnet-azure-function.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. deepsec gates on azure-functions or dotnet; kalkan gates on dotnet (C# sources)."
+}

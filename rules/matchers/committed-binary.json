@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "slug": "committed-binary",
+  "description": "Executable or compiled binary file committed to the repository (outside vendored and test folders)",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829",
+    "CWE-1357"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*"
+  ],
+  "exclude_file_patterns": [
+    "**/{vendor,vendors,third_party,third-party,thirdparty,external,extern,deps,bower_components,Pods,Carthage}/**",
+    "**/{test,tests,testdata,test-data,test_data,__tests__,fixtures,__fixtures__,spec,specs,e2e}/**",
+    "**/gradle/wrapper/gradle-wrapper.jar",
+    "**/.mvn/wrapper/maven-wrapper.jar"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_signatures": [
+    {
+      "hex": "7f454c46",
+      "label": "ELF executable or library"
+    },
+    {
+      "hex": "4d5a",
+      "label": "Windows PE executable or DLL (MZ header)"
+    },
+    {
+      "hex": "feedface",
+      "label": "Mach-O executable (32-bit)"
+    },
+    {
+      "hex": "feedfacf",
+      "label": "Mach-O executable (64-bit)"
+    },
+    {
+      "hex": "cefaedfe",
+      "label": "Mach-O executable (32-bit, little-endian)"
+    },
+    {
+      "hex": "cffaedfe",
+      "label": "Mach-O executable (64-bit, little-endian)"
+    },
+    {
+      "hex": "cafebabe",
+      "label": "Mach-O universal binary or Java class file"
+    },
+    {
+      "hex": "0061736d",
+      "label": "WebAssembly module"
+    }
+  ],
+  "name_patterns": [
+    {
+      "glob": "**/*.{exe,dll,msi,sys,ocx,scr,cpl,drv,efi}",
+      "label": "Windows executable, library or driver"
+    },
+    {
+      "glob": "**/*.{so,dylib,ko,elf,bundle,o,a,lib}",
+      "label": "native library or object file"
+    },
+    {
+      "glob": "**/*.so.[0-9]*",
+      "label": "versioned shared library"
+    },
+    {
+      "glob": "**/*.{jar,war,ear,class,dex,apk,aar}",
+      "label": "compiled JVM or Android code"
+    },
+    {
+      "glob": "**/*.{pyc,pyo,pyd}",
+      "label": "compiled Python code"
+    },
+    {
+      "glob": "**/*.{wasm,deb,rpm,crx}",
+      "label": "WebAssembly module or software package"
+    }
+  ],
+  "patterns": [],
+  "examples": [
+    "tools/bin/helper.exe",
+    "lib/libcrypto.so.3",
+    "app/libs/sdk.jar",
+    "hex:7f454c4602010100",
+    "hex:4d5a90000300000004000000"
+  ],
+  "source": null,
+  "notes": "kalkan rule (ADR-0005, K.12; the Binary-Artifacts check of OpenSSF Scorecard, without its network checks). One file-level result per file: an executable or compiled extension (compared without case), or a known binary header in a file that has a NUL byte in its first 8 KiB. Vendored and test folders and the Gradle and Maven wrapper jars are left out. Scorecard Binary-Artifacts also runs in kalkan and reports such files without these exclusions. Files above 5 MiB never reach the target copy (run init lists them as large files)."
+}

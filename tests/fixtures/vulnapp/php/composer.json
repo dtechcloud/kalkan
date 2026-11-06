@@ -1,0 +1,14 @@
+{
+    "name": "vulnapp/storefront",
+    "description": "PHP part of the kalkan vulnapp fixture. Do not deploy.",
+    "type": "project",
+    "license": "MIT",
+    "require": {
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "ext-mysqli": "*",
+        "firebase/php-jwt": "^7.0",
+        "mongodb/mongodb": "^2.1",
+        "twig/twig": "^3.21"
+    }
+}

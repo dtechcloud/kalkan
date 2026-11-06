@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "slug": "framework-internal-header",
+  "description": "Reads/writes of Next.js internal headers (x-middleware-*, x-next-*, __Next-*)",
+  "class": "missing-authz",
+  "cwe": [
+    "CWE-285"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "['\"`](x-middleware-subrequest|x-middleware-prefetch|x-middleware-rewrite|x-middleware-redirect|x-middleware-next|x-middleware-cookie|x-middleware-set-cookie|x-middleware-override-headers|x-middleware-skip)['\"`]",
+      "flags": "i",
+      "label": "Next.js internal x-middleware-* header"
+    },
+    {
+      "regex": "['\"`](x-next-prerender-bypass|x-next-revalidated-tags|x-next-cache-tags|x-next-debug-logging|__Next-Action|next-action-id|next-router-state-tree|next-router-prefetch|next-router-segment-prefetch|rsc|next-url)['\"`]",
+      "flags": "i",
+      "label": "Next.js internal x-next-* / router header"
+    }
+  ],
+  "examples": [
+    "const subreq = headers.get('x-middleware-subrequest');",
+    "res.headers.set('x-middleware-rewrite', target);",
+    "res.headers.set('x-middleware-redirect', loc);",
+    "if (req.headers.get('x-middleware-prefetch')) return;",
+    "headers['x-next-prerender-bypass'] = token;",
+    "const tags = res.headers.get('x-next-cache-tags');",
+    "if (req.headers['__Next-Action']) handle();",
+    "const id = req.headers.get('next-action-id');",
+    "const tree = req.headers.get('next-router-state-tree');",
+    "if (req.headers.get('rsc')) return rscResponse();",
+    "const original = req.headers.get('next-url');"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-internal-header.ts"
+  },
+  "notes": "The upstream header list is split in two regexes to stay below 500 characters. The deepsec label names the header; the port uses two fixed labels. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

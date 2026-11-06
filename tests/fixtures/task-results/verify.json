@@ -1,0 +1,76 @@
+{
+  "task_id": "T0020-verify",
+  "subject": {"kind": "hunter", "ref": "T0007-hunt#0"},
+  "audit_answers": {
+    "attacker_control": {
+      "status": "established",
+      "reason": "The id value comes from the query string of an HTTP request.",
+      "evidence": [
+        {"file": "app/routes.py", "line": 12, "quote": "user_id = request.args.get(\"id\")"}
+      ]
+    },
+    "privilege_boundary": {
+      "status": "established",
+      "reason": "Any logged-in user can read rows of other users through the query.",
+      "evidence": [
+        {"file": "app/routes.py", "line": 10, "quote": "@login_required"}
+      ]
+    },
+    "unmitigated": {
+      "status": "established",
+      "reason": "The value is formatted into SQL text without binding or validation.",
+      "evidence": [
+        {"file": "app/db.py", "line": 8, "quote": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")"}
+      ]
+    }
+  },
+  "finding": {
+    "title": "SQL injection in user lookup",
+    "description": "GET /users formats the id parameter into a SQL statement.",
+    "class": "sqli",
+    "cwe": ["CWE-89"],
+    "root_cause": "find_user builds SQL with an f-string.",
+    "intended_behavior": "The query must bind user_id as a parameter.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/routes.py",
+        "line": 12,
+        "scope": "get_user",
+        "description": "Reads id from the query string."
+      },
+      {
+        "kind": "sink",
+        "file": "app/db.py",
+        "line": 8,
+        "scope": "find_user",
+        "description": "Executes the formatted SQL text."
+      }
+    ],
+    "evidence": [
+      {"file": "app/db.py", "line": 8, "description": "The f-string puts user_id into the SQL text."}
+    ],
+    "conditions": [
+      {"kind": "authentication_level", "description": "The attacker needs any user account."}
+    ],
+    "execution": {
+      "attacker_perspective": "A logged-in user with a normal account.",
+      "payloads": ["1 OR 1=1"],
+      "instructions": ["Log in as a normal user.", "Request GET /users?id=1%20OR%201=1."],
+      "observed_result": "Static analysis only: the payload reaches cur.execute unchanged."
+    },
+    "remediation": {
+      "strategy": "Use a bound parameter: cur.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))."
+    },
+    "severity": {
+      "likelihood": {"score": "high", "reason": "Any user can send the request."},
+      "impact": {"score": "high", "reason": "The attacker reads every user row."},
+      "overall_severity": "high"
+    },
+    "confidence": {"score": "medium", "reason": "The path is clear in source; no PoC ran yet."},
+    "blockers": [],
+    "validation_plan": {"local": "Run the app with a test database and send the payload."},
+    "reason": "All three questions are established with quotes."
+  },
+  "duplicate_of": null
+}

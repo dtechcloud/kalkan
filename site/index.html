@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en" data-title-tr="kalkan · Last stop before production" data-title-en="kalkan · Last stop before production">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>kalkan · Last stop before production</title>
+<meta name="description" content="kalkan: security audit for source code, inside Claude Code. Open source and free.">
+<link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="stop" viewBox="0 0 6 7"><path d="M0 0H6V2.7C6 4.7 4.6 6.1 3 7 1.4 6.1 0 4.7 0 2.7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5V3.25A1.25 1.25 0 0 1 6.75 2h6A1.25 1.25 0 0 1 14 3.25v6a1.25 1.25 0 0 1-1.25 1.25H10.5M3.25 5.5h6a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 9.25 14h-6A1.25 1.25 0 0 1 2 12.75v-6A1.25 1.25 0 0 1 3.25 5.5Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5 5.75 5.75 0 1 0 13.5 9.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="index.html" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+    <nav class="nav" aria-label="Sayfalar / Pages"><a href="how-it-works.html"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools.html"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage.html"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security.html"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="compare.html"><span class="tr" lang="tr">Karşılaştırma</span><span class="en" lang="en">Compare</span></a><a href="faq.html"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs.html"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></nav>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Dil / Language">
+        <button type="button" data-lang-set="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang-set="tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Tema / Theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <details class="contact"><summary class="btn btn-sm"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span></summary><div class="contact-pop"><p><span class="tr" lang="tr">Soru, ayrıntı veya danışmanlık için bize yaz.</span><span class="en" lang="en">Write to us for questions, details or consulting.</span></p><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></details>
+      <details class="menu"><summary aria-label="Menü / Menu"><span class="tr" lang="tr">Menü</span><span class="en" lang="en">Menu</span></summary><nav aria-label="Menü / Menu"><a href="how-it-works.html"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools.html"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage.html"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security.html"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="compare.html"><span class="tr" lang="tr">Karşılaştırma</span><span class="en" lang="en">Compare</span></a><a href="faq.html"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs.html"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a><div class="menu-mail"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></nav></details>
+    </div>
+  </div>
+</header>
+<main class="page" id="top">
+  <div class="frame">
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="h-hero">
+      <div class="field" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>
+      <div class="hero-in">
+        <p class="eyebrow"><span class="tr" lang="tr"><b>v1.15.0</b> · Açık kaynak, MIT · Claude Code ve Codex</span><span class="en" lang="en"><b>v1.15.0</b> · Open source, MIT · Claude Code and Codex</span></p>
+        <h1 id="h-hero" lang="en">Last stop before production.</h1>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="hero-sub tr" lang="tr">Kaynak kodun için derin güvenlik denetimi, Claude Code içinde. 22 sabit sürümlü araç adayları bulur, ajanlar her birini kaynakta doğrular. Taramalar makinende kalır.</p>
+            <p class="hero-sub en" lang="en">A deep security audit of your source code, inside Claude Code. 22 pinned tools find the candidates, and agents verify each one in the source. The scans stay on your machine.</p>
+            <div class="hero-install">
+              <div class="code"><pre><code><span class="p">❯</span> claude plugin marketplace add dtechcloud/kalkan
+<span class="p">❯</span> claude plugin install kalkan@kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+              <p class="meta"><span class="tr" lang="tr">Sonra Claude Code'u yeniden başlat ve <code>/kalkan &lt;klasör veya git URL&gt;</code> yaz. İlk çalıştırma araçları ve veritabanlarını kurar (5-15 dakika).</span><span class="en" lang="en">Then restart Claude Code and type <code>/kalkan &lt;folder or git URL&gt;</code>. The first run sets up the tools and the databases (5 to 15 minutes).</span></p>
+              <a class="alt-link" href="docs.html#kurulum"><span class="tr" lang="tr">Diğer kurulum yolları →</span><span class="en" lang="en">Other ways to install →</span></a>
+            </div>
+            <div class="cta">
+              <a class="btn btn-primary" href="usage.html"><span class="tr" lang="tr">Tüm komutlar</span><span class="en" lang="en">All commands</span></a>
+              <a class="btn" href="how-it-works.html"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a>
+            </div>
+            <p class="meta"><span class="tr" lang="tr">Windows 11, Linux, macOS · Claude Code CLI 2.1+ veya VS Code eklentisi · Python 3.11+</span><span class="en" lang="en">Windows 11, Linux, macOS · Claude Code CLI 2.1+ or the VS Code extension · Python 3.11+</span></p>
+          </div>
+          <figure class="term" aria-label="kalkan-audit">
+            <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>kalkan-audit · shop</span></div>
+<pre lang="en"><code><span class="p">❯</span> <span class="k">kalkan-audit</span> https://github.com/org/shop --profile deep
+<span class="m">kalkan audit:</span> checking the setup: pinned tools, vulnerability databases, Claude Code
+<span class="m">kalkan audit:</span> run 20261026T091512Z-shop-3f2a created
+<span class="m">kalkan audit:</span> agents: Claude Code rounds start now; they wait through usage-limit resets
+<span class="m">kalkan audit:</span> phase hunt: 14 of 31 agent tasks finished, 6 running; budget 45 of 400 used
+<span class="m">kalkan audit:</span> phase validate: 52 of 58 agent tasks finished, 6 running; budget 131 of 400 used
+Audit <span class="ok">done</span>: run 20261026T091512Z-shop-3f2a <span class="m">(1 h 52 min)</span>
+Posture: <span class="w">Medium</span>
+Confirmed findings: 9 (critical 0, high 2, medium 5, low 2, info 0); need validation: 4; rejected: 31
+Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXECUTIVE.html
+<span class="p">❯</span> <span class="cursor">▍</span></code></pre>
+            <figcaption><span class="tr" lang="tr">Örnek çıktı. Satırlar kalkan-audit'in gerçek biçiminde, sayılar örnek.</span><span class="en" lang="en">Sample output. The lines use the real format of kalkan-audit; the numbers are examples.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+    <!-- Numbers -->
+    <section class="rule" aria-label="Sayılar / Numbers">
+      <div class="grid-lines nums" style="border-top: 0">
+        <div class="num"><b>22</b><span class="tr" lang="tr">sabit sürümlü araç, SHA-256 kontrollü</span><span class="en" lang="en">pinned tools, SHA-256 checked</span></div>
+        <div class="num"><b>611</b><span class="tr" lang="tr">Opengrep kuralı: 106 kalkan, 505 seçilmiş</span><span class="en" lang="en">Opengrep rules: 106 own, 505 curated</span></div>
+        <div class="num"><b>198</b><span class="tr" lang="tr">deepsec'ten port edilmiş regex matcher</span><span class="en" lang="en">regex matchers ported from deepsec</span></div>
+        <div class="num"><b>42</b><span class="tr" lang="tr">zafiyet sınıfı bilgi paketi</span><span class="en" lang="en">vulnerability class packs</span></div>
+        <div class="num"><b>10</b><span class="tr" lang="tr">ajan rolü, yalnız okuma yetkili</span><span class="en" lang="en">agent roles, read-only</span></div>
+        <div class="num"><b>8</b><span class="tr" lang="tr">çıktı: HTML, Markdown, SARIF, JSON, SBOM</span><span class="en" lang="en">deliverables: HTML, Markdown, SARIF, JSON, SBOM</span></div>
+      </div>
+    </section>
+    <!-- Open source -->
+    <section class="rule" aria-labelledby="h-open">
+      <div class="pad">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Açık kaynak</span><span class="en" lang="en">Open source</span></p>
+          <h2 id="h-open"><span class="tr" lang="tr">Herkes kendi projesini denetler.</span><span class="en" lang="en">Anyone can audit their own project.</span></h2>
+        </div>
+        <div class="paths one">
+          <div class="path">
+            <span class="tag"><span class="tr" lang="tr">Açık kaynak · ücretsiz</span><span class="en" lang="en">Open source · free</span></span>
+            <h3><span class="tr" lang="tr">Kendin çalıştır</span><span class="en" lang="en">Run it yourself</span></h3>
+            <ul class="ticks">
+              <li><span class="tr" lang="tr">MIT lisansı. Bütün kod açık, her satırı okuyabilirsin.</span><span class="en" lang="en">MIT license. All the code is open, you can read every line.</span></li>
+              <li><span class="tr" lang="tr">Tek komutla kurulum. Denetim kendi Claude Code oturumunda veya kendi API hesabınla çalışır.</span><span class="en" lang="en">One-command install. The audit runs in your own Claude Code session or on your own API account.</span></li>
+              <li><span class="tr" lang="tr">Kod, raporlar ve veritabanları kendi makinende kalır.</span><span class="en" lang="en">The code, the reports and the databases stay on your machine.</span></li>
+            </ul>
+            <a class="btn btn-primary" href="usage.html"><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Install</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Why -->
+    <section class="rule" aria-labelledby="h-why">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Neden kalkan</span><span class="en" lang="en">Why kalkan</span></p>
+          <h2 id="h-why"><span class="tr" lang="tr">Gürültü değil, kanıt.</span><span class="en" lang="en">Proof, not noise.</span></h2>
+          <p class="lede tr" lang="tr">Güvenlik tarayıcıları çok aday üretir. Dil modeli incelemeleri ise ikna edici ama kimsenin kontrol etmediği iddialar yazabilir. kalkan ikisini birleştirir ve her iddiayı kaynağa bağlar.</p>
+          <p class="lede en" lang="en">Security scanners produce many candidates. LLM reviews can write convincing claims that nobody checked. kalkan combines both and ties every claim to the source.</p>
+        </div>
+      </div>
+      <div class="grid-lines three">
+        <div class="card">
+          <span class="tag"><span class="tr" lang="tr">Sorun · tarayıcı gürültüsü</span><span class="en" lang="en">Problem · scanner noise</span></span>
+          <h3><span class="tr" lang="tr">Doğrulanmamış sonuç bulgu sayılmaz.</span><span class="en" lang="en">An unverified result is not a finding.</span></h3>
+          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 aday üretti. kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
+          <p class="en" lang="en">On OWASP Juice Shop, the tools alone gave 1,200 candidates. kalkan counts a tool result as a finding only after the agents trace and verify it in the code. The unverified ones stay in a separate list of the report.</p>
+        </div>
+        <div class="card">
+          <span class="tag"><span class="tr" lang="tr">Sorun · uydurma iddia</span><span class="en" lang="en">Problem · made-up claims</span></span>
+          <h3><span class="tr" lang="tr">Her iddia bir alıntı taşır.</span><span class="en" lang="en">Every claim carries a quote.</span></h3>
+          <p class="tr" lang="tr">Doğrulayıcı ajan her yanıtının arkasındaki kodu alıntılar. Motor her alıntıyı dosyada arar (±2 satır). Dosyada olmayan bir alıntı kanıt sayılmaz.</p>
+          <p class="en" lang="en">The verifier agent quotes the code behind each answer. The engine looks up every quote in the file (±2 lines). A quote that is not in the file counts as no evidence.</p>
+        </div>
+        <div class="card">
+          <span class="tag"><span class="tr" lang="tr">Sorun · yarıda kalan denetim</span><span class="en" lang="en">Problem · audits that stop halfway</span></span>
+          <h3><span class="tr" lang="tr">Limit dolsa da kaldığı yerden sürer.</span><span class="en" lang="en">A usage limit is only a pause.</span></h3>
+          <p class="tr" lang="tr">Denetimin bütün durumu diskte durur. Kullanım limiti dolarsa kalkan sıfırlanmayı bekler ve kaldığı yerden devam eder. Hiçbir görev kaybolmaz, hiçbiri iki kez çalışmaz.</p>
+          <p class="en" lang="en">All audit state lives on disk. When a usage limit stops the audit, kalkan waits for the reset and continues where it stopped. No task is lost, and none runs twice.</p>
+        </div>
+      </div>
+    </section>
+    <!-- Explore -->
+    <section class="rule" aria-labelledby="h-explore">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Keşfet</span><span class="en" lang="en">Explore</span></p>
+          <h2 id="h-explore"><span class="tr" lang="tr">kalkan'ı yakından tanı.</span><span class="en" lang="en">Take a closer look.</span></h2>
+        </div>
+      </div>
+      <div class="grid-lines explore">
+        <a href="how-it-works.html"><b><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></b><span class="tr" lang="tr">10 adımlık hat, alıntılı doğrulama, raporlar ve ölçümler.</span><span class="en" lang="en">The 10-step pipeline, quoted verification, reports and benchmarks.</span></a>
+        <a href="tools.html"><b><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></b><span class="tr" lang="tr">22 sabit sürümlü araç: sürümleri ve görevleri.</span><span class="en" lang="en">22 pinned tools: their versions and their roles.</span></a>
+        <a href="usage.html"><b><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></b><span class="tr" lang="tr">Kur, denetle, devam et. Komutlar ve profiller.</span><span class="en" lang="en">Install, audit, resume. Commands and profiles.</span></a>
+        <a href="security.html"><b><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></b><span class="tr" lang="tr">Üç söz ve her birini koruyan test.</span><span class="en" lang="en">Three promises and the test that holds each one.</span></a>
+        <a href="compare.html"><b><span class="tr" lang="tr">Karşılaştırma</span><span class="en" lang="en">Compare</span></b><span class="tr" lang="tr">Snyk, Semgrep, GitHub, SonarQube ve Claude Security ile.</span><span class="en" lang="en">Against Snyk, Semgrep, GitHub, SonarQube and Claude Security.</span></a>
+        <a href="faq.html"><b><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></b><span class="tr" lang="tr">Veri, süre, ücret, API, CI ve diller.</span><span class="en" lang="en">Data, time, price, API, CI and languages.</span></a>
+      </div>
+    </section>
+    <!-- Closing -->
+    <section class="rule closing" aria-labelledby="h-close">
+      <div class="field" aria-hidden="true"><i class="a"></i><i class="b"></i></div>
+      <div class="closing-in">
+        <h2 id="h-close"><span class="tr" lang="tr">Sürümden önce bir kez daha bak.</span><span class="en" lang="en">Look once more before the release.</span></h2>
+        <div class="code"><pre><code><span class="p">❯</span> kalkan-audit https://github.com/org/shop --profile deep --open</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+        <div class="cta">
+          <a class="btn btn-primary" href="usage.html"><span class="tr" lang="tr">Ücretsiz kur</span><span class="en" lang="en">Install for free</span></a>
+          <a class="btn" href="docs.html"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Read the docs</span></a>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="foot">
+  <div class="frame">
+    <div class="foot-in">
+      <div>
+        <a class="logo" href="index.html" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+        <p lang="en">Last stop before production.</p>
+        <p><a class="mail-link" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a></p>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Ürün</span><span class="en" lang="en">Product</span></h4>
+        <ul><li><a href="how-it-works.html"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a></li><li><a href="tools.html"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a></li><li><a href="usage.html"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a></li><li><a href="security.html"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a></li></ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Daha fazla</span><span class="en" lang="en">More</span></h4>
+        <ul>
+          <li><a href="compare.html"><span class="tr" lang="tr">Karşılaştırma</span><span class="en" lang="en">Compare</span></a></li>
+          <li><a href="faq.html"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a></li>
+          <li><a href="docs.html"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Kaynak</span><span class="en" lang="en">Source</span></h4>
+        <ul>
+          <li><a href="https://github.com/dtechcloud/kalkan" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/LICENSE" target="_blank" rel="noopener"><span class="tr" lang="tr">MIT lisansı</span><span class="en" lang="en">MIT license</span></a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 kalkan · MIT</span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+</body>
+</html>

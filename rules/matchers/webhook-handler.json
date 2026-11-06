@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "webhook-handler",
+  "description": "Webhook endpoints that receive external payloads — must verify signatures",
+  "class": "webhook-replay",
+  "cwe": [
+    "CWE-345"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*webhook*/**/*.{ts,tsx,js,jsx}",
+    "**/*hook*/**/route.{ts,js}",
+    "**/api/**/route.{ts,js}",
+    "**/services/**/src/**/*.ts"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "webhook",
+      "flags": "i",
+      "label": "Webhook handler (verify signature validation) — has signature verification",
+      "near": [
+        {
+          "regex": "export|handler|POST|route",
+          "flags": "i"
+        },
+        {
+          "regex": "(?i:verifySignature|verify.*signature|hmac|createHmac|timingSafeEqual)",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "webhook",
+      "flags": "i",
+      "label": "Webhook handler (verify signature validation) — NO signature verification found",
+      "near": [
+        {
+          "regex": "export|handler|POST|route",
+          "flags": "i"
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "(?i:verifySignature|verify.*signature|hmac|createHmac|timingSafeEqual)",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "export async function POST(req) { /* webhook */ return ok(); }",
+    "export const handler = async (req) => { /* webhook */ };",
+    "// webhook route\nexport function POST(req) { return ok(); }",
+    "export async function webhookHandler(req) { return ok(); }",
+    "export const webhookRoute = (req) => process(req);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/webhook-handler.ts"
+  },
+  "notes": "deepsec reports the first line per file; the port reports every line."
+}

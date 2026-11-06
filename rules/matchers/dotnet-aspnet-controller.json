@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "slug": "dotnet-aspnet-controller",
+  "description": "ASP.NET Core controllers and authorization attributes (gated on .NET)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.cs"
+  ],
+  "exclude_file_patterns": [
+    "**/{Tests,UnitTests,IntegrationTests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "dotnet"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bclass\\s+\\w+\\s*:\\s*(?:Controller|ControllerBase)\\b",
+      "flags": "",
+      "label": "ControllerBase / Controller subclass"
+    },
+    {
+      "regex": "\\[\\s*ApiController\\s*\\]",
+      "flags": "",
+      "label": "[ApiController] attribute"
+    },
+    {
+      "regex": "\\[\\s*Route\\s*\\(",
+      "flags": "",
+      "label": "[Route] attribute"
+    },
+    {
+      "regex": "\\[\\s*Http(?:Get|Post|Put|Patch|Delete|Head|Options)\\s*\\(?",
+      "flags": "",
+      "label": "[HttpMethod] attribute"
+    },
+    {
+      "regex": "\\[\\s*AllowAnonymous\\s*\\]",
+      "flags": "",
+      "label": "[AllowAnonymous] — opens public access"
+    },
+    {
+      "regex": "\\[\\s*Authorize(?:\\s*\\([^)]*\\))?\\s*\\]",
+      "flags": "",
+      "label": "[Authorize] auth gate"
+    }
+  ],
+  "examples": [
+    "public class UsersController : ControllerBase",
+    "public class HomeController : Controller",
+    "[ApiController]",
+    "[ ApiController ]",
+    "[Route(\"api/[controller]\")]",
+    "[HttpGet(\"{id}\")]",
+    "[HttpPost]",
+    "[HttpPut(\"{id}\")]",
+    "[HttpPatch(\"{id}\")]",
+    "[HttpDelete(\"{id}\")]",
+    "[HttpHead]",
+    "[HttpOptions]",
+    "[AllowAnonymous]",
+    "[Authorize]",
+    "[Authorize(Roles = \"Admin\")]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dotnet-aspnet-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

@@ -1,0 +1,56 @@
+{
+  "engine": "gitleaks",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-FB5341172090B380",
+      "engine": "gitleaks",
+      "rule_id": "aws-access-token",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms.",
+      "message": "aws-access-token has detected secret for file C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target\\config\\settings.py.",
+      "file": "config/settings.py",
+      "start_line": 12,
+      "end_line": 12,
+      "snippet": "REDACTED",
+      "severity": "medium",
+      "tool_severity": "",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-628B83FF13DB8FB4",
+      "engine": "gitleaks",
+      "rule_id": "slack-webhook-url",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "Discovered a Slack Webhook, which could lead to unauthorized message posting and data leakage in Slack channels.",
+      "message": "slack-webhook-url has detected secret for file C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target\\app\\notify.py.",
+      "file": "app/notify.py",
+      "start_line": 8,
+      "end_line": 8,
+      "snippet": "REDACTED",
+      "severity": "medium",
+      "tool_severity": "",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    }
+  ]
+}

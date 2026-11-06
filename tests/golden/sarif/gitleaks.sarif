@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "gitleaks",
+          "semanticVersion": "v8.30.1",
+          "informationUri": "https://github.com/gitleaks/gitleaks",
+          "rules": [
+            {
+              "id": "aws-access-token",
+              "shortDescription": {
+                "text": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms."
+              }
+            },
+            {
+              "id": "generic-api-key",
+              "shortDescription": {
+                "text": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations."
+              }
+            },
+            {
+              "id": "slack-webhook-url",
+              "shortDescription": {
+                "text": "Discovered a Slack Webhook, which could lead to unauthorized message posting and data leakage in Slack channels."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "message": {
+            "text": "aws-access-token has detected secret for file C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target\\config\\settings.py."
+          },
+          "ruleId": "aws-access-token",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target\\config\\settings.py"
+                },
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 21,
+                  "endLine": 12,
+                  "endColumn": 40,
+                  "snippet": {
+                    "text": "REDACTED"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "commitSha": "",
+            "email": "",
+            "author": "",
+            "date": "",
+            "commitMessage": ""
+          },
+          "properties": {
+            "tags": []
+          }
+        },
+        {
+          "message": {
+            "text": "slack-webhook-url has detected secret for file C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target\\app\\notify.py."
+          },
+          "ruleId": "slack-webhook-url",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target\\app\\notify.py"
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 17,
+                  "endLine": 8,
+                  "endColumn": 96,
+                  "snippet": {
+                    "text": "REDACTED"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "commitSha": "",
+            "email": "",
+            "author": "",
+            "date": "",
+            "commitMessage": ""
+          },
+          "properties": {
+            "tags": []
+          }
+        }
+      ]
+    }
+  ]
+}

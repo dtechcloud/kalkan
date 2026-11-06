@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "slug": "response-header-leak",
+  "description": "Response headers exposing internal infrastructure details",
+  "class": "sensitive-data-exposure",
+  "cwe": [
+    "CWE-200"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,lua,go,conf}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "x-powered-by",
+      "flags": "i",
+      "label": "X-Powered-By header"
+    },
+    {
+      "regex": "setHeader\\s*\\(\\s*['\"]server['\"]",
+      "flags": "i",
+      "label": "Server header set"
+    },
+    {
+      "regex": "x-debug|x-internal|x-trace-id",
+      "flags": "i",
+      "label": "Debug/internal header"
+    },
+    {
+      "regex": "add_header.{0,40}server_version|add_header.{0,40}x-debug",
+      "flags": "i",
+      "label": "Nginx debug header"
+    },
+    {
+      "regex": "ngx\\.header\\[['\"]x-debug",
+      "flags": "",
+      "label": "Lua debug response header"
+    },
+    {
+      "regex": "w\\.Header\\(\\)\\.Set\\s*\\(\\s*\"X-Debug|w\\.Header\\(\\)\\.Set\\s*\\(\\s*\"Server\"",
+      "flags": "",
+      "label": "Go debug response header"
+    }
+  ],
+  "examples": [
+    "res.setHeader(\"X-Powered-By\", \"Express\");",
+    "app.set('x-powered-by', false);",
+    "res.setHeader(\"Server\", \"nginx/1.21.0\");",
+    "response.setHeader('server', 'apache');",
+    "res.setHeader(\"X-Debug\", \"true\");",
+    "res.setHeader(\"X-Internal-Trace\", id);",
+    "res.setHeader(\"X-Trace-Id\", traceId);",
+    "add_header server_version $server_version;",
+    "add_header x-debug \"1\";",
+    "ngx.header[\"x-debug-info\"] = \"yes\"",
+    "w.Header().Set(\"X-Debug\", \"true\")",
+    "w.Header().Set(\"Server\", \"Custom/1.0\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/response-header-leak.ts"
+  },
+  "notes": ""
+}

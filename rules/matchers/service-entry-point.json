@@ -1,0 +1,75 @@
+{
+  "version": 1,
+  "slug": "service-entry-point",
+  "description": "Lambda handlers, event consumers, cron jobs, and API endpoints in services (weak candidate)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/services/**/src/index.ts",
+    "**/services/**/src/event-consumer.ts",
+    "**/services/**/src/endpoint.ts",
+    "**/services/**/src/endpoints/**/*.ts",
+    "**/services/**/src/handler.ts",
+    "**/services/**/src/handlers/**/*.ts"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+default\\s+(async\\s+)?(function\\s*)?\\(",
+      "flags": "",
+      "label": "Lambda default export handler (weak candidate)"
+    },
+    {
+      "regex": "export\\s+default\\s+async\\s+function\\b",
+      "flags": "",
+      "label": "Lambda default export handler (weak candidate)"
+    },
+    {
+      "regex": "eventConsumer|event-consumer|EventConsumer",
+      "flags": "",
+      "label": "Event consumer entry point (weak candidate)"
+    },
+    {
+      "regex": "createEndpoint|registerEndpoint",
+      "flags": "",
+      "label": "Service endpoint registration (weak candidate)"
+    },
+    {
+      "regex": "handleRequest|routeHandler|createRouter",
+      "flags": "",
+      "label": "Request handler (weak candidate)"
+    },
+    {
+      "regex": "withSchema\\s*\\(",
+      "flags": "",
+      "label": "withSchema route handler (weak candidate)"
+    }
+  ],
+  "examples": [
+    "export default (event) => process(event);",
+    "export default async (event) => handle(event);",
+    "export default async function handler(event) { return ok(); }",
+    "const c = new EventConsumer();",
+    "import { eventConsumer } from \"./bus\";",
+    "const ep = createEndpoint(spec);",
+    "registerEndpoint(api, def);",
+    "const router = createRouter();",
+    "await handleRequest(req);",
+    "const r = routeHandler(req);",
+    "export const POST = withSchema(schema, handler);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/service-entry-point.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "go-cobra-command",
+  "description": "Cobra CLI commands — privileged-CLI surface (gated on cobra)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go",
+      "cobra"
+    ],
+    "sentinel_files": [
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "github\\.com/spf13/cobra"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "&cobra\\.Command\\s*\\{",
+      "flags": "",
+      "label": "cobra.Command{} declaration"
+    },
+    {
+      "regex": "\\b(?:Run|RunE|PreRun|PostRun)\\s*:\\s*func\\b",
+      "flags": "",
+      "label": "Run/RunE handler — privileged action body"
+    },
+    {
+      "regex": "\\.PersistentFlags\\s*\\(\\s*\\)\\.(?:String|Bool|Int)Var",
+      "flags": "",
+      "label": "PersistentFlags()"
+    },
+    {
+      "regex": "\\.AddCommand\\s*\\(",
+      "flags": "",
+      "label": "AddCommand registration"
+    }
+  ],
+  "examples": [
+    "var rootCmd = &cobra.Command{",
+    "cmd := &cobra.Command{Use: \"deploy\"}",
+    "\tRun: func(cmd *cobra.Command, args []string) {",
+    "\tRunE: func(cmd *cobra.Command, args []string) error {",
+    "\tPreRun: func(cmd *cobra.Command, args []string) {",
+    "\tPostRun: func(cmd *cobra.Command, args []string) {",
+    "rootCmd.PersistentFlags().StringVar(&cfgFile, \"config\", \"\", \"config file\")",
+    "rootCmd.PersistentFlags().BoolVar(&verbose, \"verbose\", false, \"verbose output\")",
+    "rootCmd.PersistentFlags().IntVar(&port, \"port\", 8080, \"port number\")",
+    "rootCmd.AddCommand(deployCmd)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-cobra-command.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [cobra]; kalkan uses tech go (or cobra) and a manifest that names cobra."
+}

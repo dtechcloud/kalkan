@@ -1,0 +1,15 @@
+{
+  "task_id": "T0044-consolidate",
+  "groups": [
+    {
+      "ids": ["KF-2CC44B27C1508C41", "KF-9A01D3E57B2F6C80"],
+      "reason": "Both records describe the one HMAC key committed in app/captcha.py; the register controller only uses it. Removing the key from source and rotating it fixes both.",
+      "evidence": [
+        {"file": "app/captcha.py", "line": 7, "quote": "CAPTCHA_HMAC_KEY ="}
+      ]
+    }
+  ],
+  "distinct": [
+    {"id": "KF-4E7B10C2D9A35F16", "reason": "The plain HTTP listener in docker-compose.yml is a different setting with its own fix."}
+  ]
+}

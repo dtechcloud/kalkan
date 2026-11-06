@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "slug": "missing-await",
+  "description": "Async calls that may be missing await — race conditions, lost errors",
+  "class": "race-condition",
+  "cwe": [
+    "CWE-362"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "with\\w*Mutex\\s*\\(",
+      "flags": "",
+      "label": "mutex without await",
+      "not_near": [
+        {
+          "regex": "\\b(?:await|return)\\s+with\\w*Mutex\\s*\\(|^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "with\\w*Lock\\s*\\(",
+      "flags": "",
+      "label": "lock without await",
+      "not_near": [
+        {
+          "regex": "\\b(?:await|return)\\s+with\\w*Lock\\s*\\(|^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "with\\w*Transaction\\s*\\(",
+      "flags": "",
+      "label": "transaction without await",
+      "not_near": [
+        {
+          "regex": "\\b(?:await|return)\\s+with\\w*Transaction\\s*\\(|^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "redis\\.\\w+\\s*\\(",
+      "flags": "",
+      "label": "redis call without await",
+      "not_near": [
+        {
+          "regex": "\\b(?:await|return)\\s+redis\\.\\w+\\s*\\(|^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "prisma\\.\\w+\\.\\w+\\s*\\(",
+      "flags": "",
+      "label": "prisma call without await",
+      "not_near": [
+        {
+          "regex": "\\b(?:await|return)\\s+prisma\\.\\w+\\.\\w+\\s*\\(|^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "db\\.\\w+\\.\\w+\\s*\\(",
+      "flags": "",
+      "label": "db call without await",
+      "not_near": [
+        {
+          "regex": "\\b(?:await|return)\\s+db\\.\\w+\\.\\w+\\s*\\(|^\\s*(?://|\\*)"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "withMutex(() => doStuff());",
+    "withUserMutex(() => updateUser(id));",
+    "withLock(key, () => criticalSection());",
+    "withDistributedLock(key, fn);",
+    "withTransaction(async (tx) => {\n  await tx.user.update({ id });\n});",
+    "withDbTransaction(fn);",
+    "redis.get(\"key\");",
+    "redis.set(key, value);",
+    "prisma.user.findUnique({ where: { id } });",
+    "prisma.session.delete({ where: { id } });",
+    "db.users.findOne({ id });",
+    "db.posts.update({ id });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/missing-await.ts"
+  },
+  "notes": "The lookbehinds '(?<!await\\s)(?<!return\\s)' fail the safety checks. They become line exclusions: a line with 'await <call>' or 'return <call>' does not count, even when it holds a second call without await."
+}

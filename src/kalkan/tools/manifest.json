@@ -1,0 +1,1573 @@
+{
+  "schema_version": 1,
+  "description": "Pinned external tools for kalkan (docs/ENGINE-SPEC.md, section 12). Never install a version that is not listed here.",
+  "platforms": [
+    "windows-amd64",
+    "windows-arm64",
+    "linux-amd64",
+    "linux-arm64",
+    "darwin-amd64",
+    "darwin-arm64"
+  ],
+  "tools": {
+    "trivy": {
+      "version": "0.75.0",
+      "tag": "v0.75.0",
+      "released_at": "2026-10-01",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/aquasecurity/trivy",
+      "executable": "trivy",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [
+        "0.69.4",
+        "0.69.5",
+        "0.69.6"
+      ],
+      "blocked_reason": "CVE-2026-33634: compromised release builds. Never install or run them.",
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_checksums.txt",
+      "checksums_sha256": "43a87485d39b60dae55cb1a14725dddd612040c0b1ec4caa88948c07d6c06219",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "sigstore-bundle",
+        "bundle_url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_checksums.txt.sigstore.json",
+        "identity": "https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.75.0",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "The v0.75.0 release ships no windows-arm64 build.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_windows-64bit.zip",
+          "sha256": "4e43bd71a30f51aee39525f60f2b47043af77eb8df8fe082aae4372b69c6660f",
+          "size": 52927180,
+          "archive": "zip",
+          "binary": "trivy.exe",
+          "binary_sha256": "3b4fcf6fec53c4c73c325cfd518c7264100695b19e6c59c6a777e4a67dc9f0e6"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_Linux-64bit.tar.gz",
+          "sha256": "c6e65abddb348e25f10549df887045629cf28cc72453cd1c63acb717316b3f3f",
+          "size": 51704231,
+          "archive": "tar.gz",
+          "binary": "trivy",
+          "binary_sha256": "93f9da8e4ba5e0c1c76d8234ed2494cf9afb0a96fd21953e424bb795f3299b8e"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_Linux-ARM64.tar.gz",
+          "sha256": "a1ee9f6ffb7d112b64ff726a2a0717c21175c1114361391f4a132956751a13b3",
+          "size": 46568043,
+          "archive": "tar.gz",
+          "binary": "trivy",
+          "binary_sha256": "869e310e208f0f2e3e90e4f842cc6adaa2b2c046fecbaade481e6b23fcc8f2a9"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_macOS-64bit.tar.gz",
+          "sha256": "291edaa9778acbe4693d067b5ad60ee11570e5ac68296e85595417528ca641e4",
+          "size": 52818709,
+          "archive": "tar.gz",
+          "binary": "trivy",
+          "binary_sha256": "484287e06ab2e4038c42ba396da8637aaaca0967e3e65840563706a0284169b4"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/aquasecurity/trivy/releases/download/v0.75.0/trivy_0.75.0_macOS-ARM64.tar.gz",
+          "sha256": "4a77108cccf8e55c8d6823e1e759939a622277e66cd0daa3c1fc621ed69e4568",
+          "size": 48967916,
+          "archive": "tar.gz",
+          "binary": "trivy",
+          "binary_sha256": "32b84c068e11e5381fc85d3fe2e8ac238659ab22524ce1b2b9dfcbd0b1f7331a"
+        }
+      }
+    },
+    "gitleaks": {
+      "version": "8.30.1",
+      "tag": "v8.30.1",
+      "released_at": "2026-03-21",
+      "pinned_at": "2026-10-15",
+      "license": "MIT",
+      "kind": "binary",
+      "homepage": "https://github.com/gitleaks/gitleaks",
+      "executable": "gitleaks",
+      "version_args": [
+        "version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_checksums.txt",
+      "checksums_sha256": "061476c21adaf5441516f96f185c1a4706a83cd6329b9b38762271b3d4a52fae",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "notes": "The release publishes no signature. The gitleaks GitHub Action has a separate license; kalkan uses the CLI only.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_windows_x64.zip",
+          "sha256": "d29144deff3a68aa93ced33dddf84b7fdc26070add4aa0f4513094c8332afc4e",
+          "size": 8438883,
+          "archive": "zip",
+          "binary": "gitleaks.exe",
+          "binary_sha256": "17157e2ee8b76fc8b1d8bee607a250e34b8a8023c8bc81822d4b5ee4d78fcb7c"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_windows_arm64.zip",
+          "sha256": "b95f5e4f5c425cedca7ee203d9afd29597e692c4924a12ed42f970537c72cc0f",
+          "size": 7701820,
+          "archive": "zip",
+          "binary": "gitleaks.exe",
+          "binary_sha256": "200df852fdecbedb19a33960657333cba5e231740bc8968972b507b50f93b194"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_x64.tar.gz",
+          "sha256": "551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb",
+          "size": 8230402,
+          "archive": "tar.gz",
+          "binary": "gitleaks",
+          "binary_sha256": "88f91962aa2f93ac6ab281d553b9e125f5197bbbce38f9f2437f7299c32e5509"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_linux_arm64.tar.gz",
+          "sha256": "e4a487ee7ccd7d3a7f7ec08657610aa3606637dab924210b3aee62570fb4b080",
+          "size": 7601421,
+          "archive": "tar.gz",
+          "binary": "gitleaks",
+          "binary_sha256": "00e91bbe655bd7c47753e8cfe61cb76ea1a5d7e7702fe161ee40102b46b3823b"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_x64.tar.gz",
+          "sha256": "dfe101a4db2255fc85120ac7f3d25e4342c3c20cf749f2c20a18081af1952709",
+          "size": 8359235,
+          "archive": "tar.gz",
+          "binary": "gitleaks",
+          "binary_sha256": "cee01fea7173f1b779dff188e1c26ecbcb4027d394acc573b23aaf0be260e291"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/gitleaks/gitleaks/releases/download/v8.30.1/gitleaks_8.30.1_darwin_arm64.tar.gz",
+          "sha256": "b40ab0ae55c505963e365f271a8d3846efbc170aa17f2607f13df610a9aeb6a5",
+          "size": 7897593,
+          "archive": "tar.gz",
+          "binary": "gitleaks",
+          "binary_sha256": "ba52fb1bfabbcde42f032afad3d6e0b19dff8ed105229a16e7caa338bbc0e84f"
+        }
+      }
+    },
+    "opengrep": {
+      "version": "1.30.1",
+      "tag": "v1.30.1",
+      "released_at": "2026-09-21",
+      "pinned_at": "2026-10-15",
+      "license": "LGPL-2.1",
+      "kind": "binary",
+      "homepage": "https://github.com/opengrep/opengrep",
+      "executable": "opengrep",
+      "version_args": [
+        "--version",
+        "--disable-version-check"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "computed-at-pin-time",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "cosign-keyless-per-asset",
+        "certificate_url": "{asset_url}.cert",
+        "signature_url": "{asset_url}.sig",
+        "identity": "https://github.com/opengrep/opengrep/.github/workflows/rolling-release.yml@refs/heads/release-v1.30.1",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "The release has no checksums file. kalkan downloaded every asset at pin time, computed its SHA-256 and compared it with the GitHub release asset digest. The v1.30.1 release ships no windows-arm64 build. The Linux assets are the manylinux (glibc) builds; musl-based systems such as Alpine are not covered.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/opengrep/opengrep/releases/download/v1.30.1/opengrep_windows_x86.exe",
+          "sha256": "d3a45326ff63cabe90d94ebc679fcd4302440178a0e5bf0248a6f7b610db3b53",
+          "size": 53700608,
+          "archive": "none",
+          "binary": "opengrep_windows_x86.exe",
+          "binary_sha256": "d3a45326ff63cabe90d94ebc679fcd4302440178a0e5bf0248a6f7b610db3b53"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/opengrep/opengrep/releases/download/v1.30.1/opengrep_manylinux_x86",
+          "sha256": "d3195b9d8d5ae93179f6aa5f5daaba6a920a5a09d38c5d5ae5e60924050210c4",
+          "size": 46553256,
+          "archive": "none",
+          "binary": "opengrep_manylinux_x86",
+          "binary_sha256": "d3195b9d8d5ae93179f6aa5f5daaba6a920a5a09d38c5d5ae5e60924050210c4"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/opengrep/opengrep/releases/download/v1.30.1/opengrep_manylinux_aarch64",
+          "sha256": "a730f6fdce1e978ea29e610a2e0503bfe1ec31fce08979a9a84e3699f03e16ee",
+          "size": 47982360,
+          "archive": "none",
+          "binary": "opengrep_manylinux_aarch64",
+          "binary_sha256": "a730f6fdce1e978ea29e610a2e0503bfe1ec31fce08979a9a84e3699f03e16ee"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/opengrep/opengrep/releases/download/v1.30.1/opengrep_osx_x86",
+          "sha256": "a8c6d5f51bb38253b48e9a80fca63684aa2a0f9abfeacea27b8d8b5778476bae",
+          "size": 48421600,
+          "archive": "none",
+          "binary": "opengrep_osx_x86",
+          "binary_sha256": "a8c6d5f51bb38253b48e9a80fca63684aa2a0f9abfeacea27b8d8b5778476bae"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/opengrep/opengrep/releases/download/v1.30.1/opengrep_osx_arm64",
+          "sha256": "7b788794e111ce3fb83f0aa52c100a3b85d37d8b59482262109031f50d4a8d91",
+          "size": 47397296,
+          "archive": "none",
+          "binary": "opengrep_osx_arm64",
+          "binary_sha256": "7b788794e111ce3fb83f0aa52c100a3b85d37d8b59482262109031f50d4a8d91"
+        }
+      }
+    },
+    "hadolint": {
+      "version": "2.15.1",
+      "tag": "v2.15.1",
+      "released_at": "2026-07-31",
+      "pinned_at": "2026-10-15",
+      "license": "GPL-3.0",
+      "kind": "binary",
+      "homepage": "https://github.com/hadolint/hadolint",
+      "executable": "hadolint",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/checksums.sha256",
+      "checksums_sha256": "4d09c27d4f8151c586b83a9390eaa5843b1e2af2a67df61a53b18b2df4c769d4",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "notes": "The v2.15.1 release ships no windows-arm64 build. The release publishes no signature. kalkan runs the unmodified binary as a separate process only (GPL-3.0).",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-windows-x86_64.exe",
+          "sha256": "01d927294962b5387f9ead4f18679158452be4f17c765ad0bdffe5264b9c7b0a",
+          "size": 85316096,
+          "archive": "none",
+          "binary": "hadolint-windows-x86_64.exe",
+          "binary_sha256": "01d927294962b5387f9ead4f18679158452be4f17c765ad0bdffe5264b9c7b0a"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-x86_64",
+          "sha256": "c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507",
+          "size": 55661096,
+          "archive": "none",
+          "binary": "hadolint-linux-x86_64",
+          "binary_sha256": "c7187db94eeeeca956519a6af171adc31453941a1e777961f6e680f697c8c507"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-linux-arm64",
+          "sha256": "f6198ef8090f404dbb771abfee086eb8c48ac177f30da7fd3510aca35b344b5d",
+          "size": 60491096,
+          "archive": "none",
+          "binary": "hadolint-linux-arm64",
+          "binary_sha256": "f6198ef8090f404dbb771abfee086eb8c48ac177f30da7fd3510aca35b344b5d"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-macos-x86_64",
+          "sha256": "ffe9bb18b23d5ed1eae50237aecdbb523d016e96da0bd4e7aa432040acfc3fde",
+          "size": 23407592,
+          "archive": "none",
+          "binary": "hadolint-macos-x86_64",
+          "binary_sha256": "ffe9bb18b23d5ed1eae50237aecdbb523d016e96da0bd4e7aa432040acfc3fde"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/hadolint/hadolint/releases/download/v2.15.1/hadolint-macos-arm64",
+          "sha256": "5c09f3213f8e40406abe048233d985eebef336d4a6a20021be47fadb6cf480a2",
+          "size": 102616248,
+          "archive": "none",
+          "binary": "hadolint-macos-arm64",
+          "binary_sha256": "5c09f3213f8e40406abe048233d985eebef336d4a6a20021be47fadb6cf480a2"
+        }
+      }
+    },
+    "go": {
+      "version": "1.26.9",
+      "tag": "go1.26.9",
+      "released_at": "2026-10-08",
+      "pinned_at": "2026-10-25",
+      "license": "BSD-3-Clause",
+      "kind": "toolchain",
+      "homepage": "https://go.dev/",
+      "executable": "go",
+      "version_args": [
+        "env",
+        "GOVERSION"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://go.dev/dl/?mode=json&include=all",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "notes": "The Go toolchain that gosec and govulncheck need. The newest stable 1.26 release on 2026-10-16 (go.dev also lists 1.27.x). Released on 2026-10-08, so the pin of 2026-10-16 was younger than the 14 days of ADR-0005: on 2026-10-25 every archive was downloaded again and its SHA-256, size, file count, tree_sha256, binary_sha256 and header matched the pinned values and the go.dev listing, and pinned_at names that day. 1.26.10 (2026-10-19) is younger than 14 days. kalkan extracts the whole archive into .tools/go/1.26.9/go (GOROOT). tree_sha256 and files were computed at pin time from the archive members (kalkan.tools.manifest.tree_digest). go.dev publishes no signature for the archives. docker/Dockerfile pins the same version and the same linux SHA-256 values. A system Go is used only when this copy is missing and its version is at least the highest min_go_version of the Go tools.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://go.dev/dl/go1.26.9.windows-amd64.zip",
+          "sha256": "d722201a9c0c086d1610e111c48203009af690892ed708072bd5ae20160e7a59",
+          "size": 75002909,
+          "archive": "zip",
+          "root": "go",
+          "binary": "go/bin/go.exe",
+          "binary_sha256": "5b25a4a434c7bbba11112a94c3fa9c1502c0f377bd971705ee8e07b8e3c12620",
+          "files": 15045,
+          "tree_sha256": "23c4d52c0ae77fc382918be8ac367bfce7ebb2b8694fd02777013862c5a72f3b"
+        },
+        "windows-arm64": {
+          "url": "https://go.dev/dl/go1.26.9.windows-arm64.zip",
+          "sha256": "05215f9e71ea27c9e843409314b1e6bf12dc6a5516318126b2357d497fed42c5",
+          "size": 71522198,
+          "archive": "zip",
+          "root": "go",
+          "binary": "go/bin/go.exe",
+          "binary_sha256": "90cfddab33fbb9a32611d2480a6d543ecfb0dc1fa179db39824eb7c524b7fb33",
+          "files": 15045,
+          "tree_sha256": "9d2afa12a47a3254e2f17038ae6f649b2941bb747e0b42c54c4e234e9d5f7d04"
+        },
+        "linux-amd64": {
+          "url": "https://go.dev/dl/go1.26.9.linux-amd64.tar.gz",
+          "sha256": "42d158b4d8f7b61ac0a830567c940a86098fb7aac52e467a5ebec03ef5cc2f8d",
+          "size": 66935201,
+          "archive": "tar.gz",
+          "root": "go",
+          "binary": "go/bin/go",
+          "binary_sha256": "e90c4e12df236ea0c2e7536fd68da8a47fc0b585c19588bf6c1a70cfc296a0f9",
+          "files": 15045,
+          "tree_sha256": "b6b770c3adac57c4df30e558a8c82ed7f057a8425efd344fb1e3c62b25748723"
+        },
+        "linux-arm64": {
+          "url": "https://go.dev/dl/go1.26.9.linux-arm64.tar.gz",
+          "sha256": "4a97373d49fcacdcf3694fea368a500b00ee3e963974f3e7514132717632f052",
+          "size": 63830030,
+          "archive": "tar.gz",
+          "root": "go",
+          "binary": "go/bin/go",
+          "binary_sha256": "4f2acadc264de6717bc65a294065532baa03d4e7ba5901cd4ebc72b872c5fcb4",
+          "files": 15045,
+          "tree_sha256": "6b50ada108e0bf6f3fd9d77509a37e7b597ed109bbdd1fb0d67976b88a777870"
+        },
+        "darwin-amd64": {
+          "url": "https://go.dev/dl/go1.26.9.darwin-amd64.tar.gz",
+          "sha256": "00c29e3d4c8562f547410daa18d2959b641bd691ab00c4a525ea817a0253d4bd",
+          "size": 67810349,
+          "archive": "tar.gz",
+          "root": "go",
+          "binary": "go/bin/go",
+          "binary_sha256": "0e66111f6fa297bf0262063420f4a40b1f61dac99c0b86d4c5120626dfe61db4",
+          "files": 15045,
+          "tree_sha256": "df86b05a4b8862464dc0cf7e65b4e6fb504528182fad84e6aea7bda63ed77d0b"
+        },
+        "darwin-arm64": {
+          "url": "https://go.dev/dl/go1.26.9.darwin-arm64.tar.gz",
+          "sha256": "f9bb7c0a02506c5d9bf0d1eb1f7ee6c7684f844ae49558308a0427b830e022cc",
+          "size": 64675343,
+          "archive": "tar.gz",
+          "root": "go",
+          "binary": "go/bin/go",
+          "binary_sha256": "318dee99db233501f6c419fbb4616e5a345ed0b831dbd6c7669b24e1ff8e9e2e",
+          "files": 15045,
+          "tree_sha256": "a486382908d22579a4961ae0115895a0326d6eacc04eb43a593cea39a44d30d9"
+        }
+      }
+    },
+    "gosec": {
+      "version": "2.29.0",
+      "tag": "v2.29.0",
+      "released_at": "2026-08-26",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/securego/gosec",
+      "executable": "gosec",
+      "version_args": [
+        "-version"
+      ],
+      "requires_go": true,
+      "min_go_version": "1.25",
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_checksums.txt",
+      "checksums_sha256": "defad574c673241264dc89f21678fffec3770026279d3948cfb13ee96203daab",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "sigstore-bundle-public-key",
+        "bundle_url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_checksums.txt.sigstore.json",
+        "verified_by_kalkan": false
+      },
+      "notes": "gosec needs the Go toolchain at run time: kalkan puts the Go of the tool go first on PATH. min_go_version: the go directive of the gosec 2.29.0 go.mod. The Windows assets are tar.gz archives.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_windows_amd64.tar.gz",
+          "sha256": "67cd5ca3a80280b27102a8d6482e7124e8a47bda240412a0fcd1bb7f1be96faf",
+          "size": 28276759,
+          "archive": "tar.gz",
+          "binary": "gosec.exe",
+          "binary_sha256": "b39ae00787c331406ce663181481bc95a82aa856ecd2c4567f3fe0699cbee5bc"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_windows_arm64.tar.gz",
+          "sha256": "6165a36fe42ec5cbab06c1b42c1e26abb5d0b6dc789fb8661e6fe911cd30d460",
+          "size": 26444590,
+          "archive": "tar.gz",
+          "binary": "gosec.exe",
+          "binary_sha256": "2dde6668fca76bce76ef1e76bf6c9b915ec66fad8f662eea9150dde92302c933"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_linux_amd64.tar.gz",
+          "sha256": "6431b119741c1f4a50fdfcf94e782e16b9e642afc8c7fa9b5d39d48bf3003095",
+          "size": 27920687,
+          "archive": "tar.gz",
+          "binary": "gosec",
+          "binary_sha256": "ffcab3fa1ae4c9909890bc9e12324926d71edc57e94e663deb989f2a866c13f2"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_linux_arm64.tar.gz",
+          "sha256": "c71244ec8d37488fd479d0d26990968fee03ece48b305d8224ac0c1ebd66e87c",
+          "size": 26356042,
+          "archive": "tar.gz",
+          "binary": "gosec",
+          "binary_sha256": "6d21156aab0605927c7f22d407ab9876aa382a46a31bd4dce5a2013d67bab395"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_darwin_amd64.tar.gz",
+          "sha256": "a48152c3c009988f1750b6508316339c8b55076d24b1a958789e30ea2a21794c",
+          "size": 29469820,
+          "archive": "tar.gz",
+          "binary": "gosec",
+          "binary_sha256": "2ac395407645642d8d57921a84598e6780dff5b41e8aeb78229b802dec42da07"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/securego/gosec/releases/download/v2.29.0/gosec_2.29.0_darwin_arm64.tar.gz",
+          "sha256": "7ab6a92c1983b7cb9df12b3ac20fb270afa43cfa12a143c354edae3109c763e5",
+          "size": 28626563,
+          "archive": "tar.gz",
+          "binary": "gosec",
+          "binary_sha256": "88f1ad04168bce2252a0ffade965b4a2c1d33a16013ce18cdc7e0fded3a1c173"
+        }
+      }
+    },
+    "osv-scanner": {
+      "version": "2.6.0",
+      "tag": "v2.6.0",
+      "released_at": "2026-09-14",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/google/osv-scanner",
+      "executable": "osv-scanner",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_SHA256SUMS",
+      "checksums_sha256": "29f6fbc8bdd02d977df4b0987705d046233c36b70469a7021c623e8c155c9ddc",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "slsa-provenance",
+        "provenance_url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/multiple.intoto.jsonl",
+        "identity": "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v2.1.0",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "The provenance subjects match the SHA256SUMS file (checked at pin time).",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_windows_amd64.exe",
+          "sha256": "e0ed7644118b717b028c249ee9d3515024e55e8510747ca08906eb96765354d6",
+          "size": 58692096,
+          "archive": "none",
+          "binary": "osv-scanner_windows_amd64.exe",
+          "binary_sha256": "e0ed7644118b717b028c249ee9d3515024e55e8510747ca08906eb96765354d6"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_windows_arm64.exe",
+          "sha256": "ca1379da0e408279ef2c85cde0846a903495738a91c7b065a208048437c1686c",
+          "size": 54076928,
+          "archive": "none",
+          "binary": "osv-scanner_windows_arm64.exe",
+          "binary_sha256": "ca1379da0e408279ef2c85cde0846a903495738a91c7b065a208048437c1686c"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_amd64",
+          "sha256": "ca69b3d3cd08f889a49dc0a383122f71cc528b83803671df5fd874d97485b108",
+          "size": 57524384,
+          "archive": "none",
+          "binary": "osv-scanner_linux_amd64",
+          "binary_sha256": "ca69b3d3cd08f889a49dc0a383122f71cc528b83803671df5fd874d97485b108"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_linux_arm64",
+          "sha256": "2c71403eb443d05891c4f268c3ad771cf4f16e5443463fd7851ef8f454d3c7e4",
+          "size": 53608608,
+          "archive": "none",
+          "binary": "osv-scanner_linux_arm64",
+          "binary_sha256": "2c71403eb443d05891c4f268c3ad771cf4f16e5443463fd7851ef8f454d3c7e4"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_darwin_amd64",
+          "sha256": "60c5296637e977b28eeda5c7f13573e447659a632922737f94d11fa7e30ad6ca",
+          "size": 58672624,
+          "archive": "none",
+          "binary": "osv-scanner_darwin_amd64",
+          "binary_sha256": "60c5296637e977b28eeda5c7f13573e447659a632922737f94d11fa7e30ad6ca"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/google/osv-scanner/releases/download/v2.6.0/osv-scanner_darwin_arm64",
+          "sha256": "98c460dcd37de25819babd757d04542045b6243113e209edcd4d89fedb0256b4",
+          "size": 55130242,
+          "archive": "none",
+          "binary": "osv-scanner_darwin_arm64",
+          "binary_sha256": "98c460dcd37de25819babd757d04542045b6243113e209edcd4d89fedb0256b4"
+        }
+      }
+    },
+    "syft": {
+      "version": "1.54.0",
+      "tag": "v1.54.0",
+      "released_at": "2026-10-01",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/anchore/syft",
+      "executable": "syft",
+      "version_args": [
+        "--version"
+      ],
+      "version_env": {
+        "SYFT_CHECK_FOR_APP_UPDATE": "false"
+      },
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_checksums.txt",
+      "checksums_sha256": "e423344e663d7d14db62e51ddd31e4a5012818ed69e78358391dc487483f839c",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "sigstore-bundle",
+        "bundle_url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_checksums.txt.sigstore.json",
+        "identity": "https://github.com/anchore/syft/.github/workflows/release.yaml@refs/heads/main",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_windows_amd64.zip",
+          "sha256": "77f4b472779058e819eec9a054753a5071a996aaa40db31a290f8b256748593f",
+          "size": 29834852,
+          "archive": "zip",
+          "binary": "syft.exe",
+          "binary_sha256": "71bb3254c6eab5faf8c882ae04b6595d49b31245b367d4a5e029b90eca660683"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_windows_arm64.zip",
+          "sha256": "0fdfa61470a69b99ace491df1fd7ef9803439c15d4d3d19a0bcb139d8b9fba4e",
+          "size": 26827648,
+          "archive": "zip",
+          "binary": "syft.exe",
+          "binary_sha256": "680da266b19ddcbfdd90a3d4e8aa56d3678b4da294ba0bbc1947a9eadca771c5"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_linux_amd64.tar.gz",
+          "sha256": "54a87372498168b2d033e876fd41fa4e8035b872699e525a57046e1f2f09c860",
+          "size": 29217540,
+          "archive": "tar.gz",
+          "binary": "syft",
+          "binary_sha256": "d46a9a61a6ae3d367f0a03748c5e9c59253e586c4388ab26ddcacebc2efa0d92"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_linux_arm64.tar.gz",
+          "sha256": "ee6d4566373a05b344bc6b5f1706f14419bf9338ba39ff686e247deefe9b8818",
+          "size": 26697817,
+          "archive": "tar.gz",
+          "binary": "syft",
+          "binary_sha256": "fced89f2b5d414b189190e083d83cf7068d4befdca483c5a4e8ed225d8e9b58e"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_darwin_amd64.tar.gz",
+          "sha256": "22b71725e388a4c0de385249c4bc1044f78a870f2894f34b43ba957e792145d7",
+          "size": 30450520,
+          "archive": "tar.gz",
+          "binary": "syft",
+          "binary_sha256": "4ca3d1c3cc14d47df41f841524dc2b72e0e9724005cd9ce81ea1fa9591ffe451"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_darwin_arm64.tar.gz",
+          "sha256": "7e0bdad94c569fc6d5785c9a657bbae3d4c4e140ccb5eace3d0b5b6bc2b6dbcf",
+          "size": 27894431,
+          "archive": "tar.gz",
+          "binary": "syft",
+          "binary_sha256": "835607cdfbdbfc59335b0beadeefc47aa6aab7d3b403c11cfa65627d92a27f61"
+        }
+      }
+    },
+    "grype": {
+      "version": "0.119.0",
+      "tag": "v0.119.0",
+      "released_at": "2026-09-17",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/anchore/grype",
+      "executable": "grype",
+      "version_args": [
+        "--version"
+      ],
+      "version_env": {
+        "GRYPE_CHECK_FOR_APP_UPDATE": "false"
+      },
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_checksums.txt",
+      "checksums_sha256": "9cb7f68e8fa2b039e67f33d1fda29e7224946167f3b8abb43c51a6fff0c0de78",
+      "cross_check": {
+        "date": "2026-10-15",
+        "platforms": [
+          "windows-amd64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "cosign-keyless",
+        "certificate_url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_checksums.txt.pem",
+        "signature_url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_checksums.txt.sig",
+        "identity": "https://github.com/anchore/grype/.github/workflows/release.yaml@refs/heads/main",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "The v0.119.0 release ships no windows-arm64 build.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_windows_amd64.zip",
+          "sha256": "1db5c23b8ba0038a04acebed9c17945e1ade68d9f83e2fe1c101e4fb1feb9a48",
+          "size": 31201746,
+          "archive": "zip",
+          "binary": "grype.exe",
+          "binary_sha256": "5fa9104fb0630b9cd8049b12cb7b29713ce58fcaf586a26b3ad93d418982a52c"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_linux_amd64.tar.gz",
+          "sha256": "3fa2dc4b924621ab65404cf08d0b8438d896d80ab949c9d5a4ca283c36004c9b",
+          "size": 30482169,
+          "archive": "tar.gz",
+          "binary": "grype",
+          "binary_sha256": "e02ba25615668c6bae03473e3c6493b6dfffc2e4e419f65f9bd62555ac10cd0e"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_linux_arm64.tar.gz",
+          "sha256": "29f0ec7c549ddb0e2b6a0ca714851f7399438afc399b80c12808e065edc9a8f8",
+          "size": 27815126,
+          "archive": "tar.gz",
+          "binary": "grype",
+          "binary_sha256": "885734e2e13cdd6ac25341e4b751aa504cbc3d27a2924ca1d6db0b7aa499b742"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_darwin_amd64.tar.gz",
+          "sha256": "ea106d3ab9573d654871ad9e3e89be2237506ff3f8c170e5aeacb59da4def2b8",
+          "size": 31825367,
+          "archive": "tar.gz",
+          "binary": "grype",
+          "binary_sha256": "d618c8afc037efffd7af832c05fa9118f18c75acf77eebfb938a68cc0e426e13"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/anchore/grype/releases/download/v0.119.0/grype_0.119.0_darwin_arm64.tar.gz",
+          "sha256": "500c9b2b6c089d21481815f57a553fabbd441ec7d1e79d95e3aaf40c3bfc7e36",
+          "size": 29118593,
+          "archive": "tar.gz",
+          "binary": "grype",
+          "binary_sha256": "f8486425f232aea78fc932249ca0923672d88be36c9661e25e82ea1fa8cd0cae"
+        }
+      }
+    },
+    "checkov": {
+      "version": "3.3.22",
+      "released_at": "2026-10-01",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "pip",
+      "homepage": "https://github.com/bridgecrewio/checkov",
+      "executable": "checkov",
+      "version_args": [
+        "--version"
+      ],
+      "version_env": {
+        "CKV_SKIP_PACKAGE_UPDATE_CHECK": "true"
+      },
+      "requires_go": false,
+      "blocked_versions": [],
+      "package": "checkov",
+      "requirement": "checkov==3.3.22",
+      "notes": "Installed with pip into the tool venv .tools/pyenv. Upstream classifiers list Python 3.9 to 3.12. checkov --version asks PyPI for the newest release (CONNECT pypi.org:443, measured on 2026-10-25); version_env turns that off as the adapter does."
+    },
+    "bandit": {
+      "version": "1.9.4",
+      "released_at": "2026-02-25",
+      "pinned_at": "2026-10-15",
+      "license": "Apache-2.0",
+      "kind": "pip",
+      "homepage": "https://github.com/PyCQA/bandit",
+      "executable": "bandit",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "package": "bandit",
+      "requirement": "bandit[sarif]==1.9.4",
+      "notes": "Installed with pip into the tool venv .tools/pyenv with the sarif extra."
+    },
+    "govulncheck": {
+      "version": "1.8.0",
+      "tag": "v1.8.0",
+      "released_at": "2026-09-08",
+      "pinned_at": "2026-10-15",
+      "license": "BSD-3-Clause",
+      "kind": "go-install",
+      "homepage": "https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck",
+      "executable": "govulncheck",
+      "version_args": [
+        "-db",
+        "{workdir_url}",
+        "-version"
+      ],
+      "requires_go": true,
+      "blocked_versions": [],
+      "module": "golang.org/x/vuln/cmd/govulncheck@v1.8.0",
+      "min_go_version": "1.26",
+      "notes": "Built from source with go install and the Go of the tool go (GOTOOLCHAIN=local; GOPATH, GOMODCACHE and GOCACHE under .tools/go-build). The Go checksum database verifies the module. min_go_version: the go directive of the x/vuln v1.8.0 go.mod. govulncheck -version reads the modification time of its database, by default from vuln.go.dev (CONNECT vuln.go.dev:443, measured on 2026-10-25): the version probe passes -db with the file URL of its empty working folder, which govulncheck reads as an empty local database."
+    },
+    "zizmor": {
+      "version": "1.30.1",
+      "tag": "v1.30.1",
+      "released_at": "2026-09-09",
+      "pinned_at": "2026-10-25",
+      "license": "MIT",
+      "kind": "binary",
+      "homepage": "https://github.com/zizmorcore/zizmor",
+      "executable": "zizmor",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://pypi.org/pypi/zizmor/1.30.1/json",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "wheel-record"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "notes": "The assets are the PyPI wheels of zizmor 1.30.1. A wheel is a zip archive: kalkan extracts only the executable zizmor-1.30.1.data/scripts/zizmor (zizmor.exe on Windows). The SHA-256 values are the digests that PyPI publishes for the files (checksums_url). At pin time every wheel was downloaded, its SHA-256 matched the PyPI digest, the executable matched the RECORD entry of the wheel, and its header matched the platform. The wheels and not the GitHub release binaries: the Linux wheels need glibc 2.28 (x86_64) or 2.18 (aarch64), the release binaries glibc 2.34 (measured on 2026-10-25), and the release has no checksums file (its binaries carry GitHub build attestations, the wheels carry none). zizmor publishes no windows-arm64 build, neither a wheel nor a binary. The windows-arm64 asset is therefore the windows-amd64 wheel: Windows 11 on Arm runs x64 programs through its built-in emulation (not tested on Arm hardware). 1.30.1 is the newest release that was at least 14 days old on 2026-10-25 (ADR-0005); 1.31.0 and 1.31.1 (2026-10-15) are younger.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://files.pythonhosted.org/packages/db/fe/2889fcbcf7728dd5e013bae7cf5c4e634d981a9e26d55e1da6ab9006404f/zizmor-1.30.1-py3-none-win_amd64.whl",
+          "sha256": "06e039fae8e185e2a1a8b002f2d95a6f5c3b548048bdd79e004dcb501fcd0868",
+          "size": 8925696,
+          "archive": "zip",
+          "binary": "zizmor-1.30.1.data/scripts/zizmor.exe",
+          "binary_sha256": "c39ef6b4c975ed3bf07a3a88fcfe228cb4b073993d76192fe09faba21478df91"
+        },
+        "windows-arm64": {
+          "url": "https://files.pythonhosted.org/packages/db/fe/2889fcbcf7728dd5e013bae7cf5c4e634d981a9e26d55e1da6ab9006404f/zizmor-1.30.1-py3-none-win_amd64.whl",
+          "sha256": "06e039fae8e185e2a1a8b002f2d95a6f5c3b548048bdd79e004dcb501fcd0868",
+          "size": 8925696,
+          "archive": "zip",
+          "binary": "zizmor-1.30.1.data/scripts/zizmor.exe",
+          "binary_sha256": "c39ef6b4c975ed3bf07a3a88fcfe228cb4b073993d76192fe09faba21478df91"
+        },
+        "linux-amd64": {
+          "url": "https://files.pythonhosted.org/packages/63/55/1900b53d34dcebc207cf3ceb7957b3748e8bb40958f062e3853ab72f2395/zizmor-1.30.1-py3-none-manylinux_2_28_x86_64.whl",
+          "sha256": "eee12266b793cb87ad4a7e3af2e72404f8a63e3de5eb099b80bf7b1cfd232a8e",
+          "size": 9467893,
+          "archive": "zip",
+          "binary": "zizmor-1.30.1.data/scripts/zizmor",
+          "binary_sha256": "9be5ac955a59e43a111152ee2e0315d3863866a8df4a15a9be7aaa94af72d74a"
+        },
+        "linux-arm64": {
+          "url": "https://files.pythonhosted.org/packages/37/9c/43764a6e9eb5ad5a332202afc3e63622e3380669ecf7079b6b0de892e474/zizmor-1.30.1-py3-none-manylinux_2_24_aarch64.whl",
+          "sha256": "92906f448365672ebb657fb50d36f997290a3aaba8cac723214741ea9054845d",
+          "size": 9009843,
+          "archive": "zip",
+          "binary": "zizmor-1.30.1.data/scripts/zizmor",
+          "binary_sha256": "6e4f078f03727f2b66075ecb48feda8abbb3b95f357393f0d82a41fd8577781f"
+        },
+        "darwin-amd64": {
+          "url": "https://files.pythonhosted.org/packages/22/a1/a877361a6c6ae13fb0ff4ed3c9d681ccddb9c838c5c3ca8f163a0fcfded9/zizmor-1.30.1-py3-none-macosx_10_12_x86_64.whl",
+          "sha256": "17fda74e15fe41a6aa354ea4cf71fc7ff3cd025cda6584bb6d7466b3f1d00fe6",
+          "size": 9148491,
+          "archive": "zip",
+          "binary": "zizmor-1.30.1.data/scripts/zizmor",
+          "binary_sha256": "7fce5f28ced65105be840d9440be33163748bf9c144d10a9b1549ad2ab5dc928"
+        },
+        "darwin-arm64": {
+          "url": "https://files.pythonhosted.org/packages/eb/0e/ea44a8f466b9a080dc0634497f6c9ee63dd586a94f5e2cd743e06c4df140/zizmor-1.30.1-py3-none-macosx_11_0_arm64.whl",
+          "sha256": "f9eb092f089e35fa9fb3b70aeec0a19eca7dacf2ab161f1d50b18351895f085c",
+          "size": 8743712,
+          "archive": "zip",
+          "binary": "zizmor-1.30.1.data/scripts/zizmor",
+          "binary_sha256": "0717f7c8878caf12f3c8bdb99841bd5dff97e26f0481bba98f59169d414edc34"
+        }
+      }
+    },
+    "actionlint": {
+      "version": "1.7.12",
+      "tag": "v1.7.12",
+      "released_at": "2026-03-30",
+      "pinned_at": "2026-10-25",
+      "license": "MIT",
+      "kind": "binary",
+      "homepage": "https://github.com/rhysd/actionlint",
+      "executable": "actionlint",
+      "version_args": [
+        "-version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_checksums.txt",
+      "checksums_sha256": "433028cf0ba3c42163ea1a668dedce30fcdbe84fe912b1a5e288c006eab8a4f5",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "github-attestation",
+        "identity": "https://github.com/rhysd/actionlint/.github/workflows/release.yaml@refs/tags/v1.7.12",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "kalkan never lets actionlint start a shellcheck or pyflakes of the system: it passes -pyflakes= always and -shellcheck= unless a pinned kalkan copy of shellcheck is installed.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_windows_amd64.zip",
+          "sha256": "6e7241b51e6817ea6a047693d8e6fed13b31819c9a0dd6c5a726e1592d22f6e9",
+          "size": 2479065,
+          "archive": "zip",
+          "binary": "actionlint.exe",
+          "binary_sha256": "54ca21be3de4c7cfa26914aa8b61bd76bf573ef3caac5f80d110558cdf241718"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_windows_arm64.zip",
+          "sha256": "cadcf7ea4efe3a68728893813643cebe1185e5b1d4be5b96245f65c9a4d5ea41",
+          "size": 2200159,
+          "archive": "zip",
+          "binary": "actionlint.exe",
+          "binary_sha256": "dc172c9dd32275b4a563143a318a48c91dff44fabafb23b7d1a05ed9c106a488"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz",
+          "sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8",
+          "size": 2353908,
+          "archive": "tar.gz",
+          "binary": "actionlint",
+          "binary_sha256": "c872d6db8c6bf83a8eaa704fc93999f027d55dffbc63b8a6abdccb47df5f4cd4"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_arm64.tar.gz",
+          "sha256": "325e971b6ba9bfa504672e29be93c24981eeb1c07576d730e9f7c8805afff0c6",
+          "size": 2111482,
+          "archive": "tar.gz",
+          "binary": "actionlint",
+          "binary_sha256": "ac0323433c2853ec3fb978c611430c5b3dc5d43c58d1a1ec031b00ab572beb60"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_amd64.tar.gz",
+          "sha256": "5b44c3bc2255115c9b69e30efc0fecdf498fdb63c5d58e17084fd5f16324c644",
+          "size": 2355828,
+          "archive": "tar.gz",
+          "binary": "actionlint",
+          "binary_sha256": "d1f7cee75ae2873609bd9567b4600bebc5315a5e733e73202987a44fafdd53b2"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_darwin_arm64.tar.gz",
+          "sha256": "aba9ced2dee8d27fecca3dc7feb1a7f9a52caefa1eb46f3271ea66b6e0e6953f",
+          "size": 2164202,
+          "archive": "tar.gz",
+          "binary": "actionlint",
+          "binary_sha256": "8db11704dc296f096216db4db65d86cd7f0ebfdf4c38453a1da276b137b88388"
+        }
+      }
+    },
+    "poutine": {
+      "version": "1.1.6",
+      "tag": "v1.1.6",
+      "released_at": "2026-05-22",
+      "pinned_at": "2026-10-25",
+      "license": "Apache-2.0",
+      "kind": "go-install",
+      "homepage": "https://github.com/boostsecurityio/poutine",
+      "executable": "poutine",
+      "version_args": [
+        "version",
+        "--disable-version-check"
+      ],
+      "version_env": {
+        "POUTINE_DISABLE_VERSION_CHECK": "1"
+      },
+      "requires_go": true,
+      "blocked_versions": [],
+      "module": "github.com/boostsecurityio/poutine@v1.1.6",
+      "min_go_version": "1.26",
+      "build_flags": [
+        "-trimpath",
+        "-ldflags=-X main.version=1.1.6 -X main.commit=8918c66db19ecfd12b2f8379e445c3da4589e599"
+      ],
+      "notes": "The v1.1.6 release ships no Windows binary, so kalkan builds poutine from source on every platform: go install with the Go of the tool go (GOTOOLCHAIN=local; GOPATH, GOMODCACHE and GOCACHE under .tools/go-build). The Go checksum database verifies the module. build_flags stamp the release version and the commit of the v1.1.6 tag into the binary, as the upstream release build does; a plain go install reports the version development. -trimpath keeps the build folder out of the binary. min_go_version: the go directive of the poutine v1.1.6 go.mod. Every poutine command except mcp-server and completion sends a version check with an anonymous instance ID to version-check.cicd.fun once a day: kalkan always passes --disable-version-check (version_args too) and sets POUTINE_DISABLE_VERSION_CHECK=1."
+    },
+    "scorecard": {
+      "version": "5.5.0",
+      "tag": "v5.5.0",
+      "released_at": "2026-04-23",
+      "pinned_at": "2026-10-25",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/ossf/scorecard",
+      "executable": "scorecard",
+      "version_args": [
+        "version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_checksums.txt",
+      "checksums_sha256": "0a3cf6e9f7a340b05e66840b1e44322a59be5ab8a55cffdef4b69ae8ca8acc77",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "slsa-provenance",
+        "provenance_url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/multiple.intoto.jsonl",
+        "identity": "https://github.com/slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@refs/tags/v2.1.0",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "kalkan runs scorecard --local only, with the checks that read files and need no network (docs/ENGINE-SPEC.md, section 13). The provenance subjects match the checksums file (checked at pin time). The Windows assets are tar.gz archives. 5.5.0 is the newest release that was at least 14 days old on 2026-10-25 (ADR-0005); 5.6.0 (2026-10-12) is younger.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_5.5.0_windows_amd64.tar.gz",
+          "sha256": "21ca42b37260785e670c58f602b483510099e7b1988e3c6eb5005f143dc2a2ab",
+          "size": 26148320,
+          "archive": "tar.gz",
+          "binary": "scorecard.exe",
+          "binary_sha256": "77ecd54bda08699dd27746e0adb125eac01437632a968aa2228736bb959abde4"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_5.5.0_windows_arm64.tar.gz",
+          "sha256": "375ccf037552cf2ca105b9143311ed9128c669352d29faeb6bd11024e5d0be4a",
+          "size": 23485994,
+          "archive": "tar.gz",
+          "binary": "scorecard.exe",
+          "binary_sha256": "244a909b454e26ddc4d403aa46fe2356ddd75028338e581e177752a1d27b6e23"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_5.5.0_linux_amd64.tar.gz",
+          "sha256": "83b90a05c1540ef1390db1cd5711e5fd04be9c1d8537fb84d39d02092d6a8dff",
+          "size": 26474049,
+          "archive": "tar.gz",
+          "binary": "scorecard",
+          "binary_sha256": "e63945e2c94060b4768d86b3ae3878c3b985fbfae3b082603a6fa9c06f28fe86"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_5.5.0_linux_arm64.tar.gz",
+          "sha256": "3ce59d20c1d53e540c4a14e0da1e0d96b3b294e8ddc96a3c5a7b8a637b32991e",
+          "size": 24197256,
+          "archive": "tar.gz",
+          "binary": "scorecard",
+          "binary_sha256": "aa77c1325aa5539465ad885115de79cbc3a0a3bccee189769a99a1dbb865429a"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_5.5.0_darwin_amd64.tar.gz",
+          "sha256": "979487ca20e726f6a4d2bd63a0a4c544184f589724b3d12d2ba8d0ea80889063",
+          "size": 26075576,
+          "archive": "tar.gz",
+          "binary": "scorecard",
+          "binary_sha256": "80293b393e16b4cdef8d238738cfdcc57a83ba3d7900a217610ad4ef1fe1a993"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/ossf/scorecard/releases/download/v5.5.0/scorecard_5.5.0_darwin_arm64.tar.gz",
+          "sha256": "bac6371a4f810d6bdd0b65d63c3311906bdfe3ba0d76a5ea743ce24ced170fcf",
+          "size": 24435646,
+          "archive": "tar.gz",
+          "binary": "scorecard",
+          "binary_sha256": "940d711660cc83aafbc844fc80b31ff09d66a44a29aa15d9f0735c7e874fade5"
+        }
+      }
+    },
+    "kingfisher": {
+      "version": "2.11.1",
+      "tag": "v2.11.1",
+      "released_at": "2026-10-08",
+      "pinned_at": "2026-10-25",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/mongodb/kingfisher",
+      "executable": "kingfisher",
+      "version_args": [
+        "--no-update-check",
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/multiple.intoto.jsonl",
+      "checksums_sha256": "941a4b6ce2218f2df2241e9fafd5edd402f0fc6d51652915b9e357673608eed9",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "slsa-provenance",
+        "provenance_url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/multiple.intoto.jsonl",
+        "identity": "https://github.com/mongodb/kingfisher/.github/workflows/release.yml@refs/tags/v2.11.1",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "The release has no plain checksums file: the SHA-256 values are the subjects of the SLSA provenance multiple.intoto.jsonl, and they matched the downloads and the GitHub release asset digests at pin time. Every archive also holds a CHECKSUM file (CHECKSUM.txt or CHECKSUM-<platform>.txt) with the SHA-256 of the executable; it matches binary_sha256. 2.11.1 is the newest release that was at least 14 days old on 2026-10-25 (ADR-0005); 2.12.0 to 2.14.0 are younger. The adapter turns off the validation of found secrets against live services and the update check (docs/SECURITY.md).",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/kingfisher-windows-x64.zip",
+          "sha256": "6b41da5b091f131948d85568aae7da594af0b95c19599f9deb7a08d1f76b823c",
+          "size": 17029873,
+          "archive": "zip",
+          "binary": "kingfisher.exe",
+          "binary_sha256": "f430bd8edbd7cd6bfc886f9f478c7121ad52fc4d923486a5ad281714390fb3b8"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/kingfisher-windows-arm64.zip",
+          "sha256": "9617c17ff2ea57a40e2562edca475d2c5ddd6088f2b1d44b3536dbc57dc21aae",
+          "size": 15343393,
+          "archive": "zip",
+          "binary": "kingfisher.exe",
+          "binary_sha256": "2d2c67c8c5953046a4b31127c74a1f6d7976ff2246b1eedbf35c514078652a6a"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/kingfisher-linux-x64.tgz",
+          "sha256": "84e4a4c45814f05e80aa8eee768e5170d758736fa116ffaf03565da4d5a77447",
+          "size": 16728002,
+          "archive": "tar.gz",
+          "binary": "kingfisher",
+          "binary_sha256": "0f1bba872ccfd2ae451e1a7d1c41bf4a38d1e241087fd6c0fcbfc25df0bd1213"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/kingfisher-linux-arm64.tgz",
+          "sha256": "da7508a90ff36337b41d12e63814cca3ac5586abdcf8c194898059c1ed5e1f81",
+          "size": 15577898,
+          "archive": "tar.gz",
+          "binary": "kingfisher",
+          "binary_sha256": "cf939b95b40d2fbcab87de4bec37722a5c1e253c080f8a581a3ac31e5e01260e"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/kingfisher-darwin-x64.tgz",
+          "sha256": "e91b74c447b759fc72f993373b80ce7a6122a275f5793df61928b9c3c4eac1e3",
+          "size": 16198739,
+          "archive": "tar.gz",
+          "binary": "kingfisher",
+          "binary_sha256": "b55943a6965f95431800228bd09e151958ff37e32f9d543b0dbf1a20492e7a9d"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/mongodb/kingfisher/releases/download/v2.11.1/kingfisher-darwin-arm64.tgz",
+          "sha256": "131de009409be38ae595550acfa8811ff3d43912715687758ff6a84157f1ef5e",
+          "size": 14412799,
+          "archive": "tar.gz",
+          "binary": "kingfisher",
+          "binary_sha256": "e623faaa8f78cec953179d5529665b60507118e4a15a4ab475d5ca4c230e3cf9"
+        }
+      }
+    },
+    "shellcheck": {
+      "version": "0.11.0",
+      "tag": "v0.11.0",
+      "released_at": "2025-08-04",
+      "pinned_at": "2026-10-25",
+      "license": "GPL-3.0",
+      "kind": "binary",
+      "homepage": "https://github.com/koalaman/shellcheck",
+      "executable": "shellcheck",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "computed-at-pin-time",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "notes": "The release has no checksums file and no signature. kalkan downloaded every asset at pin time, computed its SHA-256 and compared it with the GitHub release asset digest. The release ships one Windows build, for x86_64 (shellcheck-v0.11.0.zip). windows-arm64 uses that x64 build: Windows 11 on Arm runs it through its x64 emulation. kalkan runs the unmodified binary as a separate process only (GPL-3.0).",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.zip",
+          "sha256": "8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e",
+          "size": 8068167,
+          "archive": "zip",
+          "binary": "shellcheck.exe",
+          "binary_sha256": "c9e82ada36ef4b8d4caf1f97fa89289048c8f4a33c2c76ffffc88bfe09ff00c5"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.zip",
+          "sha256": "8a4e35ab0b331c85d73567b12f2a444df187f483e5079ceffa6bda1faa2e740e",
+          "size": 8068167,
+          "archive": "zip",
+          "binary": "shellcheck.exe",
+          "binary_sha256": "c9e82ada36ef4b8d4caf1f97fa89289048c8f4a33c2c76ffffc88bfe09ff00c5"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.x86_64.tar.gz",
+          "sha256": "b7af85e41cc99489dcc21d66c6d5f3685138f06d34651e6d34b42ec6d54fe6f6",
+          "size": 3773312,
+          "archive": "tar.gz",
+          "binary": "shellcheck-v0.11.0/shellcheck",
+          "binary_sha256": "4da528ddb3a4d1b7b24a59d4e16eb2f5fd960f4bd9a3708a15baddbdf1d5a55b"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.linux.aarch64.tar.gz",
+          "sha256": "68a8133197a50beb8803f8d42f9908d1af1c5540d4bb05fdfca8c1fa47decefc",
+          "size": 11668131,
+          "archive": "tar.gz",
+          "binary": "shellcheck-v0.11.0/shellcheck",
+          "binary_sha256": "127f13925eadd52c341bca0ebaf9ab0dbd78c6468f30a8f262a528bf8de47546"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.x86_64.tar.gz",
+          "sha256": "c2c15e08df0e8fbc374c335b230a7ee958c313fa5714817a59aa59f1aa594f51",
+          "size": 6700263,
+          "archive": "tar.gz",
+          "binary": "shellcheck-v0.11.0/shellcheck",
+          "binary_sha256": "2589be755bb115f4421b8271eb7c08df1e03729f00350c1e4cf53b4a0bf9c2df"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.gz",
+          "sha256": "339b930feb1ea764467013cc1f72d09cd6b869ebf1013296ba9055ab2ffbd26f",
+          "size": 11370575,
+          "archive": "tar.gz",
+          "binary": "shellcheck-v0.11.0/shellcheck",
+          "binary_sha256": "61c17246d69f012cd458ae82f244c46023dac75d1b69733ca1cc7d28fb270fd7"
+        }
+      }
+    },
+    "flawfinder": {
+      "version": "2.0.20",
+      "released_at": "2026-05-17",
+      "pinned_at": "2026-10-25",
+      "license": "GPL-2.0-or-later",
+      "kind": "pip",
+      "homepage": "https://dwheeler.com/flawfinder/",
+      "executable": "flawfinder",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "package": "flawfinder",
+      "requirement": "flawfinder==2.0.20",
+      "notes": "Installed with pip into the tool venv .tools/pyenv (pure Python, no dependencies). kalkan runs it unmodified as a separate process only (GPL-2.0-or-later)."
+    },
+    "gixy": {
+      "version": "0.2.55",
+      "released_at": "2026-09-29",
+      "pinned_at": "2026-10-25",
+      "license": "MPL-2.0",
+      "kind": "pip",
+      "homepage": "https://github.com/dvershinin/gixy",
+      "executable": "gixy",
+      "version_args": [
+        "--version"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "package": "gixy-ng",
+      "requirement": "gixy-ng==0.2.55",
+      "notes": "The maintained fork of yandex/gixy (PyPI gixy-ng). Its LICENSE file is the Mozilla Public License 2.0 with two copyright lines in front of it, so the GitHub metadata says NOASSERTION. Installed with pip into the tool venv .tools/pyenv without the deep extra: its dependencies are ngxparse (Apache-2.0), Jinja2 and MarkupSafe (BSD-3-Clause) and ConfigArgParse (MIT). kalkan does not use the release binaries: they bundle redoctor (checked in the 0.2.55 Windows binary), whose Business Source License 1.1 allows production use for non-commercial purposes only (not OSI-approved). pip also covers darwin-amd64 and windows-arm64, which have no release binary. 0.2.55 is the newest release that was at least 14 days old on 2026-10-25 (ADR-0005); 0.2.57 (2026-10-20) and 0.2.58 (2026-10-25) are younger."
+    },
+    "helm": {
+      "version": "4.3.0",
+      "tag": "v4.3.0",
+      "released_at": "2026-09-09",
+      "pinned_at": "2026-10-25",
+      "license": "Apache-2.0",
+      "kind": "binary",
+      "homepage": "https://github.com/helm/helm",
+      "executable": "helm",
+      "version_args": [
+        "version",
+        "--short"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz.sha256sum",
+      "checksums_pattern": "<asset url>.sha256sum",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-release-notes",
+          "pgp-signature"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "pgp",
+        "signature_pattern": "https://github.com/helm/helm/releases/download/v4.3.0/<asset name>.asc",
+        "key_fingerprint": "208DD36ED5BB3745A16743A4C7C6FBB5B91C1155",
+        "keys_url": "https://raw.githubusercontent.com/helm/helm/v4.3.0/KEYS",
+        "verified_at_pin_time": true,
+        "verified_by_kalkan": false
+      },
+      "notes": "Helm 4.3.0 (2026-09-09) is the newest stable release published on or before 2026-10-11 (ADR-0005 rule 1); 4.3.1 and 3.22.1 came out on 2026-10-15. Helm 3 gets no new minor release and reaches its end of life (helm.sh/blog/helm-v3-end-of-life), so the 4.x line is pinned. Helm publishes its binaries on get.helm.sh, not as GitHub release assets: every asset has its own checksum file <asset url>.sha256sum (checksums_url names the linux-amd64 one), and the GitHub release notes list the same SHA-256 values. At pin time all six downloads matched both, and the PGP signature <asset>.asc of each archive (GitHub release asset) verified with the release key 208D D36E D5BB 3745 A167 43A4 C7C6 FBB5 B91C 1155 of the KEYS file of the tag. kalkan uses helm only to render charts offline with helm template (helm-checkov adapter, docs/ENGINE-SPEC.md section 13): never dependency update or build, no repository, no --repo, and HELM_CACHE_HOME, HELM_CONFIG_HOME and HELM_DATA_HOME in the work folder.",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://get.helm.sh/helm-v4.3.0-windows-amd64.zip",
+          "sha256": "304ea163cce4d9ad14e189c01846c6a34de9cfdfe48536ae54b2e8ba7884e67c",
+          "size": 20832154,
+          "archive": "zip",
+          "binary": "windows-amd64/helm.exe",
+          "binary_sha256": "2f65add9f1d5c96fc70ad70f06f1c47b3ef21bee4a9f086d861bb138429e9c13"
+        },
+        "windows-arm64": {
+          "url": "https://get.helm.sh/helm-v4.3.0-windows-arm64.zip",
+          "sha256": "4a9eefa30d26eb73900a9a0f16e97eae678582172204db60cbd454c68acea246",
+          "size": 18076214,
+          "archive": "zip",
+          "binary": "windows-arm64/helm.exe",
+          "binary_sha256": "346e40dace982ddd3eec651e09a7b50de5e1d1a777f8a020cdae588c52777d08"
+        },
+        "linux-amd64": {
+          "url": "https://get.helm.sh/helm-v4.3.0-linux-amd64.tar.gz",
+          "sha256": "86584a54def73570558f66f5111cc53dfed56689637ae32c1201205d494f54fb",
+          "size": 20321063,
+          "archive": "tar.gz",
+          "binary": "linux-amd64/helm",
+          "binary_sha256": "57ce7fc4ea77b28ee6fa91ae071abcade74d3f524e80c9decff5877a5ac8eda4"
+        },
+        "linux-arm64": {
+          "url": "https://get.helm.sh/helm-v4.3.0-linux-arm64.tar.gz",
+          "sha256": "31c5794dd55c66a51e6b7d2e2ac7a114ae8b1de41ff1d9ba51748ac973b06a08",
+          "size": 17889190,
+          "archive": "tar.gz",
+          "binary": "linux-arm64/helm",
+          "binary_sha256": "5bbdb28c8ca3f71daab33996a72392ce3135439a040ee63aed406888f82f2228"
+        },
+        "darwin-amd64": {
+          "url": "https://get.helm.sh/helm-v4.3.0-darwin-amd64.tar.gz",
+          "sha256": "347a784877e0e20eac865e8d1c36a80f6bb0861d6f29abd34defb6570ef95d92",
+          "size": 20742010,
+          "archive": "tar.gz",
+          "binary": "darwin-amd64/helm",
+          "binary_sha256": "942d9ee88fcabd394948ca1a7b98c61254f5ca7b119cdd5ee57da4db75620814"
+        },
+        "darwin-arm64": {
+          "url": "https://get.helm.sh/helm-v4.3.0-darwin-arm64.tar.gz",
+          "sha256": "d3870437e1e95b67f8edbde964156c84a26503f560821d40c542441658934fba",
+          "size": 18792964,
+          "archive": "tar.gz",
+          "binary": "darwin-arm64/helm",
+          "binary_sha256": "ed7defb5950888de567b2ba32f6795efbba172227aba7dfd2ee110549194f5c4"
+        }
+      }
+    },
+    "vacuum": {
+      "version": "0.33.0",
+      "tag": "v0.33.0",
+      "released_at": "2026-10-10",
+      "pinned_at": "2026-10-25",
+      "license": "MIT",
+      "kind": "binary",
+      "homepage": "https://github.com/daveshanley/vacuum",
+      "executable": "vacuum",
+      "version_args": [
+        "version",
+        "--no-update-check"
+      ],
+      "requires_go": false,
+      "blocked_versions": [],
+      "sha256_source": "upstream-checksums",
+      "checksums_url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/checksums.txt",
+      "checksums_sha256": "9b65d43ebe0593065bcbdceb9b976a993887ee6809cb302ddc9d5f16ad1ce833",
+      "cross_check": {
+        "date": "2026-10-25",
+        "platforms": [
+          "windows-amd64",
+          "windows-arm64",
+          "linux-amd64",
+          "linux-arm64",
+          "darwin-amd64",
+          "darwin-arm64"
+        ],
+        "sources": [
+          "download",
+          "upstream-checksums",
+          "github-asset-digest"
+        ],
+        "binary_header_matches_platform": true
+      },
+      "signature": {
+        "type": "sigstore",
+        "bundle_url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/checksums.txt.sigstore.json",
+        "identity": "https://github.com/daveshanley/vacuum/.github/workflows/publish.yaml@refs/heads/main",
+        "issuer": "https://token.actions.githubusercontent.com",
+        "verified_by_kalkan": false
+      },
+      "notes": "vacuum 0.33.0 (2026-10-10) is the newest stable release published on or before 2026-10-11 (ADR-0005 rule 1); 0.33.1 followed on 2026-10-15. The sigstore bundle signs checksums.txt (identity: the publish workflow of the main branch, not of the tag). The Windows assets are tar.gz archives. kalkan runs vacuum spectral-report with --remote=false, --no-update-check, its own ruleset (the built-in OWASP rules) and an empty config file, and only on specifications whose local references stay inside the target (docs/ENGINE-SPEC.md section 13, docs/SECURITY.md).",
+      "platforms": {
+        "windows-amd64": {
+          "url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/vacuum_0.33.0_windows_x86_64.tar.gz",
+          "sha256": "9bf87b10a1074e451d5e040b4e6825ff19a411b8938dfb951c1b074fcb32a685",
+          "size": 21310155,
+          "archive": "tar.gz",
+          "binary": "vacuum.exe",
+          "binary_sha256": "18107d19dcb18678eaa0446e659485b3e2b75f160284655bda78b7b1e532f9ba"
+        },
+        "windows-arm64": {
+          "url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/vacuum_0.33.0_windows_arm64.tar.gz",
+          "sha256": "c4d0b36e45bb0b52e565c5de5bc692046c2d3d730a814f56fc9312ecd37c982b",
+          "size": 19422505,
+          "archive": "tar.gz",
+          "binary": "vacuum.exe",
+          "binary_sha256": "7a838dbcc46685c25e40f91adb5dc72344ff0db885543212761078a1b6dacbc3"
+        },
+        "linux-amd64": {
+          "url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/vacuum_0.33.0_linux_x86_64.tar.gz",
+          "sha256": "b4de4f93784194dce3af3a554abca8abdefb9529e6d4ed1ad5eb26cfbb0298d7",
+          "size": 20879960,
+          "archive": "tar.gz",
+          "binary": "vacuum",
+          "binary_sha256": "e8209cf3f448d527f0212d2635abddc74e7ab7029658da59a1d925fc87d60bb9"
+        },
+        "linux-arm64": {
+          "url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/vacuum_0.33.0_linux_arm64.tar.gz",
+          "sha256": "87a340ced4fe0a5d4068ef43d75269a3a11ea38fc6d1e9e9c29df9aa6c6be9b4",
+          "size": 19334051,
+          "archive": "tar.gz",
+          "binary": "vacuum",
+          "binary_sha256": "a2ef08c3787de8f68d503da3cc00e9edbf6468461ad810a2d3123b05b4ef2231"
+        },
+        "darwin-amd64": {
+          "url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/vacuum_0.33.0_darwin_x86_64.tar.gz",
+          "sha256": "0719f511c497eaa3b7659d13e3b0ce10c2cbdae8fcc735e676cef98b6fb37f91",
+          "size": 21815325,
+          "archive": "tar.gz",
+          "binary": "vacuum",
+          "binary_sha256": "7169592649be36c5dcde075159649d4ffd260e3e1256e0819fb8945a409f24c6"
+        },
+        "darwin-arm64": {
+          "url": "https://github.com/daveshanley/vacuum/releases/download/v0.33.0/vacuum_0.33.0_darwin_arm64.tar.gz",
+          "sha256": "de5410bfc557fd9f81a2a3bb6588674d350ba274ed2ddcc3b4ecd3e77968d63b",
+          "size": 20240407,
+          "archive": "tar.gz",
+          "binary": "vacuum",
+          "binary_sha256": "0a3107f51a1b7f627d2fadd5ef54ea32f8428cdc5efee16524b229184b7c1bfd"
+        }
+      }
+    }
+  }
+}

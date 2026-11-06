@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "rate-limit-bypass",
+  "description": "Sensitive endpoints that may lack rate limiting",
+  "class": "rate-limit-bruteforce",
+  "cwe": [
+    "CWE-307"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/app/api/**/route.{ts,tsx}",
+    "**/apps/**/route.{ts,tsx}",
+    "**/apps/**/route.*.ts",
+    "**/services/**/endpoints/**/*.ts",
+    "**/services/**/src/index.ts",
+    "**/pages/api/**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_excludes": [
+    "(?i:rateLimit|rate.limit|checkRateLimit|rateLimiter|throttle)"
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=|export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+default|withSchema\\s*\\(|withAuthentication\\s*\\(",
+      "flags": "",
+      "label": "Sensitive endpoint without rate limiting",
+      "near": [
+        {
+          "regex": "(?i:login|signin|sign.in|authenticate|password|passwd|billing|charge|payment|refund|invoice|delete.{0,200}account|remove.{0,200}user|deactivate|export|download.{0,200}data|bulk|api.key|token.{0,200}create|generate.{0,200}token|invite|add.{0,200}member|transfer.{0,200}ownership)",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=|export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+default|withSchema\\s*\\(|withAuthentication\\s*\\(",
+      "flags": "",
+      "label": "Sensitive endpoint without rate limiting",
+      "paths": [
+        "**/*{login,signin,sign-in,authenticate,password,passwd,billing,charge}*/**",
+        "**/*{payment,refund,invoice,deactivate,export,bulk,invite,api-key}*/**",
+        "**/*{login,signin,sign-in,authenticate,password,passwd,billing,charge}*",
+        "**/*{payment,refund,invoice,deactivate,export,bulk,invite,api-key}*"
+      ]
+    }
+  ],
+  "examples": [
+    "// login handler\nexport const POST = async (req) => signIn(req);",
+    "// password reset\nexport async function POST(req) { return resetPassword(req); }",
+    "// billing charge\nexport default async function (req, res) { charge(req); }",
+    "// delete account\nexport const DELETE = (req) => removeUser(req);",
+    "// data export\nexport default async function handler(req, res) { exportData(); }",
+    "// generate token\nexport const POST = async (req) => createToken(req);",
+    "// invite member\nexport default function handler(req, res) { invite(req); }"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rate-limit-bypass.ts"
+  },
+  "notes": "The sensitive-operation test (content or path) becomes two pattern variants. In the content regex each 'a.*b' wildcard is bounded to 200 characters. Path matching uses lower-case keywords. deepsec flags the first handler line; the port flags every handler line."
+}

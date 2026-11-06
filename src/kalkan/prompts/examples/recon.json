@@ -1,0 +1,40 @@
+{
+  "task_id": "T0001-recon",
+  "kind": "surfaces",
+  "summary_md": "The service exposes a Flask HTTP API with login, user lookup and an image proxy.",
+  "facts": [
+    {
+      "statement": "The user lookup route takes the user ID from the query string.",
+      "evidence": [
+        {"file": "app/routes.py", "line": 12, "quote": "user_id = request.args.get(\"id\")"}
+      ]
+    }
+  ],
+  "surfaces": [
+    {
+      "id": "http-users",
+      "kind": "http",
+      "name": "GET /users",
+      "file": "app/routes.py",
+      "line": 10,
+      "auth": "user",
+      "trust_boundary": "internet to application",
+      "subsystem": "api",
+      "notes": ""
+    },
+    {
+      "id": "cfg-docker",
+      "kind": "file",
+      "name": "Dockerfile",
+      "file": "Dockerfile",
+      "line": null,
+      "auth": "unknown",
+      "trust_boundary": "build to runtime",
+      "subsystem": "deployment",
+      "notes": "Runs as root."
+    }
+  ],
+  "classes_of_interest": ["sqli", "idor", "ssrf"],
+  "sensitive_data": ["user e-mail addresses"],
+  "uncertainties": ["The reverse proxy configuration is not in the repository."]
+}

@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "snowflake-bigquery-sql",
+  "description": "Snowflake / BigQuery / ClickHouse SQL via template/string interpolation",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "\\bfrom\\s+[\"'](?:snowflake-sdk|@google-cloud/bigquery|@clickhouse/client|@clickhouse/client-web|@databricks/sql|duckdb|@duckdb/[^\"']*)[\"']"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bsqlText\\s*:\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "Snowflake sqlText with template interpolation"
+    },
+    {
+      "regex": "\\bsqlText\\s*:\\s*[\"'][^\"']*[\"']\\s*\\+",
+      "flags": "",
+      "label": "Snowflake sqlText with string concatenation"
+    },
+    {
+      "regex": "\\bcreateQueryJob\\s*\\(\\s*\\{[^}]*query\\s*:\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "BigQuery createQueryJob with template interpolation"
+    },
+    {
+      "regex": "\\b(?:bigquery|bq|clickhouse|client|connection)\\.\\s*query\\s*\\(\\s*\\{?\\s*(?:query\\s*:\\s*)?`[^`]*\\$\\{",
+      "flags": "",
+      "label": "Analytics .query() with template interpolation"
+    },
+    {
+      "regex": "\\b(?:connection|conn|client|db)\\.\\s*execute\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": ".execute() with template interpolation in analytics context"
+    }
+  ],
+  "examples": [
+    "import snowflake from \"snowflake-sdk\";\nconnection.execute({ sqlText: `SELECT * FROM users WHERE id = ${id}` });",
+    "import snowflake from \"snowflake-sdk\";\nconnection.execute({ sqlText: \"SELECT * FROM users WHERE id = \" + id });",
+    "import { BigQuery } from \"@google-cloud/bigquery\";\nawait bigquery.query(`SELECT * FROM users WHERE id = ${id}`);",
+    "import { BigQuery } from \"@google-cloud/bigquery\";\nawait bigquery.createQueryJob({ query: `SELECT * FROM ${tableName}` });",
+    "import { createClient } from \"@clickhouse/client\";\nawait clickhouse.query(`SELECT * FROM users WHERE id = ${id}`);",
+    "import { createClient } from \"@clickhouse/client\";\nawait client.query({ query: `SELECT * FROM ${table}` });",
+    "import duckdb from \"duckdb\";\nawait connection.execute(`SELECT * FROM ${table}`);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/snowflake-bigquery-sql.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,221 @@
+{
+  "$schema": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/schemas/sarif-schema-2.1.0.json",
+  "runs": [
+    {
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "toolExecutionNotifications": []
+        }
+      ],
+      "results": [
+        {
+          "fingerprints": {
+            "matchBasedId/v1": "23e1a6ff8292dac11036943f8d84fab529091292926e46f177cc3cc5bda59b0d4f4722dce60e255a5a378498345ba40792e8a727c3a002d79be73252b45ee030"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/db.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endColumn": 72,
+                  "endLine": 14,
+                  "snippet": {
+                    "text": "    cursor.execute(\"SELECT * FROM users WHERE id = '\" + user_id + \"'\")"
+                  },
+                  "startColumn": 5,
+                  "startLine": 14
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected possible formatted SQL query. Use parameterized queries instead."
+          },
+          "properties": {},
+          "ruleId": "python.lang.security.audit.formatted-sql-query.formatted-sql-query"
+        },
+        {
+          "fingerprints": {
+            "matchBasedId/v1": "a7d34b8ede16ee48c052137a36f585032bef683d932eae6e34dd4b451309ff71b4387d70b931c7d053792817e1915353f093a2256347243e1121a776013689d1"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/avatar.py",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endColumn": 51,
+                  "endLine": 31,
+                  "snippet": {
+                    "text": "    response = requests.get(avatar_url, timeout=5)"
+                  },
+                  "startColumn": 16,
+                  "startLine": 31
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "A URL from the request reaches requests.get without a host allow-list. Check the host against an allow-list after DNS resolution."
+          },
+          "properties": {},
+          "ruleId": "kalkan.python.ssrf.requests-user-url"
+        },
+        {
+          "fingerprints": {
+            "matchBasedId/v1": "66826751b0e72d9c8ca0341d622642d7c53a4396dd1b1aeb1f1c7309fa000802363921bf660e41e729da77e0f38859c0d62a54bd9ce4cb21eab2ccff55dc4fe5"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "web/server.js",
+                  "uriBaseId": "%SRCROOT%"
+                },
+                "region": {
+                  "endColumn": 53,
+                  "endLine": 18,
+                  "snippet": {
+                    "text": "  res.send(\"<h1>Hello \" + req.query.name + \"</h1>\");"
+                  },
+                  "startColumn": 3,
+                  "startLine": 18
+                }
+              }
+            }
+          ],
+          "message": {
+            "text": "Detected directly writing to a Response object from user-defined input. This bypasses any HTML escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use 'resp.render()' to render safely escaped HTML."
+          },
+          "properties": {},
+          "ruleId": "javascript.express.security.audit.xss.direct-response-write.direct-response-write"
+        }
+      ],
+      "tool": {
+        "driver": {
+          "name": "Opengrep OSS",
+          "rules": [
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Detected directly writing to a Response object from user-defined input. This bypasses any HTML escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use 'resp.render()' to render safely escaped HTML."
+              },
+              "help": {
+                "markdown": "Detected directly writing to a Response object from user-defined input. This bypasses any HTML escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use 'resp.render()' to render safely escaped HTML.\n\n<b>References:</b>\n - [Semgrep Rule](https://semgrep.dev/r/javascript.express.security.audit.xss.direct-response-write.direct-response-write)\n - [https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html](https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html)\n",
+                "text": "Detected directly writing to a Response object from user-defined input. This bypasses any HTML escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use 'resp.render()' to render safely escaped HTML."
+              },
+              "helpUri": "https://semgrep.dev/r/javascript.express.security.audit.xss.direct-response-write.direct-response-write",
+              "id": "javascript.express.security.audit.xss.direct-response-write.direct-response-write",
+              "name": "javascript.express.security.audit.xss.direct-response-write.direct-response-write",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+                  "MEDIUM CONFIDENCE",
+                  "OWASP-A03:2021 - Injection",
+                  "OWASP-A07:2017 - Cross-Site Scripting (XSS)",
+                  "security"
+                ]
+              },
+              "shortDescription": {
+                "text": "Opengrep Finding: javascript.express.security.audit.xss.direct-response-write.direct-response-write"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "A URL from the request reaches requests.get without a host allow-list. Check the host against an allow-list after DNS resolution."
+              },
+              "help": {
+                "markdown": "A URL from the request reaches requests.get without a host allow-list. Check the host against an allow-list after DNS resolution.",
+                "text": "A URL from the request reaches requests.get without a host allow-list. Check the host against an allow-list after DNS resolution."
+              },
+              "id": "kalkan.python.ssrf.requests-user-url",
+              "name": "kalkan.python.ssrf.requests-user-url",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "CWE-918: Server-Side Request Forgery (SSRF)",
+                  "HIGH CONFIDENCE",
+                  "OWASP-A10:2021 - Server-Side Request Forgery (SSRF)",
+                  "security"
+                ]
+              },
+              "shortDescription": {
+                "text": "Opengrep Finding: kalkan.python.ssrf.requests-user-url"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "fullDescription": {
+                "text": "Detected possible formatted SQL query. Use parameterized queries instead."
+              },
+              "help": {
+                "markdown": "Detected possible formatted SQL query. Use parameterized queries instead.\n\n<b>References:</b>\n - [Semgrep Rule](https://semgrep.dev/r/python.lang.security.audit.formatted-sql-query.formatted-sql-query)\n - [https://stackoverflow.com/questions/775296/mysql-parameterized-queries](https://stackoverflow.com/questions/775296/mysql-parameterized-queries)\n",
+                "text": "Detected possible formatted SQL query. Use parameterized queries instead."
+              },
+              "helpUri": "https://semgrep.dev/r/python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+              "id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+              "name": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+                  "LOW CONFIDENCE",
+                  "OWASP-A01:2017 - Injection",
+                  "OWASP-A03:2021 - Injection",
+                  "security"
+                ]
+              },
+              "shortDescription": {
+                "text": "Opengrep Finding: python.lang.security.audit.formatted-sql-query.formatted-sql-query"
+              }
+            },
+            {
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "fullDescription": {
+                "text": "Found 'subprocess' function with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead."
+              },
+              "help": {
+                "markdown": "Found 'subprocess' function with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead.",
+                "text": "Found 'subprocess' function with 'shell=True'. This is dangerous because this call will spawn the command using a shell process. Doing so propagates current shell settings and variables, which makes it much easier for a malicious actor to execute commands. Use 'shell=False' instead."
+              },
+              "helpUri": "https://semgrep.dev/r/python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+              "id": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+              "name": "python.lang.security.audit.subprocess-shell-true.subprocess-shell-true",
+              "properties": {
+                "precision": "very-high",
+                "tags": [
+                  "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')",
+                  "HIGH CONFIDENCE",
+                  "OWASP-A01:2017 - Injection",
+                  "OWASP-A03:2021 - Injection",
+                  "security"
+                ]
+              },
+              "shortDescription": {
+                "text": "Opengrep Finding: python.lang.security.audit.subprocess-shell-true.subprocess-shell-true"
+              }
+            }
+          ],
+          "semanticVersion": "1.30.1"
+        }
+      }
+    }
+  ],
+  "version": "2.1.0"
+}

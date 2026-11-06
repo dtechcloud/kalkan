@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "slug": "jwt-handling",
+  "description": "JWT signing, verification, and cookie-based session handling",
+  "class": "jwt",
+  "cwe": [
+    "CWE-347"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "(?i:jwt|jose|jsonwebtoken|token|session[\\w\\s]{0,20}cookie)"
+  ],
+  "patterns": [
+    {
+      "regex": "jwtVerify|jwt\\.verify|verifyJwt",
+      "flags": "",
+      "label": "JWT verification (verify algorithm pinning)"
+    },
+    {
+      "regex": "SignJWT|jwt\\.sign|jwtSign|createBypassJwt",
+      "flags": "",
+      "label": "JWT signing (verify key management)"
+    },
+    {
+      "regex": "jwtDecrypt|jwtEncrypt|EncryptJWT",
+      "flags": "",
+      "label": "JWT encryption (verify algorithm)"
+    },
+    {
+      "regex": "cookie.*secret|SESSION_COOKIE|USER_CACHE_COOKIE",
+      "flags": "",
+      "label": "Session cookie handling"
+    },
+    {
+      "regex": "refreshToken|force_refresh_access_token",
+      "flags": "",
+      "label": "Token refresh logic (verify validation)"
+    },
+    {
+      "regex": "algorithm.{0,40}none|alg.{0,40}none",
+      "flags": "i",
+      "label": "JWT 'none' algorithm (CRITICAL if not test)"
+    }
+  ],
+  "examples": [
+    "import { jwtVerify } from \"jose\"; await jwtVerify(token, key);",
+    "import jwt from \"jsonwebtoken\"; jwt.verify(token, key);",
+    "await verifyJwt(token); // jwt",
+    "import { SignJWT } from \"jose\"; new SignJWT({}).sign(key);",
+    "import jwt from \"jsonwebtoken\"; jwt.sign(payload, key);",
+    "const j = jwtSign(payload); // jwt",
+    "const j = createBypassJwt(uid); // jwt",
+    "import { jwtDecrypt } from \"jose\"; await jwtDecrypt(token, key);",
+    "import { EncryptJWT } from \"jose\"; new EncryptJWT({}).encrypt(key);",
+    "const opts = { cookie: { secret: \"x\" } }; // jwt",
+    "const c = SESSION_COOKIE; // jwt",
+    "const c = USER_CACHE_COOKIE; // jwt",
+    "await refreshToken(); // jwt",
+    "force_refresh_access_token(); // jwt",
+    "const t = jwt.sign(p, k, { algorithm: \"none\" });",
+    "const t = jwt.sign(p, k, { alg: \"none\" });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/jwt-handling.ts"
+  },
+  "notes": ""
+}

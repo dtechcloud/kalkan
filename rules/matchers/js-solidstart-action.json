@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "slug": "js-solidstart-action",
+  "description": "SolidStart server actions and cached server functions (gated on SolidStart)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "solidstart"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"(?:@solidjs/start|solid-start)\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:action|cache|query)\\s*\\(\\s*async\\s*\\(",
+      "flags": "",
+      "label": "action/cache/query factory"
+    },
+    {
+      "regex": "\\b['\"]use server['\"]\\s*;?",
+      "flags": "",
+      "label": "'use server' directive (publicly callable)"
+    },
+    {
+      "regex": "\\baction\\$\\s*\\(|\\bserver\\$\\s*\\(",
+      "flags": "",
+      "label": "action$ / server$ helper"
+    }
+  ],
+  "examples": [
+    "export const updateUser = action(async (form: FormData) => {})",
+    "const getUsers = cache(async (id: string) => {}, \"users\")",
+    "const search = query(async (q: string) => {}, \"search\")",
+    "return\"use server\";",
+    "x'use server';",
+    "const create = action$(async (data) => { return data })",
+    "const me = server$(async () => ({ id: 1 }))"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-solidstart-action.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [solidstart]; kalkan uses tech node (or solidstart) and a manifest that names solidstart."
+}

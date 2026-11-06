@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "slug": "unsafe-redirect",
+  "description": "Redirects that may bypass validNextRedirect() — open redirect risk",
+  "class": "open-redirect",
+  "cwe": [
+    "CWE-601"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "(?i:redirect\\s*\\(|NextResponse\\.redirect|router\\.push|router\\.replace|window\\.location)"
+  ],
+  "patterns": [
+    {
+      "regex": "redirect\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|searchParams|body\\.)",
+      "flags": "",
+      "label": "redirect() with request-derived URL (NO validNextRedirect — investigate)",
+      "not_near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "redirect\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|searchParams|body\\.)",
+      "flags": "",
+      "label": "redirect() with request-derived URL (validNextRedirect in scope — verify usage)",
+      "near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "redirect\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "redirect() with interpolated URL (NO validNextRedirect — investigate)",
+      "not_near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "redirect\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "redirect() with interpolated URL (validNextRedirect in scope — verify usage)",
+      "near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "NextResponse\\.redirect\\s*\\(\\s*new\\s+URL\\s*\\(",
+      "flags": "",
+      "label": "NextResponse.redirect with dynamic URL (NO validNextRedirect — investigate)",
+      "not_near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "NextResponse\\.redirect\\s*\\(\\s*new\\s+URL\\s*\\(",
+      "flags": "",
+      "label": "NextResponse.redirect with dynamic URL (validNextRedirect in scope — verify usage)",
+      "near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "x-app-redirect-uri|redirect.uri|redirectUrl|returnUrl|returnTo",
+      "flags": "i",
+      "label": "Redirect URL from header/param (NO validNextRedirect — investigate)",
+      "not_near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "x-app-redirect-uri|redirect.uri|redirectUrl|returnUrl|returnTo",
+      "flags": "i",
+      "label": "Redirect URL from header/param (validNextRedirect in scope — verify usage)",
+      "near": [
+        {
+          "regex": "validNextRedirect",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "redirect(req.body.next);",
+    "redirect(query.target);",
+    "redirect(searchParams.get(\"u\"));",
+    "redirect(params.next);",
+    "redirect(`/${req.body.path}`);",
+    "NextResponse.redirect(new URL(target, base));",
+    "// x-app-redirect-uri header\nredirect(target);",
+    "// returnUrl from query\nredirect(target);",
+    "// returnTo param\nredirect(t);",
+    "// redirectUrl from body\nredirect(t);",
+    "// redirect.uri from header\nredirect(t);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/unsafe-redirect.ts"
+  },
+  "notes": ""
+}

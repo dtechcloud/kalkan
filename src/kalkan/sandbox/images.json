@@ -1,0 +1,12 @@
+{
+  "$comment": "kalkan PoC sandbox base images (docs/ENGINE-SPEC.md section 23). A harness may name only these images (the poc_build schema has the same list). `kalkan sandbox pull` downloads them and records the digest in <home>/.tools/sandbox/pinned.json; the runner then starts the digest, else the tag. The runner never pulls an image during an audit.",
+  "images": [
+    "python:3.12-slim",
+    "node:22-slim",
+    "golang:1.26",
+    "eclipse-temurin:21-jdk",
+    "php:8.3-cli",
+    "ruby:3.3-slim",
+    "mcr.microsoft.com/dotnet/sdk:10.0"
+  ]
+}

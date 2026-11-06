@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "slug": "lockfile-unexpected-registry",
+  "description": "Lockfile entry comes from a registry other than the public npm registry, or from a git repository",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829",
+    "CWE-1357"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/package-lock.json",
+    "**/npm-shrinkwrap.json",
+    "**/yarn.lock",
+    "**/pnpm-lock.yaml"
+  ],
+  "exclude_file_patterns": [
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\"resolved\"\\s*:\\s*\"https://(?!registry\\.(?:npmjs\\.org|yarnpkg\\.com)/)",
+      "flags": "i",
+      "label": "npm registry host other than registry.npmjs.org",
+      "paths": [
+        "**/package-lock.json",
+        "**/npm-shrinkwrap.json"
+      ]
+    },
+    {
+      "regex": "\"resolved\"\\s*:\\s*\"git\\+",
+      "flags": "i",
+      "label": "npm git dependency",
+      "paths": [
+        "**/package-lock.json",
+        "**/npm-shrinkwrap.json"
+      ]
+    },
+    {
+      "regex": "^\\s+resolved\\s+\"?(?:https://(?!registry\\.(?:npmjs\\.org|yarnpkg\\.com)/)|git\\+)",
+      "flags": "i",
+      "label": "yarn source other than the public npm registry",
+      "paths": [
+        "**/yarn.lock"
+      ]
+    },
+    {
+      "regex": "\\btarball:\\s*[\"']?https://(?!registry\\.(?:npmjs\\.org|yarnpkg\\.com)/)",
+      "flags": "i",
+      "label": "pnpm tarball from a host other than registry.npmjs.org",
+      "paths": [
+        "**/pnpm-lock.yaml"
+      ]
+    },
+    {
+      "regex": "\\bresolution:\\s*\\{[^}]*\\btype:\\s*git\\b",
+      "flags": "",
+      "label": "pnpm git dependency",
+      "paths": [
+        "**/pnpm-lock.yaml"
+      ]
+    }
+  ],
+  "examples": [
+    "      \"resolved\": \"https://npm.mirror.example/lodash/-/lodash-4.17.15.tgz\",",
+    "      \"resolved\": \"git+ssh://git@github.com/example/tool.git#0123456789abcdef0123456789abcdef01234567\",",
+    "  resolved \"https://npm.mirror.example/left-pad/-/left-pad-1.3.0.tgz\"",
+    "    resolution: {integrity: sha512-AAAA, tarball: https://npm.mirror.example/a/-/a-1.0.0.tgz}",
+    "    resolution: {commit: 0123456789abcdef, repo: https://github.com/example/tool.git, type: git}"
+  ],
+  "source": null,
+  "notes": "kalkan rule (ADR-0005, K.12; the validate-host and allowed-schemes checks of lockfile-lint). kalkan does not know the registry of the organization, so the rule reports every https host other than registry.npmjs.org and registry.yarnpkg.com, and every git source, at a low severity for review. Plain http belongs to lockfile-insecure-url, local folders (file:) are left out."
+}

@@ -1,0 +1,11 @@
+{
+  "name": "shop-web",
+  "private": true,
+  "dependencies": {
+    "lodash": "4.17.15",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "eslint": "^9.0.0"
+  }
+}

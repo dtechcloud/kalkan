@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "slug": "use-server-export",
+  "description": "Server Action files that export functions accepting identity/auth objects as parameters — trusting client input",
+  "class": "idor",
+  "cwe": [
+    "CWE-639"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "['\"]use server['\"]"
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+\\w+",
+      "flags": "",
+      "label": "Server Action exports function accepting identity/auth parameter — client can supply arbitrary values",
+      "near": [
+        {
+          "regex": "\\b(owner|authenticatedOwner|user|auth|session|identity|actor|caller)\\b",
+          "flags": "i",
+          "after": 4
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "\"use server\";\nexport async function deletePost(owner: string, postId: string) { return { owner, postId } }",
+    "'use server'\nexport async function transferFunds(authenticatedOwner, target, amount) { return { authenticatedOwner } }",
+    "\"use server\";\nexport function getProfile(user) { return user }",
+    "'use server'\nexport async function logEvent(session: any, event: string) { return { session, event } }",
+    "\"use server\";\nexport function setRole(actor, role) { return { actor, role } }",
+    "'use server'\nexport async function audit(caller: string, action: string) { return { caller, action } }",
+    "\"use server\";\nexport async function actAs(\n  identity: string,\n  payload: any,\n) { return { identity, payload } }"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-use-server-export.ts"
+  },
+  "notes": "Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

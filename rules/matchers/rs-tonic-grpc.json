@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "rs-tonic-grpc",
+  "description": "Tonic gRPC service implementations (gated on Tonic)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "tonic"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\btonic\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "#\\[\\s*tonic::async_trait\\s*\\]",
+      "flags": "",
+      "label": "#[tonic::async_trait] impl"
+    },
+    {
+      "regex": "\\bimpl\\s+\\w+\\s+for\\s+\\w+\\s*\\{",
+      "flags": "",
+      "label": "service trait implementation"
+    },
+    {
+      "regex": "\\bRequest<[^>]+>|\\bResponse<[^>]+>",
+      "flags": "",
+      "label": "Request/Response shape"
+    },
+    {
+      "regex": "\\bStatus::(?:unauthenticated|permission_denied|invalid_argument)",
+      "flags": "",
+      "label": "Status response"
+    }
+  ],
+  "examples": [
+    "#[tonic::async_trait]",
+    "#[ tonic::async_trait ]",
+    "impl Greeter for MyGreeter {",
+    "impl UserService for UserServiceImpl {",
+    "async fn say_hello(&self, request: Request<HelloRequest>) -> Result<Response<HelloReply>, Status> {",
+    "let response: Response<UserReply> = ...;",
+    "return Err(Status::unauthenticated(\"missing token\"));",
+    "Status::permission_denied(\"forbidden\")",
+    "Status::invalid_argument(\"bad input\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-tonic-grpc.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [tonic]; kalkan uses tech rust (or tonic) and a manifest that names tonic."
+}

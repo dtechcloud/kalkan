@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-web
+  labels:
+    {{- include "shop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.web.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: web
+    spec:
+      hostNetwork: {{ .Values.web.hostNetwork }}
+      automountServiceAccountToken: false
+      containers:
+        - name: web
+          image: {{ .Values.web.image | quote }}
+          ports:
+            - containerPort: 8080
+          securityContext:
+            privileged: {{ .Values.web.privileged }}
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi

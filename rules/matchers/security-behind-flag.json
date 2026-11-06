@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "slug": "security-behind-flag",
+  "description": "Security-critical code gated by feature flags — fails open when flag is off",
+  "class": "security-misconfig",
+  "cwe": [
+    "CWE-636"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,lua,go}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "feature_?flag|featureFlag|LaunchDarkly|variation\\s*\\(|statsig|flag_enabled",
+      "flags": "i",
+      "label": "Security operation gated by feature flag — verify fail-safe when flag is off",
+      "near": [
+        {
+          "regex": "sanitize|strip.{0,200}header|clear_header|remove.{0,200}header|auth|verify|validate.{0,200}token|check.{0,200}permission|waf|firewall|block|deny|reject|rate.?limit|throttle|csrf|cors|xss|injection|encrypt|decrypt|sign|hmac",
+          "flags": "i",
+          "before": 3,
+          "after": 3
+        }
+      ]
+    },
+    {
+      "regex": "isEnabled\\s*\\(|isFeatureEnabled|experiment\\s*\\(|getFlag\\s*\\(",
+      "flags": "",
+      "label": "Security operation gated by feature flag — verify fail-safe when flag is off",
+      "near": [
+        {
+          "regex": "sanitize|strip.{0,200}header|clear_header|remove.{0,200}header|auth|verify|validate.{0,200}token|check.{0,200}permission|waf|firewall|block|deny|reject|rate.?limit|throttle|csrf|cors|xss|injection|encrypt|decrypt|sign|hmac",
+          "flags": "i",
+          "before": 3,
+          "after": 3
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "if (featureFlag(\"strict-auth\")) {\n  await verifyToken(req);\n}",
+    "if (feature_flag.is_enabled(\"waf\")) {\n  await firewallCheck(req);\n}",
+    "if (LaunchDarkly.variation(\"rate-limit\", false)) {\n  throttle(req);\n}",
+    "const variant = client.variation(\"csrf-check\");\nif (variant) {\n  validateCsrf(req);\n}",
+    "if (statsig.checkGate(\"strip-headers\")) {\n  sanitize(req.headers);\n}",
+    "if (flag_enabled(\"encryption\")) {\n  encrypt(payload);\n}",
+    "if (isEnabled(\"auth-required\")) {\n  await verifyToken(req);\n}",
+    "if (isFeatureEnabled(\"rate-limit\")) {\n  throttle(req);\n}",
+    "const flag = experiment(\"hmac-check\");\nif (flag) {\n  hmac(secret, body);\n}",
+    "if (getFlag(\"strict-cors\")) {\n  applyCors(req);\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/security-behind-flag.ts"
+  },
+  "notes": "In the security-operation regex the first wildcard of 'strip.*header', 'remove.*header', 'validate.*token' and 'check.*permission' is bounded to 200 characters (one unbounded wildcard per regex)."
+}

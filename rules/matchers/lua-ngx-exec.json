@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "slug": "lua-ngx-exec",
+  "description": "Lua ngx.exec/ngx.redirect/os.execute/io.popen with dynamic content",
+  "class": "os-command-injection",
+  "cwe": [
+    "CWE-78"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.lua"
+  ],
+  "exclude_file_patterns": [
+    "**/*_{test,spec}.lua"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "ngx\\.exec\\s*\\(",
+      "flags": "",
+      "label": "ngx.exec (internal redirect)"
+    },
+    {
+      "regex": "ngx\\.redirect\\s*\\(",
+      "flags": "",
+      "label": "ngx.redirect (external redirect)"
+    },
+    {
+      "regex": "os\\.execute\\s*\\(",
+      "flags": "",
+      "label": "os.execute (shell command)"
+    },
+    {
+      "regex": "io\\.popen\\s*\\(",
+      "flags": "",
+      "label": "io.popen (shell command)"
+    },
+    {
+      "regex": "ngx\\.location\\.capture\\s*\\(",
+      "flags": "",
+      "label": "ngx.location.capture (subrequest)"
+    }
+  ],
+  "examples": [
+    "ngx.exec(\"/internal/\" .. user_path)",
+    "ngx.redirect(\"https://example.com/\" .. target)",
+    "os.execute(\"rm -rf \" .. dir)",
+    "local fh = io.popen(cmd)",
+    "local res = ngx.location.capture(\"/proxy\")",
+    "ngx.exec(\"@upstream\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/lua-ngx-exec.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "slug": "github-workflow-security",
+  "description": "GitHub Actions workflow / composite-action with supply-chain or injection risk",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    ".github/workflows/**/*.yml",
+    ".github/workflows/**/*.yaml",
+    ".github/actions/**/*.yml",
+    ".github/actions/**/*.yaml"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "github-actions"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*-\\s*pull_request_target\\b|^\\s*pull_request_target\\s*:",
+      "flags": "",
+      "label": "pull_request_target trigger"
+    },
+    {
+      "regex": "^\\s*-\\s*workflow_run\\b|^\\s*workflow_run\\s*:",
+      "flags": "",
+      "label": "workflow_run trigger"
+    },
+    {
+      "regex": "\\buses\\s*:\\s*[\\w-]+/[\\w./-]+@(?:main|master|v?\\d+|develop)\\s*$",
+      "flags": "m",
+      "label": "unpinned action ref (branch/major-tag)"
+    },
+    {
+      "regex": "\\$\\{\\{\\s*github\\.event\\.(?:pull_request|head_commit|comment|issue|review)\\.\\w+",
+      "flags": "",
+      "label": "github.event interpolation in run:"
+    },
+    {
+      "regex": "\\$\\{\\{\\s*github\\.head_ref\\s*\\}\\}",
+      "flags": "",
+      "label": "github.head_ref in script"
+    },
+    {
+      "regex": "\\bsecrets\\.[A-Z_][A-Z0-9_]+",
+      "flags": "",
+      "label": "secret reference"
+    },
+    {
+      "regex": "^\\s*permissions\\s*:\\s*write-all\\b",
+      "flags": "",
+      "label": "permissions: write-all"
+    },
+    {
+      "regex": "\\bid-token\\s*:\\s*write\\b",
+      "flags": "",
+      "label": "id-token: write (OIDC)"
+    },
+    {
+      "regex": "\\brun\\s*:\\s*\\|.*\\$\\{\\{[^}]*\\}\\}",
+      "flags": "s",
+      "label": "run block interpolating expression"
+    },
+    {
+      "regex": "\\bcurl\\s+[^|]*\\|\\s*(?:sh|bash)\\b",
+      "flags": "",
+      "label": "curl | sh in workflow"
+    },
+    {
+      "regex": "^(?:on|jobs|name)\\s*:",
+      "flags": "",
+      "label": "GitHub workflow file (path-based, no specific risk pattern)",
+      "not_near": [
+        {
+          "regex": "^\\s*-\\s*pull_request_target\\b|^\\s*pull_request_target\\s*:|^\\s*-\\s*workflow_run\\b|^\\s*workflow_run\\s*:",
+          "scope": "file"
+        },
+        {
+          "regex": "\\buses\\s*:\\s*[\\w-]+/[\\w./-]+@(?:main|master|v?\\d+|develop)\\s*$",
+          "flags": "m",
+          "scope": "file"
+        },
+        {
+          "regex": "\\$\\{\\{\\s*github\\.event\\.(?:pull_request|head_commit|comment|issue|review)\\.\\w+|\\$\\{\\{\\s*github\\.head_ref\\s*\\}\\}",
+          "scope": "file"
+        },
+        {
+          "regex": "\\bsecrets\\.[A-Z_][A-Z0-9_]+|^\\s*permissions\\s*:\\s*write-all\\b|\\bid-token\\s*:\\s*write\\b",
+          "scope": "file"
+        },
+        {
+          "regex": "\\brun\\s*:\\s*\\|.*\\$\\{\\{[^}]*\\}\\}",
+          "flags": "s",
+          "scope": "file"
+        },
+        {
+          "regex": "\\bcurl\\s+[^|]*\\|\\s*(?:sh|bash)\\b",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "on:\n  pull_request_target:\n    types: [opened]",
+    "on:\n  workflow_run:\n    workflows: [build]",
+    "      - uses: actions/checkout@main",
+    "      - uses: actions/setup-node@v3",
+    "        run: echo \"${{ github.event.pull_request.title }}\"",
+    "        run: git log ${{ github.head_ref }}",
+    "          token: ${{ secrets.GITHUB_TOKEN }}",
+    "permissions: write-all",
+    "permissions:\n  id-token: write\n  contents: read",
+    "      - run: |\n          echo ${{ github.event.pull_request.head.ref }}",
+    "      - run: curl -fsSL https://example.com/install.sh | sh"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/github-workflow-security.ts"
+  },
+  "notes": "The fallback for workflow files without a risk pattern anchors on unindented on:, jobs: and name: lines (deepsec: the first such line, indented or not). deepsec stops at the first label per line."
+}

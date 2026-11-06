@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "slug": "rb-grape-endpoint",
+  "description": "Grape API endpoints (gated on Grape)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rb"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,spec,Test,Spec}/**",
+    "**/{test,spec,Test,Spec}.*",
+    "**/*{.,-}{test,spec,Test,Spec}.*",
+    "**/{test,spec}-*/**",
+    "**/*-{test,spec}/**"
+  ],
+  "requires": {
+    "tech": [
+      "ruby",
+      "grape"
+    ],
+    "sentinel_files": [
+      "**/Gemfile",
+      "**/Gemfile.lock",
+      "**/*.gemspec"
+    ],
+    "sentinel_contains": [
+      "\\bgrape\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*(?:get|post|put|patch|delete)\\s+:\\w+",
+      "flags": "m",
+      "label": "Grape <verb> :name do"
+    },
+    {
+      "regex": "^\\s*resource\\s+:\\w+",
+      "flags": "m",
+      "label": "resource :name do block"
+    },
+    {
+      "regex": "^\\s*before\\s+do\\b",
+      "flags": "m",
+      "label": "before do — auth filter"
+    },
+    {
+      "regex": "\\bdeclared\\s*\\(\\s*params\\s*\\)",
+      "flags": "",
+      "label": "declared(params) — strong-params equivalent"
+    }
+  ],
+  "examples": [
+    "get :status do",
+    "post :create do",
+    "put :update do",
+    "patch :rename do",
+    "delete :destroy do",
+    "resource :users do",
+    "before do",
+    "  user = User.find(declared(params)[:id])"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rb-grape-endpoint.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [grape]; kalkan uses tech ruby (or grape) and a manifest that names grape."
+}

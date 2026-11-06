@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "slug": "php-drupal-controller",
+  "description": "Drupal controllers, routes, and form callbacks (gated on Drupal)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/src/Controller/**/*.php",
+    "**/modules/**/*.php",
+    "**/modules/**/*.routing.yml"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "php",
+      "drupal"
+    ],
+    "sentinel_files": [
+      "**/composer.json",
+      "**/*.info.yml",
+      "**/*.routing.yml",
+      "**/*.module"
+    ],
+    "sentinel_contains": [
+      "(?i:drupal)|core_version_requirement"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "class\\s+\\w+\\s+extends\\s+ControllerBase\\b",
+      "flags": "",
+      "label": "Drupal ControllerBase subclass"
+    },
+    {
+      "regex": "_permission\\s*:\\s*['\"]access\\s+content['\"]",
+      "flags": "",
+      "label": "permission: access content (public-ish route)"
+    },
+    {
+      "regex": "buildForm\\s*\\(\\s*array\\s+\\$form",
+      "flags": "",
+      "label": "FormBase::buildForm() entry"
+    },
+    {
+      "regex": "\\\\Drupal::request\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "request() service accessor"
+    }
+  ],
+  "examples": [
+    "class UserController extends ControllerBase { public function view() {} }",
+    "class NodeListController extends ControllerBase\n{\n    public function build() { return []; }\n}",
+    "requirements:\n  _permission: 'access content'",
+    "requirements: { _permission: \"access content\" }",
+    "public function buildForm(array $form, FormStateInterface $form_state) { return $form; }",
+    "public function buildForm( array $form, FormStateInterface $form_state ) {}",
+    "$request = \\Drupal::request();",
+    "$ip = \\Drupal::request()->getClientIp();"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-drupal-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [drupal]; kalkan uses tech php (or drupal) and a Drupal manifest, routing or module file."
+}

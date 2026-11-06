@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "slug": "js-nuxt-route",
+  "description": "Nuxt server routes / event handlers (gated on Nuxt)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/server/api/**/*.{ts,js}",
+    "**/server/routes/**/*.{ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "nuxt"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"nuxt[\\w-]*\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bdefineEventHandler\\s*\\(",
+      "flags": "",
+      "label": "defineEventHandler — Nuxt server entry point"
+    },
+    {
+      "regex": "\\beventHandler\\s*\\(",
+      "flags": "",
+      "label": "h3 eventHandler factory"
+    },
+    {
+      "regex": "\\bgetRouterParam(?:s)?\\s*\\(|\\bgetQuery\\s*\\(|\\breadBody\\s*\\(",
+      "flags": "",
+      "label": "h3 request accessor (untrusted input)"
+    },
+    {
+      "regex": "\\bcreateError\\s*\\(",
+      "flags": "",
+      "label": "createError() throw site"
+    }
+  ],
+  "examples": [
+    "export default defineEventHandler(async (event) => {})",
+    "export default eventHandler((event) => ({ ok: true }))",
+    "const id = getRouterParam(event, \"id\")",
+    "const params = getRouterParams(event)",
+    "const q = getQuery(event)",
+    "const body = await readBody(event)",
+    "throw createError({ statusCode: 401, message: \"nope\" })"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nuxt-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [nuxt]; kalkan uses tech node (or nuxt) and a manifest that names nuxt."
+}

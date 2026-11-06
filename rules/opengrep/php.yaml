@@ -1,0 +1,801 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for PHP (plain PHP, Laravel, Symfony, Twig).
+# Original rules written for kalkan. Rule ID form: kalkan.php.<class>.<name>.
+rules:
+  - id: kalkan.php.sqli.tainted-sql-string
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is concatenated into a SQL statement. An attacker can change the
+      query. Use prepared statements with placeholders (mysqli_prepare(), PDO::prepare()) and bind
+      the values.
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://www.php.net/manual/en/mysqli.quickstart.prepared-statements.php
+      category: security
+      technology: [php, mysqli, pdo, laravel]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - pattern: $_FILES
+          - pattern: file_get_contents("php://input")
+          - pattern: getallheaders()
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_\w+|QUERY_STRING|REQUEST_URI|PATH_INFO|PHP_SELF)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+          - pattern: $request->query->get(...)
+          - pattern: $request->request->get(...)
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: intval(...)
+          - pattern: floatval(...)
+          - pattern: (int) $VALUE
+          - pattern: (float) $VALUE
+          - pattern: mysqli_real_escape_string(...)
+          - pattern: $CONN->real_escape_string(...)
+          - pattern: $PDO->quote(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: mysqli_query($CONN, $QUERY, ...)
+              - pattern: mysqli_multi_query($CONN, $QUERY)
+              - pattern: mysqli_real_query($CONN, $QUERY)
+              - pattern: mysqli_prepare($CONN, $QUERY)
+              - pattern: pg_query($CONN, $QUERY)
+              - pattern: pg_query($QUERY)
+              - pattern: $DB->query($QUERY, ...)
+              - pattern: $DB->exec($QUERY)
+              - pattern: $DB->prepare($QUERY, ...)
+              - pattern: $DB->multi_query($QUERY)
+              - pattern: $DB->real_query($QUERY)
+              - pattern: DB::select($QUERY, ...)
+              - pattern: DB::statement($QUERY, ...)
+              - pattern: DB::unprepared($QUERY)
+              - pattern: DB::raw($QUERY)
+              - pattern: $BUILDER->whereRaw($QUERY, ...)
+              - pattern: $BUILDER->selectRaw($QUERY, ...)
+              - pattern: $BUILDER->orderByRaw($QUERY, ...)
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.php.os-command-injection.tainted-shell-command
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a shell command. An attacker can run other commands on
+      the server. Avoid the shell, or quote every value with escapeshellarg().
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://www.php.net/manual/en/function.escapeshellarg.php
+      category: security
+      technology: [php]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - pattern: $_FILES
+          - pattern: file_get_contents("php://input")
+          - pattern: getallheaders()
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_\w+|QUERY_STRING|REQUEST_URI|PATH_INFO|PHP_SELF)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+          - pattern: $request->query->get(...)
+          - pattern: $request->request->get(...)
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: escapeshellarg(...)
+          - pattern: escapeshellcmd(...)
+          - pattern: intval(...)
+          - pattern: (int) $VALUE
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: system($CMD, ...)
+              - pattern: exec($CMD, ...)
+              - pattern: shell_exec($CMD)
+              - pattern: passthru($CMD, ...)
+              - pattern: popen($CMD, ...)
+              - pattern: proc_open($CMD, ...)
+              - pattern: pcntl_exec($CMD, ...)
+          - focus-metavariable: $CMD
+
+  - id: kalkan.php.code-injection.tainted-eval
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is evaluated as PHP code (eval, assert, create_function) or
+      selects the function to call. An attacker can run any PHP code. Never evaluate request
+      data. Select a fixed function or expression from an allowlist.
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+        - "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/95.html
+        - https://www.php.net/manual/en/function.eval.php
+      category: security
+      technology: [php]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - pattern: file_get_contents("php://input")
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_\w+|QUERY_STRING|REQUEST_URI|PATH_INFO|PHP_SELF)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: intval(...)
+          - pattern: floatval(...)
+          - pattern: (int) $VALUE
+          - pattern: (float) $VALUE
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: eval($CODE)
+              - pattern: assert($CODE, ...)
+              - pattern: create_function($ARGS, $CODE)
+              - pattern: call_user_func($CODE, ...)
+              - pattern: call_user_func_array($CODE, ...)
+          - focus-metavariable: $CODE
+
+  - id: kalkan.php.code-injection.tainted-file-inclusion
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request selects the file for include or require. An attacker can load
+      local files with "../", or remote code when allow_url_include is on, and the included file
+      runs as PHP. Map the input to a fixed list of files, or keep only basename() of a known
+      page name.
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+        - "CWE-98: Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/98.html
+        - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/11.1-Testing_for_File_Inclusion
+      category: security
+      technology: [php]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_\w+|QUERY_STRING|REQUEST_URI|PATH_INFO|PHP_SELF)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: basename(...)
+          - pattern: intval(...)
+          - pattern: (int) $VALUE
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: include $FILE
+              - pattern: include_once $FILE
+              - pattern: require $FILE
+              - pattern: require_once $FILE
+          - focus-metavariable: $FILE
+
+  - id: kalkan.php.ssti.tainted-template-source
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is compiled as a Twig, Blade or Smarty template. Template code can
+      call PHP functions and read server data. Load templates from fixed files and pass user data
+      only as template variables.
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://twig.symfony.com/doc/3.x/recipes.html#loading-a-template-from-a-string
+      category: security
+      technology: [php, twig, blade, smarty]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - pattern: file_get_contents("php://input")
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $TWIG->createTemplate($SOURCE, ...)
+              - pattern: Blade::render($SOURCE, ...)
+              - pattern: $SMARTY->fetch("string:" . $SOURCE, ...)
+              - pattern: $SMARTY->display("string:" . $SOURCE, ...)
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.php.xss.tainted-echo
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is printed into the page without HTML escaping. An attacker can
+      run script in the browser of another user. Escape the value with
+      htmlspecialchars($value, ENT_QUOTES, 'UTF-8') or render it through an auto-escaping
+      template.
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://www.php.net/manual/en/function.htmlspecialchars.php
+      category: security
+      technology: [php]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_\w+|QUERY_STRING|REQUEST_URI|PATH_INFO|PHP_SELF)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|route)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: htmlspecialchars(...)
+          - pattern: htmlentities(...)
+          - pattern: strip_tags(...)
+          - pattern: intval(...)
+          - pattern: floatval(...)
+          - pattern: (int) $VALUE
+          - pattern: (float) $VALUE
+          - pattern: (bool) $VALUE
+          - pattern: json_encode(...)
+          - pattern: urlencode(...)
+          - pattern: rawurlencode(...)
+          - pattern: e(...)
+          - pattern: esc_html(...)
+          - pattern: esc_attr(...)
+          - pattern: $TEMPLATE->render(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: echo $OUTPUT;
+              - pattern: echo ..., $OUTPUT, ...;
+              - pattern: print($OUTPUT)
+              - pattern: printf($OUTPUT, ...)
+              - pattern: vprintf($OUTPUT, ...)
+              - pattern: exit($OUTPUT)
+              - pattern: die($OUTPUT)
+          - focus-metavariable: $OUTPUT
+
+  - id: kalkan.php.ssrf.tainted-request-url
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound request. An attacker can reach
+      internal services or cloud metadata endpoints. Map the input to a fixed allowlist of URLs, or
+      parse it and check the scheme and host against an allowlist before the request.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [php, curl, guzzle, laravel]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - pattern: file_get_contents("php://input")
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: curl_init($URL)
+              - pattern: curl_setopt($HANDLE, CURLOPT_URL, $URL)
+              - pattern: get_headers($URL, ...)
+              - pattern: fsockopen($URL, ...)
+              - pattern: Http::get($URL, ...)
+              - pattern: Http::post($URL, ...)
+              - pattern: $CLIENT->request($METHOD, $URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.php.path-traversal.tainted-file-path
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. An attacker can use "../", an
+      absolute path or a stream wrapper (php://, http://) to read or change other files. Keep only
+      basename() of the name, or resolve the path with realpath() and check that it stays inside
+      the base folder.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://owasp.org/www-community/attacks/Path_Traversal
+      category: security
+      technology: [php]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_\w+|QUERY_STRING|REQUEST_URI|PATH_INFO|PHP_SELF)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|route)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: basename(...)
+          - pattern: intval(...)
+          - pattern: (int) $VALUE
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: readfile($PATH, ...)
+              - pattern: file_get_contents($PATH, ...)
+              - pattern: file_put_contents($PATH, ...)
+              - pattern: fopen($PATH, ...)
+              - pattern: file($PATH, ...)
+              - pattern: unlink($PATH, ...)
+              - pattern: copy($PATH, ...)
+              - pattern: rename($PATH, ...)
+              - pattern: move_uploaded_file($TMP, $PATH)
+              - pattern: new SplFileObject($PATH, ...)
+              - pattern: scandir($PATH, ...)
+              - pattern: parse_ini_file($PATH, ...)
+              - pattern: highlight_file($PATH, ...)
+              - pattern: show_source($PATH, ...)
+          - focus-metavariable: $PATH
+
+  - id: kalkan.php.deserialization.tainted-unserialize
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches unserialize() without an allowed_classes limit. A crafted
+      string can create objects whose magic methods (__wakeup, __destruct) run gadget chains. Use
+      json_decode(), or pass ['allowed_classes' => false].
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://www.php.net/manual/en/function.unserialize.php
+      category: security
+      technology: [php]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - pattern: file_get_contents("php://input")
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|cookie|header|json|route)$
+    pattern-sinks:
+      - patterns:
+          - pattern: unserialize($DATA, ...)
+          - pattern-not: "unserialize($DATA, ['allowed_classes' => false])"
+          - pattern-not: "unserialize($DATA, ['allowed_classes' => [...]])"
+          - focus-metavariable: $DATA
+
+  - id: kalkan.php.xxe.libxml-entity-substitution
+    languages: [php]
+    severity: ERROR
+    message: >-
+      The XML parser runs with LIBXML_NOENT or LIBXML_DTDLOAD, or with the entity loader turned
+      back on. These options substitute entities and load external DTDs, so a crafted document can
+      read local files (XXE). Parse without these options.
+    metadata:
+      cwe:
+        - "CWE-611: Improper Restriction of XML External Entity Reference"
+      kalkan_class: xxe
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [php, libxml]
+    pattern-either:
+      - pattern: LIBXML_NOENT
+      - pattern: LIBXML_DTDLOAD
+      - pattern: libxml_disable_entity_loader(false)
+      - pattern: $READER->setParserProperty(XMLReader::SUBST_ENTITIES, true)
+
+  - id: kalkan.php.open-redirect.tainted-location-header
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Map the input to a fixed set of internal paths, or
+      accept only relative paths that start with a single "/".
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+      category: security
+      technology: [php, laravel, symfony]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - patterns:
+              - pattern: $_SERVER[$KEY]
+              - metavariable-regex:
+                  metavariable: $KEY
+                  regex: ^["']?(HTTP_REFERER|QUERY_STRING|REQUEST_URI)["']?$
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|cookie|header|route)$
+    pattern-sinks:
+      - patterns:
+          - pattern: header($HEADER, ...)
+          - metavariable-pattern:
+              metavariable: $HEADER
+              patterns:
+                - pattern-regex: (?i)^.\s*location\s*[:]
+          - focus-metavariable: $HEADER
+      - patterns:
+          - pattern-either:
+              - pattern: redirect($URL, ...)
+              - pattern: redirect()->to($URL, ...)
+              - pattern: redirect()->away($URL, ...)
+              - pattern: Redirect::to($URL, ...)
+              - pattern: new RedirectResponse($URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.php.nosqli.tainted-mongo-filter
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+    languages: [php]
+    severity: ERROR
+    message: >-
+      Request data is used inside a MongoDB filter without a type check. PHP turns a parameter
+      such as username[$ne]=x into an array, so an attacker can inject query operators and bypass
+      the filter. Cast each value with (string) or (int).
+    metadata:
+      cwe:
+        - "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      kalkan_class: nosqli
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://www.php.net/manual/en/mongodb.security.request_injection.php
+      category: security
+      technology: [php, mongodb]
+    pattern-sources:
+      - pattern-either:
+          - pattern: $_GET
+          - pattern: $_POST
+          - pattern: $_REQUEST
+          - pattern: $_COOKIE
+          - patterns:
+              - pattern: $request->$METHOD(...)
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(input|query|post|get|all|json)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: (string) $VALUE
+          - pattern: (int) $VALUE
+          - pattern: (float) $VALUE
+          - pattern: (bool) $VALUE
+          - pattern: strval(...)
+          - pattern: intval(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: $COLLECTION->$OPERATION($FILTER, ...)
+          - metavariable-regex:
+              metavariable: $OPERATION
+              regex: ^(find|findOne|findOneAndUpdate|findOneAndDelete|findOneAndReplace|updateOne|updateMany|deleteOne|deleteMany|replaceOne|countDocuments|count|aggregate)$
+          - focus-metavariable: $FILTER
+
+  - id: kalkan.php.jwt.unverified-token
+    languages: [php]
+    severity: ERROR
+    message: >-
+      The JWT payload is decoded without a signature check, or the verification key takes its
+      algorithm from untrusted data. An attacker can forge any claim. Verify the token with
+      Firebase\JWT\JWT::decode($token, new Key($key, 'HS256')) and a fixed algorithm.
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://github.com/firebase/php-jwt
+      category: security
+      technology: [php, php-jwt]
+    pattern-either:
+      - pattern: json_decode(base64_decode(<... explode(".", $TOKEN) ...>), ...)
+      - pattern: json_decode(base64_decode(<... explode(".", $TOKEN)[1] ...>), ...)
+      - patterns:
+          - pattern: JWT::decode($TOKEN, new Key($KEY, $ALGORITHM))
+          - pattern-not: JWT::decode($TOKEN, new Key($KEY, "..."))
+
+  - id: kalkan.php.crypto.weak-password-hash
+    languages: [php]
+    severity: WARNING
+    message: >-
+      A password or secret is hashed with MD5 or SHA-1. These hashes are fast and broken, so a
+      leaked hash is cracked quickly. Use password_hash($password, PASSWORD_DEFAULT) and
+      password_verify().
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/916.html
+        - https://www.php.net/manual/en/function.password-hash.php
+      category: security
+      technology: [php]
+    patterns:
+      - pattern-either:
+          - pattern: md5($VALUE, ...)
+          - pattern: sha1($VALUE, ...)
+          - pattern: hash("md5", $VALUE, ...)
+          - pattern: hash("sha1", $VALUE, ...)
+      - metavariable-pattern:
+          metavariable: $VALUE
+          patterns:
+            - pattern-regex: (?i)(pass|pwd|secret|credential)
+
+  - id: kalkan.php.crypto.weak-cipher
+    languages: [php]
+    severity: WARNING
+    message: >-
+      openssl_encrypt() uses a broken cipher (DES, 3DES, RC2, RC4, Blowfish) or ECB mode, or the
+      code uses the removed mcrypt extension. Use aes-256-gcm with a random IV and keep the tag.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      kalkan_class: crypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://www.php.net/manual/en/function.openssl-encrypt.php
+      category: security
+      technology: [php, openssl]
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern: openssl_encrypt($DATA, $CIPHER, ...)
+              - pattern: openssl_decrypt($DATA, $CIPHER, ...)
+          - metavariable-regex:
+              metavariable: $CIPHER
+              regex: (?i)^["']?(des.*|rc2.*|rc4.*|bf.*|blowfish.*|.*-ecb)["']?$
+      - pattern: mcrypt_encrypt(...)
+      - pattern: mcrypt_decrypt(...)
+
+  - id: kalkan.php.cors.reflected-origin-with-credentials
+    languages: [php]
+    severity: WARNING
+    message: >-
+      The script copies the Origin request header into Access-Control-Allow-Origin and also
+      allows credentials. Any web site can then send authenticated requests and read the answers.
+      Compare the origin with a fixed allowlist and send only an allowed value.
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://portswigger.net/web-security/cors
+      category: security
+      technology: [php]
+    patterns:
+      - pattern-either:
+          - pattern-inside: |
+              header("Access-Control-Allow-Credentials: true", ...);
+              ...
+          - pattern-inside: |
+              $FIRST;
+              ...
+              header("Access-Control-Allow-Credentials: true", ...);
+      - pattern-either:
+          - pattern: 'header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"], ...)'
+          - pattern: 'header("Access-Control-Allow-Origin: " . getallheaders()["Origin"], ...)'

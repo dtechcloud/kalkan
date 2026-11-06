@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "slug": "object-injection",
+  "description": "Prototype pollution via Object.assign/merge/defaults with user input",
+  "class": "prototype-pollution",
+  "cwe": [
+    "CWE-1321"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "Object\\.assign\\s*\\(\\s*\\{\\s*\\}\\s*,\\s*(req|body|params|query)",
+      "flags": "",
+      "label": "Object.assign from user input"
+    },
+    {
+      "regex": "lodash[\\w./]{0,20}merge\\s*\\(|_\\.merge\\s*\\(|deepMerge\\s*\\(",
+      "flags": "",
+      "label": "Deep merge (prototype pollution risk)"
+    },
+    {
+      "regex": "_\\.defaultsDeep\\s*\\(|defaultsDeep\\s*\\(",
+      "flags": "",
+      "label": "defaultsDeep (prototype pollution)"
+    },
+    {
+      "regex": "\\[req\\.\\w+\\]|body\\[[^\\]]{0,80}\\]\\s*=|params\\[[^\\]]{0,80}\\]\\s*=",
+      "flags": "",
+      "label": "Dynamic property assignment from user input"
+    }
+  ],
+  "examples": [
+    "const merged = Object.assign({}, req.body);",
+    "Object.assign({ }, params, defaults);",
+    "const out = _.merge({}, defaults, req.body);",
+    "lodash.merge(target, source);",
+    "import { merge } from \"lodash/merge\";\nconst out = lodash.merge(target, userInput);",
+    "deepMerge(target, payload);",
+    "_.defaultsDeep(opts, userOpts);",
+    "defaultsDeep(target, source);",
+    "obj[req.query] = \"value\";",
+    "body[userKey] = req.params.id;",
+    "params[someKey] = 1;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/object-injection.ts"
+  },
+  "notes": ""
+}

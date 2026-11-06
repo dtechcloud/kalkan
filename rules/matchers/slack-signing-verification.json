@@ -1,0 +1,177 @@
+{
+  "version": 1,
+  "slug": "slack-signing-verification",
+  "description": "Slack request handlers — verify HMAC signing + replay protection",
+  "class": "webhook-replay",
+  "cwe": [
+    "CWE-345",
+    "CWE-294"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bexport\\s+(?:async\\s+)?function\\s+(?:POST|GET|handle)\\b",
+      "flags": "",
+      "label": "Slack-context HTTP handler",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bnew\\s+App\\s*\\(\\s*\\{[^}]*signingSecret\\s*:",
+      "flags": "m",
+      "label": "Slack Bolt App construction",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bapp\\.\\s*command\\s*\\(",
+      "flags": "",
+      "label": "Slack Bolt slash-command handler",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bapp\\.\\s*action\\s*\\(",
+      "flags": "",
+      "label": "Slack Bolt action handler",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bapp\\.\\s*event\\s*\\(",
+      "flags": "",
+      "label": "Slack Bolt event handler",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bapp\\.\\s*view\\s*\\(",
+      "flags": "",
+      "label": "Slack Bolt view (modal) handler",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bapp\\.\\s*shortcut\\s*\\(",
+      "flags": "",
+      "label": "Slack Bolt shortcut handler",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bawsLambdaReceiver\\b|\\bExpressReceiver\\b|\\bAwsLambdaReceiver\\b",
+      "flags": "",
+      "label": "Slack Bolt receiver wiring",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bverifySlackRequest\\s*\\(",
+      "flags": "",
+      "label": "Manual Slack signature verification",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bcrypto\\.\\s*createHmac\\s*\\(\\s*[\"']sha256[\"'].*?(?:slack|signing)",
+      "flags": "i",
+      "label": "Slack HMAC-SHA256 verification",
+      "near": [
+        {
+          "regex": "\\bfrom\\s+[\"'](?:@slack/(?:bolt|web-api|events-api|interactive-messages|oauth)|slack-bolt)[\"']|\\bSlackRequestVerifier\\b|\\bverifySlackRequest\\b|\\bslack_signing_secret\\b|\\bSLACK_SIGNING_SECRET\\b",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "\\bexport\\s+(?:async\\s+)?function\\s+(?:POST|GET|handle)\\b",
+      "flags": "",
+      "label": "Slack-context HTTP handler",
+      "paths": [
+        "**/{slack,Slack,bolt,Bolt}/**",
+        "**/{slack,Slack,bolt,Bolt}{-,_,.}*",
+        "**/{slack,Slack,bolt,Bolt}{-,_,.}*/**"
+      ]
+    },
+    {
+      "regex": "\\bcrypto\\.\\s*createHmac\\s*\\(\\s*[\"']sha256[\"'].*?(?:slack|signing)",
+      "flags": "i",
+      "label": "Slack HMAC-SHA256 verification",
+      "paths": [
+        "**/{slack,Slack,bolt,Bolt}/**",
+        "**/{slack,Slack,bolt,Bolt}{-,_,.}*",
+        "**/{slack,Slack,bolt,Bolt}{-,_,.}*/**"
+      ]
+    }
+  ],
+  "examples": [
+    "import { App } from \"@slack/bolt\";\nexport async function POST(req: Request) {\n  return new Response(\"ok\");\n}",
+    "import { App } from \"@slack/bolt\";\nconst app = new App({ signingSecret: process.env.SLACK_SIGNING_SECRET });",
+    "import { App } from \"@slack/bolt\";\napp.command(\"/hello\", async ({ ack }) => { await ack(); });",
+    "import { App } from \"@slack/bolt\";\napp.action(\"button_click\", async ({ ack }) => { await ack(); });",
+    "import { App } from \"@slack/bolt\";\napp.event(\"message\", async ({ event }) => {});",
+    "import { App } from \"@slack/bolt\";\napp.view(\"modal_submit\", async ({ ack }) => { await ack(); });",
+    "import { App } from \"@slack/bolt\";\napp.shortcut(\"global_shortcut\", async ({ ack }) => { await ack(); });",
+    "import { AwsLambdaReceiver } from \"@slack/bolt\";\nconst receiver = new AwsLambdaReceiver({ signingSecret: \"x\" });",
+    "import { verifySlackRequest } from \"@slack/web-api\";\nverifySlackRequest({ body, signingSecret });",
+    "import { createHmac } from \"crypto\";\nconst SLACK_SIGNING_SECRET = process.env.SLACK_SIGNING_SECRET;\nconst hmac = crypto.createHmac(\"sha256\", slackSecret);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/slack-signing-verification.ts"
+  },
+  "notes": "The 'Slack import or Slack path' gate becomes a whole-file condition on every upstream pattern plus path-gated variants of the handler and HMAC patterns. deepsec stops at the first label per line."
+}

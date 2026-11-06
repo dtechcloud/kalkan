@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "components": [
+    {
+      "name": "security-audit-skill",
+      "upstream": "https://github.com/cloudflare/security-audit-skill",
+      "commit": "c1c8a8c1471069fb0e188eeaff69b8e8db6564a8",
+      "license": "MIT",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "skills/security-audit", "to": "skills/security-audit"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Source of the phase model, the coverage ledger, report-schema.json and the two validators.",
+        "The validators reject every input on native Windows (O_NOFOLLOW and O_NONBLOCK are undefined). kalkan ports them to Python."
+      ]
+    },
+    {
+      "name": "sast-skills",
+      "upstream": "https://github.com/utkusen/sast-skills",
+      "commit": "db52227eab1043bf122cbff7206fac6708b4d6c9",
+      "license": "MIT",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "sast-files/.claude/skills", "to": "skills"},
+        {"from": "sast-files/CLAUDE.md", "to": "orchestration/ORCHESTRATOR.claude.md"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "The upstream skills live in sast-files/.claude/skills. They are copied to skills/ so that Claude Code does not load them.",
+        "The upstream orchestration file sast-files/CLAUDE.md is renamed so that no agent host loads it."
+      ]
+    },
+    {
+      "name": "codecrucible",
+      "upstream": "https://github.com/block/codecrucible",
+      "commit": "b5c8086b7f7031b828b5fbcfeac53fa58b4c9a38",
+      "license": "Apache-2.0",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "prompts", "to": "prompts"},
+        {"from": "PROMPT_SETS.md", "to": "PROMPT_SETS.md"},
+        {"from": "internal/cli/scan_audit_v2.go", "to": "go/scan_audit_v2.go"},
+        {"from": "internal/cli/scan_audit_v2_test.go", "to": "go/scan_audit_v2_test.go"},
+        {"from": "internal/sarif/identity.go", "to": "go/identity.go"},
+        {"from": "internal/sarif/review_test.go", "to": "go/review_test.go"},
+        {"from": "internal/llm/schema_audit_v2.go", "to": "go/schema_audit_v2.go"}
+      ],
+      "notes": [
+        "prompts/nano-analyzer is adapted by Block from weareaisle/nano-analyzer (Apache-2.0, AISLE).",
+        "The Go files are reference material for the Python ports of the quote verifier, the verdict policy and the finding identity."
+      ]
+    },
+    {
+      "name": "deepsec",
+      "upstream": "https://github.com/vercel-labs/deepsec",
+      "commit": "4fa67220aff67ac93dfc840206d3d32bfa4411ec",
+      "license": "Apache-2.0",
+      "license_files": ["LICENSE", "NOTICE"],
+      "copy": [
+        {"from": "packages/scanner/src/matchers", "to": "scanner/matchers"},
+        {"from": "packages/scanner/src/declarative-matcher.ts", "to": "scanner/declarative-matcher.ts"},
+        {"from": "packages/core/src/plugin.ts", "to": "core/plugin.ts"},
+        {"from": "packages/core/src/types.ts", "to": "core/types.ts"},
+        {"from": "packages/processor/src/prompt", "to": "processor/prompt"},
+        {"from": "packages/processor/src/agents/shared.ts", "to": "processor/agents/shared.ts"},
+        {"from": "docs/writing-matchers.md", "to": "docs/writing-matchers.md"}
+      ],
+      "notes": [
+        "The NOTICE file must ship with any redistribution (Apache-2.0 section 4(d)). kalkan repeats its text in the root NOTICE file.",
+        "Source of the 198 regex matchers, the declarative matcher spec with regex safety checks and the processor prompts."
+      ]
+    },
+    {
+      "name": "open-code-review",
+      "upstream": "https://github.com/alibaba/open-code-review",
+      "commit": "11ac6d4c57082f310067a4a1654ad5b63cb57410",
+      "license": "Apache-2.0",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "internal/config/rules/rule_docs", "to": "rules/rule_docs"},
+        {"from": "internal/config/rules/system_rules.json", "to": "rules/system_rules.json"},
+        {"from": "internal/config/template/prompts/review_filter_task_system.md", "to": "prompts/review_filter_task_system.md"},
+        {"from": "internal/config/template/prompts/review_filter_task_user.md", "to": "prompts/review_filter_task_user.md"}
+      ],
+      "notes": [
+        "Source of the per-language rule documents (security sections) and the conservative review filter prompts.",
+        "Do not use the Alibaba or OpenCodeReview trademarks (Apache-2.0 section 6)."
+      ]
+    },
+    {
+      "name": "gitlab-sast-rules",
+      "upstream": "https://gitlab.com/gitlab-org/security-products/sast-rules",
+      "commit": "53bf5cf6df3c51b6c02110f5a638b5e6213666cd",
+      "release": "v2.10.1",
+      "commit_date": "2026-09-21",
+      "license": "MIT and LGPL-3.0-only (the license header of each file)",
+      "license_files": ["LICENSE", "rules/lgpl/LICENSE"],
+      "license_header": {
+        "regex": "^# License: (.+)$",
+        "allowed": {
+          "MIT (c) GitLab Inc.": "MIT",
+          "GNU Lesser General Public License v3.0": "LGPL-3.0-only"
+        }
+      },
+      "copy": [
+        {"from": "csharp", "to": "csharp", "include": ["*.yml"], "require": "(?m)^rules:"},
+        {"from": "java", "to": "java", "include": ["*.yml"], "require": "(?m)^rules:"},
+        {"from": "javascript", "to": "javascript", "include": ["*.yml"], "require": "(?m)^rules:"},
+        {"from": "python", "to": "python", "include": ["*.yml"], "require": "(?m)^rules:"},
+        {"from": "scala", "to": "scala", "include": ["*.yml"], "require": "(?m)^rules:"},
+        {"from": "rules/lgpl", "to": "rules/lgpl", "include": ["*.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md", "license_header": false}
+      ],
+      "notes": [
+        "Opengrep rule pack (ADR-0005, K.8). Copied: the rule files of csharp, java, javascript, python and scala (license header 'MIT (c) GitLab Inc.') and of rules/lgpl (license header 'GNU Lesser General Public License v3.0'; rules/lgpl/LICENSE is the LGPL-3.0 text). The test sources next to the rules are not copied (some carry the LGPL-3.0 header of find-sec-bugs).",
+        "Not copied: rules/lgpl-cc (LGPL-2.1 with the Commons Clause, which forbids selling services that derive their value from the rules), rules/gitlab (GitLab Enterprise Edition license, not open source), c (GPL-2.0 port of flawfinder, which kalkan runs itself), go (Apache-2.0 port of gosec, which kalkan runs itself), mappings, qa, ci and spec.",
+        "ADR-0005 and the 2026-10-19 research name the license 'LGPL-2.1'. The files say LGPL-3.0. The LGPL-3.0 adds permissions to the GPL-3.0, whose text is not in the upstream repository: https://www.gnu.org/licenses/gpl-3.0.txt",
+        "kalkan runs the kept rules from rules/opengrep-packs/gitlab (scripts/build_opengrep_packs.py, docs/ENGINE-SPEC.md section 13)."
+      ]
+    },
+    {
+      "name": "0xdea-semgrep-rules",
+      "upstream": "https://github.com/0xdea/semgrep-rules",
+      "commit": "dae50da6e6e629750f1daec73a01ef9206a372ab",
+      "release": "v2.0.0-20-gdae50da (the rules last changed on 2026-06-09)",
+      "commit_date": "2026-09-25",
+      "license": "MIT",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "rules", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack for C and C++ (ADR-0005, K.8). The C and C++ test sources next to the rules are not copied.",
+        "kalkan runs the kept rules from rules/opengrep-packs/0xdea (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "trailofbits-semgrep-rules",
+      "upstream": "https://github.com/trailofbits/semgrep-rules",
+      "commit": "31390b3a99c04c81522d1b37c8d1900aa2dd4094",
+      "commit_date": "2025-11-12",
+      "license": "AGPL-3.0-only",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "generic", "to": "generic", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "go", "to": "go", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "hcl", "to": "hcl", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "javascript", "to": "javascript", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "jvm", "to": "jvm", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "python", "to": "python", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "rs", "to": "rs", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "ruby", "to": "ruby", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "swift", "to": "swift", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "yaml", "to": "yaml", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack (ADR-0005, K.8; license policy of 2026-10-25: AGPL-3.0 rule files stay unmodified in their own folder with the license text, and kalkan is not offered as a network service). The test files next to the rules are not copied.",
+        "The pack belongs to the restricted group: KALKAN_RULE_PACKS=osi turns it off (docs/ENGINE-SPEC.md section 13).",
+        "kalkan runs the kept rules from rules/opengrep-packs/trailofbits (scripts/build_opengrep_packs.py)."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "slug": "framework-image-optimizer",
+  "description": "Next.js image-optimizer and private-IP allow-list code (SSRF risk surface)",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bimageOptimizer\\s*\\(|\\boptimizeImage\\s*\\(",
+      "flags": "",
+      "label": "image optimizer call"
+    },
+    {
+      "regex": "\\b(?:remotePatterns|domains|loaderFile)\\b",
+      "flags": "",
+      "label": "image remote-pattern config"
+    },
+    {
+      "regex": "\\bisPrivateIP\\s*\\(|\\bIP_ADDRESS_REGEX\\b",
+      "flags": "",
+      "label": "private-IP check"
+    },
+    {
+      "regex": "\\bmatchRemotePattern\\s*\\(|\\bmatchHost\\s*\\(",
+      "flags": "",
+      "label": "remote pattern / host matching"
+    },
+    {
+      "regex": "\\b(?:169\\.254\\.169\\.254|0\\.0\\.0\\.0|127\\.0\\.0\\.1|::1|::ffff:)",
+      "flags": "",
+      "label": "internal address literal"
+    }
+  ],
+  "examples": [
+    "await imageOptimizer({ req, res, parsedUrl, nextConfig });",
+    "const buf = await optimizeImage(input, { width });",
+    "const remotePatterns = config.images.remotePatterns;",
+    "if (config.domains.includes(host)) return true;",
+    "const loaderFile = require(config.images.loaderFile);",
+    "if (isPrivateIP(addr)) throw new Error('blocked');",
+    "const m = host.match(IP_ADDRESS_REGEX);",
+    "if (matchRemotePattern(p, parsed)) return true;",
+    "if (matchHost(p.hostname, parsed.hostname)) return true;",
+    "if (host === '169.254.169.254') throw new Error('metadata blocked');",
+    "if (ip === '127.0.0.1' || ip === '0.0.0.0') return false;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-image-optimizer.ts"
+  },
+  "notes": "deepsec labels with the first 40 characters of the regex; the port uses descriptive labels. The path-only fallback (flag line 1 of image-optimizer files without content hits) is dropped. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

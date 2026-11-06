@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "clj-ring-handler",
+  "description": "Clojure Ring/Compojure routes and handlers (gated on Clojure)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{clj,cljs,cljc}"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,spec}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/project.clj",
+      "**/deps.edn",
+      "**/build.boot",
+      "**/shadow-cljs.edn"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bdefroutes\\b",
+      "flags": "",
+      "label": "defroutes Compojure declaration"
+    },
+    {
+      "regex": "\\((?:GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS|ANY)\\s+\"[^\"]+\"",
+      "flags": "",
+      "label": "Compojure route verb"
+    },
+    {
+      "regex": "\\bdefn\\s+\\w+\\s+\\[\\s*(?:request|req)\\b",
+      "flags": "",
+      "label": "Ring handler fn (request-shape arg)"
+    },
+    {
+      "regex": "\\bwrap-(?:authentication|authorization|cors|csrf)\\b",
+      "flags": "",
+      "label": "Ring middleware"
+    }
+  ],
+  "examples": [
+    "(defroutes app-routes\n  (GET \"/\" [] \"Hello\"))",
+    "(defroutes api\n  (POST \"/users\" req (create-user req)))",
+    "  (GET \"/users/:id\" [id] (get-user id))",
+    "  (PUT \"/users/:id\" [id :as req] (update-user id req))",
+    "  (DELETE \"/users/:id\" [id] (delete-user id))",
+    "  (PATCH \"/users/:id\" [id :as req] (patch id req))",
+    "  (ANY \"/healthz\" [] \"ok\")",
+    "(defn handler [request] (response \"hi\"))",
+    "(defn login [req] (-> req :params :user))",
+    "(-> handler\n    (wrap-authentication backend)\n    (wrap-authorization backend))",
+    "(wrap-cors handler)",
+    "(wrap-csrf handler)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/clj-ring-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [clojure]; kalkan uses a Clojure build file."
+}

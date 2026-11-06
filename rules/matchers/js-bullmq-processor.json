@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "slug": "js-bullmq-processor",
+  "description": "BullMQ workers and queue processors — background-job auth-gap surface (gated on bullmq)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "bullmq"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"bullmq\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "new\\s+Worker\\s*\\(\\s*['\"][^'\"]+['\"]\\s*,",
+      "flags": "",
+      "label": "new Worker('queue', handler)"
+    },
+    {
+      "regex": "new\\s+Queue\\s*\\(\\s*['\"][^'\"]+['\"]",
+      "flags": "",
+      "label": "new Queue() declaration"
+    },
+    {
+      "regex": "\\.process\\s*\\(\\s*async\\s*\\(\\s*job\\b",
+      "flags": "",
+      "label": "queue.process(async job => ...) handler body"
+    },
+    {
+      "regex": "\\bjob\\.data\\b",
+      "flags": "",
+      "label": "job.data — payload trust boundary"
+    }
+  ],
+  "examples": [
+    "const worker = new Worker('emails', async (job) => {});",
+    "new Worker(\"payments\", processPayment, { connection })",
+    "const queue = new Queue('emails', { connection })",
+    "new Queue(\"notifications\")",
+    "queue.process(async (job) => { return doWork(job) })",
+    "const { userId, payload } = job.data;",
+    "console.log(job.data.email)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-bullmq-processor.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [bullmq]; kalkan uses tech node (or bullmq) and a manifest that names bullmq."
+}

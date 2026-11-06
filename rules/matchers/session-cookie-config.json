@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "session-cookie-config",
+  "description": "Session/auth cookie configuration — verify httpOnly + sameSite + secure",
+  "class": "security-misconfig",
+  "cwe": [
+    "CWE-1004",
+    "CWE-614"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "(?i:\\bfrom\\s+[\"'](?:better-auth|next-auth|@auth/core|iron-session|lucia|@lucia-auth|@clerk/(?:nextjs|backend))[^\"']*[\"']|\\bcookies\\(\\)\\s*\\.\\s*set\\s*\\(|\\bres\\.\\s*setHeader\\s*\\(\\s*[\"']Set-Cookie)"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bcookies\\(\\)\\s*\\.\\s*set\\s*\\(",
+      "flags": "",
+      "label": "next/headers cookies().set() — verify cookie options"
+    },
+    {
+      "regex": "\\bres\\.\\s*cookie\\s*\\(|\\bresponse\\.\\s*cookie\\s*\\(",
+      "flags": "",
+      "label": "res.cookie() — verify httpOnly+secure+sameSite"
+    },
+    {
+      "regex": "\\bnew\\s+(?:NextAuth|BetterAuth|Lucia)\\s*\\(",
+      "flags": "",
+      "label": "Auth library construction — review cookie config"
+    },
+    {
+      "regex": "\\bsessionCookie\\s*:\\s*\\{|\\bcookieOptions\\s*:\\s*\\{|\\bcookies\\s*:\\s*\\{",
+      "flags": "",
+      "label": "Cookie options block"
+    },
+    {
+      "regex": "\\bironOptions\\s*=\\s*\\{|\\bironSession\\s*\\(",
+      "flags": "",
+      "label": "iron-session config"
+    },
+    {
+      "regex": "\\bsetHeader\\s*\\(\\s*[\"']Set-Cookie[\"']",
+      "flags": "",
+      "label": "Raw Set-Cookie header — verify flags"
+    }
+  ],
+  "examples": [
+    "import { cookies } from \"next/headers\";\ncookies().set(\"session\", token, { httpOnly: true });",
+    "import { cookies } from \"next/headers\";\ncookies().set({ name: \"auth\", value: token });",
+    "import session from \"iron-session\";\nres.cookie(\"auth\", token, { secure: true });",
+    "import { betterAuth } from \"better-auth\";\nresponse.cookie(\"session\", token);",
+    "import NextAuth from \"next-auth\";\nconst auth = new NextAuth({ providers: [] });",
+    "import { Lucia } from \"lucia\";\nconst lucia = new Lucia(adapter, {\n  sessionCookie: { attributes: { secure: true } },\n});",
+    "import { betterAuth } from \"better-auth\";\nexport const auth = betterAuth({\n  cookieOptions: { secure: true, httpOnly: true },\n});",
+    "import session from \"iron-session\";\nconst ironOptions = { cookieName: \"session\", password: \"x\" };",
+    "import { ironSession } from \"iron-session/express\";\nironSession({ cookieName: \"session\", password: \"x\" });",
+    "import { cookies } from \"next/headers\";\nres.setHeader(\"Set-Cookie\", `session=${token}; HttpOnly`);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/session-cookie-config.ts"
+  },
+  "notes": ""
+}

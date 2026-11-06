@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="generator" content="kalkan 0.0.0-golden">
+<title>Yönetici özeti · 20261015T120000Z-shop-a1b2</title>
+<style>
+:root {
+  --bg: #f3f5f8; --panel: #ffffff; --head: #f6f8fa; --line: #e1e5ea; --line-strong: #c5ccd6;
+  --text: #17202b; --text-2: #44505f; --text-3: #5f6b7a;
+  --accent: #1d5bb8; --accent-ink: #123e7a; --accent-soft: #d6e4f7; --accent-wash: #eef4fc;
+  --good: #0ca30c; --warn: #fab219; --crit: #d03b3b;
+  --warn-wash: #fff7e0;
+  --sev-critical: #a61b1b; --sev-critical-wash: #fbe9e9;
+  --sev-high: #a84300; --sev-high-wash: #fdeee2;
+  --sev-medium: #7d5800; --sev-medium-wash: #fdf5dc;
+  --sev-low: #1d5bb8; --sev-low-wash: #e8f0fb;
+  --sev-info: #4f5b69; --sev-info-wash: #eef1f4;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", "SF Mono", Consolas, "Liberation Mono", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131a; --panel: #141a23; --head: #19212c; --line: #253041; --line-strong: #344256;
+    --text: #e4e9f0; --text-2: #b3bdca; --text-3: #93a0b1;
+    --accent: #6ea8ff; --accent-ink: #cfe0ff; --accent-soft: #1e3a5f;
+    --accent-wash: rgba(110, 168, 255, 0.10); --warn-wash: rgba(250, 178, 25, 0.10);
+    --sev-critical: #ff8a80; --sev-critical-wash: rgba(208, 59, 59, 0.18);
+    --sev-high: #ffb27a; --sev-high-wash: rgba(229, 112, 26, 0.18);
+    --sev-medium: #f5cf6b; --sev-medium-wash: rgba(250, 178, 25, 0.15);
+    --sev-low: #8fb8ff; --sev-low-wash: rgba(110, 168, 255, 0.15);
+    --sev-info: #b3bdca; --sev-info-wash: rgba(179, 189, 202, 0.12);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131a; --panel: #141a23; --head: #19212c; --line: #253041; --line-strong: #344256;
+  --text: #e4e9f0; --text-2: #b3bdca; --text-3: #93a0b1;
+  --accent: #6ea8ff; --accent-ink: #cfe0ff; --accent-soft: #1e3a5f;
+  --accent-wash: rgba(110, 168, 255, 0.10); --warn-wash: rgba(250, 178, 25, 0.10);
+  --sev-critical: #ff8a80; --sev-critical-wash: rgba(208, 59, 59, 0.18);
+  --sev-high: #ffb27a; --sev-high-wash: rgba(229, 112, 26, 0.18);
+  --sev-medium: #f5cf6b; --sev-medium-wash: rgba(250, 178, 25, 0.15);
+  --sev-low: #8fb8ff; --sev-low-wash: rgba(110, 168, 255, 0.15);
+  --sev-info: #b3bdca; --sev-info-wash: rgba(179, 189, 202, 0.12);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; font-size: 14.5px; }
+body {
+  margin: 0; background: var(--bg); color: var(--text); font-family: var(--font-sans);
+  font-size: 1rem; line-height: 1.5;
+  padding: 24px 16px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+p { margin: 0.5rem 0 0; }
+code { font-family: var(--font-mono); font-size: 0.86em; overflow-wrap: anywhere; }
+.page {
+  max-width: 1180px; margin-inline: auto; background: var(--panel); border: 1px solid var(--line);
+  padding: clamp(16px, 3vw, 36px);
+}
+.head { border-bottom: 2px solid var(--text); padding-bottom: 1.1rem; position: relative; }
+.kicker {
+  font-family: var(--font-mono); font-size: 0.83rem; color: var(--accent); font-weight: 600;
+  letter-spacing: 0.03em; margin: 0; padding-right: 72px; overflow-wrap: anywhere;
+}
+h1 {
+  font-size: clamp(1.4rem, 2.6vw, 1.95rem); font-weight: 700; line-height: 1.2;
+  margin: 0.4rem 0 0; letter-spacing: -0.01em; overflow-wrap: anywhere;
+}
+.subtitle { color: var(--text-2); margin-top: 0.4rem; }
+.meta {
+  margin: 1.1rem 0 0; display: flex; flex-wrap: wrap; gap: 1px; background: var(--line);
+  border: 1px solid var(--line);
+}
+.meta div { flex: 1 1 10rem; background: var(--panel); padding: 0.5rem 0.8rem; min-width: 0; }
+.meta div.wide { flex: 3 1 18rem; }
+.meta dt, .lbl {
+  font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-3);
+  letter-spacing: 0.03em; text-transform: uppercase;
+}
+.meta dd { margin: 0.15rem 0 0; font-size: 0.93rem; font-weight: 500; overflow-wrap: anywhere; }
+.status { margin: 0.8rem 0 0; font-size: 0.93rem; color: var(--text-2); overflow-wrap: anywhere; }
+.status .lbl { margin-right: 0.5rem; }
+.status .st { margin-right: 0.4rem; color: var(--text); font-weight: 600; white-space: normal; }
+.theme-toggle {
+  position: absolute; top: 0; right: 0; font: inherit; font-size: 12px; color: var(--text-2);
+  background: var(--head); border: 1px solid var(--line-strong); border-radius: 3px;
+  padding: 3px 9px; cursor: pointer;
+}
+section { margin-top: 2rem; min-width: 0; }
+h2 {
+  font-size: 1.15rem; font-weight: 700; margin: 0; display: flex; gap: 0.7rem;
+  align-items: baseline; padding-bottom: 0.45rem; border-bottom: 1px solid var(--line);
+}
+h2 .num {
+  font-family: var(--font-mono); font-size: 0.9rem; color: var(--accent); font-weight: 600;
+  flex: none;
+}
+h3 { font-size: 0.95rem; font-weight: 600; margin: 1rem 0 0; }
+.intro { color: var(--text-2); font-size: 0.93rem; }
+.note { color: var(--text-3); font-size: 0.86rem; }
+.nt { color: var(--text-3); font-style: italic; font-size: 0.9em; }
+.mute { color: var(--text-3); }
+.small { font-size: 0.83rem; color: var(--text-3); }
+.two { display: grid; gap: 0 2rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .two { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.two > div, .risk > div { min-width: 0; }
+@media (min-width: 900px) { .two.wide { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); } }
+.risk { margin-top: 1rem; display: grid; gap: 1rem; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 760px) {
+  .risk { grid-template-columns: minmax(250px, 1fr) minmax(0, 2fr); }
+}
+.posture {
+  border: 1px solid var(--line); border-left: 6px solid var(--line-strong);
+  background: var(--head); padding: 0.9rem 1.1rem;
+}
+.posture .lvl {
+  display: block; font-size: 2.6rem; font-weight: 700; line-height: 1.1; margin-top: 0.1rem;
+  letter-spacing: -0.01em; overflow-wrap: anywhere;
+}
+.posture p { margin: 0.5rem 0 0; font-size: 0.93rem; }
+.posture.lv-critical {
+  border-left-color: var(--sev-critical); background: var(--sev-critical-wash);
+}
+.posture.lv-high { border-left-color: var(--sev-high); background: var(--sev-high-wash); }
+.posture.lv-medium { border-left-color: var(--sev-medium); background: var(--sev-medium-wash); }
+.posture.lv-low { border-left-color: var(--sev-low); background: var(--sev-low-wash); }
+.posture.lv-critical .lvl { color: var(--sev-critical); }
+.posture.lv-high .lvl { color: var(--sev-high); }
+.posture.lv-medium .lvl { color: var(--sev-medium); }
+.posture.lv-low .lvl { color: var(--sev-low); }
+.alert {
+  border: 1px solid var(--line); border-left: 6px solid var(--sev-critical);
+  background: var(--sev-critical-wash); padding: 0.8rem 1.1rem;
+}
+.alert h2 { border-bottom: 0; padding-bottom: 0; color: var(--sev-critical); }
+.alert p { margin: 0.4rem 0 0; font-size: 0.93rem; overflow-wrap: anywhere; }
+.alert ul.mal { margin: 0.5rem 0 0; padding-left: 1.2rem; display: grid; gap: 0.2rem; }
+.alert ul.mal li { overflow-wrap: anywhere; font-size: 0.93rem; }
+.caption { margin: 0 0 0.4rem; }
+.tiles {
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px;
+  background: var(--line); border: 1px solid var(--line); margin-bottom: 0.8rem;
+}
+.tiles.pair { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 0; }
+.tile {
+  background: var(--panel); padding: 0.65rem 0.8rem; border-top: 3px solid transparent;
+  display: grid; gap: 0.1rem; align-content: start; min-width: 0;
+}
+.tile b { font-size: 1.9rem; font-weight: 600; line-height: 1.1; }
+.tile span { font-size: 0.86rem; color: var(--text-2); overflow-wrap: anywhere; }
+.tiles.pair .tile b { font-size: 1.45rem; }
+.tile.zero b { color: var(--text-3); }
+.tile.sev-critical { border-top-color: var(--sev-critical); }
+.tile.sev-high { border-top-color: var(--sev-high); }
+.tile.sev-medium { border-top-color: var(--sev-medium); }
+.tile.sev-low { border-top-color: var(--sev-low); }
+.tile.sev-info { border-top-color: var(--sev-info); }
+.tbl-wrap { overflow-x: auto; margin-top: 0.7rem; border: 1px solid var(--line); max-width: 100%; }
+table.tbl { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.tbl th, .tbl td {
+  padding: 0.45rem 0.6rem; border-bottom: 1px solid var(--line); text-align: left;
+  vertical-align: top; overflow-wrap: anywhere;
+}
+.tbl thead th {
+  background: var(--head); color: var(--text-2); font-weight: 600; font-size: 0.83rem;
+  border-bottom: 1px solid var(--line-strong); vertical-align: bottom; overflow-wrap: normal;
+}
+.tbl tbody th { font-weight: 500; }
+.tbl tr:last-child > * { border-bottom: 0; }
+.tbl tfoot th, .tbl tfoot td {
+  border-top: 1px solid var(--line-strong); background: var(--head); font-weight: 600;
+}
+.tbl .n, .tbl .c { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tbl .n { text-align: right; }
+.tbl .c { text-align: center; }
+.tbl .c.z { color: var(--text-3); }
+.tbl .rank {
+  font-family: var(--font-mono); color: var(--text-3); width: 2.4em; white-space: nowrap;
+}
+.tbl .lead a { font-weight: 600; }
+.tbl .imp { color: var(--text-2); font-size: 0.86rem; }
+.tbl .loc, .tbl .loc code { overflow-wrap: break-word; }
+.tbl .nw { white-space: nowrap; }
+@media (min-width: 641px) { table.top { min-width: 760px; } }
+.sev {
+  display: inline-block; padding: 1px 0.5rem; border-radius: 3px; font-size: 0.83rem;
+  font-weight: 600; line-height: 1.6; white-space: nowrap;
+}
+.sev-critical { color: var(--sev-critical); background: var(--sev-critical-wash); }
+.sev-high { color: var(--sev-high); background: var(--sev-high-wash); }
+.sev-medium { color: var(--sev-medium); background: var(--sev-medium-wash); }
+.sev-low { color: var(--sev-low); background: var(--sev-low-wash); }
+.sev-info, .sev-none { color: var(--sev-info); background: var(--sev-info-wash); }
+.st { display: inline-flex; align-items: center; gap: 0.4rem; white-space: nowrap; }
+.st::before { content: ""; width: 8px; height: 8px; border-radius: 50%; flex: none; }
+.st-good::before { background: var(--good); } .st-warn::before { background: var(--warn); }
+.st-crit::before { background: var(--crit); }
+.st-neutral::before { background: var(--line-strong); }
+.bar { display: block; height: 5px; margin-top: 0.3rem; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 0 3px 3px 0; }
+.meter {
+  display: block; height: 7px; margin-top: 0.3rem; max-width: 280px;
+  background: var(--accent-soft); border-radius: 4px; overflow: hidden;
+}
+.meter i { display: block; height: 100%; background: var(--accent); }
+ul.chips {
+  list-style: none; margin: 0.5rem 0 0; padding: 0; display: flex; flex-wrap: wrap;
+  gap: 0.4rem 1.1rem;
+}
+ul.chips li { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.9rem; }
+ul.chips b { font-variant-numeric: tabular-nums; }
+.facts {
+  margin: 0.8rem 0 0; display: grid; grid-template-columns: max-content minmax(0, 1fr);
+  gap: 0.6rem 1.1rem; font-size: 0.93rem;
+}
+.facts dt { padding-top: 0.15rem; }
+.facts dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+.facts ul { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.15rem; }
+ol.actions {
+  margin: 0.7rem 0 0; padding: 0; list-style: none; counter-reset: action; display: grid;
+  gap: 0.5rem;
+}
+ol.actions li {
+  counter-increment: action; display: grid; grid-template-columns: 1.6em minmax(0, 1fr);
+  gap: 0 0.5rem; padding: 0.6rem 0.8rem; border: 1px solid var(--line); background: var(--head);
+}
+ol.actions li::before {
+  content: counter(action); font-family: var(--font-mono); font-weight: 600; color: var(--accent);
+}
+ol.actions .what { overflow-wrap: anywhere; }
+ol.actions .what .sev { margin-right: 0.4rem; }
+ol.actions .why {
+  grid-column: 2; font-size: 0.86rem; color: var(--text-2); overflow-wrap: anywhere;
+}
+footer.foot {
+  margin-top: 2.2rem; padding-top: 0.7rem; border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 0.83rem; color: var(--text-3); display: flex;
+  flex-wrap: wrap; gap: 0.4rem 1.5rem;
+}
+footer.foot span { overflow-wrap: anywhere; }
+@media (max-width: 640px) {
+  html { font-size: 14px; }
+  body { padding-top: 12px; padding-bottom: 24px; }
+  .page { padding: 14px; }
+  .posture .lvl { font-size: 2.1rem; }
+  .tile { padding: 0.55rem 0.4rem; }
+  .tile b { font-size: 1.4rem; }
+  .tile span { font-size: 0.8rem; }
+  table.stack, .stack tbody, .stack tr, .stack td { display: block; }
+  .stack thead {
+    position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .stack tr { position: relative; padding: 0.6rem 0.7rem; border-bottom: 1px solid var(--line); }
+  .stack tr:last-child { border-bottom: 0; }
+  .stack.top tr { padding-left: 2.4rem; }
+  .tbl.stack td { border: 0; padding: 0.12rem 0; }
+  .stack td.rank { position: absolute; left: 0.7rem; top: 0.6rem; width: auto; }
+  .stack td.inl { display: inline-block; margin-right: 0.8rem; }
+  .tbl.stack td[data-label] { position: relative; padding-left: calc(var(--lw) + 0.6rem); }
+  .stack td[data-label]::before {
+    content: attr(data-label); position: absolute; left: 0; top: 0.3rem; width: var(--lw);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    font-family: var(--font-mono); font-size: 0.76rem; color: var(--text-3);
+  }
+  .tbl.stack td.inl[data-label] { padding-left: 0; }
+  .stack td.inl[data-label]::before { position: static; width: auto; margin-right: 0.4rem; }
+  .stack.top { --lw: 4.4rem; }
+  .stack.pkg { --lw: 8.2rem; }
+}
+@media (max-width: 560px) {
+  table.grid, .grid thead, .grid tbody, .grid tfoot { display: block; }
+  .grid tr { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .grid thead th:first-child { display: none; }
+  .tbl.grid tbody th, .tbl.grid tfoot th {
+    grid-column: 1 / -1; border-bottom: 0; padding-bottom: 0;
+  }
+  .facts { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; }
+  .facts dd { margin-bottom: 0.6rem; }
+}
+@page { size: A4; margin: 12mm; }
+@media print {
+  :root:not([data-print]):not([data-x]) {
+    --bg: #ffffff; --panel: #ffffff; --head: #f4f5f7; --line: #d5d9de; --line-strong: #aab2bd;
+    --text: #000000; --text-2: #222222; --text-3: #444444; --accent: #123e7a;
+    --accent-wash: transparent; --warn-wash: #fff7e0;
+    --sev-critical: #8a1010; --sev-high: #8a3800; --sev-medium: #6b4b00; --sev-low: #123e7a;
+    --sev-info: #333333; color-scheme: light;
+  }
+  :root:not([data-print]):not([data-x]) { --accent-soft: #d6e4f7; }
+  html { font-size: 7.5pt; }
+  body { padding: 0; line-height: 1.4; background: #ffffff; }
+  .page { border: 0; padding: 0; max-width: none; }
+  .theme-toggle { display: none !important; }
+  h1 { font-size: 1.6rem; }
+  section { margin-top: 1.2rem; }
+  .risk { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); }
+  .two { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 1.6rem; }
+  .two.wide { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+  .posture .lvl { font-size: 2.2rem; }
+  .tile b { font-size: 1.6rem; }
+  .tbl-wrap { overflow: visible; }
+  table.tbl { min-width: 0 !important; line-height: 1.3; }
+  table.tbl, table.top { font-size: 0.93rem; }
+  .tbl th, .tbl td { padding: 0.28rem 0.45rem; }
+  ol.actions { gap: 0.3rem; }
+  ol.actions li { padding: 0.35rem 0.6rem; }
+  .facts { gap: 0.35rem 1rem; }
+  h2, h3 { break-after: avoid; }
+  .posture, .alert, .tiles, tr, ol.actions li, .facts > * { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+  .sev, .tile, .posture, .alert, .tbl td, .meter, .meter i, .bar i {
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  footer.foot { margin-top: 1.2rem; }
+}
+</style>
+</head>
+<body>
+<main class="page">
+<header class="head"><button type="button" class="theme-toggle" id="theme-toggle" hidden>Tema</button><p class="kicker">GÜVENLİK DENETİMİ · 20261015T120000Z-shop-a1b2</p><h1>Yönetici özeti: shop</h1><p class="subtitle">Denetimin tek sayfalık özeti. Ayrıntılar tam raporda: <a href="REPORT.html">REPORT.html</a></p><dl class="meta"><div class="wide"><dt>Hedef</dt><dd><code>C:/<wbr>projects/<wbr>shop</code></dd></div><div><dt>Git commit</dt><dd>—</dd></div><div><dt>Profil</dt><dd>standard</dd></div><div><dt>Başlangıç</dt><dd>2026-10-15 09:30 UTC</dd></div><div><dt>Rapor tarihi</dt><dd>2026-10-15 12:30 UTC</dd></div></dl><p class="status"><span class="lbl">Durum</span><span class="st st-warn">Kısmi geçiş (partial pass)</span> <span>1 kapsam birimi açık · 1 manifest dosyasında lockfile yok</span></p></header>
+<section id="risk" aria-labelledby="h-risk"><h2 id="h-risk"><span class="num">1</span>Genel risk</h2>
+<div class="risk"><div><div class="posture lv-high"><span class="lbl">Genel risk seviyesi</span><span class="lvl">Yüksek</span><p>En yüksek doğrulanan ciddiyet: Yüksek.</p><p>Kısmi geçiş: seviye yalnızca taranan kapsamı gösterir.</p><p>Dikkat: 1 erişilebilir (reachable) bağımlılık paketinin ciddiyeti bu seviyenin üstünde. En yüksek ciddiyet: Kritik. Ayrıntılar 4. bölümde.</p><p><b>Dikkat: bağımlılıklarda 1 bilinen zararlı paket sürümü var. Seviye kuralı SCA kayıtlarını saymaz, ama bu kayıtlar Kritik. Aşağıdaki kutuya bak.</b></p></div><p class="note">Kural: doğrulanan bir Kritik bulgu varsa seviye Kritik olur. Yoksa Yüksek bulgu varsa Yüksek, yoksa Orta bulgu varsa Orta olur. Diğer durumlarda seviye Düşük olur. Araç sonuçları ve SCA kayıtları seviyeyi değiştirmez.</p></div><div><p class="lbl caption">Doğrulanan bulgular: 2</p><div class="tiles"><div class="tile zero"><b>0</b><span>Kritik</span></div><div class="tile sev-high"><b>1</b><span>Yüksek</span></div><div class="tile sev-medium"><b>1</b><span>Orta</span></div><div class="tile zero"><b>0</b><span>Düşük</span></div><div class="tile zero"><b>0</b><span>Bilgi</span></div></div><p class="lbl caption">Diğer kararlar</p><div class="tiles pair"><div class="tile"><b>1</b><span>Doğrulama bekleyen</span></div><div class="tile"><b>1</b><span>Reddedilen</span></div></div><p class="note">Ciddiyet sayıları yalnızca doğrulanan bulguları kapsar.</p></div></div>
+</section>
+<section id="malicious" class="alert" aria-labelledby="h-malicious"><h2 id="h-malicious">Zararlı bağımlılık: 1 paket sürümü</h2><p>Bu sürümler bilinen zararlı paket kayıtlarıyla eşleşti (OSV <code>MAL-</code>, GitHub malware advisory). Zararlı kod kurulum sırasında çalışır, bu yüzden reachability önemli değil.</p><ul class="mal"><li><code>sample-module</code> <code>0.0.1</code> · PyPI · <code>MAL-2025-41758</code> +1 · <code>requirements.txt</code></li></ul><p class="act"><b>Yapılacak: paketi kaldır, paketi kuran makineleri açığa çıkmış kabul et ve kurulumun okuyabildiği sırları değiştir. Adımlar tam raporun 8.1 bölümünde.</b></p></section>
+<section id="top" aria-labelledby="h-top"><h2 id="h-top"><span class="num">2</span>En önemli 10 bulgu</h2>
+<p class="intro">Doğrulanan bulgular önce ciddiyete, sonra olasılığa (likelihood) göre sıralı. Başlık, tam rapordaki bulguyu açar.</p>
+<div class="tbl-wrap"><table class="tbl top stack"><thead><tr><th scope="col" class="rank">#</th><th scope="col">Bulgu</th><th scope="col">Ciddiyet</th><th scope="col">Son inceleme</th><th scope="col">Sınıf</th><th scope="col">Konum</th><th scope="col">Etki</th></tr></thead><tbody><tr><td class="rank">1</td><td class="lead"><a href="REPORT.html#f-KF-CF0FB1E8E50E80FC">Kullanıcı aramasında SQL injection</a></td><td class="inl nw"><span class="sev sev-high">Yüksek</span></td><td class="inl nw" data-label="Son inceleme"><span class="st st-good">Doğrulandı</span></td><td data-label="Sınıf">SQL injection</td><td class="loc" data-label="Konum"><code>app/<wbr>db.py:8</code></td><td class="imp" data-label="Etki">Saldırgan bütün kullanıcı satırlarını okur.</td></tr><tr><td class="rank">2</td><td class="lead"><a href="REPORT.html#f-KF-760073988BED4CB8">Görsel proxy&#x27;sinde SSRF</a></td><td class="inl nw"><span class="sev sev-medium">Orta</span></td><td class="inl nw" data-label="Son inceleme"><span class="st st-neutral">İncelenmedi</span></td><td data-label="Sınıf">Server-side request forgery (SSRF)</td><td class="loc" data-label="Konum"><code>app/<wbr>routes.py:19</code></td><td class="imp" data-label="Etki">İç ağdaki servislere istek atılabilir.</td></tr></tbody></table></div>
+<p class="note">1 bulgu doğrulama bekliyor. Liste tam raporun 4. bölümünde.</p>
+</section>
+<section id="classes" aria-labelledby="h-classes"><h2 id="h-classes"><span class="num">3</span>Sınıflar ve bileşenler</h2>
+<div class="two wide"><div>
+<h3>Sınıf ve ciddiyet</h3>
+<div class="tbl-wrap"><table class="tbl grid"><thead><tr><th scope="col">Sınıf</th><th scope="col" class="c">Kritik</th><th scope="col" class="c">Yüksek</th><th scope="col" class="c">Orta</th><th scope="col" class="c">Düşük</th><th scope="col" class="c">Bilgi</th><th scope="col" class="c">Toplam</th></tr></thead><tbody><tr><th scope="row">SQL injection</th><td class="c z">0</td><td class="c sev-high">1</td><td class="c z">0</td><td class="c z">0</td><td class="c z">0</td><td class="c"><b>1</b></td></tr><tr><th scope="row">Server-side request forgery (SSRF)</th><td class="c z">0</td><td class="c z">0</td><td class="c sev-medium">1</td><td class="c z">0</td><td class="c z">0</td><td class="c"><b>1</b></td></tr></tbody><tfoot><tr><th scope="row">Toplam</th><td class="c z">0</td><td class="c sev-high">1</td><td class="c sev-medium">1</td><td class="c z">0</td><td class="c z">0</td><td class="c"><b>2</b></td></tr></tfoot></table></div>
+<p class="note">Doğrulanan bulguların sayısı.</p>
+</div><div>
+<h3>Etkilenen bileşenler</h3>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Bileşen</th><th scope="col" class="n">Bulgu</th><th scope="col">En yüksek</th></tr></thead><tbody><tr><td><code>app</code><span class="bar" aria-hidden="true"><i style="width: 100%"></i></span></td><td class="n">2</td><td class="nw"><span class="sev sev-high">Yüksek</span></td></tr></tbody></table></div>
+<p class="note">Bileşen: dosya yolunun ilk iki klasörü.</p>
+</div></div>
+</section>
+<div class="two"><div>
+<section id="sca" aria-labelledby="h-sca"><h2 id="h-sca"><span class="num">4</span>Bağımlılıklar (SCA)</h2>
+<p class="note">1 zararlı paket sürümü sayfanın başındaki kutuda. Bu bölüm onları saymaz.</p>
+<p class="intro">4 zafiyetli paket, 4 zafiyet kaydı.</p>
+<h3>Ciddiyete göre paket</h3><ul class="chips"><li><span class="sev sev-critical">Kritik</span> <b>1</b></li><li><span class="sev sev-high">Yüksek</span> <b>1</b></li><li><span class="sev sev-medium">Orta</span> <b>1</b></li><li><span class="sev sev-low">Düşük</span> <b>1</b></li></ul>
+<h3>Reachability (paket)</h3><ul class="chips"><li><span class="st st-crit">Erişilebilir <b>1</b></span></li><li><span class="st st-warn">Bilinmiyor <b>2</b></span></li><li><span class="st st-good">Erişilemiyor <b>1</b></span></li></ul>
+<h3>En önemli 5 paket</h3>
+<div class="tbl-wrap"><table class="tbl pkg stack"><thead><tr><th scope="col">Paket</th><th scope="col">Ciddiyet</th><th scope="col">Reachability</th><th scope="col">Düzeltilmiş sürüm</th></tr></thead><tbody><tr><td class="lead"><code>pyyaml</code> <code>5.3</code><br><span class="small"><code>GHSA-8q59-q68h-6hv4</code> · PyPI</span></td><td class="inl nw"><span class="sev sev-critical">Kritik</span></td><td class="inl nw"><span class="st st-crit">Erişilebilir</span></td><td data-label="Düzeltilmiş sürüm"><code>5.4</code> veya üstü</td></tr><tr><td class="lead"><code>lodash</code> <code>4.17.15</code><br><span class="small"><code>GHSA-p6mc-m468-83gw</code> · npm</span></td><td class="inl nw"><span class="sev sev-high">Yüksek</span></td><td class="inl nw"><span class="st st-warn">Bilinmiyor</span></td><td data-label="Düzeltilmiş sürüm"><code>4.17.19</code> veya üstü</td></tr><tr><td class="lead"><code>jquery</code> <code>1.12.4</code><br><span class="small"><code>GHSA-jpcq-cgw6-v4j6</code> · npm</span></td><td class="inl nw"><span class="sev sev-medium">Orta</span></td><td class="inl nw"><span class="st st-warn">Bilinmiyor</span></td><td data-label="Düzeltilmiş sürüm"><code>3.5.0</code> veya üstü</td></tr><tr><td class="lead"><code>requests</code> <code>2.19.0</code><br><span class="small"><code>GHSA-x84v-xcm2-53pg</code> · PyPI</span></td><td class="inl nw"><span class="sev sev-low">Düşük</span></td><td class="inl nw"><span class="st st-good">Erişilemiyor</span></td><td data-label="Düzeltilmiş sürüm"><code>2.20.0</code> veya üstü</td></tr></tbody></table></div>
+</section>
+</div><div>
+<section id="tools" aria-labelledby="h-tools"><h2 id="h-tools"><span class="num">5</span>Araç sonuçları (doğrulanmadı)</h2>
+<p class="intro">Bu sonuçları deterministik araçlar üretti. Hiçbir ajan onları doğrulamadı. False positive içerebilir.</p>
+<div class="tbl-wrap"><table class="tbl"><thead><tr><th scope="col">Motor</th><th scope="col">Durum</th><th scope="col" class="n">Doğrulanmamış sonuç</th></tr></thead><tbody><tr><td><code>bandit</code></td><td><span class="st st-good">Çalıştı</span></td><td class="n">1</td></tr><tr><td><code>gitleaks</code></td><td><span class="st st-good">Çalıştı</span></td><td class="n">1</td></tr><tr><td><code>opengrep</code></td><td><span class="st st-good">Çalıştı</span></td><td class="n">0</td></tr><tr><td><code>trivy</code></td><td><span class="st st-neutral">Atlandı</span></td><td class="n">—</td></tr><tr><td><code>grype</code></td><td><span class="st st-neutral">Atlandı</span></td><td class="n"><span class="mute">SCA</span></td></tr><tr><td><code>osv-scanner</code></td><td><span class="st st-good">Çalıştı</span></td><td class="n"><span class="mute">SCA</span></td></tr><tr><td><code>retirejs</code></td><td><span class="st st-good">Çalıştı</span></td><td class="n"><span class="mute">SCA</span></td></tr><tr><td><code>syft</code></td><td><span class="st st-good">Çalıştı</span></td><td class="n"><span class="mute">SCA</span></td></tr></tbody><tfoot><tr><th scope="row" colspan="2">Toplam</th><td class="n">2</td></tr></tfoot></table></div>
+<p class="note">SCA motorlarının sonuçları 4. bölümde.</p>
+</section>
+</div></div><div class="two"><div>
+<section id="coverage" aria-labelledby="h-coverage"><h2 id="h-coverage"><span class="num">6</span>Kapsam ve sınırlar</h2>
+<dl class="facts"><dt class="lbl">Profil</dt><dd>standard</dd><dt class="lbl">Ajan görevi bütçesi</dt><dd>13 / 150 kullanıldı<span class="meter" aria-hidden="true"><i style="width: 8%"></i></span></dd><dt class="lbl">Kapsam defteri</dt><dd>%80 kapandı (4 / 5 birim)<span class="meter" aria-hidden="true"><i style="width: 80%"></i></span></dd><dt class="lbl">Son inceleme</dt><dd>2 kayıt incelendi: 1 doğrulandı, 1 düşürüldü, 0 reddedildi.</dd><dt class="lbl">Çalıştırma</dt><dd>standard · docker auto. Takvim süresi 2 sa 30 dk. Maliyet kaydedilmedi: etkileşimli oturum veya yalnızca araç modu. Maliyet <code>kalkan-audit</code> ile kaydedilir.</dd><dt class="lbl">Tarama boşlukları</dt><dd><ul><li>1 manifest dosyasında lockfile yok.</li><li><code>opengrep</code> 1 dosyayı kısmen analiz etti.</li><li><code>opengrep</code> 1 dosyayı atladı.</li><li>1 dosyanın yolu çok uzun. Opengrep bu dosyaları atlayabilir.</li></ul>Ayrıntılar tam raporun 2.6 bölümünde.</dd><dt class="lbl">Uyarılar</dt><dd>1 uyarı var. Liste tam raporun A.4 bölümünde.</dd><dt class="lbl">Sınırlar</dt><dd><ul><li>PoC sandbox bu denetimde çalıştı. Etkiyi göstermeyen bir PoC açığın olmadığını kanıtlamaz.</li><li>Doğrulanmamış araç sonuçları ve SCA kayıtları bulgu sayılmaz.</li></ul></dd><dt class="lbl">Çıktılar</dt><dd><code>REPORT.md</code>, <code>REPORT.html</code>, <code>EXECUTIVE.html</code>, <code>findings.sarif</code>, <code>findings.json</code>, <code>sbom.cdx.json</code> (CycloneDX 1.6), <code>sbom.spdx.json</code> (SPDX 2.3), <code>summary.json</code></dd></dl>
+</section>
+</div><div>
+<section id="actions" aria-labelledby="h-actions"><h2 id="h-actions"><span class="num">7</span>Öncelikli aksiyonlar</h2>
+<p class="intro">En önemli bulguların düzeltmeleri, önem sırasıyla.</p>
+<ol class="actions"><li><div class="what"><span class="sev sev-high">Yüksek</span>Bağlanmış parametre kullan.</div><div class="why"><a href="REPORT.html#f-KF-CF0FB1E8E50E80FC">Kullanıcı aramasında SQL injection</a></div></li><li><div class="what"><span class="sev sev-medium">Orta</span>Hedef adresi bir allowlist ile sınırla.</div><div class="why"><a href="REPORT.html#f-KF-760073988BED4CB8">Görsel proxy&#x27;sinde SSRF</a></div></li></ol>
+</section>
+</div></div>
+<footer class="foot"><span>20261015T120000Z-shop-a1b2</span><span>kalkan 0.0.0-golden · 2026-10-15 12:30 UTC</span><span>Statik denetim. Rapor kalkan motoru tarafından üretildi.</span><span><a href="REPORT.html">Tam rapor: REPORT.html</a></span></footer>
+</main>
+<script>
+(function () {
+  var button = document.getElementById("theme-toggle");
+  if (!button) { return; }
+  var root = document.documentElement;
+  try {
+    var saved = window.localStorage.getItem("kalkan-theme");
+    if (saved === "light" || saved === "dark") { root.setAttribute("data-theme", saved); }
+  } catch (e) {}
+  button.hidden = false;
+  button.addEventListener("click", function () {
+    var current = root.getAttribute("data-theme");
+    var dark = current ? current === "dark"
+      : window.matchMedia("(prefers-color-scheme: dark)").matches;
+    var next = dark ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { window.localStorage.setItem("kalkan-theme", next); } catch (e) {}
+  });
+})();
+</script>
+</body>
+</html>

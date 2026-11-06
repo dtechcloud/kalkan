@@ -1,0 +1,94 @@
+# kalkan execpolicy rules for OpenAI Codex (docs/CODEX.md).
+#
+# Codex loads this file only when the kalkan folder is a trusted project. The rules follow
+# .claude/settings.json: the engine runs outside the sandbox, as under Claude Code, and the
+# network and push commands are forbidden.
+#
+# - Only `run step` and `task complete` run outside the sandbox. They run the scanners, update
+#   the vulnerability databases and start the Docker PoC sandbox. The other engine commands only
+#   write under runs/ and stay in the sandbox. `run init` stays in the sandbox too, so a git URL
+#   target must be cloned first: an allowed `run init` could send data to any URL.
+# - Codex compares the first token exactly, so each rule lists the path spellings of the engine.
+#   The skill writes `--run <run-id>` after the subcommand, so a prefix rule still matches.
+# - Codex runs Windows commands through PowerShell. Whether these rules match a PowerShell
+#   command line is untested.
+#
+# Written by hand. tests/unit/test_host_sync.py checks these rules against .claude/settings.json.
+
+prefix_rule(
+    pattern = [
+        [
+            ".venv/Scripts/kalkan.exe",
+            "./.venv/Scripts/kalkan.exe",
+            ".venv\\Scripts\\kalkan.exe",
+            ".\\.venv\\Scripts\\kalkan.exe",
+            ".venv/bin/kalkan",
+            "./.venv/bin/kalkan",
+        ],
+        "run",
+        "step",
+    ],
+    decision = "allow",
+    justification = "kalkan engine step: scanners, vulnerability databases and the PoC sandbox need access outside the Codex sandbox.",
+    match = [
+        ".venv/Scripts/kalkan.exe run step --json",
+        ".venv/bin/kalkan run step --json",
+        [".\\.venv\\Scripts\\kalkan.exe", "run", "step", "--json"],
+        ".venv/Scripts/kalkan.exe run step --run 20261016T151915Z-app-5fc6 --json",
+    ],
+    not_match = [
+        ".venv/Scripts/kalkan.exe run init https://example.com/app.git --json",
+        ".venv/Scripts/kalkan.exe run next --owner orchestrator --json",
+        "kalkan run step --json",
+    ],
+)
+
+prefix_rule(
+    pattern = [
+        [
+            ".venv/Scripts/kalkan.exe",
+            "./.venv/Scripts/kalkan.exe",
+            ".venv\\Scripts\\kalkan.exe",
+            ".\\.venv\\Scripts\\kalkan.exe",
+            ".venv/bin/kalkan",
+            "./.venv/bin/kalkan",
+        ],
+        "task",
+        "complete",
+    ],
+    decision = "allow",
+    justification = "kalkan task completion: a poc_build result starts the network-less Docker PoC sandbox.",
+    match = [
+        ".venv/Scripts/kalkan.exe task complete T0001-recon --json",
+        ".venv/bin/kalkan task complete T0042-poc_build --json",
+        ".venv/bin/kalkan task complete T0001-recon --run 20261016T151915Z-app-5fc6 --json",
+    ],
+    not_match = [
+        ".venv/Scripts/kalkan.exe task claim T0001-recon",
+        ".venv/Scripts/kalkan.exe task prompt T0001-recon",
+    ],
+)
+
+prefix_rule(
+    pattern = [["curl", "curl.exe"]],
+    decision = "forbidden",
+    justification = "No network during a kalkan audit. The engine fetches what it needs.",
+    match = ["curl https://example.com", "curl.exe -s https://example.com"],
+    not_match = ["curly", "rg curl"],
+)
+
+prefix_rule(
+    pattern = [["wget", "wget.exe"]],
+    decision = "forbidden",
+    justification = "No network during a kalkan audit. The engine fetches what it needs.",
+    match = ["wget https://example.com"],
+    not_match = ["rg wget"],
+)
+
+prefix_rule(
+    pattern = [["git", "git.exe"], "push"],
+    decision = "forbidden",
+    justification = "Never push to git during a kalkan audit.",
+    match = ["git push", "git push origin main", "git.exe push"],
+    not_match = ["git status", "git pull"],
+)

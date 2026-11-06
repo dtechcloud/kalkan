@@ -1,0 +1,20 @@
+trigger:
+  - main
+
+pr:
+  - main
+
+stages:
+  - stage: build
+    jobs:
+      - job: build
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          - script: echo "Building $(Build.SourceBranchName)"
+            displayName: Print the branch
+
+          - script: echo "Building $BRANCH_NAME"
+            displayName: Print the branch for the log
+            env:
+              BRANCH_NAME: $(Build.SourceBranchName)

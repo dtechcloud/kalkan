@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "slug": "jvm-spring-controller",
+  "description": "Spring controllers, mappings, and security config (gated on Spring)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{java,kt}"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "spring"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "@(?:Rest)?Controller\\b",
+      "flags": "",
+      "label": "@Controller / @RestController"
+    },
+    {
+      "regex": "@(?:Get|Post|Put|Patch|Delete|Request)Mapping\\b",
+      "flags": "",
+      "label": "@<Verb>Mapping"
+    },
+    {
+      "regex": "@PreAuthorize\\s*\\(",
+      "flags": "",
+      "label": "@PreAuthorize SpEL expression"
+    },
+    {
+      "regex": "\\.permitAll\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": ".permitAll() — opens public access"
+    },
+    {
+      "regex": "\\bantMatchers?\\s*\\(",
+      "flags": "",
+      "label": "antMatcher(...) auth scope"
+    }
+  ],
+  "examples": [
+    "@RestController",
+    "@Controller",
+    "@GetMapping(\"/users\")",
+    "@PostMapping(\"/login\")",
+    "@PutMapping",
+    "@PatchMapping(\"/items/{id}\")",
+    "@DeleteMapping(\"/items/{id}\")",
+    "@RequestMapping(value = \"/api\", method = RequestMethod.GET)",
+    "@PreAuthorize(\"hasRole('ADMIN')\")",
+    "http.authorizeRequests().antMatchers(\"/public/**\").permitAll();",
+    ".antMatcher(\"/admin/**\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/jvm-spring-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

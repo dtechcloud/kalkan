@@ -1,0 +1,98 @@
+{
+  "engine": "gitleaks-history",
+  "target_root": "/home/runner/work/kalkan/runs/20261015T120000Z-ab12/target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks-history.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-5F07A48B5C770BD4",
+      "engine": "gitleaks-history",
+      "rule_id": "aws-access-token",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms.",
+      "message": "aws-access-token has detected secret for file config/settings.py at commit 4f1c2d3e9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d.",
+      "file": "config/settings.py",
+      "start_line": 12,
+      "end_line": 12,
+      "snippet": "REDACTED",
+      "severity": "medium",
+      "tool_severity": "",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {
+        "commitSha": "4f1c2d3e9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d",
+        "email": "deniz@example.com",
+        "author": "Deniz Yılmaz",
+        "date": "2026-09-28T09:14:51Z",
+        "commitMessage": "add settings"
+      },
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks-history.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-56B98FF8E6116F11",
+      "engine": "gitleaks-history",
+      "rule_id": "private-key",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption.",
+      "message": "private-key has detected secret for file deploy/id_rsa at commit 9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c.",
+      "file": "deploy/id_rsa",
+      "start_line": 1,
+      "end_line": 27,
+      "snippet": "REDACTED",
+      "severity": "medium",
+      "tool_severity": "",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {
+        "commitSha": "9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c",
+        "email": "deniz@example.com",
+        "author": "Deniz Yılmaz",
+        "date": "2026-09-29T16:02:10Z",
+        "commitMessage": "deploy key for staging"
+      },
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks-history.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-E54DA31C4684C94C",
+      "engine": "gitleaks-history",
+      "rule_id": "generic-api-key",
+      "class": "hardcoded-secrets",
+      "cwe": [],
+      "title": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations.",
+      "message": "generic-api-key has detected secret for file app/notify.py at commit 9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c.",
+      "file": "app/notify.py",
+      "start_line": 8,
+      "end_line": 8,
+      "snippet": "REDACTED",
+      "severity": "medium",
+      "tool_severity": "",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {
+        "commitSha": "9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c",
+        "email": "deniz@example.com",
+        "author": "Deniz Yılmaz",
+        "date": "2026-09-29T16:02:10Z",
+        "commitMessage": "deploy key for staging"
+      },
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gitleaks-history.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    }
+  ]
+}

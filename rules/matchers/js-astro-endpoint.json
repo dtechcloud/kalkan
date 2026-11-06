@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "js-astro-endpoint",
+  "description": "Astro API endpoints and SSR routes (gated on Astro)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/pages/**/*.{ts,js}",
+    "**/pages/api/**/*.{ts,js}",
+    "**/src/pages/**/*.astro"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "astro"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"astro\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+(?:async\\s+)?(?:const|function)\\s+(GET|POST|PUT|PATCH|DELETE|ALL)\\b",
+      "flags": "",
+      "label": "Astro endpoint method export"
+    },
+    {
+      "regex": "\\bAstro\\.(?:request|cookies|params|url)\\b",
+      "flags": "",
+      "label": "Astro.* request accessor"
+    },
+    {
+      "regex": "\\bexport\\s+const\\s+prerender\\s*=",
+      "flags": "",
+      "label": "prerender flag (SSR / SSG split)"
+    },
+    {
+      "regex": "\\bSetCookie\\s*\\(|cookies\\.set\\s*\\(",
+      "flags": "",
+      "label": "cookie write — auth surface"
+    }
+  ],
+  "examples": [
+    "export const GET: APIRoute = async ({ request }) => {}",
+    "export async function POST({ request }) { return new Response(null) }",
+    "export const PUT = ({ request }) => {}",
+    "export function DELETE({ params }) {}",
+    "export const ALL: APIRoute = async ({ request }) => {}",
+    "const url = Astro.request.url",
+    "const token = Astro.cookies.get(\"session\")",
+    "const id = Astro.params.id",
+    "export const prerender = false",
+    "cookies.set(\"session\", value, { httpOnly: true })"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-astro-endpoint.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [astro]; kalkan uses tech node (or astro) and a manifest that names astro."
+}

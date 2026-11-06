@@ -1,0 +1,6 @@
+apiVersion: v2
+name: shop
+description: Kubernetes deployment of the vulnapp shop
+type: application
+version: 0.1.0
+appVersion: "1.4.2"

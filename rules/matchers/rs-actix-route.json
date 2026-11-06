@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "rs-actix-route",
+  "description": "Actix-web route attributes and service registrations (gated on Actix)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "actix"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\bactix-web\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "#\\[\\s*(?:get|post|put|patch|delete|head|options)\\s*\\(\\s*\"[^\"]+\"\\s*\\)",
+      "flags": "",
+      "label": "Actix route attribute"
+    },
+    {
+      "regex": "App::new\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "App::new() factory"
+    },
+    {
+      "regex": "\\.service\\s*\\(",
+      "flags": "",
+      "label": ".service(...) registration"
+    },
+    {
+      "regex": "\\bweb::scope\\s*\\(",
+      "flags": "",
+      "label": "web::scope() group"
+    },
+    {
+      "regex": "web::(?:Path|Query|Json|Form|Data)<[^>]+>",
+      "flags": "",
+      "label": "extractor (untrusted input)"
+    }
+  ],
+  "examples": [
+    "#[get(\"/users/{id}\")]",
+    "#[post(\"/login\")]",
+    "#[ delete ( \"/items/{id}\" ) ]",
+    "let app = App::new();",
+    "App::new().service(index)",
+    "cfg.service(index);",
+    "web::scope(\"/api/v1\")",
+    "async fn handler(path: web::Path<u32>) -> impl Responder {}",
+    "async fn create(payload: web::Json<UserDto>) {}",
+    "data: web::Data<AppState>"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-actix-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [actix]; kalkan uses tech rust (or actix) and a manifest that names actix."
+}

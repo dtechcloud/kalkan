@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "slug": "process-env-access",
+  "description": "Direct process.env access — check for fallbacks, leaks, and misuse",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}",
+    "**/*.lua",
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "process\\.env\\.(\\w+)|process\\.env\\[['\"](\\w+)['\"]\\]",
+      "flags": "",
+      "label": "process.env access"
+    }
+  ],
+  "examples": [
+    "const url = process.env.DATABASE_URL;",
+    "const key = process.env.API_KEY ?? \"fallback\";",
+    "if (process.env.NODE_ENV === \"development\") doStuff();",
+    "const cfg = process.env[\"MY_VAR\"];",
+    "const secret = process.env['SESSION_SECRET'];"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/process-env-access.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Inventory of process.env reads. The deepsec label names the variable; the port uses one fixed label."
+}

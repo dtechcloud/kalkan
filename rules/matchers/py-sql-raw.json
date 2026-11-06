@@ -1,0 +1,119 @@
+{
+  "version": 1,
+  "slug": "py-sql-raw",
+  "description": "Raw SQL across popular Python DB drivers (SQLAlchemy, psycopg, pymysql, sqlite3, asyncpg, Django ORM raw) — f-string / %-format / .format / + interpolation is SQL injection",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bengine\\.execute\\s*\\(\\s*(?:text\\s*\\(\\s*)?f['\"]",
+      "flags": "",
+      "label": "SQLAlchemy engine.execute with f-string — SQL injection"
+    },
+    {
+      "regex": "\\bsession\\.execute\\s*\\(\\s*(?:text\\s*\\(\\s*)?f['\"]",
+      "flags": "",
+      "label": "SQLAlchemy session.execute with f-string — SQL injection"
+    },
+    {
+      "regex": "\\btext\\s*\\(\\s*f['\"]",
+      "flags": "",
+      "label": "SQLAlchemy text() with f-string — bypasses parameterization"
+    },
+    {
+      "regex": "\\bsession\\.execute\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*%",
+      "flags": "",
+      "label": "SQLAlchemy session.execute with %-formatting — SQL injection"
+    },
+    {
+      "regex": "\\bcursor\\.execute\\s*\\(\\s*f['\"]",
+      "flags": "",
+      "label": "cursor.execute with f-string — SQL injection"
+    },
+    {
+      "regex": "\\bcursor\\.execute\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*%",
+      "flags": "",
+      "label": "cursor.execute with %-formatting — SQL injection"
+    },
+    {
+      "regex": "\\bcursor\\.execute\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.format\\s*\\(",
+      "flags": "",
+      "label": "cursor.execute with .format() — SQL injection"
+    },
+    {
+      "regex": "\\bcursor\\.execute\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\+",
+      "flags": "",
+      "label": "cursor.execute with string concatenation — SQL injection"
+    },
+    {
+      "regex": "\\bawait\\s+conn\\.(?:execute|fetch|fetchrow|fetchval)\\s*\\(\\s*f['\"]",
+      "flags": "",
+      "label": "asyncpg conn.execute/fetch* with f-string — SQL injection"
+    },
+    {
+      "regex": "\\b\\w+\\.objects\\.raw\\s*\\(\\s*f['\"]",
+      "flags": "",
+      "label": "Django Model.objects.raw with f-string — SQL injection"
+    },
+    {
+      "regex": "\\b\\w+\\.objects\\.raw\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*%",
+      "flags": "",
+      "label": "Django Model.objects.raw with %-formatting — SQL injection"
+    },
+    {
+      "regex": "\\b\\w+\\.objects\\.extra\\s*\\(\\s*where\\s*=\\s*\\[\\s*f?['\"]",
+      "flags": "",
+      "label": "Django Model.objects.extra(where=...) — string-built WHERE clause"
+    },
+    {
+      "regex": "\\bconnection\\.cursor\\(\\)\\.execute\\s*\\(\\s*f['\"]",
+      "flags": "",
+      "label": "Django connection.cursor().execute with f-string — SQL injection"
+    },
+    {
+      "regex": "\\bdb\\.execute\\s*\\(\\s*f['\"]\\s*(?:SELECT|INSERT|UPDATE|DELETE)",
+      "flags": "",
+      "label": "db.execute with f-string SQL — SQL injection"
+    }
+  ],
+  "examples": [
+    "cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
+    "cursor.execute(\"SELECT * FROM users WHERE id = %s\" % user_id)",
+    "cursor.execute(\"DELETE FROM x WHERE y = '\" + name + \"'\")",
+    "cursor.execute(\"SELECT * FROM t WHERE col = '{}'\".format(val))",
+    "engine.execute(text(f\"SELECT * FROM users WHERE name = '{name}'\"))",
+    "session.execute(f\"UPDATE users SET role = '{role}'\")",
+    "text(f\"SELECT id FROM users WHERE email = '{email}'\")",
+    "User.objects.raw(f\"SELECT * FROM users WHERE name = '{name}'\")",
+    "User.objects.extra(where=[f\"name = '{name}'\"])",
+    "await conn.execute(f\"DELETE FROM users WHERE id = {user_id}\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-sql-raw.ts"
+  },
+  "notes": ""
+}

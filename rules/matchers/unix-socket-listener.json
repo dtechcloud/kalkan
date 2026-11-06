@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "slug": "unix-socket-listener",
+  "description": "Unix-socket / vsock listener setup (incl. umask + auto-recreate patterns)",
+  "class": "mobile-desktop-ipc",
+  "cwe": [
+    "CWE-732"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go",
+    "**/gen/**"
+  ],
+  "requires": {
+    "tech": [
+      "go"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bnet\\.Listen\\s*\\(\\s*\"unix(?:packet|gram)?\"",
+      "flags": "",
+      "label": "net.Listen unix socket"
+    },
+    {
+      "regex": "\\bnet\\.ListenUnix\\s*\\(",
+      "flags": "",
+      "label": "net.ListenUnix"
+    },
+    {
+      "regex": "\\bvsock\\.(?:Listen|Dial|ListenContextID)\\s*\\(",
+      "flags": "",
+      "label": "vsock listener/dial"
+    },
+    {
+      "regex": "\\bnet\\.ListenPacket\\s*\\(\\s*\"unix",
+      "flags": "",
+      "label": "net.ListenPacket unix"
+    },
+    {
+      "regex": "\\bsyscall\\.Umask\\s*\\(",
+      "flags": "",
+      "label": "syscall.Umask (socket perm)"
+    },
+    {
+      "regex": "\\bos\\.(?:Remove|RemoveAll)\\s*\\([^)]*[Ss]ocket",
+      "flags": "",
+      "label": "socket file removal"
+    },
+    {
+      "regex": "\\bfsnotify\\.\\w+|inotify\\.|watcher\\.Add\\s*\\(",
+      "flags": "",
+      "label": "filesystem watcher"
+    }
+  ],
+  "examples": [
+    "l, err := net.Listen(\"unix\", \"/var/run/app.sock\")",
+    "l, err := net.Listen(\"unixpacket\", path)",
+    "l, err := net.ListenUnix(\"unix\", addr)",
+    "l, err := vsock.Listen(uint32(port), nil)",
+    "conn, err := vsock.Dial(cid, port, nil)",
+    "pc, err := net.ListenPacket(\"unix\", path)",
+    "oldMask := syscall.Umask(0177)",
+    "os.Remove(socketPath)",
+    "watcher.Add(\"/var/run\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/unix-socket-listener.ts"
+  },
+  "notes": ""
+}

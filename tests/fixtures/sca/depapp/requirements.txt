@@ -1,0 +1,4 @@
+# kalkan depapp fixture: versions with well-known advisories. Never install or deploy.
+PyYAML==5.3
+Jinja2==2.10.1
+requests==2.19.1

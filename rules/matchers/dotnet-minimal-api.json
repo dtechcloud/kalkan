@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "slug": "dotnet-minimal-api",
+  "description": "ASP.NET Core minimal-API endpoint mappings (gated on .NET)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.cs"
+  ],
+  "exclude_file_patterns": [
+    "**/{Tests,UnitTests,IntegrationTests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "dotnet"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bapp\\.Map(?:Get|Post|Put|Patch|Delete|Methods)\\s*\\(",
+      "flags": "",
+      "label": "app.Map<Verb> registration"
+    },
+    {
+      "regex": "\\.RequireAuthorization\\s*\\(",
+      "flags": "",
+      "label": ".RequireAuthorization() — auth gate"
+    },
+    {
+      "regex": "\\.AllowAnonymous\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": ".AllowAnonymous() — public route"
+    },
+    {
+      "regex": "\\bWebApplication\\.CreateBuilder\\s*\\(",
+      "flags": "",
+      "label": "WebApplication.CreateBuilder() init"
+    }
+  ],
+  "examples": [
+    "app.MapGet(\"/users\", () => users);",
+    "app.MapPost(\"/login\", (LoginDto body) => Login(body));",
+    "app.MapPut(\"/items/{id}\", UpdateItem);",
+    "app.MapPatch(\"/items/{id}\", PatchItem);",
+    "app.MapDelete(\"/items/{id}\", DeleteItem);",
+    "app.MapMethods(\"/api\", new[] { \"GET\", \"POST\" }, Handler);",
+    "app.MapGet(\"/admin\", AdminHandler).RequireAuthorization();",
+    "app.MapGet(\"/public\", PublicHandler).AllowAnonymous();",
+    "var builder = WebApplication.CreateBuilder(args);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dotnet-minimal-api.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

@@ -1,0 +1,11 @@
+[
+  {
+    "message": "\"github.event.issue.title\" is potentially untrusted. avoid using it directly in inline scripts. instead, pass it through an environment variable. see https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks for more details",
+    "filepath": ".github/workflows/issue-triage.yml",
+    "line": 18,
+    "column": 40,
+    "kind": "expression",
+    "snippet": "        run: |",
+    "end_column": 40
+  }
+]

@@ -1,0 +1,51 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+#
+# Run or resume a kalkan audit unattended with the engine of the Claude Code plugin
+# (docs/PLUGIN.md, "Unattended runs").
+#
+# Usage: sh kalkan-unattended <target> [--profile fast|standard|deep] [--no-latest] [options]
+#        sh kalkan-unattended devam [<run-id> | --run <run-id>] [options]
+#
+# The script runs `kalkan unattended` of the plugin venv with all its arguments (--run included)
+# and passes the exit code through. kalkan unattended creates the run of a new target, then
+# starts `claude -p "/kalkan:kalkan devam <run-id> --headless"` in rounds from the runs folder
+# (~/kalkan-runs), waits through usage-limit resets, and stops when the audit is done (exit code
+# 0), incomplete (exit code 1) or after --max-hours (exit code 1). Every round names its run, so
+# one terminal per audit can run at the same time. `devam` without a run ID resumes the newest
+# run (runs/LATEST). A relative target path is relative to your current folder. All options:
+# kalkan-unattended --help
+#
+# kalkan-setup copies this script to <plugin data folder>/bin/kalkan-unattended. That path stays
+# the same after a plugin update (the plugin folder has the version in its path), so start the
+# copy from a terminal. The script finds the plugin data folder in this order:
+#   1. the parent of its own folder, when that folder holds venv/ (the copy in <data>/bin);
+#   2. CLAUDE_PLUGIN_DATA, when it is set.
+# Works in sh on Linux and macOS and in Git Bash on Windows. PowerShell and cmd on Windows use
+# kalkan-unattended.cmd next to this script.
+
+set -eu
+
+fail() {
+    printf 'kalkan-unattended: error: %s\n' "$*" >&2
+    exit 1
+}
+
+parent=$(dirname -- "$(dirname -- "$0")")
+if [ -d "$parent/venv" ]; then
+    data=$parent
+elif [ -n "${CLAUDE_PLUGIN_DATA:-}" ]; then
+    data=$CLAUDE_PLUGIN_DATA
+else
+    fail "cannot find the kalkan plugin data folder. Type /kalkan unattended in Claude Code once: it installs the engine and this command, and prints the kalkan-audit command that starts an audit. With a marketplace install it is: sh ~/.claude/plugins/data/kalkan-kalkan/bin/kalkan-unattended <target>"
+fi
+
+if [ -f "$data/venv/Scripts/kalkan.exe" ]; then
+    engine=$data/venv/Scripts/kalkan.exe
+elif [ -x "$data/venv/bin/kalkan" ]; then
+    engine=$data/venv/bin/kalkan
+else
+    fail "the kalkan engine is missing in $data/venv. Type /kalkan unattended in Claude Code once: it installs the engine. Then start this command again."
+fi
+
+exec "$engine" unattended "$@"

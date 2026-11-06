@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "slug": "rs-lambda-runtime",
+  "description": "Rust AWS Lambda handlers via lambda_runtime (gated on lambda-rs)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "lambda-rs"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\blambda_(?:runtime|http)\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\blambda_runtime::run\\s*\\(\\s*service_fn\\s*\\(",
+      "flags": "",
+      "label": "lambda_runtime::run(service_fn(handler))"
+    },
+    {
+      "regex": "\\bLambdaEvent<[^>]+>",
+      "flags": "",
+      "label": "LambdaEvent shape"
+    },
+    {
+      "regex": "\\baws_lambda_events::",
+      "flags": "",
+      "label": "AWS event types (APIGatewayProxyRequest, etc.)"
+    }
+  ],
+  "examples": [
+    "lambda_runtime::run(service_fn(handler)).await?;",
+    "lambda_runtime::run( service_fn ( my_handler ) ).await?;",
+    "async fn handler(event: LambdaEvent<Request>) -> Result<Response, Error> {}",
+    "let event: LambdaEvent<ApiGatewayProxyRequest> = e;",
+    "use aws_lambda_events::event::apigw::ApiGatewayProxyRequest;",
+    "aws_lambda_events::sqs::SqsEvent"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-lambda-runtime.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [lambda-rs]; kalkan uses tech rust (or lambda-rs) and a manifest that names lambda-rs."
+}

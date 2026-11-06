@@ -1,0 +1,26 @@
+{
+  "id": "CAND-0123456789ABCDEF",
+  "engine": "opengrep",
+  "rule_id": "kalkan.python.sqli.string-format",
+  "class": "sqli",
+  "cwe": ["CWE-89"],
+  "title": "SQL query built with string formatting",
+  "message": "User input reaches cursor.execute through an f-string.",
+  "file": "app/db.py",
+  "start_line": 42,
+  "end_line": 43,
+  "snippet": "cursor.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
+  "severity": "high",
+  "tool_severity": "ERROR",
+  "confidence": "medium",
+  "tags": ["security", "external/cwe/cwe-89"],
+  "fingerprints": {
+    "matchBasedId/v1": "4f1c0e6b9a"
+  },
+  "sca": null,
+  "raw": {
+    "sarif_file": "scans/opengrep.sarif",
+    "run_index": 0,
+    "result_index": 3
+  }
+}

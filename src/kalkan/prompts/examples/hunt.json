@@ -1,0 +1,95 @@
+{
+  "task_id": "T0007-hunt",
+  "units": [
+    {
+      "coverage_id": "U0003",
+      "status": "candidate",
+      "checks": [
+        {
+          "reviewed_paths": [
+            "app/routes.py",
+            "app/db.py"
+          ],
+          "invariant": "User input never reaches SQL text without parameter binding.",
+          "result": "The id parameter is formatted into the SQL string in find_user."
+        }
+      ],
+      "notes": "",
+      "unresolved": []
+    },
+    {
+      "coverage_id": "U0004",
+      "status": "covered",
+      "checks": [
+        {
+          "reviewed_paths": [
+            "app/routes.py"
+          ],
+          "invariant": "Every user lookup checks that the caller owns the record.",
+          "result": "The handler compares the session user with the requested ID."
+        }
+      ],
+      "notes": "",
+      "unresolved": []
+    }
+  ],
+  "candidates": [
+    {
+      "coverage_id": "U0003",
+      "title": "SQL injection in user lookup",
+      "class": "sqli",
+      "cwe": [
+        "CWE-89"
+      ],
+      "description": "The id query parameter is formatted into a SQL statement.",
+      "claimed_root_cause": "find_user builds the query with an f-string instead of a bound parameter.",
+      "trace": [
+        {
+          "kind": "entrypoint",
+          "file": "app/routes.py",
+          "line": 12,
+          "scope": "get_user",
+          "description": "Reads id from the query string."
+        },
+        {
+          "kind": "sink",
+          "file": "app/db.py",
+          "line": 8,
+          "scope": "find_user",
+          "description": "Executes the formatted SQL text."
+        }
+      ],
+      "evidence": [
+        {
+          "file": "app/db.py",
+          "line": 8,
+          "quote": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")"
+        }
+      ],
+      "suggested_severity": {
+        "likelihood": "high",
+        "impact": "high"
+      },
+      "dynamic_test": "GET /users?id=1%20OR%201=1 returns every row.",
+      "related_candidates": []
+    }
+  ],
+  "hardening": [
+    {
+      "title": "Container runs as root",
+      "file": "Dockerfile",
+      "line": null,
+      "note": "Add a USER line."
+    }
+  ],
+  "uncovered": [
+    {
+      "surface_id": "GET /admin/export",
+      "class": "missing-authz",
+      "reason": "The export route shares the user handler but no unit covers it.",
+      "starting_paths": [
+        "app/admin.py"
+      ]
+    }
+  ]
+}

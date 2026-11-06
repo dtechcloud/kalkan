@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "xss",
+  "description": "Unsafe innerHTML, dangerouslySetInnerHTML, template injection patterns",
+  "class": "xss",
+  "cwe": [
+    "CWE-79"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,html,ejs,hbs}"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "dangerouslySetInnerHTML",
+      "flags": "",
+      "label": "dangerouslySetInnerHTML"
+    },
+    {
+      "regex": "\\.innerHTML\\s*=",
+      "flags": "",
+      "label": "innerHTML assignment"
+    },
+    {
+      "regex": "\\.outerHTML\\s*=",
+      "flags": "",
+      "label": "outerHTML assignment"
+    },
+    {
+      "regex": "document\\.write\\s*\\(",
+      "flags": "",
+      "label": "document.write"
+    },
+    {
+      "regex": "\\$\\{[^}]{0,200}\\}.{0,120}</?\\w+>|<\\w+[^>]{0,200}\\$\\{",
+      "flags": "",
+      "label": "template literal in HTML"
+    },
+    {
+      "regex": "v-html\\s*=",
+      "flags": "",
+      "label": "Vue v-html directive"
+    },
+    {
+      "regex": "\\[innerHTML\\]\\s*=",
+      "flags": "",
+      "label": "Angular innerHTML binding"
+    }
+  ],
+  "examples": [
+    "<div dangerouslySetInnerHTML={{ __html: x }} />",
+    "el.innerHTML = userInput;",
+    "node.outerHTML = data;",
+    "document.write(payload);",
+    "const html = `<p>${value}</p>`;",
+    "<div v-html=\"raw\" />",
+    "<span [innerHTML]=\"bound\"></span>"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/xss.ts"
+  },
+  "notes": ""
+}

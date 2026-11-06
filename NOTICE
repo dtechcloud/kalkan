@@ -1,0 +1,64 @@
+kalkan
+Copyright (c) 2026 The kalkan authors
+
+kalkan is licensed under the MIT License (see LICENSE).
+
+This product includes software and content from the projects below.
+Files under third_party/ and files with a different SPDX header keep their
+upstream license. See THIRD_PARTY.md for details.
+
+------------------------------------------------------------------------
+deepsec (Apache-2.0) - https://github.com/vercel-labs/deepsec
+------------------------------------------------------------------------
+deepsec
+Copyright 2026 Vercel, Inc. and contributors
+
+This product includes software developed at Vercel, Inc.
+(https://vercel.com/).
+
+------------------------------------------------------------------------
+codecrucible (Apache-2.0) - https://github.com/block/codecrucible
+------------------------------------------------------------------------
+Copyright 2026 Block, Inc.
+
+The codecrucible prompt set "nano-analyzer" is adapted from
+weareaisle/nano-analyzer (Apache-2.0, AISLE).
+
+------------------------------------------------------------------------
+open-code-review (Apache-2.0) - https://github.com/alibaba/open-code-review
+------------------------------------------------------------------------
+Copyright 2026 alibaba/open-code-review Contributors
+
+------------------------------------------------------------------------
+retire.js (Apache-2.0) - https://github.com/RetireJS/retire.js
+------------------------------------------------------------------------
+Copyright 2018 Erlend Oftedal
+
+------------------------------------------------------------------------
+security-audit-skill (MIT) - https://github.com/cloudflare/security-audit-skill
+------------------------------------------------------------------------
+Copyright (c) 2025-2026 Cloudflare, Inc.
+
+------------------------------------------------------------------------
+sast-skills (MIT) - https://github.com/utkusen/sast-skills
+------------------------------------------------------------------------
+Copyright (c) 2026 Utku Sen
+
+------------------------------------------------------------------------
+Opengrep rule packs (third_party/ and rules/opengrep-packs/)
+------------------------------------------------------------------------
+The rule packs keep their upstream licenses; see THIRD_PARTY.md and the
+license files in each third_party/ folder. The bundle files in
+rules/opengrep-packs/ were changed by kalkan on 2026-10-25: the rules of
+several upstream files are joined into one file and re-indented.
+
+GitLab sast-rules (MIT and LGPL-3.0-only, by file) -
+https://gitlab.com/gitlab-org/security-products/sast-rules
+Copyright (c) 2011-present GitLab Inc.
+
+0xdea semgrep-rules (MIT) - https://github.com/0xdea/semgrep-rules
+Copyright (c) 2022 raptor
+
+Trail of Bits semgrep-rules (AGPL-3.0-only) -
+https://github.com/trailofbits/semgrep-rules
+The rules are licensed under AGPLv3 (third_party/trailofbits-semgrep-rules/LICENSE).

@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "go-ssrf",
+  "description": "Go HTTP requests with string-concatenated or formatted URLs — SSRF risk",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "http\\.(Get|Post|Head)\\s*\\(.*\\+",
+      "flags": "",
+      "label": "http.Get/Post with string concat URL"
+    },
+    {
+      "regex": "http\\.NewRequest\\s*\\(.*fmt\\.Sprintf",
+      "flags": "",
+      "label": "http.NewRequest with formatted URL"
+    },
+    {
+      "regex": "http\\.NewRequest\\s*\\(.*\\+",
+      "flags": "",
+      "label": "http.NewRequest with concatenated URL"
+    },
+    {
+      "regex": "url\\.Parse\\s*\\(.*\\+",
+      "flags": "",
+      "label": "url.Parse with concatenated string"
+    },
+    {
+      "regex": "fmt\\.Sprintf\\s*\\(\\s*\"https?://",
+      "flags": "",
+      "label": "URL built via fmt.Sprintf"
+    }
+  ],
+  "examples": [
+    "resp, err := http.Get(baseURL + path)",
+    "resp, err := http.Post(host + \"/api\", \"application/json\", body)",
+    "resp, err := http.Head(\"https://\" + target)",
+    "req, err := http.NewRequest(\"GET\", fmt.Sprintf(\"https://%s/api\", host), nil)",
+    "req, err := http.NewRequest(\"POST\", baseURL + path, body)",
+    "u, err := url.Parse(scheme + \"://\" + host)",
+    "endpoint := fmt.Sprintf(\"https://api.example.com/users/%s\", userID)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-ssrf.ts"
+  },
+  "notes": ""
+}

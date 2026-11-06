@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "slug": "unsafe-json-in-html",
+  "description": "JSON.stringify into dangerouslySetInnerHTML or script tags — </script> injection risk",
+  "class": "xss",
+  "cwe": [
+    "CWE-79"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{tsx,jsx,ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "react"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "JSON\\.stringify",
+      "flags": "",
+      "label": "JSON.stringify into dangerouslySetInnerHTML/script — use safeJsonStringify to escape </script>",
+      "near": [
+        {
+          "regex": "dangerouslySetInnerHTML|<script",
+          "before": 3,
+          "after": 2
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "safeJsonStringify",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "JSON\\.stringify",
+      "flags": "",
+      "label": "JSON.stringify near HTML injection point (safeJsonStringify in scope — verify usage)",
+      "near": [
+        {
+          "regex": "dangerouslySetInnerHTML|<script",
+          "before": 3,
+          "after": 2
+        },
+        {
+          "regex": "safeJsonStringify",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "dangerouslySetInnerHTML",
+      "flags": "",
+      "label": "dangerouslySetInnerHTML with JSON.stringify — XSS via </script> in data",
+      "near": [
+        {
+          "regex": "JSON\\.stringify",
+          "before": 3,
+          "after": 2
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "safeJsonStringify",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "dangerouslySetInnerHTML",
+      "flags": "",
+      "label": "dangerouslySetInnerHTML with JSON data (safeJsonStringify in scope)",
+      "near": [
+        {
+          "regex": "JSON\\.stringify",
+          "before": 3,
+          "after": 2
+        },
+        {
+          "regex": "safeJsonStringify",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "<div dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }} />",
+    "return <script dangerouslySetInnerHTML={{ __html: 'window.__DATA__ = ' + JSON.stringify(state) }} />",
+    "const html = '<script>window.X = ' + JSON.stringify(payload) + '</script>'",
+    "return (\n  <script>\n    {'window.STATE = ' + JSON.stringify(state)}\n  </script>\n)",
+    "const json = JSON.stringify(props);\nreturn <div dangerouslySetInnerHTML={{ __html: json }} />",
+    "import { safeJsonStringify } from './util';\nconst payload = JSON.stringify(state);\nreturn <script dangerouslySetInnerHTML={{ __html: 'window.X = ' + payload }} />"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-react-unsafe-json-in-html.ts"
+  },
+  "notes": ""
+}

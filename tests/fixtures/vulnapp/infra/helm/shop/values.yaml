@@ -1,0 +1,11 @@
+web:
+  replicas: 2
+  image: registry.vulnapp.internal/shop-web:1.4.2
+  hostNetwork: false
+  privileged: false
+
+logAgent:
+  enabled: true
+  image: registry.vulnapp.internal/log-agent:2.1.0
+  hostNetwork: true
+  privileged: true

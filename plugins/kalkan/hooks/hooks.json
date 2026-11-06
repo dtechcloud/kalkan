@@ -1,0 +1,241 @@
+{
+  "description": "kalkan: allow the kalkan engine commands, the subagent result files and reads in the kalkan folders; confine the kalkan subagents to their run; deny network tools in a session while it runs a kalkan audit. Every other call follows the normal permission flow.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "Bash(*kalkan*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\"",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*curl*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-curl",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*wget*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-wget",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*http*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-http",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*ftp*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-ftp",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*ssh *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-ssh",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*scp *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-scp",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*nc *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-nc",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*ncat *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-ncat",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*telnet *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-telnet",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*rsync *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-rsync",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*git push*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-git-push",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*git fetch*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-git-fetch",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*git pull*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-git-pull",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*git clone*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-git-clone",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*git ls-remote*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-git-ls-remote",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*Invoke-WebRequest*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-invoke-webrequest",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*Invoke-RestMethod*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-invoke-restmethod",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*pip install*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-pip-install",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "Bash(*npm install*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" bash-npm-install",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "if": "PowerShell(*http*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-http",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*ftp*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-ftp",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*curl*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-curl",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*wget*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-wget",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*Invoke-WebRequest*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-invoke-webrequest",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*Invoke-RestMethod*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-invoke-restmethod",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*iwr *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-iwr",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*irm *)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-irm",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*WebClient*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-webclient",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*BitsTransfer*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-bitstransfer",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*git push*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-git-push",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*git fetch*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-git-fetch",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*git pull*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-git-pull",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "if": "PowerShell(*git clone*)",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" ps-git-clone",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Read|Grep|Glob|NotebookEdit|WebFetch|WebSearch",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\"",
+            "timeout": 30
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh\" mcp",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}

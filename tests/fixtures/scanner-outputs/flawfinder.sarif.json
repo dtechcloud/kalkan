@@ -1,0 +1,504 @@
+{
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Flawfinder",
+          "version": "2.0.20",
+          "informationUri": "https://dwheeler.com/flawfinder/",
+          "rules": [
+            {
+              "id": "FF1013",
+              "name": "buffer/char",
+              "shortDescription": {
+                "text": "Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/119.html",
+              "relationships": [
+                {
+                  "target": {
+                    "id": "CWE-119",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "incomparable"
+                  ]
+                },
+                {
+                  "target": {
+                    "id": "CWE-120",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "relevant"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "FF1001",
+              "name": "buffer/strcpy",
+              "shortDescription": {
+                "text": "Does not check for buffer overflows when copying to destination [MS-banned] (CWE-120)."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/120.html",
+              "relationships": [
+                {
+                  "target": {
+                    "id": "CWE-120",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "relevant"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "FF1019",
+              "name": "format/snprintf",
+              "shortDescription": {
+                "text": "If format strings can be influenced by an attacker, they can be exploited, and note that sprintf variations do not always \\0-terminate (CWE-134)."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/134.html",
+              "relationships": [
+                {
+                  "target": {
+                    "id": "CWE-134",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "relevant"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "FF1015",
+              "name": "buffer/sprintf",
+              "shortDescription": {
+                "text": "Does not check for buffer overflows (CWE-120)."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/120.html",
+              "relationships": [
+                {
+                  "target": {
+                    "id": "CWE-120",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "relevant"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "FF1014",
+              "name": "buffer/gets",
+              "shortDescription": {
+                "text": "Does not check for buffer overflows (CWE-120, CWE-20)."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://cwe.mitre.org/data/definitions/120.html",
+              "relationships": [
+                {
+                  "target": {
+                    "id": "CWE-120",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "relevant"
+                  ]
+                },
+                {
+                  "target": {
+                    "id": "CWE-20",
+                    "toolComponent": {
+                      "name": "CWE",
+                      "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+                    }
+                  },
+                  "kinds": [
+                    "relevant"
+                  ]
+                }
+              ]
+            }
+          ],
+          "supportedTaxonomies": [
+            {
+              "name": "CWE",
+              "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+            }
+          ]
+        }
+      },
+      "columnKind": "utf16CodeUnits",
+      "results": [
+        {
+          "ruleId": "FF1013",
+          "level": "note",
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 5,
+                  "endColumn": 18,
+                  "snippet": {
+                    "text": "    char buf[32];"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "917f6ed0ae72790ae84d5546f1fd6d51df65d8cc348e82b8bf2389e3a4b61c78"
+          },
+          "rank": 0.4
+        },
+        {
+          "ruleId": "FF1001",
+          "level": "error",
+          "message": {
+            "text": "buffer/strcpy:Does not check for buffer overflows when copying to destination [MS-banned] (CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 5,
+                  "endColumn": 23,
+                  "snippet": {
+                    "text": "    strcpy(buf, name);"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "e3df27891f2454929855923c7ab869c6a11ab7c0b290554a892eab980ae76094"
+          },
+          "rank": 0.8
+        },
+        {
+          "ruleId": "FF1013",
+          "level": "note",
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 5,
+                  "endColumn": 18,
+                  "snippet": {
+                    "text": "    char buf[32];"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "917f6ed0ae72790ae84d5546f1fd6d51df65d8cc348e82b8bf2389e3a4b61c78"
+          },
+          "rank": 0.4
+        },
+        {
+          "ruleId": "FF1019",
+          "level": "note",
+          "message": {
+            "text": "format/snprintf:If format strings can be influenced by an attacker, they can be exploited, and note that sprintf variations do not always \\0-terminate (CWE-134)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 15,
+                  "startColumn": 5,
+                  "endColumn": 43,
+                  "snippet": {
+                    "text": "    snprintf(buf, sizeof buf, \"%s\", name);"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "59e6077f9905e70874565727b8f9debcb8613716a5fcca820f2445ef419ad5f2"
+          },
+          "rank": 0.0
+        },
+        {
+          "ruleId": "FF1013",
+          "level": "note",
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 5,
+                  "endColumn": 20,
+                  "snippet": {
+                    "text": "    char label[64];"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "a1b71d42153334ed0a09ee7b1539fa4f12cdda74cb078d3f6e57eed61b18f9a4"
+          },
+          "rank": 0.4
+        },
+        {
+          "ruleId": "FF1015",
+          "level": "error",
+          "message": {
+            "text": "buffer/sprintf:Does not check for buffer overflows (CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 22,
+                  "startColumn": 5,
+                  "endColumn": 42,
+                  "snippet": {
+                    "text": "    sprintf(label, \"customer: %s\", name);"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "199ee7b3e9236ddda48ef810e6327af92f6fb1f94af447228f55d615b4aeb52e"
+          },
+          "rank": 0.8
+        },
+        {
+          "ruleId": "FF1013",
+          "level": "note",
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 5,
+                  "endColumn": 20,
+                  "snippet": {
+                    "text": "    char label[64];"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "a1b71d42153334ed0a09ee7b1539fa4f12cdda74cb078d3f6e57eed61b18f9a4"
+          },
+          "rank": 0.4
+        },
+        {
+          "ruleId": "FF1019",
+          "level": "note",
+          "message": {
+            "text": "format/snprintf:If format strings can be influenced by an attacker, they can be exploited, and note that sprintf variations do not always \\0-terminate (CWE-134)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 5,
+                  "endColumn": 57,
+                  "snippet": {
+                    "text": "    snprintf(label, sizeof label, \"customer: %s\", name);"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "1f858f034dbfbe7b8450788d9eee4ae50fc84728c720bd5055c2f4cde0b3fa60"
+          },
+          "rank": 0.0
+        },
+        {
+          "ruleId": "FF1013",
+          "level": "note",
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 5,
+                  "endColumn": 20,
+                  "snippet": {
+                    "text": "    char note[128];"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "924f643cb2d340488e13b9287a571762ab1f33a46f37053b87f99d5267020910"
+          },
+          "rank": 0.4
+        },
+        {
+          "ruleId": "FF1014",
+          "level": "error",
+          "message": {
+            "text": "buffer/gets:Does not check for buffer overflows (CWE-120, CWE-20)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 36,
+                  "startColumn": 5,
+                  "endColumn": 16,
+                  "snippet": {
+                    "text": "    gets(note);"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "dab4085c1ccabb90923ce10205c994ebd8ab606d1efa2f39c5444849285ab2f3"
+          },
+          "rank": 1.0
+        },
+        {
+          "ruleId": "FF1013",
+          "level": "note",
+          "message": {
+            "text": "buffer/char:Statically-sized arrays can be improperly restricted, leading to potential overflows or other issues (CWE-119!/CWE-120)."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "@TARGET@/native/labels.c",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 42,
+                  "startColumn": 5,
+                  "endColumn": 20,
+                  "snippet": {
+                    "text": "    char note[128];"
+                  }
+                }
+              }
+            }
+          ],
+          "fingerprints": {
+            "contextHash/v1": "924f643cb2d340488e13b9287a571762ab1f33a46f37053b87f99d5267020910"
+          },
+          "rank": 0.4
+        }
+      ],
+      "externalPropertyFileReferences": {
+        "taxonomies": [
+          {
+            "location": {
+              "uri": "https://raw.githubusercontent.com/sarif-standard/taxonomies/main/CWE_v4.4.sarif"
+            },
+            "guid": "FFC64C90-42B6-44CE-8BEB-F6B7DAE649E5"
+          }
+        ]
+      }
+    }
+  ]
+}

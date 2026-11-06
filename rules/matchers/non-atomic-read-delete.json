@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "slug": "non-atomic-read-delete",
+  "description": "Non-atomic read-then-delete/update — TOCTOU race conditions",
+  "class": "race-condition",
+  "cwe": [
+    "CWE-367"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "redis\\.(get|hget|hgetall)\\s*\\(",
+      "flags": "",
+      "label": "Redis get-then-delete/set without transaction — TOCTOU race",
+      "near": [
+        {
+          "regex": "redis\\.(del|hdel|set|hset|expire)\\s*\\(",
+          "after": 9
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "\\.multi\\s*\\(|\\.pipeline\\s*\\(|\\.transaction\\s*\\(|WATCH",
+          "before": 5,
+          "after": 14
+        }
+      ]
+    },
+    {
+      "regex": "\\b(SELECT|findFirst|findUnique|findOne)\\b",
+      "flags": "i",
+      "label": "Read-then-modify without transaction — potential TOCTOU race",
+      "near": [
+        {
+          "regex": "\\b(DELETE|UPDATE|destroy|remove|deleteMany)\\b",
+          "flags": "i",
+          "after": 14
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "\\$transaction\\s*\\(|BEGIN|SERIALIZABLE|\\.transaction\\s*\\(",
+          "before": 5,
+          "after": 19
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "const cached = await redis.get(key);\nif (!cached) return null;\nawait redis.del(key);",
+    "const value = await redis.hget(bucket, field);\nawait redis.hdel(bucket, field);",
+    "const session = await redis.hgetall(`session:${id}`);\nawait redis.set(`session:${id}`, \"expired\");",
+    "const row = await db.findFirst({ where: { id } });\nawait db.deleteMany({ where: { id: row.id } });",
+    "const r = await client.findUnique({ where: { id } });\nawait client.destroy(r.id);",
+    "// SELECT something\nconst r = await query(\"SELECT * FROM tokens WHERE id = $1\", [id]);\nawait query(\"DELETE FROM tokens WHERE id = $1\", [id]);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/non-atomic-read-delete.ts"
+  },
+  "notes": ""
+}

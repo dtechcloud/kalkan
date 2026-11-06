@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "slug": "dockerfile-from-mutable-tag",
+  "description": "FROM line uses a mutable tag (no @sha256 digest pin)",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/Dockerfile",
+    "**/Dockerfile.*",
+    "**/*.Dockerfile",
+    "**/dockerfile",
+    "**/*.dockerfile",
+    "**/Containerfile",
+    "**/Containerfile.*",
+    "**/*.Containerfile"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "docker"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*FROM\\s+(?:--platform=\\S+\\s+)?(?!\\$)(?!\\S*@sha256:)(?=\\S*[:/.])\\S+(?:\\s+AS\\s+\\S+)?\\s*$",
+      "flags": "i",
+      "label": "FROM without @sha256 digest"
+    },
+    {
+      "regex": "^\\s*FROM\\s+(?:--platform=\\S+\\s+)?(?!\\$)(?!scratch(?:\\s|$))[A-Za-z0-9_-]+(?:\\s+AS\\s+\\S+)?\\s*$",
+      "flags": "i",
+      "label": "FROM without @sha256 digest",
+      "not_near": [
+        {
+          "regex": "^\\s*FROM\\s.*\\sAS\\s+\\S+\\s*$",
+          "flags": "i",
+          "before": 10000
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "FROM node:20",
+    "FROM python:3.11-slim",
+    "FROM ubuntu:22.04",
+    "FROM alpine",
+    "FROM debian:bookworm AS builder",
+    "FROM --platform=linux/amd64 golang:1.21"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dockerfile-from-mutable-tag.ts"
+  },
+  "notes": "The image checks (ARG reference, scratch, @sha256 digest) become lookaheads. The scratch check is case-insensitive here. kalkan (ADR-0005, K.12): Containerfile and lower-case file names; an image with a tag, a registry or a path is always reported; a bare name (FROM alpine) is reported only when no FROM ... AS <name> line comes before it or on it, because such a name can be an earlier build stage (FROM build); an untagged image with its own AS clause is thus left out."
+}

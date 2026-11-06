@@ -1,0 +1,717 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for C# (ASP.NET Core and the .NET base class library).
+# Original rules written for kalkan. Rule ID form: kalkan.csharp.<class>.<name>.
+rules:
+  - id: kalkan.csharp.sqli.tainted-sql-string
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is concatenated into a SQL statement. An attacker can change the
+      query. Keep the SQL text constant and pass values as parameters (cmd.Parameters.Add(), or
+      FromSqlInterpolated / Dapper parameters).
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://learn.microsoft.com/en-us/ef/core/querying/sql-queries
+      category: security
+      technology: [csharp, aspnetcore, ado-net, ef-core, dapper]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromBody|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Headers
+          - pattern: Request.Cookies
+          - pattern: Request.Body
+          - pattern: Request.RouteValues
+          - pattern: $CONTEXT.Request.Query
+          - pattern: $CONTEXT.Request.Form
+          - pattern: $CONTEXT.Request.Headers
+          - pattern: $CONTEXT.Request.Cookies
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new SqlCommand($QUERY, ...)
+              - pattern: new SqliteCommand($QUERY, ...)
+              - pattern: new NpgsqlCommand($QUERY, ...)
+              - pattern: new MySqlCommand($QUERY, ...)
+              - pattern: new OracleCommand($QUERY, ...)
+              - pattern: $COMMAND.CommandText = $QUERY
+              - pattern: $DB.Database.ExecuteSqlRaw($QUERY, ...)
+              - pattern: $DB.Database.SqlQueryRaw<$T>($QUERY, ...)
+              - pattern: $SET.FromSqlRaw($QUERY, ...)
+              - pattern: $CONN.Query<$T>($QUERY, ...)
+              - pattern: $CONN.QueryFirstOrDefault<$T>($QUERY, ...)
+              - pattern: $CONN.Execute($QUERY, ...)
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.csharp.os-command-injection.tainted-process-start
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches the argument string of a shell, or selects the program
+      that Process.Start() runs. An attacker can run other commands on the server. Start a fixed
+      program and add each value to ProcessStartInfo.ArgumentList.
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://learn.microsoft.com/en-us/dotnet/api/system.diagnostics.processstartinfo.argumentlist
+      category: security
+      technology: [csharp, dotnet]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromBody|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Headers
+          - pattern: Request.Cookies
+          - pattern: Request.Body
+          - pattern: $CONTEXT.Request.Query
+          - pattern: $CONTEXT.Request.Form
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Process.Start($SHELL, $ARGUMENTS)
+              - pattern: new ProcessStartInfo($SHELL, $ARGUMENTS)
+          - metavariable-regex:
+              metavariable: $SHELL
+              regex: (?i)^"?((/usr)?/bin/)?(sh|bash|zsh|dash|cmd|cmd\.exe|pwsh|pwsh\.exe|powershell|powershell\.exe)"?$
+          - focus-metavariable: $ARGUMENTS
+      - patterns:
+          - pattern-either:
+              - pattern: Process.Start((string $PROGRAM), ...)
+              - pattern: new ProcessStartInfo((string $PROGRAM), ...)
+          - focus-metavariable: $PROGRAM
+
+  - id: kalkan.csharp.code-injection.tainted-script
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is compiled and run as C# script code (Roslyn scripting). An
+      attacker can run any .NET code in the server process. Never evaluate request data. Select a
+      fixed script by name.
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/dotnet/roslyn/blob/main/docs/wiki/Scripting-API-Samples.md
+      category: security
+      technology: [csharp, roslyn]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromBody|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Body
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: CSharpScript.EvaluateAsync($CODE, ...)
+              - pattern: CSharpScript.EvaluateAsync<$T>($CODE, ...)
+              - pattern: CSharpScript.RunAsync($CODE, ...)
+              - pattern: CSharpScript.RunAsync<$T>($CODE, ...)
+              - pattern: CSharpScript.Create($CODE, ...)
+              - pattern: CSharpScript.Create<$T>($CODE, ...)
+          - focus-metavariable: $CODE
+
+  - id: kalkan.csharp.ssti.tainted-razor-template
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is compiled as a Razor template (RazorEngineCore, RazorEngine).
+      Razor templates are C# code, so an attacker can run commands on the server. Compile only
+      fixed templates and pass user data in the model.
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://github.com/adoconnection/RazorEngineCore
+      category: security
+      technology: [csharp, razorengine]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromBody|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Body
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: (RazorEngine $ENGINE).Compile($SOURCE, ...)
+              - pattern: (RazorEngine $ENGINE).CompileAsync($SOURCE, ...)
+              - pattern: (IRazorEngine $ENGINE).Compile($SOURCE, ...)
+              - pattern: (IRazorEngine $ENGINE).CompileAsync($SOURCE, ...)
+              - pattern: (RazorEngine $ENGINE).Compile<$T>($SOURCE, ...)
+              - pattern: (IRazorEngine $ENGINE).Compile<$T>($SOURCE, ...)
+              - pattern: new RazorEngine().Compile($SOURCE, ...)
+              - pattern: new RazorEngine().CompileAsync($SOURCE, ...)
+              - pattern: Engine.Razor.RunCompile($SOURCE, ...)
+              - pattern: Engine.Razor.Compile($SOURCE, ...)
+              - pattern: Razor.Parse($SOURCE, ...)
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.csharp.xss.tainted-html-content
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is returned as HTML without encoding, or wrapped in HtmlString,
+      which turns off Razor encoding. An attacker can run script in the browser of another user.
+      Encode the value with HtmlEncoder.Default.Encode() or render it through a Razor view.
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://learn.microsoft.com/en-us/aspnet/core/security/cross-site-scripting
+      category: security
+      technology: [csharp, aspnetcore]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Headers
+          - pattern: Request.Cookies
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: HtmlEncoder.Default.Encode(...)
+          - pattern: WebUtility.HtmlEncode(...)
+          - pattern: HttpUtility.HtmlEncode(...)
+          - pattern: System.Net.WebUtility.HtmlEncode(...)
+          - pattern: $ENCODER.Encode(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: Content($BODY, $CONTENT_TYPE, ...)
+          - metavariable-regex:
+              metavariable: $CONTENT_TYPE
+              regex: (?i)^"text/html
+          - focus-metavariable: $BODY
+      - patterns:
+          - pattern-either:
+              - pattern: new HtmlString($BODY)
+              - pattern: Html.Raw($BODY)
+              - pattern: new MarkupString($BODY)
+          - focus-metavariable: $BODY
+
+  - id: kalkan.csharp.ssrf.tainted-request-url
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound HTTP request. An attacker can
+      reach internal services or cloud metadata endpoints. Look the target up in a fixed map of
+      allowed URLs, or parse it and check the scheme and host against an allowlist.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [csharp, httpclient]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromBody|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Headers
+          - pattern: Request.Body
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: (HttpClient $CLIENT).$CALL($URL, ...)
+              - pattern: new HttpRequestMessage($VERB, $URL)
+              - pattern: WebRequest.Create($URL)
+              - pattern: WebRequest.CreateHttp($URL)
+              - pattern: (WebClient $CLIENT).$CALL($URL, ...)
+          - metavariable-regex:
+              metavariable: $CALL
+              regex: ^(GetStringAsync|GetByteArrayAsync|GetStreamAsync|GetAsync|PostAsync|PutAsync|PatchAsync|DeleteAsync|DownloadString|DownloadData|DownloadFile|OpenRead)$
+          - focus-metavariable: $URL
+      - patterns:
+          - pattern-either:
+              - pattern: new HttpRequestMessage($VERB, $URL)
+              - pattern: WebRequest.Create($URL)
+              - pattern: WebRequest.CreateHttp($URL)
+          - focus-metavariable: $URL
+
+  - id: kalkan.csharp.path-traversal.tainted-file-path
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. Path.Combine() does not stop "../"
+      sequences, and an absolute second argument replaces the base folder. Keep only
+      Path.GetFileName() of the name, or resolve the full path and check that it stays inside the
+      base folder.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://learn.microsoft.com/en-us/dotnet/api/system.io.path.combine
+      category: security
+      technology: [csharp, aspnetcore]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Headers
+          - pattern: Request.Cookies
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: Path.GetFileName(...)
+          - pattern: System.IO.Path.GetFileName(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: File.$CALL($PATH, ...)
+              - pattern: System.IO.File.$CALL($PATH, ...)
+              - pattern: Directory.$CALL($PATH, ...)
+          - metavariable-regex:
+              metavariable: $CALL
+              regex: ^(ReadAllBytes|ReadAllBytesAsync|ReadAllText|ReadAllTextAsync|ReadAllLines|ReadLines|OpenRead|OpenText|Open|OpenWrite|WriteAllText|WriteAllTextAsync|WriteAllBytes|AppendAllText|Delete|Copy|Move|Create|GetFiles|EnumerateFiles)$
+          - focus-metavariable: $PATH
+      - patterns:
+          - pattern-either:
+              - pattern: new FileStream($PATH, ...)
+              - pattern: new StreamReader((string $PATH), ...)
+              - pattern: PhysicalFile($PATH, ...)
+              - pattern: new PhysicalFileResult($PATH, ...)
+          - focus-metavariable: $PATH
+
+  - id: kalkan.csharp.deserialization.unsafe-deserializer
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      This deserializer can create arbitrary .NET types from the input (Newtonsoft TypeNameHandling
+      other than None, BinaryFormatter, NetDataContractSerializer, SoapFormatter, LosFormatter,
+      ObjectStateFormatter). Known gadget chains then run code. Use TypeNameHandling.None or
+      System.Text.Json with fixed types.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://learn.microsoft.com/en-us/dotnet/standard/serialization/binaryformatter-security-guide
+      category: security
+      technology: [csharp, newtonsoft-json, dotnet]
+    pattern-either:
+      - pattern: TypeNameHandling.All
+      - pattern: TypeNameHandling.Auto
+      - pattern: TypeNameHandling.Objects
+      - pattern: TypeNameHandling.Arrays
+      - pattern: new BinaryFormatter(...)
+      - pattern: new NetDataContractSerializer(...)
+      - pattern: new SoapFormatter(...)
+      - pattern: new LosFormatter(...)
+      - pattern: new ObjectStateFormatter(...)
+      - pattern: new JavaScriptSerializer(new SimpleTypeResolver())
+
+  - id: kalkan.csharp.xxe.dtd-processing-enabled
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      The XML reader parses DTDs or resolves external resources (DtdProcessing.Parse,
+      XmlUrlResolver, ProhibitDtd = false). A crafted document can read local files or reach
+      internal hosts (XXE). Use DtdProcessing.Prohibit and XmlResolver = null.
+    metadata:
+      cwe:
+        - "CWE-611: Improper Restriction of XML External Entity Reference"
+      kalkan_class: xxe
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [csharp, dotnet]
+    pattern-either:
+      - pattern: DtdProcessing.Parse
+      - pattern: new XmlUrlResolver()
+      - pattern: $SETTINGS.ProhibitDtd = false
+
+  - id: kalkan.csharp.open-redirect.tainted-redirect-target
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Use LocalRedirect(), or check the target with
+      Url.IsLocalUrl() and fall back to a fixed page.
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://learn.microsoft.com/en-us/aspnet/core/security/preventing-open-redirects
+      category: security
+      technology: [csharp, aspnetcore]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Headers
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Redirect($URL)
+              - pattern: RedirectPermanent($URL)
+              - pattern: RedirectPreserveMethod($URL)
+              - pattern: Response.Redirect($URL, ...)
+              - pattern: new RedirectResult($URL, ...)
+              - pattern: Results.Redirect($URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.csharp.nosqli.tainted-mongo-query
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      Request data is parsed into a MongoDB query document or used as server-side JavaScript
+      ($where). An attacker can add query operators and read or change other records. Build the
+      filter with Builders<T>.Filter and pass user values only as field values.
+    metadata:
+      cwe:
+        - "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      kalkan_class: nosqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://www.mongodb.com/docs/drivers/csharp/current/fundamentals/builders/
+      category: security
+      technology: [csharp, mongodb]
+    pattern-sources:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR] $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $METHOD(..., [$ATTR(...)] $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ATTR
+              regex: ^(FromQuery|FromRoute|FromForm|FromBody|FromHeader)$
+          - focus-metavariable: $PARAM
+      - pattern-either:
+          - pattern: Request.Query
+          - pattern: Request.Form
+          - pattern: Request.Body
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: BsonDocument.Parse($QUERY, ...)
+              - pattern: new BsonDocument("$where", $QUERY)
+              - pattern: new BsonJavaScript($QUERY)
+              - pattern: new JsonFilterDefinition<$T>($QUERY)
+              - pattern: $COLLECTION.Find((string $QUERY), ...)
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.csharp.jwt.signature-validation-disabled
+    languages: [csharp]
+    severity: ERROR
+    message: >-
+      The token validation parameters accept unsigned tokens (RequireSignedTokens = false) or
+      replace signature validation with a custom SignatureValidator. An attacker can forge any
+      claim. Require signed tokens and validate them with the issuer signing key.
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://learn.microsoft.com/en-us/dotnet/api/microsoft.identitymodel.tokens.tokenvalidationparameters
+      category: security
+      technology: [csharp, aspnetcore, jwt]
+    pattern-either:
+      - pattern: RequireSignedTokens = false
+      - pattern: SignatureValidator = $VALIDATOR
+      - pattern: $PARAMETERS.RequireSignedTokens = false
+      - pattern: $PARAMETERS.SignatureValidator = $VALIDATOR
+
+  - id: kalkan.csharp.crypto.weak-hash-algorithm
+    languages: [csharp]
+    severity: WARNING
+    message: >-
+      MD5 and SHA-1 are broken for security use. Do not use them for passwords, signatures or
+      integrity checks. Hash passwords with Rfc2898DeriveBytes.Pbkdf2() (or argon2, bcrypt) and use
+      SHA-256 or better elsewhere.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-328: Use of Weak Hash"
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+      category: security
+      technology: [csharp, dotnet]
+    pattern-either:
+      - pattern: MD5.Create(...)
+      - pattern: MD5.HashData(...)
+      - pattern: MD5.HashDataAsync(...)
+      - pattern: SHA1.Create(...)
+      - pattern: SHA1.HashData(...)
+      - pattern: SHA1.HashDataAsync(...)
+      - pattern: new MD5CryptoServiceProvider()
+      - pattern: new SHA1CryptoServiceProvider()
+      - pattern: new SHA1Managed()
+      - pattern: HashAlgorithm.Create("MD5")
+      - pattern: HashAlgorithm.Create("SHA1")
+
+  - id: kalkan.csharp.crypto.weak-cipher
+    languages: [csharp]
+    severity: WARNING
+    message: >-
+      This code encrypts with a broken cipher (DES, 3DES, RC2) or with ECB mode. ECB leaks
+      patterns of the plaintext. Use AesGcm with a random nonce.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      kalkan_class: crypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://learn.microsoft.com/en-us/dotnet/api/system.security.cryptography.aesgcm
+      category: security
+      technology: [csharp, dotnet]
+    pattern-either:
+      - pattern: DES.Create(...)
+      - pattern: TripleDES.Create(...)
+      - pattern: RC2.Create(...)
+      - pattern: new DESCryptoServiceProvider()
+      - pattern: new TripleDESCryptoServiceProvider()
+      - pattern: new RC2CryptoServiceProvider()
+      - pattern: CipherMode.ECB
+      - pattern: $CIPHER.EncryptEcb(...)
+      - pattern: $CIPHER.DecryptEcb(...)
+
+  - id: kalkan.csharp.cors.any-origin-with-credentials
+    languages: [csharp]
+    severity: WARNING
+    message: >-
+      The CORS policy accepts every origin (SetIsOriginAllowed(_ => true) or AllowAnyOrigin()) and
+      also allows credentials. Any web site can then send authenticated requests and read the
+      answers. List the trusted origins with WithOrigins().
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://learn.microsoft.com/en-us/aspnet/core/security/cors
+      category: security
+      technology: [csharp, aspnetcore]
+    patterns:
+      - pattern: $CHAIN.AllowCredentials()
+      - metavariable-pattern:
+          metavariable: $CHAIN
+          patterns:
+            - pattern-either:
+                - pattern: <... $POLICY.SetIsOriginAllowed($ORIGIN => true) ...>
+                - pattern: <... $POLICY.SetIsOriginAllowed(_ => true) ...>
+                - pattern: <... $POLICY.AllowAnyOrigin() ...>

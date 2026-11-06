@@ -1,0 +1,4 @@
+# development requirements
+-r requirements-base.txt
+Django==5.0.4  # web framework
+pytest>=8

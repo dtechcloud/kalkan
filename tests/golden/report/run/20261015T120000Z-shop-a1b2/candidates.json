@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "candidates": [
+    {
+      "id": "CAND-7FB0BF0A3BDA3C13",
+      "engine": "opengrep",
+      "rule_id": "kalkan.python.sqli.fstring-execute",
+      "class": "sqli",
+      "cwe": [
+        "CWE-89"
+      ],
+      "title": "SQL query built with an f-string",
+      "message": "User input reaches cursor.execute through an f-string.",
+      "file": "app/db.py",
+      "start_line": 8,
+      "end_line": 8,
+      "snippet": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
+      "severity": "high",
+      "tool_severity": "ERROR",
+      "confidence": "medium",
+      "tags": [
+        "security"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "scans/opengrep.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-EFF43085C3985B9A",
+      "engine": "bandit",
+      "rule_id": "B506",
+      "class": "deserialization",
+      "cwe": [
+        "CWE-20"
+      ],
+      "title": "Hostile | title with `back`ticks`` and <script>alert(1)</script>",
+      "message": "Use of unsafe yaml load. <img src=x onerror=alert(1)>",
+      "file": "app/config.py",
+      "start_line": 7,
+      "end_line": 7,
+      "snippet": "return yaml.load(stream)",
+      "severity": "medium",
+      "tool_severity": "MEDIUM",
+      "confidence": "high",
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "scans/bandit.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-464E0D229741E965",
+      "engine": "gitleaks",
+      "rule_id": "generic-api-key",
+      "class": "hardcoded-secrets",
+      "cwe": [
+        "CWE-798"
+      ],
+      "title": "Generic API key",
+      "message": "An API key is in the source.",
+      "file": "app/config.py",
+      "start_line": 3,
+      "end_line": 3,
+      "snippet": "REDACTED",
+      "severity": "high",
+      "tool_severity": "",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "scans/gitleaks.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-61A07FFB84DE5B5F",
+      "engine": "osv-scanner",
+      "rule_id": "GHSA-8q59-q68h-6hv4",
+      "class": "vulnerable-dependency",
+      "cwe": [
+        "CWE-1395"
+      ],
+      "title": "PyYAML arbitrary code execution",
+      "message": "pyyaml 5.3 is affected by GHSA-8q59-q68h-6hv4.",
+      "file": "requirements.txt",
+      "start_line": null,
+      "end_line": null,
+      "snippet": "",
+      "severity": "critical",
+      "tool_severity": "9.8",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "PyPI",
+        "package": "pyyaml",
+        "version": "5.3",
+        "vuln_ids": [
+          "GHSA-8q59-q68h-6hv4",
+          "CVE-2020-14343"
+        ],
+        "fixed_versions": [
+          "5.4"
+        ],
+        "cvss_score": 9.8,
+        "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
+      },
+      "raw": {
+        "sarif_file": "scans/osv-scanner.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    }
+  ],
+  "warnings": []
+}

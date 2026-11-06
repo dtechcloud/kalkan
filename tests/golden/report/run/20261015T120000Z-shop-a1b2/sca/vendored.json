@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "engine": "retirejs",
+  "status": "ok",
+  "message": "JavaScript files checked: 1; vendored library versions: 1 (files: 1)",
+  "repository": {
+    "source": "https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/jsrepository-v5.json",
+    "sha256": "c213444cbf88314fb7fd11c20f0541fb880245ddef07f90b7f437a25f533b081",
+    "updated_at": "2026-10-15T08:00:00Z",
+    "license": "Apache-2.0",
+    "upstream": "github.com/RetireJS/retire.js"
+  },
+  "files_total": 1,
+  "files_checked": 1,
+  "libraries": [
+    {
+      "library": "jquery",
+      "npm_name": "jquery",
+      "version": "1.12.4",
+      "path": "web/static/js/jquery.min.js",
+      "extractor": "filecontent",
+      "line": 1,
+      "match": "/*! jQuery v1.12.4",
+      "purl": "pkg:npm/jquery@1.12.4"
+    }
+  ],
+  "skipped_files": {},
+  "warnings": []
+}

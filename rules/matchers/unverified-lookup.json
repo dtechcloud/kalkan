@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "slug": "unverified-lookup",
+  "description": "DB lookups by ID without a nearby ownership check — cross-tenant risk",
+  "class": "idor",
+  "cwe": [
+    "CWE-639"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/services/**/endpoints/**/*.ts",
+    "**/services/**/endpoint/**/*.ts",
+    "**/services/**/src/index.ts",
+    "**/apps/**/route.ts",
+    "**/apps/**/route.*.ts",
+    "**/app/api/**/*.ts",
+    "**/src/**/*.ts"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "get\\w+By(Id|Uid)\\s*\\(|find(One)?By(Id|Uid)\\s*\\(|\\.findUnique\\s*\\(|\\.findFirst\\s*\\(",
+      "flags": "",
+      "label": "DB lookup by ID without ownership check in next 15 lines",
+      "not_near": [
+        {
+          "regex": "===?\\s*auth\\.|auth\\.\\w+\\s*===?",
+          "after": 14
+        },
+        {
+          "regex": "ownerId\\s*===?|===?\\s*ownerId",
+          "after": 14
+        },
+        {
+          "regex": "\\.teamId\\s*===?|===?\\s*\\.teamId",
+          "after": 14
+        },
+        {
+          "regex": "\\.userId\\s*===?|===?\\s*\\.userId",
+          "after": 14
+        },
+        {
+          "regex": "throw.*(?:403|Forbidden|Unauthorized)",
+          "after": 14
+        },
+        {
+          "regex": "auth\\.can\\s*\\(",
+          "after": 14
+        },
+        {
+          "regex": "if\\s*\\(\\s*!\\s*(installation|project|team|deployment)\\.",
+          "after": 14
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "const project = await getProjectById(projectId);\nreturn Response.json(project);",
+    "const team = await getTeamById(teamId);\nreturn Response.json(team);",
+    "const user = await getUserById(userId);\nreturn Response.json(user);",
+    "const deployment = await getDeploymentById(id);\nreturn Response.json(deployment);",
+    "const installation = await getInstallationById(id);\nreturn Response.json(installation);",
+    "const data = await db.findUnique({ where: { id } });\nreturn Response.json(data);",
+    "const data = await db.findFirst({ where: { id } });\nreturn Response.json(data);",
+    "const r = await repo.findOneById(id);\nreturn Response.json(r);",
+    "const r = await repo.findByUid(uid);\nreturn Response.json(r);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/unverified-lookup.ts"
+  },
+  "notes": "The lookup regex list is merged into one alternation (getTeamById and similar are covered by get\\w+By(Id|Uid)); 'throw.*403|throw.*Forbidden|throw.*Unauthorized' becomes 'throw.*(?:403|Forbidden|Unauthorized)'."
+}
