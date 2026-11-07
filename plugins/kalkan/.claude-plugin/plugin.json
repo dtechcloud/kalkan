@@ -1,6 +1,6 @@
 {
   "name": "kalkan",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "Resumable security audit of a local folder or a git URL: pinned deterministic scanners plus Claude Code subagents, with engine-verified evidence and Turkish or English reports. Run /kalkan:kalkan <target> [fast|standard|deep].",
   "author": {
     "name": "The kalkan authors"

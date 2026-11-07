@@ -15,7 +15,7 @@
 
 kalkan is a security audit toolkit for source code that runs inside Claude Code. One request starts a long, multi-phase audit of a folder or a git repository. All audit state lives on disk, so an audit continues where it stopped after a usage-limit reset. The output is an English report in Markdown, HTML, JSON and SARIF 2.1.0. With `--lang tr` the report is Turkish, and an English version follows on request.
 
-> **Status (version 1.15.0):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006) runs unit-level checks in a container without network when a Docker engine answers; without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
+> **Status (version 1.16.0):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006) runs unit-level checks in a container without network when a Docker engine answers; without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Quick start
 
@@ -177,7 +177,7 @@ kalkan records only the name of a key variable, never its value. A low rate limi
 
 | Area | Tools |
 |---|---|
-| Code patterns | Opengrep 1.30.1 with kalkan's own 106 rules, Opengrep rule packs (505 curated rules of GitLab sast-rules, Trail of Bits and 0xdea; `KALKAN_RULE_PACKS=osi` turns the AGPL pack off), Bandit 1.9.4, gosec 2.29.0, ShellCheck 0.11.0 (shell scripts), flawfinder 2.0.20 (C and C++), 204 matchers (198 ported from deepsec, 6 of kalkan's own) |
+| Code patterns | Opengrep 1.30.1 with kalkan's own 106 rules, Opengrep rule packs (733 curated rules of GitLab sast-rules, Trail of Bits, 0xdea, elttam, njsscan, mobsfscan, Atlassian, Minded Security, Aikido and semgrep-codeql; `KALKAN_RULE_PACKS=osi` turns the AGPL pack off), Bandit 1.9.4, gosec 2.29.0, ShellCheck 0.11.0 (shell scripts), flawfinder 2.0.20 (C and C++), 204 matchers (198 ported from deepsec, 6 of kalkan's own) |
 | Secrets | Gitleaks 8.30.1 and Kingfisher 2.11.1 (working tree and git history, values redacted, no validation) |
 | IaC and containers | Trivy 0.75.0, Checkov 3.3.22 (every offline framework, and the Helm charts that helm 4.3.0 renders offline), Hadolint 2.15.1, gixy 0.2.55 (nginx) |
 | API definitions | vacuum 0.33.0 (OpenAPI 3 and Swagger 2.0, the OWASP API rules) |
@@ -233,6 +233,12 @@ kalkan builds on the work of the projects below. We thank their authors and cont
 | [GitLab sast-rules](https://gitlab.com/gitlab-org/security-products/sast-rules) | GitLab | Opengrep rules |
 | [semgrep-rules](https://github.com/0xdea/semgrep-rules) | 0xdea (raptor) | Opengrep rules for c and c++ |
 | [semgrep-rules](https://github.com/trailofbits/semgrep-rules) | Trail of Bits | Opengrep rules |
+| [semgrep-rules](https://github.com/elttam/semgrep-rules) | elttam | Opengrep rules (Java, Go, C#, Python, PHP) |
+| [njsscan](https://github.com/ajinabraham/njsscan), [mobsfscan](https://github.com/MobSF/mobsfscan) | Ajin Abraham and contributors | Opengrep rules for Node.js, Android, Kotlin and Swift |
+| [atlassian-sast-ruleset](https://github.com/atlassian-labs/atlassian-sast-ruleset) | Atlassian | Opengrep rules for Java template engines and deserialization |
+| [semgrep-rules-android-security](https://github.com/mindedsecurity/semgrep-rules-android-security) | IMQ Minded Security | Opengrep rules for Android (OWASP MASTG) |
+| [opengrep-rules](https://github.com/AikidoSec/opengrep-rules) | Aikido Security | Opengrep rules for GitHub Actions and npm |
+| [semgrep-codeql](https://github.com/andrew/semgrep-codeql) | Andrew Nesbitt (from GitHub's CodeQL queries) | Opengrep rules converted from CodeQL |
 
 ## Responsible use
 
@@ -246,4 +252,4 @@ Audit only code that you own or that you have written permission to test. The Po
 
 ## License
 
-The kalkan code is under the MIT license ([LICENSE](LICENSE)). The vendored content under `third_party/`, the rule packs in `rules/opengrep-packs/` and the files with another SPDX header keep their upstream licenses: MIT, Apache-2.0, LGPL-3.0 and AGPL-3.0 (the Trail of Bits rules). `KALKAN_RULE_PACKS=osi` turns the AGPL pack off. Details: [NOTICE](NOTICE), [THIRD_PARTY.md](THIRD_PARTY.md).
+The kalkan code is under the MIT license ([LICENSE](LICENSE)). The vendored content under `third_party/`, the rule packs in `rules/opengrep-packs/` and the files with another SPDX header keep their upstream licenses: MIT, Apache-2.0, LGPL-2.1, LGPL-3.0, GPL-3.0 (the Minded Security rules) and AGPL-3.0 (the Trail of Bits rules). `KALKAN_RULE_PACKS=osi` turns the AGPL pack off. Details: [NOTICE](NOTICE), [THIRD_PARTY.md](THIRD_PARTY.md).

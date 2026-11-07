@@ -89,6 +89,9 @@ Docker image (`WITH_GO=true`, the default): the same Go toolchain 1.26.9 (BSD-3-
 
 | Data | Source | License | Note |
 |---|---|---|---|
+| OSV vulnerability database | https://osv.dev (per-ecosystem `all.zip` archives) | The license of each source; most advisories are CC-BY 4.0 (for example GitHub Advisory Database, PyPI, Go) | `kalkan sca update-db` stores it in `.tools/vulndb/osv/`. Used locally by OSV-Scanner; not part of this repository. |
+| Grype vulnerability database | Anchore (https://github.com/anchore/grype-db) | The terms of Anchore and of each upstream source (NVD, GitHub Advisory Database, distribution feeds) | Stored in `.tools/vulndb/grype/`. Used locally by Grype; not part of this repository. |
+| Go vulnerability database | https://vuln.go.dev | CC-BY 4.0 | Stored in `.tools/vulndb/go/`. Used locally by govulncheck; not part of this repository. |
 | RetireJS library repository | `repository/jsrepository-v5.json` of https://github.com/RetireJS/retire.js (branch `master`, the file of the retire 6.1.0 command line) | Apache-2.0 | `kalkan sca update-db` stores it in `.tools/vulndb/retire/` with its SHA-256. kalkan reads it as data for the vendored JavaScript check; no RetireJS code runs. `tests/fixtures/sca/retire/jsrepository-v5.json` is a small hand-written file in the same format. |
 
 Not used: Semgrep registry rules (license forbids redistribution), CodeQL (proprietary terms), TruffleHog (Kingfisher and Gitleaks cover the same area), the GitLab rules under the GitLab Enterprise Edition license (`rules/gitlab`), the opengrep-rules pack and the GitLab `rules/lgpl-cc` (Commons Clause).

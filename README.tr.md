@@ -15,7 +15,7 @@
 
 kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Rapor varsayılan olarak İngilizce. `--lang tr` ile rapor Türkçe olur ve istersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
 
-> **Durum (sürüm 1.15.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006), bir Docker motoru yanıt verdiğinde birim düzeyi kontrolleri ağsız bir konteynerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
+> **Durum (sürüm 1.16.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006), bir Docker motoru yanıt verdiğinde birim düzeyi kontrolleri ağsız bir konteynerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Hızlı başlangıç
 
@@ -177,7 +177,7 @@ kalkan bir anahtarın yalnızca değişken adını kaydeder, değerini kaydetmez
 
 | Alan | Araçlar |
 |---|---|
-| Kod kalıpları | Opengrep 1.30.1 ve kalkan'ın kendi 106 kuralı, Opengrep kural paketleri (GitLab sast-rules, Trail of Bits ve 0xdea'dan seçilmiş 505 kural; `KALKAN_RULE_PACKS=osi` AGPL paketini kapatır), Bandit 1.9.4, gosec 2.29.0, ShellCheck 0.11.0 (kabuk betikleri), flawfinder 2.0.20 (C ve C++), 204 matcher (deepsec'ten port edilen 198 ve kalkan'ın kendi 6 kuralı) |
+| Kod kalıpları | Opengrep 1.30.1 ve kalkan'ın kendi 106 kuralı, Opengrep kural paketleri (GitLab sast-rules, Trail of Bits, 0xdea, elttam, njsscan, mobsfscan, Atlassian, Minded Security, Aikido ve semgrep-codeql'den seçilmiş 733 kural; `KALKAN_RULE_PACKS=osi` AGPL paketini kapatır), Bandit 1.9.4, gosec 2.29.0, ShellCheck 0.11.0 (kabuk betikleri), flawfinder 2.0.20 (C ve C++), 204 matcher (deepsec'ten port edilen 198 ve kalkan'ın kendi 6 kuralı) |
 | Sırlar | Gitleaks 8.30.1 ve Kingfisher 2.11.1 (çalışma ağacı ve git geçmişi, değerler gizlenir, doğrulama yapılmaz) |
 | IaC ve konteyner | Trivy 0.75.0, Checkov 3.3.22 (ağ gerektirmeyen bütün çerçeveler ve helm 4.3.0'ın ağsız çizdiği Helm chart'ları), Hadolint 2.15.1, gixy 0.2.55 (nginx) |
 | API tanımları | vacuum 0.33.0 (OpenAPI 3 ve Swagger 2.0, OWASP API kuralları) |
@@ -266,6 +266,12 @@ kalkan aşağıdaki projelerin emeği üzerine kurulu. Yazarlarına ve katkı ve
 | [GitLab sast-rules](https://gitlab.com/gitlab-org/security-products/sast-rules) | GitLab | Opengrep kuralları |
 | [semgrep-rules](https://github.com/0xdea/semgrep-rules) | 0xdea (raptor) | C ve C++ için Opengrep kuralları |
 | [semgrep-rules](https://github.com/trailofbits/semgrep-rules) | Trail of Bits | Opengrep kuralları |
+| [semgrep-rules](https://github.com/elttam/semgrep-rules) | elttam | Opengrep kuralları (Java, Go, C#, Python, PHP) |
+| [njsscan](https://github.com/ajinabraham/njsscan), [mobsfscan](https://github.com/MobSF/mobsfscan) | Ajin Abraham ve katkı verenler | Node.js, Android, Kotlin ve Swift için Opengrep kuralları |
+| [atlassian-sast-ruleset](https://github.com/atlassian-labs/atlassian-sast-ruleset) | Atlassian | Java şablon motorları ve deserialization için Opengrep kuralları |
+| [semgrep-rules-android-security](https://github.com/mindedsecurity/semgrep-rules-android-security) | IMQ Minded Security | Android için Opengrep kuralları (OWASP MASTG) |
+| [opengrep-rules](https://github.com/AikidoSec/opengrep-rules) | Aikido Security | GitHub Actions ve npm için Opengrep kuralları |
+| [semgrep-codeql](https://github.com/andrew/semgrep-codeql) | Andrew Nesbitt (GitHub'ın CodeQL sorgularından) | CodeQL'den dönüştürülmüş Opengrep kuralları |
 
 ## Sorumlu kullanım
 
@@ -279,4 +285,4 @@ Yalnız sana ait olan veya test etmek için yazılı izin aldığın kodu denetl
 
 ## Lisans
 
-kalkan'ın kodu MIT lisanslı ([LICENSE](LICENSE)). `third_party/` altındaki içerik, `rules/opengrep-packs/` içindeki kural paketleri ve farklı SPDX başlığı taşıyan dosyalar kendi upstream lisanslarını korur: MIT, Apache-2.0, LGPL-3.0 ve AGPL-3.0 (Trail of Bits kuralları). `KALKAN_RULE_PACKS=osi` AGPL paketini kapatır. Ayrıntı: [NOTICE](NOTICE), [THIRD_PARTY.md](THIRD_PARTY.md).
+kalkan'ın kodu MIT lisanslı ([LICENSE](LICENSE)). `third_party/` altındaki içerik, `rules/opengrep-packs/` içindeki kural paketleri ve farklı SPDX başlığı taşıyan dosyalar kendi upstream lisanslarını korur: MIT, Apache-2.0, LGPL-2.1, LGPL-3.0, GPL-3.0 (Minded Security kuralları) ve AGPL-3.0 (Trail of Bits kuralları). `KALKAN_RULE_PACKS=osi` AGPL paketini kapatır. Ayrıntı: [NOTICE](NOTICE), [THIRD_PARTY.md](THIRD_PARTY.md).
