@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-go-html-template-escaping-bypass
+    message: >-
+      Using template.HTML, template.JS, or template.CSS with user input bypasses
+      escaping and may lead to XSS. Ensure input is properly sanitized.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-079/HtmlTemplateEscapingBypassXss.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-079/HtmlTemplateEscapingBypassXss.ql
+    pattern-either:
+      - pattern: template.HTML($INPUT)
+      - pattern: template.JS($INPUT)
+      - pattern: template.CSS($INPUT)
+      - pattern: template.URL($INPUT)
+      - pattern: template.HTMLAttr($INPUT)

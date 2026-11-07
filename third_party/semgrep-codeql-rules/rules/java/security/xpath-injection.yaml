@@ -1,0 +1,25 @@
+rules:
+  - id: codeql-java-xpath-injection
+    message: >-
+      XPath query built from user input may be vulnerable to XPath injection.
+      Use parameterized XPath queries or validate input.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-643: Improper Neutralization of Data within XPath Expressions"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/643.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-643/XPathInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-643/XPathInjection.ql
+    pattern-either:
+      - pattern: $XPATH.evaluate($QUERY + $INPUT, ...);
+      - pattern: $XPATH.compile($QUERY + $INPUT);

@@ -1,0 +1,137 @@
+rules:
+  - id: codeql-py-insecure-ssl-version
+    message: >-
+      Use of insecure SSL/TLS protocol version. SSLv2, SSLv3, TLSv1.0, and
+      TLSv1.1 are deprecated. Use TLSv1.2 or TLSv1.3.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+    pattern-either:
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_SSLv2)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_SSLv3)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_SSLv23)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+      - pattern: ssl.SSLContext(ssl.PROTOCOL_TLSv1_1)
+      - pattern: ssl.wrap_socket(..., ssl_version=ssl.PROTOCOL_SSLv2, ...)
+      - pattern: ssl.wrap_socket(..., ssl_version=ssl.PROTOCOL_SSLv3, ...)
+      - pattern: ssl.wrap_socket(..., ssl_version=ssl.PROTOCOL_TLSv1, ...)
+      - pattern: ssl.wrap_socket(..., ssl_version=ssl.PROTOCOL_TLSv1_1, ...)
+
+  - id: codeql-py-insecure-pyopenssl-version
+    message: >-
+      Use of insecure SSL/TLS protocol version. SSLv2, SSLv3, TLSv1.0, and
+      TLSv1.1 are deprecated. Use TLSv1.2 or TLSv1.3.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pyopenssl
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+    pattern-either:
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.SSLv2_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.SSLv3_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_METHOD)
+      - pattern: OpenSSL.SSL.Context(OpenSSL.SSL.TLSv1_1_METHOD)
+      - pattern: SSL.Context(SSL.SSLv2_METHOD)
+      - pattern: SSL.Context(SSL.SSLv3_METHOD)
+      - pattern: SSL.Context(SSL.TLSv1_METHOD)
+      - pattern: SSL.Context(SSL.TLSv1_1_METHOD)
+
+  - id: codeql-py-ftp-cleartext
+    message: >-
+      FTP transmits data in cleartext. Use SFTP or FTPS for secure file
+      transfers.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-319: Cleartext Transmission of Sensitive Information"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+    pattern-either:
+      - pattern: ftplib.FTP(...)
+      - pattern: FTP(...)
+
+  - id: codeql-py-telnet-cleartext
+    message: >-
+      Telnet transmits data in cleartext. Use SSH for secure remote access.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-319: Cleartext Transmission of Sensitive Information"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+    pattern-either:
+      - pattern: telnetlib.Telnet(...)
+      - pattern: Telnet(...)
+
+  - id: codeql-py-http-url
+    message: >-
+      HTTP URL used instead of HTTPS. Data may be transmitted in cleartext.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-319: Cleartext Transmission of Sensitive Information"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/InsecureProtocol.ql
+    pattern-either:
+      - pattern: requests.get("http://...", ...)
+      - pattern: requests.post("http://...", ...)
+      - pattern: urllib.request.urlopen("http://...")

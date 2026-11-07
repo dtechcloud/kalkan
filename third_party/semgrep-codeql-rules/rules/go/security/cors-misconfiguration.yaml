@@ -1,0 +1,34 @@
+rules:
+  - id: codeql-go-cors-allow-all
+    message: >-
+      CORS configured to allow all origins. Restrict to specific trusted
+      origins in production.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-942: Overly Permissive Cross-domain Whitelist"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/experimental/CWE-942/CORSMisconfiguration.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/experimental/CWE-942/CORSMisconfiguration.ql
+    pattern-either:
+      - pattern: 'w.Header().Set("Access-Control-Allow-Origin", "*")'
+      - pattern: |
+          cors.New(cors.Config{
+              AllowOrigins: []string{"*"},
+              ...
+          })
+      - pattern: |
+          cors.Config{
+              AllowAllOrigins: true,
+              ...
+          }

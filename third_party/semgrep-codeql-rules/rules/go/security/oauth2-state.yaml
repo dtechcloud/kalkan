@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-go-constant-oauth2-state
+    message: >-
+      OAuth2 state parameter is constant or empty. Use a random value to prevent
+      CSRF attacks.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-352: Cross-Site Request Forgery (CSRF)"
+      technology:
+        - go
+        - oauth2
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/352.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-352/ConstantOauth2State.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-352/ConstantOauth2State.ql
+    pattern-either:
+      - pattern: $CFG.AuthCodeURL("")
+      - pattern: $CFG.AuthCodeURL("state")
+      - pattern: $CFG.AuthCodeURL("...")

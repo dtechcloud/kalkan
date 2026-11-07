@@ -62,3 +62,29 @@ Copyright (c) 2022 raptor
 Trail of Bits semgrep-rules (AGPL-3.0-only) -
 https://github.com/trailofbits/semgrep-rules
 The rules are licensed under AGPLv3 (third_party/trailofbits-semgrep-rules/LICENSE).
+
+Atlassian SAST ruleset (LGPL-2.1-only) -
+https://github.com/atlassian-labs/atlassian-sast-ruleset
+Copyright (C) 2025 Atlassian Pty Ltd
+
+elttam semgrep-rules (MIT) - https://github.com/elttam/semgrep-rules
+Copyright (c) 2020 Semgrep (the copyright line of the upstream LICENSE)
+
+njsscan (LGPL-3.0-or-later) - https://github.com/ajinabraham/njsscan
+mobsfscan (LGPL-3.0-or-later) - https://github.com/MobSF/mobsfscan
+Both by Ajin Abraham and contributors.
+
+Android security rules by IMQ Minded Security (GPL-3.0-only) -
+https://github.com/mindedsecurity/semgrep-rules-android-security
+
+Aikido opengrep-rules (MIT) - https://github.com/AikidoSec/opengrep-rules
+Copyright (c) 2025 Aikido Security BV
+
+semgrep-codeql (MIT) - https://github.com/andrew/semgrep-codeql
+Copyright (c) 2025 Andrew Nesbitt
+The rules are converted from the CodeQL queries of https://github.com/github/codeql:
+Copyright (c) 2006-2025 GitHub, Inc. Licensed under the MIT License: permission is
+hereby granted, free of charge, to any person obtaining a copy of this software and
+associated documentation files, to deal in the software without restriction, subject to
+including the copyright notice and this permission notice in all copies or substantial
+portions. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.

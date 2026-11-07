@@ -162,6 +162,130 @@
         "The pack belongs to the restricted group: KALKAN_RULE_PACKS=osi turns it off (docs/ENGINE-SPEC.md section 13).",
         "kalkan runs the kept rules from rules/opengrep-packs/trailofbits (scripts/build_opengrep_packs.py)."
       ]
+    },
+    {
+      "name": "elttam-semgrep-rules",
+      "clone_dir": "elttam_semgrep-rules",
+      "upstream": "https://github.com/elttam/semgrep-rules",
+      "commit": "244268562cc92d33f54b8a60a187df5520f91b26",
+      "commit_date": "2026-08-03",
+      "license": "MIT",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "rules", "to": "rules", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "rules-audit", "to": "rules-audit", "include": ["*.yaml", "*.yml"], "exclude": ["*.test.yaml", "*.test.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack (ADR-0007). The test sources next to the rules (*.java, *.go, *.test.yaml and others) are not copied.",
+        "The upstream LICENSE names 'Copyright (c) 2020 Semgrep' (the line of the template that the repository started from); the MIT grant applies to the rules of elttam. kalkan repeats the LICENSE as it is.",
+        "kalkan runs the kept rules from rules/opengrep-packs/elttam (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "mobsfscan-rules",
+      "clone_dir": "MobSF_mobsfscan",
+      "upstream": "https://github.com/MobSF/mobsfscan",
+      "commit": "175978c104549438aba5d1bfe2c44f6ff6802b56",
+      "commit_date": "2026-10-23",
+      "license": "LGPL-3.0-or-later",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "mobsfscan/rules/semgrep", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:", "exclude": ["java/android/biometric_crypto.yaml", "java/android/sensitive_input.yaml", "java/android/sensitive_notification.yaml", "java/crypto/custom_xor_crypto.yaml", "java/injection/command_injection_formated.yaml", "java/network/weak_tls_configuration.yaml", "java/xxe/xmldecoder_xxe.yaml", "java/xxe/xmlfactory_external_entities_enabled.yaml", "java/xxe/xmlfactory_xxe.yaml"]},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack for Android (Java, Kotlin) and iOS (Swift) (ADR-0007). Only the Semgrep rules of mobsfscan/rules/semgrep; the regex patterns and the Python code are not copied. setup.py names the license 'LGPLv3+'.",
+        "Left out: the rule files whose header names Semgrep's semgrep-rules repository (no license before 2020-10-29, the Commons Clause after) or the GPL-3.0 mindedsecurity rules as their source (kalkan vendors the mindedsecurity rules as their own component).",
+        "kalkan runs the kept rules from rules/opengrep-packs/mobsfscan (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "njsscan-rules",
+      "clone_dir": "ajinabraham_njsscan",
+      "upstream": "https://github.com/ajinabraham/njsscan",
+      "commit": "b1a07971dc97f28975a00378c45d8ee1c44e0431",
+      "commit_date": "2026-10-23",
+      "license": "LGPL-3.0-or-later",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "njsscan/rules/semantic_grep", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:", "exclude": ["database/sequelize_tls.yaml", "database/sequelize_tls_validation.yaml", "database/sequelize_weak_tls.yaml", "jwt/jwt_hardcoded.yaml", "jwt/jwt_none_algorithm.yaml"]},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack for Node.js and Electron (ADR-0007). Only the Semgrep rules of njsscan/rules/semantic_grep; the regex patterns and the Python code are not copied. setup.py names the license 'LGPLv3+'.",
+        "Left out: the rule files whose header names Semgrep's semgrep-rules repository (no license before 2020-10-29, the Commons Clause after) or the GPL-3.0 mindedsecurity rules as their source (kalkan vendors the mindedsecurity rules as their own component).",
+        "GitLab sast-rules ports many njsscan rules (rules/lgpl/javascript); the build drops the repeats (duplicate check of scripts/build_opengrep_packs.py).",
+        "kalkan runs the kept rules from rules/opengrep-packs/njsscan (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "atlassian-sast-ruleset",
+      "clone_dir": "atlassian-labs_atlassian-sast-ruleset",
+      "upstream": "https://github.com/atlassian-labs/atlassian-sast-ruleset",
+      "commit": "800d288fddd566b911760e5a2ca8fcc3879e94e0",
+      "commit_date": "2026-09-25",
+      "license": "LGPL-2.1-only",
+      "license_files": ["LICENSE", "COPYRIGHT"],
+      "copy": [
+        {"from": "sast-rules", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack for Java enterprise frameworks (ADR-0007). COPYRIGHT names LGPL 2.1 ('version 2.1 of the License', without 'or later'); the repository has no Commons Clause.",
+        "kalkan runs the kept rules from rules/opengrep-packs/atlassian (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "mindedsecurity-android-rules",
+      "clone_dir": "mindedsecurity_semgrep-rules-android-security",
+      "upstream": "https://github.com/mindedsecurity/semgrep-rules-android-security",
+      "commit": "8133aa8aff3b0aa897cd92a004af9ae7b854270b",
+      "commit_date": "2026-06-05",
+      "license": "GPL-3.0-only",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "rules", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack for Android, by OWASP MASTG test (ADR-0007). The LICENSE is the GPL-3.0 text, and the repository names no 'or later' option. The rule files stay unmodified in their own folder with the license text; the bundles in rules/opengrep-packs/mindedsecurity are GPL-3.0 too.",
+        "kalkan runs the kept rules from rules/opengrep-packs/mindedsecurity (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "aikido-opengrep-rules",
+      "clone_dir": "AikidoSec_opengrep-rules",
+      "upstream": "https://github.com/AikidoSec/opengrep-rules",
+      "commit": "7ac79affecf709eb7263a243b518a417cd7e0ab2",
+      "commit_date": "2026-06-04",
+      "license": "MIT",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "rules", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rule pack for GitHub Actions and npm publishing (ADR-0007).",
+        "kalkan runs the kept rules from rules/opengrep-packs/aikido (scripts/build_opengrep_packs.py)."
+      ]
+    },
+    {
+      "name": "semgrep-codeql-rules",
+      "clone_dir": "andrew_semgrep-codeql",
+      "upstream": "https://github.com/andrew/semgrep-codeql",
+      "commit": "84a03f39cff88b1599b632118961a5b603acfda7",
+      "commit_date": "2025-12-21",
+      "license": "MIT",
+      "license_files": ["LICENSE"],
+      "copy": [
+        {"from": "rules", "to": "rules", "include": ["*.yaml", "*.yml"], "require": "(?m)^rules:"},
+        {"from": "README.md", "to": "README.upstream.md"}
+      ],
+      "notes": [
+        "Opengrep rules converted from the security queries of https://github.com/github/codeql (MIT, Copyright (c) 2006-2025 GitHub, Inc.) by Andrew Nesbitt with an LLM (README). The rules have no tests upstream, so kalkan keeps only the rules that it measured on tests/fixtures/vulnapp (keep_only in rules/opengrep-packs/curation.json, ADR-0007). kalkan repeats the GitHub copyright notice in the root NOTICE.",
+        "kalkan runs the kept rules from rules/opengrep-packs/semgrep-codeql (scripts/build_opengrep_packs.py)."
+      ]
     }
   ]
 }

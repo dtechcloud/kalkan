@@ -1,0 +1,68 @@
+rules:
+  - id: codeql-java-insecure-cookie
+    message: >-
+      Cookie created without secure flag. Call setSecure(true) to prevent
+      transmission over unencrypted connections.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      technology:
+        - java
+        - servlet
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-614/InsecureCookie.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-614/InsecureCookie.ql
+    patterns:
+      - pattern: |
+          $COOKIE = new Cookie(...);
+          ...
+          $RESPONSE.addCookie($COOKIE);
+      - pattern-not: |
+          $COOKIE = new Cookie(...);
+          ...
+          $COOKIE.setSecure(true);
+          ...
+          $RESPONSE.addCookie($COOKIE);
+
+  - id: codeql-java-cookie-missing-httponly
+    message: >-
+      Cookie created without HttpOnly flag. Call setHttpOnly(true) to prevent
+      client-side script access.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      technology:
+        - java
+        - servlet
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1004.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-1004/CookieWithoutHttpOnly.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-1004/CookieWithoutHttpOnly.ql
+    patterns:
+      - pattern: |
+          $COOKIE = new Cookie(...);
+          ...
+          $RESPONSE.addCookie($COOKIE);
+      - pattern-not: |
+          $COOKIE = new Cookie(...);
+          ...
+          $COOKIE.setHttpOnly(true);
+          ...
+          $RESPONSE.addCookie($COOKIE);

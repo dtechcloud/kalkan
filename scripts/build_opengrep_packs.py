@@ -30,6 +30,8 @@ the source files.
 1. ``yaml``: the file is not YAML that the reader supports.
 2. ``id-collision``: a rule of the same folder has the same upstream ID.
 3. ``category``, ``confidence``: the metadata filters of the pack in ``curation.json``.
+   ``unmeasured``: the pack has ``keep_only`` (rule IDs and a reason) and does not name the rule;
+   for a pack whose rules have no tests upstream, only the rules measured on the fixture stay.
 4. a drop group of ``curation.json`` (its own ``kind``).
 5. ``no-class``: no class decides. The class comes from ``classes`` of ``curation.json`` (by
    rule ID), else from ``language_classes`` (a language whose rules all belong to one class:
@@ -318,6 +320,10 @@ def decide(curation: dict[str, Any], records: list[dict[str, Any]]) -> None:
                 reason=f"metadata confidence {record['confidence']!r} (kept: {kept})",
             )
             continue
+        only = packs[record["pack"]].get("keep_only")
+        if only is not None and record["id"] not in only["rules"]:
+            record.update(kind="unmeasured", reason=only["reason"])
+            continue
         group = next((item for item in groups if _matches(item, record)), None)
         if group is not None:
             record.update(kind=group["kind"], reason=group["reason"], group=group["name"])
@@ -373,6 +379,17 @@ def decide(curation: dict[str, Any], records: list[dict[str, Any]]) -> None:
     for rule_id in [*keep, *overrides]:
         if rule_id not in names:
             raise BuildError(f"curation.json: unknown rule {rule_id!r}")
+    for pack in curation["packs"]:
+        only = pack.get("keep_only")
+        if only is None:
+            continue
+        if not only.get("reason") or not only.get("rules"):
+            raise BuildError(
+                f"curation.json: keep_only of {pack['name']!r} needs rules and a reason"
+            )
+        for rule_id in only["rules"]:
+            if rule_id not in names:
+                raise BuildError(f"curation.json: keep_only of {pack['name']!r} names {rule_id!r}")
 
 
 # -- outputs ----------------------------------------------------------------------------------

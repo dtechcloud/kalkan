@@ -1,0 +1,25 @@
+rules:
+  - id: codeql-java-zip-slip
+    message: >-
+      Extracting zip archive without path validation may allow path traversal
+      (zip slip). Validate entry names before extraction.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-022/ZipSlip.ql
+    pattern-either:
+      - pattern: new File($DIR, $ENTRY.getName())
+      - pattern: Paths.get($DIR, $ENTRY.getName())
+      - pattern: new FileOutputStream(new File($DIR, $ENTRY.getName()))

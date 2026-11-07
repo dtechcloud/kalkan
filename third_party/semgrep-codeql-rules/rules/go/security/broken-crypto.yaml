@@ -1,0 +1,99 @@
+rules:
+  - id: codeql-go-weak-crypto-md5
+    message: >-
+      Use of MD5 hashing algorithm. MD5 is cryptographically broken and should
+      not be used for security purposes. Use SHA-256 or stronger.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: md5.New()
+      - pattern: md5.Sum(...)
+      - pattern: crypto/md5
+
+  - id: codeql-go-weak-crypto-sha1
+    message: >-
+      Use of SHA-1 hashing algorithm. SHA-1 is cryptographically weak and should
+      not be used for security purposes. Use SHA-256 or stronger.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: sha1.New()
+      - pattern: sha1.Sum(...)
+
+  - id: codeql-go-weak-crypto-des
+    message: >-
+      Use of DES encryption algorithm. DES is cryptographically broken due to
+      its small key size. Use AES instead.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: des.NewCipher(...)
+      - pattern: des.NewTripleDESCipher(...)
+
+  - id: codeql-go-weak-crypto-rc4
+    message: >-
+      Use of RC4 stream cipher. RC4 has multiple known vulnerabilities and is
+      prohibited in TLS. Use AES-GCM or ChaCha20-Poly1305 instead.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern: rc4.NewCipher(...)

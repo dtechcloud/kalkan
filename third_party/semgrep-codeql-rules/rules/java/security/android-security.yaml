@@ -1,0 +1,92 @@
+rules:
+  - id: codeql-java-android-webview-javascript
+    message: >-
+      WebView with JavaScript enabled. If loading untrusted content, this can
+      lead to XSS attacks.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - android
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+    pattern: $WEBVIEW.getSettings().setJavaScriptEnabled(true);
+
+  - id: codeql-java-android-webview-file-access
+    message: >-
+      WebView with file access enabled. This may allow access to local files
+      if loading untrusted content.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - android
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+    pattern-either:
+      - pattern: $WEBVIEW.getSettings().setAllowFileAccess(true);
+      - pattern: $WEBVIEW.getSettings().setAllowFileAccessFromFileURLs(true);
+      - pattern: $WEBVIEW.getSettings().setAllowUniversalAccessFromFileURLs(true);
+
+  - id: codeql-java-android-webview-content-access
+    message: >-
+      WebView with content provider access enabled. This may allow access to
+      content providers if loading untrusted content.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - android
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+    pattern: $WEBVIEW.getSettings().setAllowContentAccess(true);
+
+  - id: codeql-java-android-sensitive-log
+    message: >-
+      Sensitive data logged. Avoid logging passwords, tokens, or other
+      sensitive information.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-532: Insertion of Sensitive Information into Log File"
+      technology:
+        - android
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/532.html
+    pattern-either:
+      - pattern: Log.d($TAG, $PASSWORD);
+      - pattern: Log.i($TAG, $PASSWORD);
+      - pattern: Log.v($TAG, $PASSWORD);
+      - pattern: Log.w($TAG, $PASSWORD);
+      - pattern: Log.e($TAG, $PASSWORD);

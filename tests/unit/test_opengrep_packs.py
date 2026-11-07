@@ -237,8 +237,26 @@ def test_curation_is_well_formed(curation, index):
         "gitlab": "osi",
         "trailofbits": "agpl",
         "0xdea": "osi",
+        "atlassian": "osi",
+        "elttam": "osi",
+        "njsscan": "osi",
+        "mobsfscan": "osi",
+        "mindedsecurity": "osi",
+        "aikido": "osi",
+        "semgrep-codeql": "osi",
     }
-    kinds = {"twin-fp", "noisy", "audit", "non-security", "scope", "parse", "slow"}
+    kinds = {
+        "twin-fp",
+        "noisy",
+        "audit",
+        "non-security",
+        "scope",
+        "parse",
+        "slow",
+        "best-practice",
+        "covered",
+        "duplicate",
+    }
     for group in curation["drop"]:
         assert group["name"] and group["reason"] and group["kind"] in kinds, group
         assert group.get("rules") or group.get("paths"), group
@@ -254,6 +272,13 @@ def test_every_kept_rule_has_a_class_and_a_known_license(index):
         "gitlab": {"MIT", "LGPL-3.0-only"},
         "trailofbits": {"AGPL-3.0-only"},
         "0xdea": {"MIT"},
+        "atlassian": {"LGPL-2.1-only"},
+        "elttam": {"MIT"},
+        "njsscan": {"LGPL-3.0-or-later"},
+        "mobsfscan": {"LGPL-3.0-or-later"},
+        "mindedsecurity": {"GPL-3.0-only"},
+        "aikido": {"MIT"},
+        "semgrep-codeql": {"MIT"},
     }
     for rule in index["rules"]:
         assert rule["id"].startswith(rule["pack"] + "."), rule["id"]
@@ -374,7 +399,7 @@ def test_prepare_copies_the_bundles_into_the_run(tmp_path, index):
     expected = sorted(
         f"{pack['name']}/{bundle}"
         for pack in index["packs"]
-        if pack["name"] in {"gitlab", "0xdea"}
+        if pack["group"] == "osi"
         for bundle in pack["bundles"]
     )
     assert copied == expected
@@ -392,7 +417,17 @@ def test_switch_osi_and_none(tmp_path):
     ctx = make_ctx(tmp_path)
     osi = OpengrepPacksAdapter(environ={"KALKAN_RULE_PACKS": "osi"})
     argv = osi.command(ctx, TOOL, tmp_path / "o")
-    assert [argv[i + 1] for i, item in enumerate(argv) if item == "-f"] == ["gitlab", "0xdea"]
+    assert [argv[i + 1] for i, item in enumerate(argv) if item == "-f"] == [
+        "gitlab",
+        "0xdea",
+        "atlassian",
+        "elttam",
+        "njsscan",
+        "mobsfscan",
+        "mindedsecurity",
+        "aikido",
+        "semgrep-codeql",
+    ]
     details = osi.pack_details()["rule_packs"]
     assert details["setting"] == "osi" and details["source"] == "KALKAN_RULE_PACKS"
     assert {item["name"] for item in details["disabled"]} == {"trailofbits"}
@@ -519,3 +554,20 @@ def test_scope_narrows_a_rule_without_changing_its_logic():
         "      exclude:",
         '      - "*.min.js"',
     ]
+
+
+def test_keep_only_drops_the_unmeasured_rules(curation, index):
+    """A pack with ``keep_only`` (ADR-0007) keeps only the named rules; the others are dropped
+    with the kind ``unmeasured`` and the reason of the curation."""
+    packs = [pack for pack in curation["packs"] if pack.get("keep_only")]
+    assert packs
+    for pack in packs:
+        only = pack["keep_only"]
+        kept = {rule["id"] for rule in index["rules"] if rule["pack"] == pack["name"]}
+        assert kept and kept <= set(only["rules"])
+        groups = [
+            group
+            for group in index["dropped"]
+            if group["pack"] == pack["name"] and group["kind"] == "unmeasured"
+        ]
+        assert [group["reason"] for group in groups] == [only["reason"]]

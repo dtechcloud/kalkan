@@ -1,0 +1,30 @@
+rules:
+  - id: codeql-go-log-injection
+    message: >-
+      User input written to log may enable log injection attacks. Sanitize
+      user input before logging.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-117: Improper Output Neutralization for Logs"
+      technology:
+        - go
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: LOW
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/117.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-117/LogInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-117/LogInjection.ql
+    pattern-either:
+      - pattern: log.Print($INPUT)
+      - pattern: log.Printf($FMT, ..., $INPUT, ...)
+      - pattern: log.Println($INPUT)
+      - pattern: log.Fatal($INPUT)
+      - pattern: log.Fatalf($FMT, ..., $INPUT, ...)
+      - pattern: log.Panic($INPUT)
+      - pattern: log.Panicf($FMT, ..., $INPUT, ...)

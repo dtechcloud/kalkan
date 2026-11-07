@@ -1,0 +1,67 @@
+rules:
+  - id: codeql-go-path-traversal
+    message: >-
+      File path built from user input may allow path traversal attacks. Validate
+      and sanitize file paths before use.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-022/TaintedPath.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-022/TaintedPath.ql
+    pattern-either:
+      - pattern: os.Open($BASE + $INPUT)
+      - pattern: os.Open(filepath.Join($BASE, $INPUT))
+      - pattern: os.OpenFile($BASE + $INPUT, ...)
+      - pattern: os.OpenFile(filepath.Join($BASE, $INPUT), ...)
+      - pattern: ioutil.ReadFile($BASE + $INPUT)
+      - pattern: ioutil.ReadFile(filepath.Join($BASE, $INPUT))
+      - pattern: os.ReadFile($BASE + $INPUT)
+      - pattern: os.ReadFile(filepath.Join($BASE, $INPUT))
+
+  - id: codeql-go-zip-slip
+    message: >-
+      Extracting zip files without validating file paths may allow path
+      traversal (Zip Slip). Check for .. in extracted file names.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-022/ZipSlip.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-022/ZipSlip.ql
+    patterns:
+      - pattern-either:
+          - pattern: |
+              for ..., $F := range $R.File {
+                ...
+                os.Create(filepath.Join($DEST, $F.Name))
+                ...
+              }
+          - pattern: |
+              for ..., $F := range $R.File {
+                ...
+                os.OpenFile(filepath.Join($DEST, $F.Name), ...)
+                ...
+              }

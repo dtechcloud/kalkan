@@ -1,0 +1,24 @@
+rules:
+  - id: codeql-js-insecure-random
+    message: >-
+      Math.random() is not cryptographically secure. Use crypto.randomBytes()
+      or crypto.getRandomValues() for security-sensitive operations.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator"
+      technology:
+        - javascript
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/338.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-338/InsecureRandomness.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-338/InsecureRandomness.ql
+    pattern: Math.random()

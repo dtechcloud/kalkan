@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-py-header-injection
+    message: >-
+      HTTP header value built from user input may allow header injection
+      attacks. Validate and sanitize input for CRLF characters.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/113.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-113/HeaderInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-113/HeaderInjection.ql
+    pattern-either:
+      - pattern: $RESPONSE.headers[$KEY] = request.$METHOD.get(...)
+      - pattern: $RESPONSE[$KEY] = request.$METHOD.get(...)
+      - pattern: $RESPONSE.set_header($KEY, request.$METHOD.get(...))

@@ -1,0 +1,75 @@
+rules:
+  - id: codeql-swift-weak-crypto-md5
+    message: >-
+      Use of MD5 hashing algorithm. MD5 is cryptographically broken and should
+      not be used for security purposes.
+    severity: WARNING
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-328: Reversible One-Way Hash"
+      technology:
+        - swift
+        - ios
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/328.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-328/WeakSensitiveDataHashing.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-328/WeakSensitiveDataHashing.ql
+    pattern-either:
+      - pattern: Insecure.MD5.hash(...)
+      - pattern: CC_MD5(...)
+
+  - id: codeql-swift-weak-crypto-sha1
+    message: >-
+      Use of SHA-1 hashing algorithm. SHA-1 is cryptographically weak and
+      should not be used for security purposes.
+    severity: WARNING
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-328: Reversible One-Way Hash"
+      technology:
+        - swift
+        - ios
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/328.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-328/WeakSensitiveDataHashing.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-328/WeakSensitiveDataHashing.ql
+    pattern-either:
+      - pattern: Insecure.SHA1.hash(...)
+      - pattern: CC_SHA1(...)
+
+  - id: codeql-swift-ecb-encryption
+    message: >-
+      ECB mode encryption is insecure. Use CBC or GCM mode instead.
+    severity: ERROR
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - swift
+        - ios
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-327/ECBEncryption.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-327/ECBEncryption.ql
+    pattern: CCCrypt(..., kCCOptionECBMode, ...)

@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-go-open-redirect
+    message: >-
+      URL redirect destination built from user input may allow open redirect
+      attacks. Validate redirect URLs against a whitelist.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-601/OpenUrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-601/OpenUrlRedirect.ql
+    pattern-either:
+      - pattern: http.Redirect($W, $R, $R.URL.Query().Get(...), ...)
+      - pattern: http.Redirect($W, $R, $R.FormValue(...), ...)
+      - pattern: http.Redirect($W, $R, $R.PostFormValue(...), ...)

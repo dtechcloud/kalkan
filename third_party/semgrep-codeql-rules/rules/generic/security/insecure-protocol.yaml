@@ -1,0 +1,42 @@
+rules:
+  - id: codeql-generic-insecure-http-url
+    message: >-
+      Insecure HTTP URL detected. Use HTTPS instead to protect data in transit.
+    severity: WARNING
+    languages:
+      - generic
+    metadata:
+      category: security
+      cwe: "CWE-319: Cleartext Transmission of Sensitive Information"
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+    pattern-regex: 'http://[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}'
+    paths:
+      exclude:
+        - "*test*"
+        - "*spec*"
+        - "*example*"
+        - "*.md"
+
+  - id: codeql-generic-insecure-ftp-url
+    message: >-
+      Insecure FTP URL detected. Use SFTP or FTPS instead.
+    severity: WARNING
+    languages:
+      - generic
+    metadata:
+      category: security
+      cwe: "CWE-319: Cleartext Transmission of Sensitive Information"
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/319.html
+    pattern-regex: 'ftp://[a-zA-Z0-9][a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,}'

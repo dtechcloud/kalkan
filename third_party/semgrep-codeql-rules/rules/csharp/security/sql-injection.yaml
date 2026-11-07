@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-csharp-sql-injection
+    message: >-
+      SQL query built from user input may be vulnerable to SQL injection.
+      Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - csharp
+        - dotnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: new SqlCommand($QUERY + $INPUT, ...)
+      - pattern: new SqlCommand($"...", ...)
+      - pattern: $CMD.CommandText = $QUERY + $INPUT;
+      - pattern: $CMD.CommandText = $"...";

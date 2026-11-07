@@ -1,0 +1,30 @@
+rules:
+  - id: codeql-java-path-traversal
+    message: >-
+      File path built from user input may allow path traversal attacks.
+      Validate and canonicalize paths before use.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-022/TaintedPath.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-022/TaintedPath.ql
+    pattern-either:
+      - pattern: new File($BASE + $INPUT)
+      - pattern: new File($BASE, $INPUT)
+      - pattern: Paths.get($BASE, $INPUT)
+      - pattern: new FileInputStream($BASE + $INPUT)
+      - pattern: new FileReader($BASE + $INPUT)
+      - pattern: new FileOutputStream($BASE + $INPUT)
+      - pattern: new FileWriter($BASE + $INPUT)

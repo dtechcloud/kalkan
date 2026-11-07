@@ -1,0 +1,58 @@
+rules:
+  - id: codeql-ruby-command-injection
+    message: >-
+      Command built from user input may be vulnerable to command injection.
+      Avoid using backticks or system with untrusted input.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-078/CommandInjection.ql
+    pattern-either:
+      - pattern: system("..." + $VAR)
+      - pattern: system("#{...}")
+      - pattern: exec("..." + $VAR)
+      - pattern: exec("#{...}")
+      - pattern: IO.popen("..." + $VAR)
+      - pattern: IO.popen("#{...}")
+      - pattern: Kernel.system("..." + $VAR)
+      - pattern: Kernel.system("#{...}")
+
+  - id: codeql-ruby-code-injection
+    message: >-
+      Using eval with user input can lead to arbitrary code execution.
+      Avoid using eval with untrusted data.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-094/UnsafeCodeConstruction.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-094/UnsafeCodeConstruction.ql
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: instance_eval(...)
+      - pattern: class_eval(...)
+      - pattern: module_eval(...)

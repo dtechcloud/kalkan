@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-java-command-injection
+    message: >-
+      Command built from user input may be vulnerable to command injection.
+      Avoid using Runtime.exec with untrusted input.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-078/ExecTainted.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-078/ExecTainted.ql
+    pattern-either:
+      - pattern: Runtime.getRuntime().exec($CMD + $VAR)
+      - pattern: Runtime.getRuntime().exec(new String[]{$SHELL, $ARG, $CMD + $VAR})
+      - pattern: new ProcessBuilder($CMD + $VAR).start()
+      - pattern: new ProcessBuilder(...).command($CMD + $VAR)

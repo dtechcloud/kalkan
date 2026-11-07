@@ -1,0 +1,34 @@
+rules:
+  - id: codeql-py-xpath-injection
+    message: >-
+      XPath query built from user input may be vulnerable to XPath injection.
+      Use parameterized queries or proper escaping.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-643: Improper Neutralization of Data within XPath Expressions"
+      technology:
+        - python
+        - lxml
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/643.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-643/XpathInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-643/XpathInjection.ql
+    pattern-either:
+      - pattern: $TREE.xpath("..." % $VAR)
+      - pattern: $TREE.xpath("...".format(...))
+      - pattern: $TREE.xpath(f"...")
+      - pattern: $TREE.xpath($QUERY + $VAR)
+      - pattern: $ELEM.xpath("..." % $VAR)
+      - pattern: $ELEM.xpath("...".format(...))
+      - pattern: $ELEM.xpath(f"...")
+      - pattern: lxml.etree.XPath("..." % $VAR)
+      - pattern: lxml.etree.XPath("...".format(...))
+      - pattern: lxml.etree.XPath(f"...")

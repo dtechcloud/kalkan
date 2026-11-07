@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-go-insecure-host-key-callback
+    message: >-
+      SSH host key validation is disabled. This makes the connection vulnerable
+      to man-in-the-middle attacks. Use ssh.FixedHostKey or knownhosts.New.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-322: Key Exchange without Entity Authentication"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/322.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-322/InsecureHostKeyCallback.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-322/InsecureHostKeyCallback.ql
+    pattern-either:
+      - pattern: ssh.InsecureIgnoreHostKey()
+      - pattern: |
+          &ssh.ClientConfig{..., HostKeyCallback: ssh.InsecureIgnoreHostKey(), ...}
+      - pattern: |
+          ssh.ClientConfig{..., HostKeyCallback: ssh.InsecureIgnoreHostKey(), ...}

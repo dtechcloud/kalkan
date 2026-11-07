@@ -1,0 +1,141 @@
+rules:
+  - id: codeql-py-sql-injection-format
+    message: >-
+      SQL query built using string formatting. This may be vulnerable to SQL
+      injection attacks. Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $CURSOR.execute("..." % $VAR, ...)
+      - pattern: $CURSOR.execute("...".format(...), ...)
+      - pattern: $CURSOR.execute(f"...", ...)
+      - pattern: $CURSOR.executemany("..." % $VAR, ...)
+      - pattern: $CURSOR.executemany("...".format(...), ...)
+      - pattern: $CURSOR.executemany(f"...", ...)
+      - pattern: $CONN.execute("..." % $VAR, ...)
+      - pattern: $CONN.execute("...".format(...), ...)
+      - pattern: $CONN.execute(f"...", ...)
+
+  - id: codeql-py-sql-injection-concatenation
+    message: >-
+      SQL query built using string concatenation. This may be vulnerable to SQL
+      injection attacks. Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $CURSOR.execute($QUERY + $VAR, ...)
+      - pattern: $CURSOR.execute($VAR + $QUERY, ...)
+      - pattern: $CONN.execute($QUERY + $VAR, ...)
+      - pattern: $CONN.execute($VAR + $QUERY, ...)
+
+  - id: codeql-py-sql-injection-django-raw
+    message: >-
+      Using Django raw() with string formatting may be vulnerable to SQL
+      injection. Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $MODEL.objects.raw("..." % $VAR, ...)
+      - pattern: $MODEL.objects.raw("...".format(...), ...)
+      - pattern: $MODEL.objects.raw(f"...", ...)
+      - pattern: $MODEL.objects.raw($QUERY + $VAR, ...)
+
+  - id: codeql-py-sql-injection-django-extra
+    message: >-
+      Using Django extra() with string formatting may be vulnerable to SQL
+      injection. Consider using annotate() or raw() with parameters instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $QUERYSET.extra(..., where=["..." % $VAR], ...)
+      - pattern: $QUERYSET.extra(..., where=["...".format(...)], ...)
+      - pattern: $QUERYSET.extra(..., where=[f"..."], ...)
+
+  - id: codeql-py-sql-injection-sqlalchemy
+    message: >-
+      Using SQLAlchemy text() with string formatting may be vulnerable to SQL
+      injection. Use bound parameters instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - sqlalchemy
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: sqlalchemy.text("..." % $VAR)
+      - pattern: sqlalchemy.text("...".format(...))
+      - pattern: sqlalchemy.text(f"...")
+      - pattern: text("..." % $VAR)
+      - pattern: text("...".format(...))
+      - pattern: text(f"...")

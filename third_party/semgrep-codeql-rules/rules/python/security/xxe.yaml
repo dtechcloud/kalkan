@@ -1,0 +1,145 @@
+rules:
+  - id: codeql-py-xxe-etree
+    message: >-
+      XML parsing without disabling external entities may be vulnerable to XXE
+      attacks. Use defusedxml or disable external entity processing.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - python
+        - lxml
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: lxml.etree.parse(...)
+      - pattern: lxml.etree.fromstring(...)
+      - pattern: lxml.etree.XML(...)
+      - pattern: lxml.etree.iterparse(...)
+      - pattern: etree.parse(...)
+      - pattern: etree.fromstring(...)
+      - pattern: etree.XML(...)
+
+  - id: codeql-py-xxe-xml-etree
+    message: >-
+      xml.etree.ElementTree is vulnerable to XML External Entity (XXE) attacks.
+      Use defusedxml.ElementTree instead for safe XML parsing.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: xml.etree.ElementTree.parse(...)
+      - pattern: xml.etree.ElementTree.fromstring(...)
+      - pattern: ElementTree.parse(...)
+      - pattern: ElementTree.fromstring(...)
+      - pattern: ET.parse(...)
+      - pattern: ET.fromstring(...)
+
+  - id: codeql-py-xxe-xml-dom
+    message: >-
+      xml.dom.minidom and xml.dom.pulldom are vulnerable to XML External Entity
+      (XXE) attacks. Use defusedxml instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: xml.dom.minidom.parse(...)
+      - pattern: xml.dom.minidom.parseString(...)
+      - pattern: xml.dom.pulldom.parse(...)
+      - pattern: xml.dom.pulldom.parseString(...)
+      - pattern: minidom.parse(...)
+      - pattern: minidom.parseString(...)
+      - pattern: pulldom.parse(...)
+      - pattern: pulldom.parseString(...)
+
+  - id: codeql-py-xxe-sax
+    message: >-
+      xml.sax is vulnerable to XML External Entity (XXE) attacks. Use defusedxml
+      instead for safe XML parsing.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: xml.sax.parse(...)
+      - pattern: xml.sax.parseString(...)
+      - pattern: sax.parse(...)
+      - pattern: sax.parseString(...)
+
+  - id: codeql-py-xxe-xmlrpc
+    message: >-
+      xmlrpc is vulnerable to XML External Entity (XXE) attacks. Consider using
+      a safer alternative or ensure the server is trusted.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: xmlrpc.client.ServerProxy(...)
+      - pattern: xmlrpc.server.SimpleXMLRPCServer(...)
+      - pattern: ServerProxy(...)
+      - pattern: SimpleXMLRPCServer(...)

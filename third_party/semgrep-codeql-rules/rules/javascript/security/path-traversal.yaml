@@ -1,0 +1,62 @@
+rules:
+  - id: codeql-js-path-traversal
+    message: >-
+      File path built from user input may allow path traversal attacks.
+      Validate and sanitize file paths before use.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-022/TaintedPath.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-022/TaintedPath.ql
+    pattern-either:
+      - pattern: fs.readFile($BASE + $INPUT, ...)
+      - pattern: fs.readFile(`...${$INPUT}...`, ...)
+      - pattern: fs.readFileSync($BASE + $INPUT, ...)
+      - pattern: fs.readFileSync(`...${$INPUT}...`, ...)
+      - pattern: fs.writeFile($BASE + $INPUT, ...)
+      - pattern: fs.writeFile(`...${$INPUT}...`, ...)
+      - pattern: fs.writeFileSync($BASE + $INPUT, ...)
+      - pattern: fs.writeFileSync(`...${$INPUT}...`, ...)
+      - pattern: fs.createReadStream($BASE + $INPUT, ...)
+      - pattern: fs.createReadStream(`...${$INPUT}...`, ...)
+      - pattern: path.join($BASE, $INPUT)
+      - pattern: path.resolve($BASE, $INPUT)
+
+  - id: codeql-js-zip-slip
+    message: >-
+      Extracting archive files without validating paths may allow path
+      traversal (Zip Slip). Check for .. in extracted file names.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-022/ZipSlip.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-022/ZipSlip.ql
+    pattern-either:
+      - pattern: $ZIP.extractAllTo(...)
+      - pattern: $ENTRY.extract(...)

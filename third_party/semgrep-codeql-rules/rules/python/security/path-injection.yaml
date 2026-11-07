@@ -1,0 +1,86 @@
+rules:
+  - id: codeql-py-path-traversal-open
+    message: >-
+      File path built from user input may allow path traversal attacks.
+      Validate and sanitize file paths before use.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-022/PathInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-022/PathInjection.ql
+    pattern-either:
+      - pattern: open($PATH + $INPUT, ...)
+      - pattern: open(f"...{$INPUT}...", ...)
+      - pattern: open("...{}...".format($INPUT), ...)
+      - pattern: open("..." % $INPUT, ...)
+      - pattern: open(os.path.join($BASE, $INPUT), ...)
+
+  - id: codeql-py-tarfile-slip
+    message: >-
+      Extracting tar files without validating member names may allow path
+      traversal (Zip Slip). Check for absolute paths or .. in member names.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-022/TarSlip.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-022/TarSlip.ql
+    pattern-either:
+      - pattern: tarfile.open(...).extractall(...)
+      - pattern: $TAR.extractall(...)
+      - pattern: |
+          $TAR = tarfile.open(...)
+          ...
+          $TAR.extractall(...)
+
+  - id: codeql-py-zipfile-slip
+    message: >-
+      Extracting zip files without validating member names may allow path
+      traversal (Zip Slip). Check for absolute paths or .. in member names.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-022/TarSlip.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-022/TarSlip.ql
+    pattern-either:
+      - pattern: zipfile.ZipFile(...).extractall(...)
+      - pattern: $ZIP.extractall(...)
+      - pattern: |
+          $ZIP = zipfile.ZipFile(...)
+          ...
+          $ZIP.extractall(...)

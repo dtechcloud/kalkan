@@ -1,0 +1,51 @@
+rules:
+  - id: codeql-ruby-xxe-nokogiri
+    message: >-
+      XML parsing with external entities enabled may be vulnerable to XXE attacks.
+      Disable external entity processing in Nokogiri.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - nokogiri
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-611/Xxe.ql
+    pattern-either:
+      - pattern: Nokogiri::XML($INPUT, ..., Nokogiri::XML::ParseOptions::NOENT, ...)
+      - pattern: Nokogiri::XML($INPUT) { |config| config.noent }
+      - pattern: Nokogiri::XML::Document.parse($INPUT, ..., Nokogiri::XML::ParseOptions::NOENT, ...)
+
+  - id: codeql-ruby-xxe-rexml
+    message: >-
+      REXML XML parsing may be vulnerable to XXE attacks. Ensure external
+      entity expansion is disabled.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - rexml
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-611/Xxe.ql
+    pattern-either:
+      - pattern: REXML::Document.new($INPUT)
+      - pattern: REXML::Document.new($INPUT, ...)

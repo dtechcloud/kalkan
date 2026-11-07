@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-java-xxe
+    message: >-
+      XML parsing without disabling external entities may be vulnerable to XXE.
+      Disable DTDs or external entities in the parser.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-611/XXE.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-611/XXE.ql
+    pattern-either:
+      - pattern: DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(...)
+      - pattern: SAXParserFactory.newInstance().newSAXParser().parse(...)
+      - pattern: XMLInputFactory.newInstance().createXMLStreamReader(...)

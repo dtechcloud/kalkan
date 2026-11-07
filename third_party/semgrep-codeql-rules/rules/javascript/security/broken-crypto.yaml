@@ -1,0 +1,113 @@
+rules:
+  - id: codeql-js-weak-crypto-md5
+    message: >-
+      Use of MD5 hashing algorithm. MD5 is cryptographically broken and should
+      not be used for security purposes.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - nodejs
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: crypto.createHash("md5")
+      - pattern: crypto.createHash('md5')
+      - pattern: CryptoJS.MD5(...)
+      - pattern: require("crypto").createHash("md5")
+      - pattern: require("crypto").createHash('md5')
+
+  - id: codeql-js-weak-crypto-sha1
+    message: >-
+      Use of SHA-1 hashing algorithm. SHA-1 is cryptographically weak and should
+      not be used for security purposes.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - nodejs
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: crypto.createHash("sha1")
+      - pattern: crypto.createHash('sha1')
+      - pattern: CryptoJS.SHA1(...)
+      - pattern: require("crypto").createHash("sha1")
+
+  - id: codeql-js-weak-crypto-des
+    message: >-
+      Use of DES encryption algorithm. DES is cryptographically broken. Use AES
+      instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - nodejs
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: crypto.createCipheriv("des", ...)
+      - pattern: crypto.createCipheriv('des', ...)
+      - pattern: crypto.createCipheriv("des-ecb", ...)
+      - pattern: crypto.createCipheriv("des-cbc", ...)
+      - pattern: CryptoJS.DES.encrypt(...)
+      - pattern: CryptoJS.TripleDES.encrypt(...)
+
+  - id: codeql-js-weak-crypto-rc4
+    message: >-
+      Use of RC4 cipher. RC4 has known vulnerabilities. Use AES-GCM instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - nodejs
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: crypto.createCipheriv("rc4", ...)
+      - pattern: crypto.createCipheriv('rc4', ...)
+      - pattern: CryptoJS.RC4.encrypt(...)

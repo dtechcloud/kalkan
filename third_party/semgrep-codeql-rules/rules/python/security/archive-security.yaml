@@ -1,0 +1,82 @@
+rules:
+  - id: codeql-py-tarfile-extractall
+    message: >-
+      Extracting tar archive without path validation may allow path traversal
+      (tar slip). Validate member paths before extraction.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-022/TarSlip.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-022/TarSlip.ql
+    pattern-either:
+      - pattern: tarfile.open(...).extractall(...)
+      - pattern: |
+          $TAR = tarfile.open(...)
+          ...
+          $TAR.extractall(...)
+
+  - id: codeql-py-zipfile-extractall
+    message: >-
+      Extracting zip archive without path validation may allow path traversal
+      (zip slip). Validate member paths before extraction.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-022/TarSlip.ql
+    pattern-either:
+      - pattern: zipfile.ZipFile(...).extractall(...)
+      - pattern: |
+          $ZIP = zipfile.ZipFile(...)
+          ...
+          $ZIP.extractall(...)
+
+  - id: codeql-py-decompression-bomb
+    message: >-
+      Decompressing data without size limits may allow decompression bomb
+      attacks. Limit decompressed size.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-409: Improper Handling of Highly Compressed Data"
+      technology:
+        - python
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/409.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-409/DecompressionBomb.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-409/DecompressionBomb.ql
+    pattern-either:
+      - pattern: gzip.decompress($DATA)
+      - pattern: zlib.decompress($DATA)
+      - pattern: bz2.decompress($DATA)
+      - pattern: lzma.decompress($DATA)

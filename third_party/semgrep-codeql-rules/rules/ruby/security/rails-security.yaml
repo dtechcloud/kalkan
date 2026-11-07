@@ -1,0 +1,122 @@
+rules:
+  - id: codeql-ruby-rails-mass-assignment
+    message: >-
+      Mass assignment without strong parameters may allow unauthorized
+      attribute updates. Use strong parameters.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Attributes"
+      technology:
+        - rails
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/915.html
+    pattern-either:
+      - pattern: $MODEL.new(params[$KEY])
+      - pattern: $MODEL.create(params[$KEY])
+      - pattern: $MODEL.update(params[$KEY])
+      - pattern: $MODEL.update_attributes(params[$KEY])
+
+  - id: codeql-ruby-rails-html-safe
+    message: >-
+      Using html_safe on user input may cause XSS. Ensure content is properly
+      sanitized.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - rails
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+    pattern-either:
+      - pattern: $INPUT.html_safe
+      - pattern: raw($INPUT)
+
+  - id: codeql-ruby-rails-render-text
+    message: >-
+      Rendering text without escaping may cause XSS if the content contains
+      user input.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - rails
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+    pattern-either:
+      - pattern: "render html: $INPUT"
+      - pattern: "render html: $INPUT.html_safe"
+
+  - id: codeql-ruby-rails-send
+    message: >-
+      Using send or public_send with user input may allow arbitrary method
+      calls. Validate the method name.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - rails
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+    pattern-either:
+      - pattern: $OBJ.send(params[$KEY], ...)
+      - pattern: $OBJ.public_send(params[$KEY], ...)
+      - pattern: $OBJ.send(params[...], ...)
+      - pattern: $OBJ.public_send(params[...], ...)
+
+  - id: codeql-ruby-rails-constantize
+    message: >-
+      Using constantize with user input may allow arbitrary class instantiation.
+      Validate against a whitelist.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - rails
+        - ruby
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+    pattern-either:
+      - pattern: params[$KEY].constantize
+      - pattern: params[...].constantize
+      - pattern: params[$KEY].safe_constantize

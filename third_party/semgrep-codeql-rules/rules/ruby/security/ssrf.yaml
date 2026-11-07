@@ -1,0 +1,33 @@
+rules:
+  - id: codeql-ruby-ssrf
+    message: >-
+      URL built from user input may be vulnerable to Server-Side Request
+      Forgery (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-918/ServerSideRequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-918/ServerSideRequestForgery.ql
+    pattern-either:
+      - pattern: Net::HTTP.get($URL + $INPUT)
+      - pattern: Net::HTTP.get("#{...}")
+      - pattern: URI.open($URL + $INPUT)
+      - pattern: URI.open("#{...}")
+      - pattern: open($URL + $INPUT)
+      - pattern: open("#{...}")
+      - pattern: HTTParty.get($URL + $INPUT)
+      - pattern: HTTParty.get("#{...}")
+      - pattern: Faraday.get($URL + $INPUT)
+      - pattern: Faraday.get("#{...}")

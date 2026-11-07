@@ -14,14 +14,25 @@ kalkan keeps verbatim copies of selected upstream files under `third_party/`. `t
 | gitlab-sast-rules | https://gitlab.com/gitlab-org/security-products/sast-rules | `53bf5cf` (v2.10.1, 2026-09-21) | MIT (243 files) and LGPL-3.0-only (152 files of `rules/lgpl`), by the license header of each file | Opengrep rule pack (C#, Java, JavaScript, Python, Scala, Kotlin, Swift) |
 | 0xdea-semgrep-rules | https://github.com/0xdea/semgrep-rules | `dae50da` (2026-09-25) | MIT | Opengrep rule pack (C and C++) |
 | trailofbits-semgrep-rules | https://github.com/trailofbits/semgrep-rules | `31390b3` (2025-11-12) | AGPL-3.0-only | Opengrep rule pack (Go, Python, Ruby, JavaScript, HCL, Ansible, generic) |
+| atlassian-sast-ruleset | https://github.com/atlassian-labs/atlassian-sast-ruleset | `800d288` (2026-09-25) | LGPL-2.1-only | Opengrep rule pack (Java: FreeMarker, Jackson, Java I/O, JMX, JNDI, Soy, Spring, XStream; ADR-0007) |
+| elttam-semgrep-rules | https://github.com/elttam/semgrep-rules | `2442685` (2026-08-03) | MIT | Opengrep rule pack (Java, Go, C#, JavaScript, Python, PHP; ADR-0007) |
+| njsscan-rules | https://github.com/ajinabraham/njsscan | `b1a0797` (2026-10-23) | LGPL-3.0-or-later | Opengrep rule pack (Node.js, Electron; ADR-0007) |
+| mobsfscan-rules | https://github.com/MobSF/mobsfscan | `175978c` (2026-10-23) | LGPL-3.0-or-later | Opengrep rule pack (Android Java and Kotlin, iOS Swift; ADR-0007) |
+| mindedsecurity-android-rules | https://github.com/mindedsecurity/semgrep-rules-android-security | `8133aa8` (2026-06-05) | GPL-3.0-only | Opengrep rule pack (Android, by OWASP MASTG test; ADR-0007) |
+| aikido-opengrep-rules | https://github.com/AikidoSec/opengrep-rules | `7ac79af` (2026-06-04) | MIT | Opengrep rule pack (GitHub Actions, npm publishing; ADR-0007) |
+| semgrep-codeql-rules | https://github.com/andrew/semgrep-codeql | `84a03f3` (2025-12-21) | MIT (converted from github/codeql, MIT) | Opengrep rule pack, a measured subset (Python, JavaScript, Go, Java, Ruby, C#; ADR-0007) |
 
-The three rule packs (ADR-0005 K.8 and its license policy of 2026-10-25):
+The rule packs (ADR-0005 K.8 and its license policy of 2026-10-25; ADR-0007 for the packs of 2026-11-07):
 
 - The copies hold only rule files, no test sources. GitLab: only the files with the header `MIT (c) GitLab Inc.` or `GNU Lesser General Public License v3.0`; not copied are `rules/lgpl-cc` (Commons Clause), `rules/gitlab` (GitLab Enterprise Edition license), `c` (GPL-2.0) and `go` (Apache-2.0). ADR-0005 names the GitLab license "LGPL-2.1"; the files say LGPL-3.0.
 - License texts: each folder keeps the upstream license files. The LGPL-3.0 adds permissions to the GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.txt); the upstream repository does not ship that text.
 - AGPL-3.0 (Trail of Bits): the rule files stay unmodified in `third_party/` with the license, and the changed bundles in `rules/opengrep-packs/trailofbits/` stay under AGPL-3.0 with their source in this repository. AGPL-3.0 allows commercial use. kalkan is not offered as a network service.
 - `KALKAN_RULE_PACKS=osi` turns the AGPL pack off (docs/ENGINE-SPEC.md, section 13).
 - Removed on 2026-11-06: the opengrep-rules pack (`f1d2b56`, LGPL-2.1 with the Commons Clause License Condition v1.0). The Commons Clause forbids selling a product or service whose value derives from the rules, consulting and support services included, and the license is not OSI-approved. `KALKAN_RULE_PACKS` ignores the old pack name.
+- Added on 2026-11-07 (ADR-0007), to replace the removed pack with free licenses: atlassian, elttam, njsscan, mobsfscan, mindedsecurity, aikido and semgrep-codeql. Each LICENSE was read again at the pinned commit; none carries the Commons Clause. The copyleft packs (LGPL-2.1, LGPL-3.0, GPL-3.0) stay in their own folders with their license texts, and their changed bundles in `rules/opengrep-packs/<pack>/` keep the license of the pack. LGPL and GPL allow commercial use, paid consulting included. All seven are in the license group `osi`.
+- Left out of njsscan and mobsfscan: the 14 rule files whose header names Semgrep's semgrep-rules repository (no license before 2020-10-29, the Commons Clause after) or the GPL-3.0 mindedsecurity rules as their source (`third_party/MANIFEST.json`, the `exclude` lists).
+- semgrep-codeql is an LLM conversion of the CodeQL queries of https://github.com/github/codeql (MIT, Copyright (c) 2006-2025 GitHub, Inc.; the root NOTICE repeats it) without upstream tests. kalkan keeps only the 28 rules that it measured on `tests/fixtures/vulnapp` (`keep_only` in `curation.json`, drop kind `unmeasured`).
+- Not taken (2026-11-07 survey): patched-codes/semgrep-rules (GitLab content relabeled as MIT), Decurity/semgrep-smart-contracts (CC BY-NC-SA 4.0, non-commercial), amplify-security/opengrep-rules (Commons Clause), repositories without a license file, and the Semgrep Registry copies in brave/security-action.
 
 Rules for ported code:
 
@@ -40,8 +51,8 @@ Rules for ported code:
 | `src/kalkan/findings/validate.py`, `ledger.py`, `src/kalkan/util/safe_io.py` | security-audit-skill `validate-findings.cjs`, `validate-coverage-ledger.cjs` | MIT (Cloudflare, Inc.) | Ported to Python |
 | `src/kalkan/sca/retirejs.py` | retire.js `node/lib/retire.js` (release 6.1.0) | Apache-2.0 (Erlend Oftedal; see NOTICE) | The matching functions ported to Python; the file keeps the Apache-2.0 header |
 | `knowledge/**/*.md` | all five upstream projects | MIT and Apache-2.0 | Condensed and rewritten; each file lists its sources |
-| `rules/opengrep-packs/<pack>/**/rules.yaml` (16 bundles, 505 rules) | the three rule packs above | the license of each pack: MIT and LGPL-3.0-only, AGPL-3.0-only, MIT | Generated by `scripts/build_opengrep_packs.py`: the kept rules of the files of one pack folder joined into one file and re-indented, the rule text unchanged; each bundle names the pack, the license, the change (2026-10-25) and its source files. The unmodified files stay in `third_party/`. |
-| `rules/opengrep-packs/index.json`, `curation.json` | the three rule packs above | MIT (kalkan) | The kept rules with class and license, the dropped rules with their reason, the curation |
+| `rules/opengrep-packs/<pack>/**/rules.yaml` (55 bundles, 733 rules) | the ten rule packs above | the license of each pack: MIT and LGPL-3.0-only, AGPL-3.0-only, MIT, LGPL-2.1-only, LGPL-3.0-or-later, GPL-3.0-only | Generated by `scripts/build_opengrep_packs.py`: the kept rules of the files of one pack folder joined into one file and re-indented, the rule text unchanged; each bundle names the pack, the license, the change (2026-10-25) and its source files. The unmodified files stay in `third_party/`. |
+| `rules/opengrep-packs/index.json`, `curation.json` | the ten rule packs above | MIT (kalkan) | The kept rules with class and license, the dropped rules with their reason, the curation |
 
 ## External tools (installed at setup time, not part of this repository)
 

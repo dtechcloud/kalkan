@@ -1,0 +1,60 @@
+rules:
+  - id: codeql-actions-missing-permissions
+    message: >-
+      Workflow does not specify permissions. Add explicit permissions to
+      follow the principle of least privilege.
+    severity: WARNING
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-275: Permission Issues"
+      technology:
+        - github-actions
+      confidence: MEDIUM
+      likelihood: LOW
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/275.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-275/MissingActionsPermissions.ql
+        - https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-275/MissingActionsPermissions.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    patterns:
+      - pattern: |
+          on: ...
+          ...
+          jobs: ...
+      - pattern-not: |
+          permissions: ...
+
+  - id: codeql-actions-write-all-permissions
+    message: >-
+      Workflow grants write-all permissions. Use specific permissions instead
+      to follow the principle of least privilege.
+    severity: WARNING
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-275: Permission Issues"
+      technology:
+        - github-actions
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/275.html
+        - https://docs.github.com/en/actions/security-guides/automatic-token-authentication
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    pattern-regex: 'permissions:\s*write-all'

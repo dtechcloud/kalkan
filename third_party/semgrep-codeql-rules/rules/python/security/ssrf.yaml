@@ -1,0 +1,90 @@
+rules:
+  - id: codeql-py-ssrf-requests
+    message: >-
+      URL built from user input passed to requests library may be vulnerable
+      to Server-Side Request Forgery (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - requests
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-918/FullServerSideRequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-918/FullServerSideRequestForgery.ql
+    pattern-either:
+      - pattern: requests.get($URL + $INPUT, ...)
+      - pattern: requests.get(f"...{$INPUT}...", ...)
+      - pattern: requests.get("...{}...".format($INPUT), ...)
+      - pattern: requests.post($URL + $INPUT, ...)
+      - pattern: requests.post(f"...{$INPUT}...", ...)
+      - pattern: requests.put($URL + $INPUT, ...)
+      - pattern: requests.delete($URL + $INPUT, ...)
+      - pattern: requests.request(..., $URL + $INPUT, ...)
+      - pattern: requests.request(..., f"...{$INPUT}...", ...)
+
+  - id: codeql-py-ssrf-urllib
+    message: >-
+      URL built from user input passed to urllib may be vulnerable to
+      Server-Side Request Forgery (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-918/FullServerSideRequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-918/FullServerSideRequestForgery.ql
+    pattern-either:
+      - pattern: urllib.request.urlopen($URL + $INPUT, ...)
+      - pattern: urllib.request.urlopen(f"...{$INPUT}...", ...)
+      - pattern: urllib.request.urlopen("...{}...".format($INPUT), ...)
+      - pattern: urlopen($URL + $INPUT, ...)
+      - pattern: urlopen(f"...{$INPUT}...", ...)
+
+  - id: codeql-py-ssrf-httpx
+    message: >-
+      URL built from user input passed to httpx may be vulnerable to
+      Server-Side Request Forgery (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - httpx
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-918/FullServerSideRequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-918/FullServerSideRequestForgery.ql
+    pattern-either:
+      - pattern: httpx.get($URL + $INPUT, ...)
+      - pattern: httpx.get(f"...{$INPUT}...", ...)
+      - pattern: httpx.post($URL + $INPUT, ...)
+      - pattern: httpx.put($URL + $INPUT, ...)
+      - pattern: httpx.delete($URL + $INPUT, ...)
+      - pattern: $CLIENT.get($URL + $INPUT, ...)
+      - pattern: $CLIENT.get(f"...{$INPUT}...", ...)

@@ -1,0 +1,75 @@
+rules:
+  - id: codeql-js-electron-node-integration
+    message: >-
+      Electron BrowserWindow created with nodeIntegration enabled. This allows
+      renderer processes to access Node.js APIs, which is dangerous if loading
+      remote content.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-829: Inclusion of Functionality from Untrusted Control Sphere"
+      technology:
+        - electron
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/829.html
+        - https://www.electronjs.org/docs/latest/tutorial/security
+    pattern-either:
+      - pattern: "new BrowserWindow({ ..., webPreferences: { ..., nodeIntegration: true, ... }, ... })"
+      - pattern: |
+          $PREFS = { ..., nodeIntegration: true, ... };
+          ...
+          new BrowserWindow({ ..., webPreferences: $PREFS, ... });
+
+  - id: codeql-js-electron-context-isolation-disabled
+    message: >-
+      Electron BrowserWindow created with contextIsolation disabled. Enable
+      context isolation to prevent prototype pollution attacks.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-829: Inclusion of Functionality from Untrusted Control Sphere"
+      technology:
+        - electron
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/829.html
+        - https://www.electronjs.org/docs/latest/tutorial/security
+    pattern: "new BrowserWindow({ ..., webPreferences: { ..., contextIsolation: false, ... }, ... })"
+
+  - id: codeql-js-electron-web-security-disabled
+    message: >-
+      Electron BrowserWindow created with webSecurity disabled. This disables
+      same-origin policy protections.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-346: Origin Validation Error"
+      technology:
+        - electron
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/346.html
+        - https://www.electronjs.org/docs/latest/tutorial/security
+    pattern: "new BrowserWindow({ ..., webPreferences: { ..., webSecurity: false, ... }, ... })"

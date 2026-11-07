@@ -1,0 +1,32 @@
+rules:
+  - id: codeql-js-nosql-injection-mongodb
+    message: >-
+      MongoDB query built from user input may be vulnerable to NoSQL injection.
+      Validate and sanitize input.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      technology:
+        - mongodb
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $COLL.find({...})
+      - pattern: $COLL.findOne({...})
+      - pattern: $COLL.aggregate([...])
+      - pattern: $COLL.updateOne({...}, ...)
+      - pattern: $COLL.updateMany({...}, ...)
+      - pattern: $COLL.deleteOne({...})
+      - pattern: $COLL.deleteMany({...})

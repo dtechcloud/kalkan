@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-go-insecure-skip-verify
+    message: >-
+      TLS certificate verification is disabled. This makes the connection
+      vulnerable to man-in-the-middle attacks.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-295: Improper Certificate Validation"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/295.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-295/DisabledCertificateCheck.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-295/DisabledCertificateCheck.ql
+    pattern-either:
+      - pattern: |
+          &tls.Config{..., InsecureSkipVerify: true, ...}
+      - pattern: |
+          tls.Config{..., InsecureSkipVerify: true, ...}
+      - pattern: $CFG.InsecureSkipVerify = true
