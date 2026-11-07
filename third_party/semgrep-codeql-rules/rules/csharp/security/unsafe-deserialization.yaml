@@ -1,0 +1,77 @@
+rules:
+  - id: codeql-csharp-unsafe-deserialization-binaryformatter
+    message: >-
+      BinaryFormatter deserialization is unsafe and can lead to remote code
+      execution. Use a safe serializer like JsonSerializer.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - csharp
+        - dotnet
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-502/UnsafeDeserialization.ql
+    pattern-either:
+      - pattern: new BinaryFormatter().Deserialize(...)
+      - pattern: |
+          $BF = new BinaryFormatter();
+          ...
+          $BF.Deserialize(...);
+
+  - id: codeql-csharp-unsafe-deserialization-xmlserializer
+    message: >-
+      XmlSerializer with user-controlled type may be unsafe. Ensure the type
+      parameter is not controlled by user input.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - csharp
+        - dotnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-502/UnsafeDeserialization.ql
+    pattern: new XmlSerializer(Type.GetType($INPUT))
+
+  - id: codeql-csharp-unsafe-deserialization-javascriptserializer
+    message: >-
+      JavaScriptSerializer with TypeResolver is unsafe and can lead to remote
+      code execution.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - csharp
+        - dotnet
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-502/UnsafeDeserialization.ql
+    pattern: new JavaScriptSerializer(new SimpleTypeResolver())

@@ -1,0 +1,56 @@
+rules:
+  - id: codeql-ruby-erb-template-injection
+    message: >-
+      ERB template built from user input may allow template injection attacks.
+      Avoid using user input directly in templates.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-94: Improper Control of Generation of Code"
+      technology:
+        - erb
+        - ruby
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-094/TemplateInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-094/TemplateInjection.ql
+    pattern-either:
+      - pattern: ERB.new(params[$KEY]).result(...)
+      - pattern: ERB.new($INPUT + params[$KEY]).result(...)
+      - pattern: ERB.new($INPUT + params[$KEY] + ...).result(...)
+      - pattern: |
+          $TEMPLATE = ERB.new(params[$KEY])
+          ...
+          $TEMPLATE.result(...)
+
+  - id: codeql-ruby-render-inline
+    message: >-
+      Rendering inline template from user input may allow template injection.
+      Use render with a view file instead.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-94: Improper Control of Generation of Code"
+      technology:
+        - rails
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-094/TemplateInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-094/TemplateInjection.ql
+    pattern-either:
+      - pattern: "render inline: params[$KEY]"
+      - pattern: "render inline: params[...]"

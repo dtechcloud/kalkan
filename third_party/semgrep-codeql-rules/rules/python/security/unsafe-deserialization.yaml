@@ -1,0 +1,129 @@
+rules:
+  - id: codeql-py-unsafe-deserialization-pickle
+    message: >-
+      Deserializing untrusted data with pickle may allow attackers to execute
+      arbitrary code. Avoid using pickle with untrusted data.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+    pattern-either:
+      - pattern: pickle.load(...)
+      - pattern: pickle.loads(...)
+      - pattern: _pickle.load(...)
+      - pattern: _pickle.loads(...)
+      - pattern: cPickle.load(...)
+      - pattern: cPickle.loads(...)
+
+  - id: codeql-py-unsafe-deserialization-yaml
+    message: >-
+      Using yaml.load() without specifying a safe Loader can lead to arbitrary
+      code execution. Use yaml.safe_load() or specify Loader=yaml.SafeLoader.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - pyyaml
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+    patterns:
+      - pattern: yaml.load(...)
+      - pattern-not: yaml.load(..., Loader=yaml.SafeLoader, ...)
+      - pattern-not: yaml.load(..., Loader=yaml.FullLoader, ...)
+      - pattern-not: yaml.load(..., Loader=yaml.BaseLoader, ...)
+
+  - id: codeql-py-unsafe-deserialization-marshal
+    message: >-
+      Deserializing untrusted data with marshal may allow attackers to execute
+      arbitrary code. Marshal is not intended for untrusted data.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+    pattern-either:
+      - pattern: marshal.load(...)
+      - pattern: marshal.loads(...)
+
+  - id: codeql-py-unsafe-deserialization-shelve
+    message: >-
+      Using shelve module may lead to arbitrary code execution as it uses
+      pickle internally. Avoid using shelve with untrusted data.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+    pattern: shelve.open(...)
+
+  - id: codeql-py-unsafe-deserialization-dill
+    message: >-
+      Deserializing untrusted data with dill may allow attackers to execute
+      arbitrary code. Dill extends pickle and has the same security concerns.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - dill
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-502/UnsafeDeserialization.ql
+    pattern-either:
+      - pattern: dill.load(...)
+      - pattern: dill.loads(...)

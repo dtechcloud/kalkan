@@ -1,0 +1,32 @@
+rules:
+  - id: codeql-js-template-injection
+    message: >-
+      Template string built from user input may be vulnerable to server-side
+      template injection (SSTI).
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-094/CodeInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-094/CodeInjection.ql
+    pattern-either:
+      - pattern: ejs.render($INPUT, ...)
+      - pattern: pug.render($INPUT, ...)
+      - pattern: jade.render($INPUT, ...)
+      - pattern: nunjucks.renderString($INPUT, ...)
+      - pattern: handlebars.compile($INPUT)
+      - pattern: Handlebars.compile($INPUT)
+      - pattern: mustache.render($INPUT, ...)
+      - pattern: Mustache.render($INPUT, ...)

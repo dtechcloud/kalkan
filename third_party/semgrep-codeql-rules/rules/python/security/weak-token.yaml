@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-py-uuid-as-token
+    message: >-
+      UUID used as security token. UUIDs are not cryptographically secure.
+      Use secrets.token_hex() or secrets.token_urlsafe() instead.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-340: Generation of Predictable Numbers or Identifiers"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/340.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-340/TokenBuiltFromUUID.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-340/TokenBuiltFromUUID.ql
+    pattern-either:
+      - pattern: str(uuid.uuid4())
+      - pattern: uuid.uuid4().hex
+      - pattern: str(uuid.uuid1())
+      - pattern: uuid.uuid1().hex

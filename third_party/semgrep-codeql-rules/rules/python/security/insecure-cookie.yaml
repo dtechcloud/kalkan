@@ -1,0 +1,123 @@
+rules:
+  - id: codeql-py-cookie-without-secure
+    message: >-
+      Cookie set without Secure flag. The cookie may be transmitted over an
+      unencrypted connection, allowing attackers to intercept it.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-614/InsecureCookie.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-614/InsecureCookie.ql
+    patterns:
+      - pattern-either:
+          - pattern: $RESPONSE.set_cookie(..., secure=False, ...)
+          - patterns:
+              - pattern: $RESPONSE.set_cookie(...)
+              - pattern-not: $RESPONSE.set_cookie(..., secure=True, ...)
+              - pattern-not: $RESPONSE.set_cookie(..., secure=$VAR, ...)
+
+  - id: codeql-py-cookie-without-httponly
+    message: >-
+      Cookie set without HttpOnly flag. The cookie may be accessed by
+      client-side scripts, making it vulnerable to XSS attacks.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1004.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-1004/NonHttpOnlyCookie.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-1004/NonHttpOnlyCookie.ql
+    patterns:
+      - pattern-either:
+          - pattern: $RESPONSE.set_cookie(..., httponly=False, ...)
+          - patterns:
+              - pattern: $RESPONSE.set_cookie(...)
+              - pattern-not: $RESPONSE.set_cookie(..., httponly=True, ...)
+              - pattern-not: $RESPONSE.set_cookie(..., httponly=$VAR, ...)
+
+  - id: codeql-py-cookie-samesite-none
+    message: >-
+      Cookie set with SameSite=None. This allows the cookie to be sent in
+      cross-site requests, which may enable CSRF attacks.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-1275: Sensitive Cookie with Improper SameSite Attribute"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1275.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-1275/SameSiteNoneCookie.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-1275/SameSiteNoneCookie.ql
+    pattern-either:
+      - pattern: $RESPONSE.set_cookie(..., samesite="None", ...)
+      - pattern: $RESPONSE.set_cookie(..., samesite="none", ...)
+      - pattern: $RESPONSE.set_cookie(..., samesite=None, ...)
+
+  - id: codeql-py-django-csrf-disabled
+    message: >-
+      Django CSRF protection is disabled. This makes the application vulnerable
+      to cross-site request forgery attacks.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-352: Cross-Site Request Forgery (CSRF)"
+      technology:
+        - django
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/352.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-352/CSRFProtectionDisabled.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-352/CSRFProtectionDisabled.ql
+    pattern-either:
+      - pattern: "@csrf_exempt"
+      - pattern: |
+          MIDDLEWARE = [
+            ...,
+          ]
+      - patterns:
+          - pattern-inside: |
+              MIDDLEWARE = [
+                ...
+              ]
+          - pattern-not: |
+              MIDDLEWARE = [
+                ...,
+                "django.middleware.csrf.CsrfViewMiddleware",
+                ...,
+              ]

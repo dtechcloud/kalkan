@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "about": "Hand-written curation of the vendored Opengrep rule packs (ADR-0005 K.8, docs/ENGINE-SPEC.md section 13). scripts/build_opengrep_packs.py reads it with third_party/ and writes index.json and the pack folders. A drop group names rules by full rule ID (rules) or by path glob below this folder (paths); its kind and reason go into index.json.",
-  "priority": ["kalkan", "gitlab", "trailofbits", "0xdea"],
+  "priority": ["kalkan", "gitlab", "trailofbits", "0xdea", "atlassian", "elttam", "njsscan", "mobsfscan", "mindedsecurity", "aikido", "semgrep-codeql"],
   "changed": "2026-10-27",
   "packs": [
     {
@@ -26,6 +26,63 @@
       "license": "MIT",
       "bundle_skip": ["rules"],
       "filters": {"category": ["security"], "confidence": ["HIGH", "MEDIUM", null]}
+    },
+    {
+      "name": "atlassian",
+      "component": "atlassian-sast-ruleset",
+      "group": "osi",
+      "license": "LGPL-2.1-only",
+      "bundle_skip": ["rules"],
+      "filters": {}
+    },
+    {
+      "name": "elttam",
+      "component": "elttam-semgrep-rules",
+      "group": "osi",
+      "license": "MIT",
+      "bundle_skip": ["rules", "rules-audit"],
+      "filters": {"category": ["security"]}
+    },
+    {
+      "name": "njsscan",
+      "component": "njsscan-rules",
+      "group": "osi",
+      "license": "LGPL-3.0-or-later",
+      "bundle_skip": ["rules"],
+      "filters": {}
+    },
+    {
+      "name": "mobsfscan",
+      "component": "mobsfscan-rules",
+      "group": "osi",
+      "license": "LGPL-3.0-or-later",
+      "bundle_skip": ["rules"],
+      "filters": {}
+    },
+    {
+      "name": "mindedsecurity",
+      "component": "mindedsecurity-android-rules",
+      "group": "osi",
+      "license": "GPL-3.0-only",
+      "bundle_skip": ["rules"],
+      "filters": {"confidence": ["HIGH", "MEDIUM", null]}
+    },
+    {
+      "name": "aikido",
+      "component": "aikido-opengrep-rules",
+      "group": "osi",
+      "license": "MIT",
+      "bundle_skip": ["rules"],
+      "filters": {}
+    },
+    {
+      "name": "semgrep-codeql",
+      "component": "semgrep-codeql-rules",
+      "group": "osi",
+      "license": "MIT",
+      "bundle_skip": ["rules"],
+      "filters": {},
+      "keep_only": {"reason": "an LLM conversion of CodeQL queries without upstream tests: kalkan keeps only the rules that found a planted item of tests/fixtures/vulnapp without touching a secure twin or other code (Opengrep 1.30.1, 2026-11-07), and leaves out the GitHub Actions, secret and C rules that zizmor, Gitleaks, Kingfisher, flawfinder and the 0xdea pack already cover; the Rails mass assignment rule is left out too: it reports every X.new(params[...]), also ERB.new", "rules": ["semgrep-codeql.csharp.codeql-csharp-open-redirect", "semgrep-codeql.csharp.codeql-csharp-sql-injection", "semgrep-codeql.go.codeql-go-command-injection", "semgrep-codeql.go.codeql-go-open-redirect", "semgrep-codeql.go.codeql-go-sql-injection", "semgrep-codeql.go.codeql-go-weak-crypto-md5", "semgrep-codeql.java.codeql-java-open-redirect", "semgrep-codeql.java.codeql-java-sql-injection", "semgrep-codeql.java.codeql-java-weak-crypto-md5", "semgrep-codeql.javascript.codeql-js-code-injection", "semgrep-codeql.javascript.codeql-js-command-injection", "semgrep-codeql.javascript.codeql-js-cors-allow-all", "semgrep-codeql.javascript.codeql-js-express-cors-all-origins", "semgrep-codeql.javascript.codeql-js-open-redirect", "semgrep-codeql.javascript.codeql-js-sql-injection", "semgrep-codeql.javascript.codeql-js-unsafe-deserialization", "semgrep-codeql.javascript.codeql-js-weak-crypto-md5", "semgrep-codeql.python.codeql-py-command-injection-eval", "semgrep-codeql.python.codeql-py-command-injection-subprocess-shell", "semgrep-codeql.python.codeql-py-jwt-decode-no-verify", "semgrep-codeql.python.codeql-py-path-traversal-open", "semgrep-codeql.python.codeql-py-sql-injection-format", "semgrep-codeql.python.codeql-py-unsafe-deserialization-pickle", "semgrep-codeql.python.codeql-py-unsafe-deserialization-yaml", "semgrep-codeql.python.codeql-py-weak-crypto-md5", "semgrep-codeql.ruby.codeql-ruby-unsafe-deserialization", "semgrep-codeql.ruby.codeql-ruby-weak-crypto-md5", "semgrep-codeql.ruby.codeql-ruby-xxe-nokogiri"]}
     }
   ],
   "cwe_classes": [
@@ -68,6 +125,19 @@
         "gitlab.lgpl.rules_lgpl_javascript_xml_rule-node-xxe",
         "gitlab.lgpl.rules_lgpl_javascript_xss_rule-express-xss",
         "gitlab.python.python_xml_rule-etree"
+      ]
+    },
+    {
+      "name": "twin-false-positive-replacement-packs",
+      "kind": "twin-fp",
+      "reason": "reports the secure twin of a planted item in tests/fixtures/vulnapp (Opengrep 1.30.1, 2026-11-07): the rule does not see the mitigation (the njsscan originals of four GitLab ports that are dropped for the same reason, and two Java deserialization rules that also flag the look-ahead ObjectInputStream)",
+      "rules": [
+        "njsscan.xss.express_xss",
+        "njsscan.database.node_nosqli_injection",
+        "njsscan.redirect.express_open_redirect",
+        "njsscan.xml.node_xxe",
+        "mobsfscan.java.object_deserialization",
+        "atlassian.int-java-io-serde"
       ]
     },
     {
@@ -123,6 +193,102 @@
         "trailofbits.go.nil-check-after-call",
         "trailofbits.rs.panic-in-function-returning-result"
       ]
+    },
+    {
+      "name": "hardening-advice",
+      "kind": "best-practice",
+      "reason": "hardening advice or a reminder of a missing control (root, jailbreak and reverse-engineering detection, SafetyNet, screenshot and tapjacking protection, certificate pinning and transparency, keyboard cache, overlay protection, TLS 1.3, a minimum SDK level), not a vulnerability; njsscan good/* reports a present good control (helmet headers, CSRF and rate-limit middleware)",
+      "paths": [
+        "mobsfscan/rules/best_practices/*",
+        "njsscan/rules/good/*"
+      ],
+      "rules": [
+        "mobsfscan.kotlin.android_kotlin_sensitive_input_keyboard_cache",
+        "mobsfscan.swift.ios_tls12_used",
+        "mindedsecurity.network.MSTG-NETWORK-4_1",
+        "mindedsecurity.network.MSTG-NETWORK-4_2",
+        "mindedsecurity.platform.MSTG-PLATFORM-9_1",
+        "mindedsecurity.platform.MSTG-PLATFORM-9_2",
+        "mindedsecurity.storage.MSTG-STORAGE-5_1",
+        "mindedsecurity.storage.MSTG-STORAGE-5_2",
+        "mindedsecurity.storage.MSTG-STORAGE-11"
+      ]
+    },
+    {
+      "name": "not-security-android",
+      "kind": "non-security",
+      "reason": "Android code quality without a security impact: StrictMode in a release build, broadcast receivers that stay registered, static fields that keep an activity in memory",
+      "rules": [
+        "mindedsecurity.code.MSTG-CODE-4",
+        "mindedsecurity.code.MSTG-CODE-8_1",
+        "mindedsecurity.code.MSTG-CODE-8_2"
+      ]
+    },
+    {
+      "name": "covered-by-iac-and-cicd-tools",
+      "kind": "covered",
+      "reason": "Kubernetes security contexts and network policies, and deprecated GitHub Actions workflow commands: Trivy, Checkov, zizmor and actionlint (which kalkan runs) already check them",
+      "paths": [
+        "elttam/rules/yaml/*"
+      ]
+    },
+    {
+      "name": "review-markers",
+      "kind": "audit",
+      "reason": "marks an entry point, a framework class, a dependency or a code shape for manual review (INFO, mostly LOW confidence), without a dangerous argument or data flow: JAX-RS, Spring, Struts, ASP.NET, Express, Flask and Spark entry points, every exec or ProcessBuilder call, Velocity engines, and the review variants of the ORM leak rules",
+      "paths": [
+        "elttam/rules-audit/*entrypoints*",
+        "elttam/rules-audit/c/*",
+        "elttam/rules-audit/java/lang/security/audit/processbuilder.yml",
+        "atlassian/rules/atlassian-internal-velocity.yaml"
+      ],
+      "rules": [
+        "elttam.csharp.ef-ormleak-dynamic-orderby",
+        "elttam.csharp.ef-ormleak-dynamic-where",
+        "elttam.go.beego-ormleak-dynamic-expr-review",
+        "elttam.go.beego-ormleak-dynamic-orderby-review",
+        "elttam.python.django-orm-dynamic-lookup-kwargs",
+        "elttam.python.django-filter-exposes-all-fields",
+        "elttam.python.django-orm-dynamic-orderby-or-values",
+        "elttam.javascript.prisma-ormleak-taint-orderby",
+        "elttam.go.json-marshaler-pointer-receiver",
+        "elttam.go.net-url-pointer-alias-mutation",
+        "elttam.java.taglib-action-dmi"
+      ]
+    },
+    {
+      "name": "join-mode",
+      "kind": "parse",
+      "reason": "a join-mode rule: Opengrep 1.30.1 rejects it (opengrep validate: missing languages, mode join)",
+      "rules": [
+        "elttam.generic.jsp-likely-xss"
+      ]
+    },
+    {
+      "name": "noisy-logs-and-names",
+      "kind": "noisy",
+      "reason": "reports every log call, or every variable with a user-name or token-like name, without data flow (the GitLab port of the timing rule is dropped for the same reason)",
+      "rules": [
+        "njsscan.crypto.node_timing_attack",
+        "njsscan.generic.node_username",
+        "mobsfscan.java.android_logging",
+        "mobsfscan.kotlin.android_kotlin_logging",
+        "mobsfscan.swift.ios_log",
+        "mobsfscan.java.hardcoded_username"
+      ]
+    },
+    {
+      "name": "repeats-a-gitlab-port",
+      "kind": "duplicate",
+      "reason": "the gitlab pack keeps its port (rules_lgpl_swift_other_rule-* and rules_lgpl_kotlin_other_rule-android-kotlin-webview-debug); the upstream pattern changed after the port, so the automatic duplicate check does not see the repeat",
+      "rules": [
+        "mobsfscan.swift.ios_biometric_acl",
+        "mobsfscan.swift.ios_dtls1_used",
+        "mobsfscan.swift.ios_file_no_special",
+        "mobsfscan.swift.ios_keychain_weak_accessibility_value",
+        "mobsfscan.swift.ios_tls3_not_used",
+        "mobsfscan.kotlin.android_kotlin_webview_debug"
+      ]
     }
   ],
   "keep": [],
@@ -150,6 +316,27 @@
     {"class": "graphql", "reason": "Apollo GraphQL schema directives (CWE-686 maps to no class)", "rules": ["trailofbits.javascript.schema-directives"]},
     {"class": "code-injection", "reason": "loading a native library, custom operators or compiled code from a path (CWE-676, CWE-706)", "rules": ["trailofbits.python.numpy-f2py-compile", "trailofbits.python.numpy-load-library", "trailofbits.python.onnx-session-options", "trailofbits.python.pytorch-classes-load-library", "trailofbits.python.tensorflow-load-library"]},
     {"class": "open-redirect", "reason": "a host check with hasSuffix lets other domains pass (CWE-697 maps to no class)", "rules": ["trailofbits.swift.insecure-url-host-hassuffix-check"]},
-    {"class": "memory-safety", "reason": "C comparisons and asserts (CWE-697, CWE-754, CWE-676)", "rules": ["0xdea.c.raptor-incorrect-unsigned-comparison", "0xdea.c.raptor-suspicious-assert"]}
+    {"class": "memory-safety", "reason": "C comparisons and asserts (CWE-697, CWE-754, CWE-676)", "rules": ["0xdea.c.raptor-incorrect-unsigned-comparison", "0xdea.c.raptor-suspicious-assert"]},
+    {"class": "security-misconfig", "reason": "Struts development mode and dynamic method invocation, an open Spring firewall, debuggable Android builds, NDK debug symbols and Android app backup", "rules": ["elttam.java.default-properties-devmode", "elttam.java.struts-xml-devmode", "elttam.java.web-xml-devmode", "elttam.java.struts-xml-action-dmi", "elttam.java.struts-xml-dmi", "elttam.java.struts-xml-always-select-full-namespace", "atlassian.int-spsec-open-firewall", "mindedsecurity.code.MSTG-CODE-2", "mindedsecurity.code.MSTG-CODE-3", "mindedsecurity.storage.MSTG-STORAGE-8"]},
+    {"class": "crypto", "reason": "a static GCM IV, CBC padding oracles, a weak password encoder, a disabled TLS check of curl, and Android cipher, random, protocol, cipher suite and certificate checks (no CWE, or CWE-599 and CWE-649, which map to no class)", "rules": ["elttam.java.gcm-static-iv", "atlassian.int-spsec-bad-pwd-encoder", "njsscan.crypto.node_curl_ssl_verify_disable", "mobsfscan.java.cbc_padding_oracle", "mobsfscan.kotlin.cbc_kotlin_padding_oracle", "mindedsecurity.crypto.MSTG-CRYPTO-2", "mindedsecurity.crypto.MSTG-CRYPTO-4", "mindedsecurity.crypto.MSTG-CRYPTO-6", "mindedsecurity.network.MSTG-NETWORK-1_1", "mindedsecurity.network.MSTG-NETWORK-1_2", "mindedsecurity.network.MSTG-NETWORK-2_1", "mindedsecurity.network.MSTG-NETWORK-2_2", "mindedsecurity.network.MSTG-NETWORK-3"]},
+    {"class": "hardcoded-secrets", "reason": "a hard-coded symmetric key as the only protection", "rules": ["mindedsecurity.crypto.MSTG-CRYPTO-1"]},
+    {"class": "memory-safety", "reason": "a uintptr kept across a garbage collection", "rules": ["elttam.go.non-atomic-use-of-converted-uintptr"]},
+    {"class": "path-traversal", "reason": "a PHP filter chain in a file read lets a client read files through an error oracle (CWE-98 maps to no class)", "rules": ["elttam.php.php-filter-chain-read-from-oracle"]},
+    {"class": "deserialization", "reason": "Spring HttpInvoker and XStream permission set-ups that allow arbitrary types (CWE-670 and CWE-707 map to no class, CWE-937 to the dependency class)", "rules": ["elttam.java.UnsafeHttpInvokerServiceExporter-XML", "atlassian.int-xstream-bad-blocklist", "atlassian.int-xstream-bad-custom-converter", "atlassian.int-xstream-regexp-type-perm", "atlassian.int-xstream-open-perm"]},
+    {"class": "xxe", "reason": "Jackson XML with DTD support (the rule names CWE-502)", "rules": ["atlassian.int-jackson-xxe-dtd"]},
+    {"class": "sensitive-data-exposure", "reason": "ORM filters that let a client query hidden fields (ORM leak, CWE-203 maps to no class), and Android data in logs, the clipboard, the UI or outside the keystore", "rules": ["elttam.csharp.ef-ormleak-taint-property", "elttam.csharp.ef-ormleak-taint-dynamic-include", "elttam.go.beego-ormleak-taint-dynamic-expr", "elttam.go.beego-ormleak-filterraw", "elttam.javascript.prisma-ormleak-taint-where", "elttam.javascript.prisma-ormleak-taint-projection", "elttam.python.django-orm-dynamic-lookup-variable-key", "mindedsecurity.platform.MSTG-PLATFORM-8_2", "mindedsecurity.storage.MSTG-STORAGE-1", "mindedsecurity.storage.MSTG-STORAGE-3", "mindedsecurity.storage.MSTG-STORAGE-6_2", "mindedsecurity.storage.MSTG-STORAGE-7_2"]},
+    {"class": "nosqli", "reason": "MongoDB and Prisma query operators from request data (the rules name CWE-20 or CWE-203)", "rules": ["elttam.javascript.express-mongodb-nosqli", "elttam.javascript.prisma-orm-operator-injection"]},
+    {"class": "xss", "reason": "Soy templates with autoescaping turned off", "rules": ["atlassian.int-soy-html-noautoescape"]},
+    {"class": "code-injection", "reason": "a SpEL property accessor that reaches arbitrary methods, and require() with a request value (CWE-706 maps to no class)", "rules": ["atlassian.int-spel-bad-prop-accessor", "njsscan.eval.eval_require"]},
+    {"class": "authn", "reason": "session fixation protection turned off and biometric checks that only return a boolean", "rules": ["atlassian.int-spsec-insecure-sessfix", "mobsfscan.swift.ios_biometric_bool", "mindedsecurity.auth.MSTG-AUTH-8"]},
+    {"class": "missing-authz", "reason": "a SpEL authorization expression that a request value can bypass", "rules": ["atlassian.int-spel-auth-bypass"]},
+    {"class": "csrf", "reason": "Spring Security CSRF protection turned off", "rules": ["atlassian.int-spsec-insecure-csrf"]},
+    {"class": "mobile-desktop-ipc", "reason": "Electron webSecurity turned off, the deprecated UIWebView, FileProvider root paths, mutable pending intents and JavaScript in a WebView (CWE-346, CWE-919 or no CWE)", "rules": ["njsscan.electronjs.electron_disable_websecurity", "mobsfscan.swift.ios_uiwebview", "mindedsecurity.platform.MSTG-PLATFORM-2_4", "mindedsecurity.platform.MSTG-PLATFORM-4_1", "mindedsecurity.platform.MSTG-PLATFORM-4_2", "mindedsecurity.platform.MSTG-PLATFORM-5"]},
+    {"class": "cors", "reason": "a CORS policy that allows every origin (CWE-346 maps to no class)", "rules": ["njsscan.headers.generic_cors", "njsscan.headers.express_cors", "semgrep-codeql.javascript.codeql-js-cors-allow-all"]},
+    {"class": "request-smuggling-crlf-cache", "reason": "host header injection (CWE-20 maps to no class; the GitLab port has the same class)", "rules": ["njsscan.headers.host_header_injection"]},
+    {"class": "dos-redos", "reason": "a regular expression with catastrophic backtracking", "rules": ["mindedsecurity.platform.MSTG-PLATFORM-2_1"]},
+    {"class": "sqli", "reason": "SQL injection in Android content providers, intents and raw SQLite queries (the mobsfscan rules name CWE-78)", "rules": ["mindedsecurity.platform.MSTG-PLATFORM-2_2", "mindedsecurity.platform.MSTG-PLATFORM-2_3", "mobsfscan.java.sqlite_injection", "mobsfscan.kotlin.android_kotlin_sql_raw_query"]},
+    {"class": "llm-ai", "reason": "untrusted issue or pull request text in the prompt of an AI agent step of a GitHub workflow", "rules": ["aikido.github_workflow_prompt_injection.github_workflow_prompt_injection"]},
+    {"class": "supply-chain-cicd", "reason": "an npm publish workflow without staged publishing", "rules": ["aikido.npm_staged_publishing_missing.npm_staged_publishing_missing"]}
   ]
 }

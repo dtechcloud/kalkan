@@ -1,0 +1,50 @@
+rules:
+  - id: codeql-js-env-var-injection
+    message: >-
+      Environment variable set from user input may allow environment injection.
+      Validate input before setting environment variables.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-074: Improper Neutralization of Special Elements in Output Used by a Downstream Component"
+      technology:
+        - node
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/74.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-099/EnvValueInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-099/EnvValueInjection.ql
+    pattern-either:
+      - pattern: process.env[$KEY] = $INPUT
+      - pattern: process.env.$VAR = $INPUT
+
+  - id: codeql-js-env-key-injection
+    message: >-
+      Environment variable key from user input may allow environment injection.
+      Validate input before using as environment variable name.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-074: Improper Neutralization of Special Elements in Output Used by a Downstream Component"
+      technology:
+        - node
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/74.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-099/EnvKeyInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-099/EnvKeyInjection.ql
+    pattern: process.env[$INPUT] = $VALUE

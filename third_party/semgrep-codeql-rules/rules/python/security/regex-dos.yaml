@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-py-regex-injection
+    message: >-
+      Regular expression built from user input may be vulnerable to ReDoS
+      (Regular Expression Denial of Service). Validate or escape user input.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-730: OWASP Top Ten 2017 Category A7 - Cross-Site Scripting (XSS)"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/730.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-730/RegexInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-730/RegexInjection.ql
+    pattern-either:
+      - pattern: re.compile($INPUT)
+      - pattern: re.match($INPUT, ...)
+      - pattern: re.search($INPUT, ...)
+      - pattern: re.findall($INPUT, ...)
+      - pattern: re.sub($INPUT, ...)
+      - pattern: re.split($INPUT, ...)

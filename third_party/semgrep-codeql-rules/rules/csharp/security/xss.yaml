@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-csharp-xss
+    message: >-
+      User input written to response without encoding may be vulnerable to
+      cross-site scripting (XSS). Use proper encoding.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - csharp
+        - aspnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-079/XSS.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-079/XSS.ql
+    pattern-either:
+      - pattern: Response.Write($INPUT)
+      - pattern: $WRITER.Write($INPUT)
+      - pattern: return Content($INPUT)

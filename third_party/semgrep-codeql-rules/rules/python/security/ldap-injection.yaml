@@ -1,0 +1,33 @@
+rules:
+  - id: codeql-py-ldap-injection
+    message: >-
+      LDAP query built from user input may be vulnerable to LDAP injection.
+      Use proper escaping or parameterized queries.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-090: Improper Neutralization of Special Elements used in an LDAP Query"
+      technology:
+        - python
+        - ldap
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/90.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-090/LdapInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-090/LdapInjection.ql
+    pattern-either:
+      - pattern: $CONN.search_s(..., "..." % $VAR, ...)
+      - pattern: $CONN.search_s(..., "...".format(...), ...)
+      - pattern: $CONN.search_s(..., f"...", ...)
+      - pattern: $CONN.search(..., "..." % $VAR, ...)
+      - pattern: $CONN.search(..., "...".format(...), ...)
+      - pattern: $CONN.search(..., f"...", ...)
+      - pattern: ldap.filter.filter_format("..." % $VAR, ...)
+      - pattern: ldap.filter.filter_format("...".format(...), ...)
+      - pattern: ldap.filter.filter_format(f"...", ...)

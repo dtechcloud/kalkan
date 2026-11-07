@@ -1,0 +1,35 @@
+rules:
+  - id: codeql-go-command-injection
+    message: >-
+      Command built from user-controlled input may be vulnerable to command
+      injection. Validate input and avoid using shell interpretation.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-078/CommandInjection.ql
+    pattern-either:
+      - pattern: exec.Command("sh", "-c", $CMD + $VAR)
+      - pattern: exec.Command("sh", "-c", fmt.Sprintf(...))
+      - pattern: exec.Command("bash", "-c", $CMD + $VAR)
+      - pattern: exec.Command("bash", "-c", fmt.Sprintf(...))
+      - pattern: exec.Command("/bin/sh", "-c", $CMD + $VAR)
+      - pattern: exec.Command("/bin/sh", "-c", fmt.Sprintf(...))
+      - pattern: exec.Command("/bin/bash", "-c", $CMD + $VAR)
+      - pattern: exec.Command("/bin/bash", "-c", fmt.Sprintf(...))
+      - pattern: exec.CommandContext($CTX, "sh", "-c", $CMD + $VAR)
+      - pattern: exec.CommandContext($CTX, "sh", "-c", fmt.Sprintf(...))
+      - pattern: exec.CommandContext($CTX, "bash", "-c", $CMD + $VAR)
+      - pattern: exec.CommandContext($CTX, "bash", "-c", fmt.Sprintf(...))

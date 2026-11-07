@@ -1,0 +1,98 @@
+rules:
+  - id: codeql-java-spring-csrf-disabled
+    message: >-
+      CSRF protection is disabled. Enable CSRF protection unless you have a
+      specific reason to disable it.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-352: Cross-Site Request Forgery"
+      technology:
+        - spring
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/352.html
+    pattern-either:
+      - pattern: http.csrf().disable();
+      - pattern: http.csrf(csrf -> csrf.disable());
+
+  - id: codeql-java-spring-spel-injection
+    message: >-
+      Spring Expression Language (SpEL) with user input may allow code
+      injection. Validate input or use a SimpleEvaluationContext.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - spring
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/experimental/Security/CWE-094/SpringViewManipulation.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/experimental/Security/CWE-094/SpringViewManipulation.ql
+    pattern-either:
+      - pattern: new SpelExpressionParser().parseExpression($INPUT).getValue(...)
+      - pattern: |
+          $PARSER = new SpelExpressionParser();
+          ...
+          $PARSER.parseExpression($INPUT).getValue(...);
+
+  - id: codeql-java-spring-redirect
+    message: >-
+      Spring redirect with user input may allow open redirect attacks. Validate
+      redirect URLs.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - spring
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/experimental/Security/CWE-601/SpringUrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/experimental/Security/CWE-601/SpringUrlRedirect.ql
+    pattern-either:
+      - pattern: "return \"redirect:\" + $INPUT;"
+      - pattern: new RedirectView($INPUT);
+      - pattern: new ModelAndView("redirect:" + $INPUT);
+
+  - id: codeql-java-spring-actuator-exposed
+    message: >-
+      Spring Actuator endpoints may expose sensitive information. Secure
+      actuator endpoints in production.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - spring
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+    pattern-regex: 'management\.endpoints\.web\.exposure\.include\s*=\s*\*'

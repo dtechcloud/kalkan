@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-java-sql-injection
+    message: >-
+      SQL query built from user input may be vulnerable to SQL injection.
+      Use PreparedStatement with parameterized queries.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-089/SqlTainted.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-089/SqlTainted.ql
+    pattern-either:
+      - pattern: $STMT.executeQuery($QUERY + $VAR)
+      - pattern: $STMT.execute($QUERY + $VAR)
+      - pattern: $STMT.executeUpdate($QUERY + $VAR)
+      - pattern: $CONN.prepareStatement($QUERY + $VAR)
+      - pattern: $CONN.createStatement().executeQuery($QUERY + $VAR)

@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-ruby-xpath-injection
+    message: >-
+      XPath query built from user input may be vulnerable to XPath injection.
+      Use parameterized XPath queries or validate input.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-643: Improper Neutralization of Data within XPath Expressions"
+      technology:
+        - nokogiri
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/643.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-643/XPathInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-643/XPathInjection.ql
+    pattern-either:
+      - pattern: $DOC.xpath($QUERY + params[$KEY])
+      - pattern: $DOC.xpath("#{...}#{params[$KEY]}#{...}")
+      - pattern: $DOC.at_xpath($QUERY + params[$KEY])
+      - pattern: $DOC.at_xpath("#{...}#{params[$KEY]}#{...}")
+      - pattern: $DOC.css($QUERY + params[$KEY])

@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-js-xxe
+    message: >-
+      XML parsing without disabling external entities may be vulnerable to XXE
+      attacks. Disable DTD processing or use a safe parser.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: libxmljs.parseXml(...)
+      - pattern: libxmljs.parseXmlString(...)
+      - pattern: require("libxmljs").parseXml(...)
+      - pattern: new DOMParser().parseFromString(...)

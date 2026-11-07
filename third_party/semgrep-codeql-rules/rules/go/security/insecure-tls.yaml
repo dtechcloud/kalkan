@@ -1,0 +1,64 @@
+rules:
+  - id: codeql-go-insecure-tls-version
+    message: >-
+      Use of insecure TLS version. TLS 1.0 and 1.1 are deprecated. Use TLS 1.2
+      or higher.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/InsecureTLS.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/InsecureTLS.ql
+    pattern-either:
+      - pattern: |
+          &tls.Config{..., MinVersion: tls.VersionSSL30, ...}
+      - pattern: |
+          &tls.Config{..., MinVersion: tls.VersionTLS10, ...}
+      - pattern: |
+          &tls.Config{..., MinVersion: tls.VersionTLS11, ...}
+      - pattern: |
+          tls.Config{..., MinVersion: tls.VersionSSL30, ...}
+      - pattern: |
+          tls.Config{..., MinVersion: tls.VersionTLS10, ...}
+      - pattern: |
+          tls.Config{..., MinVersion: tls.VersionTLS11, ...}
+      - pattern: $CFG.MinVersion = tls.VersionSSL30
+      - pattern: $CFG.MinVersion = tls.VersionTLS10
+      - pattern: $CFG.MinVersion = tls.VersionTLS11
+
+  - id: codeql-go-insecure-cipher-suite
+    message: >-
+      Use of insecure cipher suite. Avoid using NULL, export, or RC4 ciphers.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/InsecureTLS.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-327/InsecureTLS.ql
+    pattern-either:
+      - pattern: tls.TLS_RSA_WITH_RC4_128_SHA
+      - pattern: tls.TLS_RSA_WITH_3DES_EDE_CBC_SHA
+      - pattern: tls.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA
+      - pattern: tls.TLS_ECDHE_RSA_WITH_RC4_128_SHA

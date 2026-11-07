@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-swift-constant-salt
+    message: >-
+      Hardcoded salt for password hashing. Use a unique random salt per
+      password.
+    severity: ERROR
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-760: Use of a One-Way Hash with a Predictable Salt"
+      technology:
+        - swift
+        - ios
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/760.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-760/ConstantSalt.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-760/ConstantSalt.ql
+    pattern-either:
+      - pattern: let salt = "..."
+      - pattern: "let salt: Data = \"...\".data(using: .utf8)!"

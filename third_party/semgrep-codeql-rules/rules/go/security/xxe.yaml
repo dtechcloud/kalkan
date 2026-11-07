@@ -1,0 +1,25 @@
+rules:
+  - id: codeql-go-xxe
+    message: >-
+      XML parsing may be vulnerable to XXE attacks. Ensure external entity
+      processing is disabled.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-611/Xxe.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-611/Xxe.ql
+    pattern-either:
+      - pattern: xml.NewDecoder($INPUT)
+      - pattern: xml.Unmarshal($INPUT, ...)

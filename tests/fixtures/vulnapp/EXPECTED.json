@@ -13,7 +13,8 @@
     "twin": "python-sqli-01-twin",
     "expected_engines": [
       "opengrep",
-      "bandit"
+      "bandit",
+      "opengrep-packs"
     ],
     "rules": {
       "bandit": [
@@ -21,6 +22,9 @@
       ],
       "opengrep": [
         "kalkan.python.sqli.tainted-sql-string"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.python.codeql-py-sql-injection-format"
       ]
     },
     "title": "SQL injection: f-string query in cursor.execute()"
@@ -223,7 +227,8 @@
         "kalkan.python.os-command-injection.tainted-shell-command"
       ],
       "opengrep-packs": [
-        "gitlab.python.python_exec_rule-subprocess-popen-shell-true"
+        "gitlab.python.python_exec_rule-subprocess-popen-shell-true",
+        "semgrep-codeql.python.codeql-py-command-injection-subprocess-shell"
       ]
     },
     "title": "Command injection: request data in a shell=True command"
@@ -310,7 +315,8 @@
         "kalkan.python.code-injection.tainted-eval"
       ],
       "opengrep-packs": [
-        "gitlab.python.python_eval_rule-eval"
+        "gitlab.python.python_eval_rule-eval",
+        "semgrep-codeql.python.codeql-py-command-injection-eval"
       ]
     },
     "title": "Code injection: request data in eval()"
@@ -397,7 +403,8 @@
         "kalkan.python.deserialization.unsafe-yaml-load"
       ],
       "opengrep-packs": [
-        "gitlab.python.python_deserialization_rule-yaml-load"
+        "gitlab.python.python_deserialization_rule-yaml-load",
+        "semgrep-codeql.python.codeql-py-unsafe-deserialization-yaml"
       ]
     },
     "title": "Insecure deserialization: yaml.load() with the full Loader"
@@ -444,7 +451,8 @@
         "kalkan.python.deserialization.tainted-pickle"
       ],
       "opengrep-packs": [
-        "gitlab.python.python_deserialization_rule-pickle"
+        "gitlab.python.python_deserialization_rule-pickle",
+        "semgrep-codeql.python.codeql-py-unsafe-deserialization-pickle"
       ]
     },
     "title": "Insecure deserialization: pickle.loads() of request data"
@@ -518,11 +526,15 @@
     "snippet": "with open(os.path.join(NOTES_DIR, name), encoding=\"utf-8\") as handle:",
     "twin": "python-path-traversal-02-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.python.path-traversal.tainted-file-path"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.python.codeql-py-path-traversal-open"
       ]
     },
     "title": "Path traversal: request file name in open()"
@@ -570,7 +582,8 @@
         "kalkan.python.crypto.weak-hash-algorithm"
       ],
       "opengrep-packs": [
-        "gitlab.python.python_crypto_rule-hash-md5"
+        "gitlab.python.python_crypto_rule-hash-md5",
+        "semgrep-codeql.python.codeql-py-weak-crypto-md5"
       ]
     },
     "title": "Weak crypto: MD5 password hash"
@@ -674,11 +687,15 @@
     "snippet": "claims = jwt.decode(token, options={\"verify_signature\": False})",
     "twin": "python-jwt-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.python.jwt.signature-not-verified"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.python.codeql-py-jwt-decode-no-verify"
       ]
     },
     "title": "JWT decoded without signature verification"
@@ -795,11 +812,16 @@
     "snippet": "cors({ origin: \"*\", credentials: true })",
     "twin": "javascript-cors-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.javascript.cors.permissive-origin-with-credentials"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.javascript.codeql-js-cors-allow-all",
+        "semgrep-codeql.javascript.codeql-js-express-cors-all-origins"
       ]
     },
     "title": "CORS: wildcard origin with credentials"
@@ -835,11 +857,16 @@
     "snippet": "crypto.createHash(\"md5\").update(password)",
     "twin": "javascript-crypto-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.javascript.crypto.weak-hash-algorithm"
+      ],
+      "opengrep-packs": [
+        "njsscan.crypto.node_md5",
+        "semgrep-codeql.javascript.codeql-js-weak-crypto-md5"
       ]
     },
     "title": "Weak crypto: MD5 password hash"
@@ -1078,11 +1105,15 @@
     "snippet": "res.redirect(req.query.next);",
     "twin": "javascript-open-redirect-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.javascript.open-redirect.tainted-redirect-target"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.javascript.codeql-js-open-redirect"
       ]
     },
     "title": "Open redirect: next parameter in res.redirect()"
@@ -1117,11 +1148,16 @@
     "snippet": "childProcess.exec(`ping -c 1 ${req.query.host}`",
     "twin": "javascript-os-command-injection-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.javascript.os-command-injection.tainted-shell-command"
+      ],
+      "opengrep-packs": [
+        "njsscan.exec.generic_os_command_exec",
+        "semgrep-codeql.javascript.codeql-js-command-injection"
       ]
     },
     "title": "Command injection: template string in child_process.exec()"
@@ -1203,7 +1239,9 @@
         "kalkan.javascript.sqli.tainted-sql-string"
       ],
       "opengrep-packs": [
-        "gitlab.lgpl.rules_lgpl_javascript_database_rule-node-sqli-injection"
+        "gitlab.lgpl.rules_lgpl_javascript_database_rule-node-sqli-injection",
+        "njsscan.database.node_sqli_injection",
+        "semgrep-codeql.javascript.codeql-js-sql-injection"
       ]
     },
     "title": "SQL injection: route parameter concatenated into db.query()"
@@ -1289,7 +1327,8 @@
       ],
       "opengrep-packs": [
         "gitlab.javascript.javascript_eval_rule-eval-with-expression",
-        "gitlab.lgpl.rules_lgpl_javascript_eval_rule-eval-nodejs"
+        "gitlab.lgpl.rules_lgpl_javascript_eval_rule-eval-nodejs",
+        "semgrep-codeql.javascript.codeql-js-code-injection"
       ]
     },
     "title": "Code injection: query data in eval()"
@@ -1333,7 +1372,8 @@
         "kalkan.javascript.deserialization.unsafe-deserializer"
       ],
       "opengrep-packs": [
-        "gitlab.lgpl.rules_lgpl_javascript_eval_rule-node-deserialize"
+        "gitlab.lgpl.rules_lgpl_javascript_eval_rule-node-deserialize",
+        "semgrep-codeql.javascript.codeql-js-unsafe-deserialization"
       ]
     },
     "title": "Insecure deserialization: node-serialize unserialize() of a cookie"
@@ -1486,7 +1526,8 @@
     "twin": "go-sqli-01-twin",
     "expected_engines": [
       "opengrep",
-      "gosec"
+      "gosec",
+      "opengrep-packs"
     ],
     "rules": {
       "gosec": [
@@ -1494,6 +1535,9 @@
       ],
       "opengrep": [
         "kalkan.go.sqli.tainted-sql-string"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.go.codeql-go-sql-injection"
       ]
     },
     "title": "SQL injection: fmt.Sprintf() query in db.Query()"
@@ -1529,7 +1573,8 @@
     "twin": "go-os-command-injection-01-twin",
     "expected_engines": [
       "opengrep",
-      "gosec"
+      "gosec",
+      "opengrep-packs"
     ],
     "rules": {
       "gosec": [
@@ -1538,6 +1583,9 @@
       ],
       "opengrep": [
         "kalkan.go.os-command-injection.tainted-shell-command"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.go.codeql-go-command-injection"
       ]
     },
     "title": "Command injection: exec.Command(\"sh\", \"-c\", ...) with request data"
@@ -1660,7 +1708,8 @@
     "twin": "go-open-redirect-01-twin",
     "expected_engines": [
       "opengrep",
-      "gosec"
+      "gosec",
+      "opengrep-packs"
     ],
     "rules": {
       "gosec": [
@@ -1668,6 +1717,9 @@
       ],
       "opengrep": [
         "kalkan.go.open-redirect.tainted-redirect-target"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.go.codeql-go-open-redirect"
       ]
     },
     "title": "Open redirect: next parameter in http.Redirect()"
@@ -1790,7 +1842,8 @@
     "twin": "go-crypto-01-twin",
     "expected_engines": [
       "opengrep",
-      "gosec"
+      "gosec",
+      "opengrep-packs"
     ],
     "rules": {
       "gosec": [
@@ -1798,6 +1851,9 @@
       ],
       "opengrep": [
         "kalkan.go.crypto.weak-hash-or-cipher"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.go.codeql-go-weak-crypto-md5"
       ]
     },
     "title": "Weak crypto: MD5 password hash"
@@ -1911,11 +1967,15 @@
     "snippet": "stmt.executeQuery(\"SELECT id, name FROM items WHERE name = '\" + name + \"'\")",
     "twin": "java-sqli-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.java.sqli.tainted-sql-string"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.java.codeql-java-sql-injection"
       ]
     },
     "title": "SQL injection: string concatenation in Statement.executeQuery()"
@@ -2106,11 +2166,15 @@
     "snippet": "response.sendRedirect(request.getParameter(\"next\"))",
     "twin": "java-open-redirect-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.java.open-redirect.tainted-redirect-target"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.java.codeql-java-open-redirect"
       ]
     },
     "title": "Open redirect: next parameter in sendRedirect()"
@@ -2472,7 +2536,9 @@
         "kalkan.java.crypto.weak-hash-algorithm"
       ],
       "opengrep-packs": [
-        "gitlab.java.java_crypto_rule-WeakMessageDigest"
+        "gitlab.java.java_crypto_rule-WeakMessageDigest",
+        "mobsfscan.java.weak_hash",
+        "semgrep-codeql.java.codeql-java-weak-crypto-md5"
       ]
     },
     "title": "Weak crypto: MD5 password hash"
@@ -2517,7 +2583,9 @@
       ],
       "opengrep-packs": [
         "gitlab.java.java_crypto_rule-CipherECBMode",
-        "gitlab.java.java_crypto_rule-CipherIntegrity"
+        "gitlab.java.java_crypto_rule-CipherIntegrity",
+        "mindedsecurity.crypto.MSTG-CRYPTO-4",
+        "mobsfscan.java.aes_ecb_mode"
       ]
     },
     "title": "Weak crypto: AES in ECB mode"
@@ -3183,11 +3251,15 @@
     "snippet": "Digest::MD5.hexdigest(password)",
     "twin": "ruby-crypto-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.ruby.crypto.weak-hash-algorithm"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.ruby.codeql-ruby-weak-crypto-md5"
       ]
     },
     "title": "Weak crypto: MD5 password hash"
@@ -3539,11 +3611,15 @@
     "snippet": "cart = Marshal.load(Base64.decode64(params[:state]))",
     "twin": "ruby-deserialization-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.ruby.deserialization.tainted-unsafe-load"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.ruby.codeql-ruby-unsafe-deserialization"
       ]
     },
     "title": "Insecure deserialization: Marshal.load() of params"
@@ -3578,11 +3654,15 @@
     "snippet": "{ |config| config.noent.dtdload }",
     "twin": "ruby-xxe-01-twin",
     "expected_engines": [
-      "opengrep"
+      "opengrep",
+      "opengrep-packs"
     ],
     "rules": {
       "opengrep": [
         "kalkan.ruby.xxe.nokogiri-entity-substitution"
+      ],
+      "opengrep-packs": [
+        "semgrep-codeql.ruby.codeql-ruby-xxe-nokogiri"
       ]
     },
     "title": "XXE: Nokogiri with NOENT and DTDLOAD"
@@ -3781,7 +3861,8 @@
         "kalkan.csharp.sqli.tainted-sql-string"
       ],
       "opengrep-packs": [
-        "gitlab.csharp.csharp_injection_rule-SQLInjection"
+        "gitlab.csharp.csharp_injection_rule-SQLInjection",
+        "semgrep-codeql.csharp.codeql-csharp-sql-injection"
       ]
     },
     "title": "SQL injection: string concatenation in SqlCommand"
@@ -4060,7 +4141,8 @@
         "kalkan.csharp.open-redirect.tainted-redirect-target"
       ],
       "opengrep-packs": [
-        "gitlab.csharp.csharp_endpoint_rule-UnvalidatedRedirect"
+        "gitlab.csharp.csharp_endpoint_rule-UnvalidatedRedirect",
+        "semgrep-codeql.csharp.codeql-csharp-open-redirect"
       ]
     },
     "title": "Open redirect: returnUrl in Redirect()"

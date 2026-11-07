@@ -1,0 +1,61 @@
+rules:
+  - id: codeql-js-open-redirect
+    message: >-
+      URL redirect destination from user input may allow open redirect attacks.
+      Validate the redirect URL against a whitelist.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - express
+        - nodejs
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-601/ServerSideUrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-601/ServerSideUrlRedirect.ql
+    pattern-either:
+      - pattern: res.redirect(req.query.$PARAM)
+      - pattern: res.redirect(req.body.$PARAM)
+      - pattern: res.redirect(req.params.$PARAM)
+      - pattern: $RES.redirect($REQ.query.$PARAM)
+      - pattern: $RES.redirect($REQ.body.$PARAM)
+      - pattern: response.redirect(request.query.$PARAM)
+
+  - id: codeql-js-open-redirect-client
+    message: >-
+      Client-side redirect using user input may allow open redirect attacks.
+      Validate URLs before redirecting.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - javascript
+        - browser
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-601/ClientSideUrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-601/ClientSideUrlRedirect.ql
+    pattern-either:
+      - pattern: window.location = $INPUT
+      - pattern: window.location.href = $INPUT
+      - pattern: location.href = $INPUT
+      - pattern: location.assign($INPUT)
+      - pattern: location.replace($INPUT)

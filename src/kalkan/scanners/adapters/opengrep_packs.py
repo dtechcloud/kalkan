@@ -2,8 +2,10 @@
 """Opengrep scan with the vendored rule packs ``<rules>/opengrep-packs`` (ENGINE-SPEC 13,
 ADR-0005 K.8).
 
-The packs: GitLab sast-rules (MIT and LGPL-3.0), Trail of Bits semgrep-rules (AGPL-3.0) and
-0xdea semgrep-rules (MIT). The verbatim copies
+The packs: GitLab sast-rules (MIT and LGPL-3.0), Trail of Bits semgrep-rules (AGPL-3.0),
+0xdea semgrep-rules (MIT) and, since ADR-0007, the Atlassian SAST ruleset (LGPL-2.1), elttam
+semgrep-rules (MIT), njsscan and mobsfscan (LGPL-3.0), the mindedsecurity Android rules
+(GPL-3.0), the Aikido rules (MIT) and a measured subset of semgrep-codeql (MIT). The verbatim copies
 live in ``third_party/``; ``scripts/build_opengrep_packs.py`` writes the kept rules into a few
 bundle files per pack and ``index.json`` (:mod:`kalkan.scanners.rulepacks`).
 
@@ -44,11 +46,12 @@ Why a second adapter and not more ``-f`` options for the ``opengrep`` adapter:
 - Cost: one more Opengrep start. Measured on Windows 11 on the vulnapp fixture (2026-10-25):
   kalkan's own pack 18 s, the four packs 43 s. Opengrep loads each rule file with a fixed cost
   (about 0.2 s), so the build joins the rules into bundles: the same rules as 1,088 files
-  took 211 s.
+  took 211 s. On 2026-11-07 (Windows 11, vulnapp, adapter run only): the three packs of then
+  14.7 s, the ten packs of ADR-0007 17.6 s.
 
 The switch: ``KALKAN_RULE_PACKS`` (:func:`kalkan.scanners.rulepacks.selection`). ``all`` (the
-default), ``osi`` (only the packs with an OSI-approved license: GitLab and 0xdea; the AGPL pack
-stays off), ``none`` or pack names. The status file records it.
+default), ``osi`` (only the packs with an OSI-approved license, the LGPL and GPL packs
+included; the AGPL pack stays off), ``none`` or pack names. The status file records it.
 
 Secrets: a result of a ``hardcoded-secrets`` rule keeps no matched text. ``after_run`` replaces
 its snippets with ``REDACTED``, its message with the rule title and drops its fingerprints (an

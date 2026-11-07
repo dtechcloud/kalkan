@@ -68,18 +68,26 @@ def test_header_exemptions(vendor):
 
 
 def test_rule_pack_components_are_pinned_on_or_before_the_14_day_limit():
-    """ADR-0005 rule 1: the pin day 2026-10-25 is at least 14 days after the commit."""
+    """ADR-0005 rule 1: the pin day (2026-10-25; 2026-11-07 for the packs of ADR-0007) is at
+    least 14 days after the commit."""
     manifest = json.loads((ROOT / "third_party" / "MANIFEST.json").read_text(encoding="utf-8"))
     packs = {
-        "gitlab-sast-rules": ("MIT", "LGPL-3.0-only"),
-        "0xdea-semgrep-rules": ("MIT",),
-        "trailofbits-semgrep-rules": ("AGPL-3.0-only",),
+        "gitlab-sast-rules": (("MIT", "LGPL-3.0-only"), "2026-10-11"),
+        "0xdea-semgrep-rules": (("MIT",), "2026-10-11"),
+        "trailofbits-semgrep-rules": (("AGPL-3.0-only",), "2026-10-11"),
+        "elttam-semgrep-rules": (("MIT",), "2026-10-24"),
+        "mobsfscan-rules": (("LGPL-3.0-or-later",), "2026-10-24"),
+        "njsscan-rules": (("LGPL-3.0-or-later",), "2026-10-24"),
+        "atlassian-sast-ruleset": (("LGPL-2.1-only",), "2026-10-24"),
+        "mindedsecurity-android-rules": (("GPL-3.0-only",), "2026-10-24"),
+        "aikido-opengrep-rules": (("MIT",), "2026-10-24"),
+        "semgrep-codeql-rules": (("MIT",), "2026-10-24"),
     }
     by_name = {component["name"]: component for component in manifest["components"]}
-    for name, licenses in packs.items():
+    for name, (licenses, last_day) in packs.items():
         component = by_name[name]
         assert len(component["commit"]) == 40
-        assert component["commit_date"] <= "2026-10-11", name
+        assert component["commit_date"] <= last_day, name
         assert all(text in component["license"] for text in licenses), name
         for license_file in component["license_files"]:
             assert (ROOT / "third_party" / name / license_file).is_file()

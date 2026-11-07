@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-java-ssrf
+    message: >-
+      URL built from user input may be vulnerable to Server-Side Request
+      Forgery (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-918/ServerSideRequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-918/ServerSideRequestForgery.ql
+    pattern-either:
+      - pattern: new URL($URL + $INPUT).openConnection()
+      - pattern: new URL($URL + $INPUT).openStream()
+      - pattern: HttpClient.newHttpClient().send(HttpRequest.newBuilder().uri(URI.create($URL + $INPUT)).$METHOD, ...)

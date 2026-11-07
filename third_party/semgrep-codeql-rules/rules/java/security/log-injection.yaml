@@ -1,0 +1,30 @@
+rules:
+  - id: codeql-java-log-injection
+    message: >-
+      User input written to log may enable log injection attacks. Sanitize
+      user input before logging.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-117: Improper Output Neutralization for Logs"
+      technology:
+        - java
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: LOW
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/117.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-117/LogInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE-117/LogInjection.ql
+    pattern-either:
+      - pattern: $LOGGER.info($INPUT);
+      - pattern: $LOGGER.debug($INPUT);
+      - pattern: $LOGGER.warn($INPUT);
+      - pattern: $LOGGER.error($INPUT);
+      - pattern: $LOGGER.trace($INPUT);
+      - pattern: System.out.println($INPUT);
+      - pattern: System.err.println($INPUT);

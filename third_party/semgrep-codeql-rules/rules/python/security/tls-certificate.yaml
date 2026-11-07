@@ -1,0 +1,121 @@
+rules:
+  - id: codeql-py-requests-no-verify
+    message: >-
+      TLS certificate verification is disabled. This makes the connection
+      vulnerable to man-in-the-middle attacks.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-295: Improper Certificate Validation"
+      technology:
+        - requests
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/295.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/RequestWithoutValidation.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/RequestWithoutValidation.ql
+    pattern-either:
+      - pattern: requests.get(..., verify=False, ...)
+      - pattern: requests.post(..., verify=False, ...)
+      - pattern: requests.put(..., verify=False, ...)
+      - pattern: requests.delete(..., verify=False, ...)
+      - pattern: requests.patch(..., verify=False, ...)
+      - pattern: requests.head(..., verify=False, ...)
+      - pattern: requests.options(..., verify=False, ...)
+      - pattern: requests.request(..., verify=False, ...)
+      - pattern: $SESSION.get(..., verify=False, ...)
+      - pattern: $SESSION.post(..., verify=False, ...)
+      - pattern: $SESSION.put(..., verify=False, ...)
+      - pattern: $SESSION.request(..., verify=False, ...)
+
+  - id: codeql-py-urllib3-no-verify
+    message: >-
+      TLS certificate verification is disabled. This makes the connection
+      vulnerable to man-in-the-middle attacks.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-295: Improper Certificate Validation"
+      technology:
+        - urllib3
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/295.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/RequestWithoutValidation.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/RequestWithoutValidation.ql
+    pattern-either:
+      - pattern: urllib3.PoolManager(..., cert_reqs="CERT_NONE", ...)
+      - pattern: urllib3.HTTPSConnectionPool(..., cert_reqs="CERT_NONE", ...)
+      - pattern: urllib3.disable_warnings(...)
+
+  - id: codeql-py-ssl-no-verify
+    message: >-
+      SSL context created without certificate verification. This makes the
+      connection vulnerable to man-in-the-middle attacks.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-295: Improper Certificate Validation"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/295.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/RequestWithoutValidation.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/RequestWithoutValidation.ql
+    pattern-either:
+      - pattern: ssl._create_unverified_context(...)
+      - pattern: ssl.create_default_context(...).check_hostname = False
+      - pattern: |
+          $CTX = ssl.create_default_context(...)
+          ...
+          $CTX.check_hostname = False
+      - pattern: |
+          $CTX = ssl.SSLContext(...)
+          ...
+          $CTX.verify_mode = ssl.CERT_NONE
+
+  - id: codeql-py-paramiko-no-host-key
+    message: >-
+      SSH host key verification is disabled. This makes the connection
+      vulnerable to man-in-the-middle attacks.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-295: Improper Certificate Validation"
+      technology:
+        - paramiko
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/295.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/MissingHostKeyValidation.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-295/MissingHostKeyValidation.ql
+    pattern-either:
+      - pattern: $CLIENT.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+      - pattern: $CLIENT.set_missing_host_key_policy(AutoAddPolicy())
+      - pattern: $CLIENT.set_missing_host_key_policy(paramiko.WarningPolicy())
+      - pattern: $CLIENT.set_missing_host_key_policy(WarningPolicy())

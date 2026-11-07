@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-py-bind-all-interfaces
+    message: >-
+      Server binding to all network interfaces (0.0.0.0) may expose the service
+      to unintended networks. Consider binding to a specific interface.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CVE-2018-1281/BindToAllInterfaces.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CVE-2018-1281/BindToAllInterfaces.ql
+    pattern-either:
+      - pattern: socket.bind(("0.0.0.0", ...))
+      - pattern: socket.bind(("", ...))
+      - pattern: $SOCKET.bind(("0.0.0.0", ...))
+      - pattern: $SOCKET.bind(("", ...))
+      - pattern: $APP.run(..., host="0.0.0.0", ...)
+      - pattern: $SERVER.bind(("0.0.0.0", ...))

@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-js-bind-all-interfaces
+    message: >-
+      Server binding to all network interfaces (0.0.0.0) may expose the service
+      to unintended networks. Consider binding to a specific interface.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - javascript
+        - node
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+    pattern-either:
+      - pattern: $SERVER.listen($PORT, "0.0.0.0", ...)
+      - pattern: $SERVER.listen($PORT, "", ...)
+      - pattern: $APP.listen($PORT, "0.0.0.0", ...)

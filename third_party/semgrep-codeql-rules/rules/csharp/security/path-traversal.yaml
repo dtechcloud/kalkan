@@ -1,0 +1,30 @@
+rules:
+  - id: codeql-csharp-path-traversal
+    message: >-
+      File path built from user input may allow path traversal attacks.
+      Validate and sanitize file paths.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - csharp
+        - dotnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-022/TaintedPath.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-022/TaintedPath.ql
+    pattern-either:
+      - pattern: File.ReadAllText($BASE + $INPUT)
+      - pattern: File.ReadAllText(Path.Combine($BASE, $INPUT))
+      - pattern: File.Open($BASE + $INPUT, ...)
+      - pattern: File.OpenRead($BASE + $INPUT)
+      - pattern: new FileStream($BASE + $INPUT, ...)
+      - pattern: new StreamReader($BASE + $INPUT)

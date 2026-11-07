@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-csharp-ldap-injection
+    message: >-
+      LDAP query built from user input may be vulnerable to LDAP injection.
+      Validate and escape special characters in user input.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-090: Improper Neutralization of Special Elements used in an LDAP Query"
+      technology:
+        - csharp
+        - dotnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/90.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-090/LDAPInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-090/LDAPInjection.ql
+    pattern-either:
+      - pattern: new DirectorySearcher($QUERY + $INPUT)
+      - pattern: new DirectorySearcher($"...")
+      - pattern: $SEARCHER.Filter = $QUERY + $INPUT;
+      - pattern: $SEARCHER.Filter = $"...";

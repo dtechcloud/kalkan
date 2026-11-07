@@ -1,0 +1,31 @@
+rules:
+  - id: codeql-csharp-command-injection
+    message: >-
+      Process started with user-controlled input may be vulnerable to command
+      injection. Validate and sanitize input before use.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - csharp
+        - dotnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-078/CommandInjection.ql
+    pattern-either:
+      - pattern: Process.Start($INPUT)
+      - pattern: Process.Start($CMD, $INPUT)
+      - pattern: |
+          $PSI = new ProcessStartInfo(...);
+          ...
+          $PSI.Arguments = $INPUT;
+      - pattern: new ProcessStartInfo($CMD, $INPUT)

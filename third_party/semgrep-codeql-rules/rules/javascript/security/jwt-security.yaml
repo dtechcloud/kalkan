@@ -1,0 +1,55 @@
+rules:
+  - id: codeql-js-jwt-decode-no-verify
+    message: >-
+      JWT decoded without signature verification. Always verify JWT signatures
+      to prevent token forgery.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-347: Improper Verification of Cryptographic Signature"
+      technology:
+        - jwt
+        - jsonwebtoken
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-347/JWTMissingSecretOrPublicKeyVerification.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-347/JWTMissingSecretOrPublicKeyVerification.ql
+    pattern-either:
+      - pattern: jwt.decode($TOKEN)
+      - pattern: "jwt.decode($TOKEN, { complete: true })"
+      - pattern: jsonwebtoken.decode($TOKEN)
+      - pattern: jose.decodeJwt($TOKEN)
+
+  - id: codeql-js-jwt-verify-none-algorithm
+    message: >-
+      JWT verification allows 'none' algorithm. This disables signature
+      verification entirely.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-347: Improper Verification of Cryptographic Signature"
+      technology:
+        - jwt
+        - jsonwebtoken
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/experimental/Security/CWE-347/JWTMissingSecretOrPublicKeyVerification.ql
+    pattern-either:
+      - pattern: "jwt.verify($TOKEN, $SECRET, { ..., algorithms: [..., \"none\", ...], ... })"
+      - pattern: "jwt.verify($TOKEN, $SECRET, { algorithms: [\"none\"] })"

@@ -1,0 +1,61 @@
+rules:
+  - id: codeql-py-open-redirect-flask
+    message: >-
+      URL redirect destination built from user input may allow open redirect
+      attacks. Validate the redirect URL against a whitelist.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - flask
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-601/UrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-601/UrlRedirect.ql
+    pattern-either:
+      - pattern: flask.redirect(request.args.get(...))
+      - pattern: flask.redirect(request.form.get(...))
+      - pattern: flask.redirect(request.values.get(...))
+      - pattern: redirect(request.args.get(...))
+      - pattern: redirect(request.form.get(...))
+      - pattern: redirect(request.values.get(...))
+      - pattern: flask.redirect(request.args[...])
+      - pattern: flask.redirect(request.form[...])
+
+  - id: codeql-py-open-redirect-django
+    message: >-
+      URL redirect destination built from user input may allow open redirect
+      attacks. Validate the redirect URL against a whitelist.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-601/UrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-601/UrlRedirect.ql
+    pattern-either:
+      - pattern: django.shortcuts.redirect(request.GET.get(...))
+      - pattern: django.shortcuts.redirect(request.POST.get(...))
+      - pattern: redirect(request.GET.get(...))
+      - pattern: redirect(request.POST.get(...))
+      - pattern: HttpResponseRedirect(request.GET.get(...))
+      - pattern: HttpResponseRedirect(request.POST.get(...))
+      - pattern: django.http.HttpResponseRedirect(request.GET.get(...))

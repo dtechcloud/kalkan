@@ -1,0 +1,33 @@
+rules:
+  - id: codeql-ruby-log-injection
+    message: >-
+      User input written to log may enable log injection attacks. Sanitize
+      user input before logging.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-117: Improper Output Neutralization for Logs"
+      technology:
+        - ruby
+        - rails
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: LOW
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/117.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-117/LogInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-117/LogInjection.ql
+    pattern-either:
+      - pattern: Rails.logger.info(params[$KEY])
+      - pattern: Rails.logger.info("#{...}#{params[$KEY]}#{...}")
+      - pattern: Rails.logger.debug(params[$KEY])
+      - pattern: Rails.logger.warn(params[$KEY])
+      - pattern: Rails.logger.error(params[$KEY])
+      - pattern: logger.info(params[$KEY])
+      - pattern: logger.debug(params[$KEY])
+      - pattern: logger.warn(params[$KEY])
+      - pattern: logger.error(params[$KEY])

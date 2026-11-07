@@ -1,0 +1,35 @@
+rules:
+  - id: codeql-go-insecure-random
+    message: >-
+      Use of math/rand for cryptographic purposes. math/rand is not
+      cryptographically secure. Use crypto/rand instead.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/338.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-338/InsecureRandomness.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-338/InsecureRandomness.ql
+    pattern-either:
+      - pattern: rand.Read(...)
+      - pattern: rand.Int()
+      - pattern: rand.Intn(...)
+      - pattern: rand.Int31()
+      - pattern: rand.Int31n(...)
+      - pattern: rand.Int63()
+      - pattern: rand.Int63n(...)
+      - pattern: rand.Uint32()
+      - pattern: rand.Uint64()
+      - pattern: rand.Float32()
+      - pattern: rand.Float64()
+      - pattern: rand.Seed(...)

@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-swift-sql-injection
+    message: >-
+      SQL query built from user input may be vulnerable to SQL injection.
+      Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - swift
+        - ios
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $DB.execute($QUERY + $INPUT)
+      - pattern: $DB.execute("\(...)")
+      - pattern: sqlite3_exec($DB, $QUERY + $INPUT, ...)

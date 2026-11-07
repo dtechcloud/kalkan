@@ -1,0 +1,30 @@
+rules:
+  - id: codeql-ruby-sql-injection
+    message: >-
+      SQL query built from user input may be vulnerable to SQL injection.
+      Use parameterized queries with ActiveRecord.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - rails
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $MODEL.where("..." + $VAR)
+      - pattern: $MODEL.where("#{...}")
+      - pattern: $MODEL.find_by_sql("..." + $VAR)
+      - pattern: $MODEL.find_by_sql("#{...}")
+      - pattern: ActiveRecord::Base.connection.execute("..." + $VAR)
+      - pattern: ActiveRecord::Base.connection.execute("#{...}")

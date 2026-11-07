@@ -1,0 +1,31 @@
+rules:
+  - id: codeql-py-flask-debug
+    message: >-
+      Flask app is running in debug mode. This may allow an attacker to run
+      arbitrary code through the Werkzeug debugger.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-215: Insertion of Sensitive Information Into Sent Data"
+      technology:
+        - flask
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/215.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-215/FlaskDebug.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-215/FlaskDebug.ql
+    patterns:
+      - pattern-either:
+          - pattern: $APP.run(..., debug=True, ...)
+          - pattern: flask.Flask(...).run(..., debug=True, ...)
+      - metavariable-pattern:
+          metavariable: $APP
+          pattern-either:
+            - pattern: flask.Flask(...)
+            - pattern: Flask(...)
