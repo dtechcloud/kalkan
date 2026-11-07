@@ -60,7 +60,7 @@ Never skip the checklist. If a check fails, fix it and run the whole checklist a
 ## Language rules
 
 - Code, comments, CLI messages and agent instructions: English.
-- Audit reports: Turkish by default. Keep established English technical terms in English (`knowledge/glossary.md`).
+- Audit reports: English by default; `--lang tr` gives a Turkish report. A Turkish report keeps established English technical terms in English (`knowledge/glossary.md`).
 - Documentation: English first. A Turkish version can sit next to it as `<name>.tr.md`, with a language link in line 2 of both files.
 - Chat with the user: the user's language.
 

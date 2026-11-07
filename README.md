@@ -13,7 +13,7 @@
   <a href="README.tr.md">Türkçe</a>
 </p>
 
-kalkan is a security audit toolkit for source code that runs inside Claude Code. One request starts a long, multi-phase audit of a folder or a git repository. All audit state lives on disk, so an audit continues where it stopped after a usage-limit reset. The output is a Turkish report (an English version on request) in Markdown, HTML, JSON and SARIF 2.1.0.
+kalkan is a security audit toolkit for source code that runs inside Claude Code. One request starts a long, multi-phase audit of a folder or a git repository. All audit state lives on disk, so an audit continues where it stopped after a usage-limit reset. The output is an English report in Markdown, HTML, JSON and SARIF 2.1.0. With `--lang tr` the report is Turkish, and an English version follows on request.
 
 > **Status (version 1.15.0):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006) runs unit-level checks in a container without network when a Docker engine answers; without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
 
@@ -105,7 +105,7 @@ You do not need to install Go. kalkan installs Go 1.26.9 into `.tools/go/` (SHA-
 
 Several audits can run at the same time, one session or terminal each: every orchestrator names its own run with `--run <run-id>` ([docs/PLUGIN.md](docs/PLUGIN.md#parallel-audits)).
 
-The report is in `runs/<run-id>/report/`: `REPORT.md`, `REPORT.html`, `EXECUTIVE.html`, `findings.sarif`, `findings.json` and `summary.json`. `EXECUTIVE.html` is a one-page executive summary for managers: the overall risk level, the top 10 findings with links into `REPORT.html`, classes, components, dependencies, tool results, coverage and the priority actions. At the end the audit asks whether you also want the English version (`REPORT.en.md`, `REPORT.en.html`, `EXECUTIVE.en.html`).
+The report is in `runs/<run-id>/report/`: `REPORT.md`, `REPORT.html`, `EXECUTIVE.html`, `findings.sarif`, `findings.json` and `summary.json`. `EXECUTIVE.html` is a one-page executive summary for managers: the overall risk level, the top 10 findings with links into `REPORT.html`, classes, components, dependencies, tool results, coverage and the priority actions. The report is English by default. Add `--lang tr` to the start command (`/kalkan <target> --lang tr` or `kalkan-audit <target> --lang tr`) for a Turkish report. A Turkish run in a Claude Code session asks at the end whether you also want the English version (`REPORT.en.md`, `REPORT.en.html`, `EXECUTIVE.en.html`).
 
 ## Install as a Claude Code plugin
 

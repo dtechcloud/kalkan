@@ -147,6 +147,12 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         help="new run only: run init does not record the run in runs/LATEST",
     )
     parser.add_argument(
+        "--lang",
+        choices=("en", "tr"),
+        default=None,
+        help="new run only: report language, en (default) or tr",
+    )
+    parser.add_argument(
         "--max-hours",
         type=_hours,
         default=loop_mod.DEFAULT_MAX_HOURS,
@@ -401,6 +407,7 @@ def prepare(
     command: str | None = None,
     plugin: bool | None = None,
     max_usd: float | None = None,
+    lang: str = "en",
 ) -> Launch:
     """Check the options of an unattended run and return its :class:`Launch`.
 
@@ -429,6 +436,7 @@ def prepare(
         run_id=run_id,
         latest=latest,
         max_usd=max_usd,
+        lang=lang,
     )
     runs_dir = _runs_root()
     workdir = plugin_workdir(runs_dir) if plugin else _repo_root()
@@ -504,6 +512,8 @@ def _cmd_unattended(args: argparse.Namespace) -> int:
         _say("--profile has no effect with devam. The run keeps its profile.")
     if resume and args.no_latest:
         _say("--no-latest has no effect with devam. It applies only to a new run.")
+    if resume and args.lang:
+        _say("--lang has no effect with devam. The run keeps its language.")
     launch = prepare(
         target=None if resume else args.target,
         run_id=run_id,
@@ -517,6 +527,7 @@ def _cmd_unattended(args: argparse.Namespace) -> int:
         command=command,
         plugin=plugin,
         max_usd=args.max_usd,
+        lang=args.lang or "en",
     )
     if args.dry_run:
         return _dry_run(args, launch)
@@ -537,7 +548,9 @@ def _dry_run(args: argparse.Namespace, launch: Launch) -> int:
     status_argv = loop_mod.status_command(run_id or RUN_ID_PLACEHOLDER)
     init_argv: list[str] | None = None
     if options.target is not None:
-        init_argv = loop_mod.init_command(options.target, options.profile, latest=options.latest)
+        init_argv = loop_mod.init_command(
+            options.target, options.profile, latest=options.latest, lang=options.lang
+        )
         run_text = f"new; run init creates it before the first round ({RUN_ID_PLACEHOLDER} below)"
     elif options.run_id is not None:
         run_text = options.run_id

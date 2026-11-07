@@ -655,7 +655,8 @@ class _Exec:
     def __init__(self, model: ReportModel, lang: str) -> None:
         self.model = model
         self.lang = lang
-        self.report = "REPORT.en.html" if lang == "en" else "REPORT.html"
+        run_lang = model.run_lang if model.run_lang in ("en", "tr") else "en"
+        self.report = "REPORT.html" if lang == run_lang else f"REPORT.{lang}.html"
         self.anchors = finding_anchors(model)
         self.parts: list[str] = []
 

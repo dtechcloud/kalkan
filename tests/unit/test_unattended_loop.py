@@ -337,6 +337,13 @@ def test_prompt_command_and_hint_helpers():
         "--json",
     ]
     assert init_command(TARGET, "deep")[-3:] == ["--profile", "deep", "--json"]
+    assert init_command(TARGET, "deep", lang="tr")[-5:] == [
+        "--profile",
+        "deep",
+        "--lang",
+        "tr",
+        "--json",
+    ]
     assert resume_hint("kalkan unattended", "claude", RUN) == f"kalkan unattended devam {RUN}"
     assert resume_hint("kalkan unattended", "codex", RUN).endswith(f"devam {RUN} --host codex")
     spaced = resume_hint("kalkan-unattended", "claude", None, "C:/My Code/app", "deep")

@@ -85,7 +85,7 @@ def ctx(tmp_path, monkeypatch):
     (target / "app" / "captcha.py").write_text(CAPTCHA, encoding="utf-8")
     (target / "app" / "register.py").write_text(REGISTER, encoding="utf-8")
     (target / "ops" / "backup.py").write_text(BACKUP, encoding="utf-8")
-    run = init_run(str(target), runs_dir=tmp_path / "runs", profile="standard")
+    run = init_run(str(target), runs_dir=tmp_path / "runs", profile="standard", lang="tr")
     with state.transaction(run) as tx:
         tx.state["phase"] = "validate"
     return run

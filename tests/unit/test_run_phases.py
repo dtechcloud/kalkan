@@ -27,7 +27,7 @@ def ctx(tmp_path, monkeypatch):
     monkeypatch.setattr(init_mod, "git_head", lambda directory: None)
     target = tmp_path / "webapp"
     shutil.copytree(TARGETS / "webapp", target)
-    return init_run(str(target), runs_dir=tmp_path / "runs")
+    return init_run(str(target), runs_dir=tmp_path / "runs", lang="tr")
 
 
 def go_to(ctx, phase, steps=None, status="running"):

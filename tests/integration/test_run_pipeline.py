@@ -542,7 +542,9 @@ class Driver:
 
 
 def test_full_pipeline_with_crash_and_resume(environment, capsys):
-    init = cli_json(capsys, "run", "init", str(environment), "--profile", "standard")
+    init = cli_json(
+        capsys, "run", "init", str(environment), "--profile", "standard", "--lang", "tr"
+    )
     run_dir = Path(init["run_dir"])
     driver = Driver(capsys, run_dir)
 
@@ -771,7 +773,7 @@ def test_full_pipeline_with_crash_and_resume(environment, capsys):
 
 
 def test_crashed_engine_step_runs_again(environment, capsys):
-    init = cli_json(capsys, "run", "init", str(environment), "--profile", "fast")
+    init = cli_json(capsys, "run", "init", str(environment), "--profile", "fast", "--lang", "tr")
     run_dir = Path(init["run_dir"])
     action = cli_json(capsys, "run", "next", "--owner", "orchestrator")
     assert action["kind"] == "engine_step"
@@ -797,7 +799,7 @@ def test_crashed_engine_step_runs_again(environment, capsys):
 
 
 def test_fast_run_skips_the_final_review(environment, capsys):
-    init = cli_json(capsys, "run", "init", str(environment), "--profile", "fast")
+    init = cli_json(capsys, "run", "init", str(environment), "--profile", "fast", "--lang", "tr")
     run_dir = Path(init["run_dir"])
     driver = Driver(capsys, run_dir)
     assert driver.run() == {"kind": "ask_user", "question": "english_report"}

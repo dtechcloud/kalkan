@@ -198,7 +198,7 @@ def test_manifest_state_events_and_latest(tmp_path):
     }
     assert loaded["options"] == {
         "profile": "standard",
-        "lang": "tr",
+        "lang": "en",
         "max_parallel": 6,
         "allow_build_network": False,
         "docker": "auto",

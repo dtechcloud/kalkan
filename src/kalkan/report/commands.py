@@ -55,6 +55,9 @@ OUTPUT_FILES: Final = {
     "report_en_html": "REPORT.en.html",
     "executive_html": "EXECUTIVE.html",
     "executive_en_html": "EXECUTIVE.en.html",
+    "report_tr_md": "REPORT.tr.md",
+    "report_tr_html": "REPORT.tr.html",
+    "executive_tr_html": "EXECUTIVE.tr.html",
     "findings_sarif": "findings.sarif",
     "findings_json": "findings.json",
     "sbom_cyclonedx": CYCLONEDX_FILE,
@@ -70,14 +73,18 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         help=REPORT_HELP,
         description=(
             "Write the report of a run into runs/<run-id>/report/: REPORT.md, REPORT.html and "
-            "the executive summary EXECUTIVE.html (Turkish) or REPORT.en.md, REPORT.en.html "
-            "and EXECUTIVE.en.html (English), findings.sarif, findings.json, summary.json and "
+            "the executive summary EXECUTIVE.html in the run language, the other language as "
+            "REPORT.<lang>.md, REPORT.<lang>.html and EXECUTIVE.<lang>.html (for example the "
+            "English version of a Turkish run), findings.sarif, findings.json, summary.json and "
             "the SBOMs sbom.cdx.json (CycloneDX) and sbom.spdx.json (SPDX)."
         ),
     )
     parser.add_argument("--run", metavar="RUN_ID", help="run ID (default: runs/LATEST)")
     parser.add_argument(
-        "--lang", choices=("tr", "en"), default="tr", help="report language (default: tr)"
+        "--lang",
+        choices=("en", "tr"),
+        default=None,
+        help="report language (default: the language of the run)",
     )
     parser.add_argument(
         "--formats",
@@ -112,14 +119,19 @@ def write_report(
     run_dir: Path,
     model: ReportModel,
     *,
-    lang: str = "tr",
+    lang: str | None = None,
     formats: Sequence[str] = FORMATS,
     include_candidates: bool = False,
 ) -> list[Path]:
-    """Write the report files of ``model`` into ``<run_dir>/report`` and return their paths."""
+    """Write the report files of ``model`` into ``<run_dir>/report`` and return their paths.
+
+    The run language gets the plain names (``REPORT.md``, ``REPORT.html``, ``EXECUTIVE.html``);
+    the other language gets ``.<lang>`` before the extension (:func:`report_suffix`).
+    """
+    lang = lang or run_language(model)
     out = run_dir / REPORT_DIRNAME
     out.mkdir(parents=True, exist_ok=True)
-    suffix = ".en" if lang == "en" else ""
+    suffix = report_suffix(lang, run_language(model))
     written: list[Path] = []
     with_sbom = "sbom" in formats and model.sbom is not None and bool(model.sbom.components)
     planned = {
@@ -172,6 +184,17 @@ def write_report(
     return written
 
 
+def run_language(model: ReportModel) -> str:
+    """Return the report language of the run (``en`` when the run names none)."""
+    return model.run_lang if model.run_lang in ("en", "tr") else "en"
+
+
+def report_suffix(lang: str, run_lang: str) -> str:
+    """Return the file name suffix of a report language: empty for the run language, else
+    ``.<lang>`` (``REPORT.en.md`` is the English version of a Turkish run)."""
+    return "" if lang == run_lang else f".{lang}"
+
+
 def refresh_report(run_dir: Path) -> list[Path]:
     """Write the report of a finished run again and return the paths written.
 
@@ -181,7 +204,7 @@ def refresh_report(run_dir: Path) -> list[Path]:
     do not change), and English gets its pages when ``REPORT.en.md`` exists.
     """
     model = build_model(run_dir)
-    run_lang = model.run_lang if model.run_lang in ("tr", "en") else "tr"
+    run_lang = run_language(model)
     written = write_report(
         run_dir, model, lang=run_lang, formats=("md", "html", "exec", "sarif", "json")
     )
@@ -200,10 +223,11 @@ def _cmd_report(args: argparse.Namespace) -> int:
         return EXIT_USAGE
     run_dir = resolve_run(args.run)
     model = build_model(run_dir)
+    lang = args.lang or run_language(model)
     written = write_report(
         run_dir,
         model,
-        lang=args.lang,
+        lang=lang,
         formats=formats,
         include_candidates=args.include_candidates,
     )
@@ -216,7 +240,7 @@ def _cmd_report(args: argparse.Namespace) -> int:
         _print_json(
             {
                 "run_id": model.run_id,
-                "lang": args.lang,
+                "lang": lang,
                 "files": files,
                 "findings": verdicts,
                 "tool_results": len(model.tool_results),

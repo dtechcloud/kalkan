@@ -465,8 +465,10 @@ def test_the_skill_takes_the_round_prompt_of_kalkan_unattended(sync):
     assert resume_prompt(run_id, "/kalkan:kalkan") == f"/kalkan:kalkan devam {run_id} --headless"
     assert resume_prompt(run_id, "$kalkan") == f"$kalkan devam {run_id} --headless"
     for path in (ROOT / ".claude" / "skills" / "kalkan" / "SKILL.md", PLUGIN_SKILL):
-        fields, _ = sync.parse_front_matter(path.read_text(encoding="utf-8"), "skill")
-        assert "devam [<run-id>] [--headless]" in fields["argument-hint"]
+        text = path.read_text(encoding="utf-8")
+        fields, _ = sync.parse_front_matter(text, "skill")
+        assert "resume [<run-id>] [--headless]" in fields["argument-hint"]
+        assert "When the first argument is `devam` or `resume`" in text  # the round prompt
 
 
 def test_done_summary_names_the_executive_summary():

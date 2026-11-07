@@ -145,7 +145,12 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         default="standard",
         help="audit depth: fast, standard (default) or deep",
     )
-    init.add_argument("--lang", choices=LANGUAGES, default="tr", help="report language")
+    init.add_argument(
+        "--lang",
+        choices=LANGUAGES,
+        default="en",
+        help="report language: en (default) or tr; a Turkish run also offers an English version",
+    )
     init.add_argument(
         "--max-parallel",
         type=_max_parallel,

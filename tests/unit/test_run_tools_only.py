@@ -44,7 +44,7 @@ def target(tmp_path):
 
 @pytest.fixture
 def ctx(runs, target):
-    return init_run(str(target), runs_dir=runs, mode=state.MODE_TOOLS_ONLY)
+    return init_run(str(target), runs_dir=runs, mode=state.MODE_TOOLS_ONLY, lang="tr")
 
 
 def go_to(ctx, phase, steps=None, status="running"):

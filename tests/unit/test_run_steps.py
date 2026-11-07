@@ -30,7 +30,7 @@ def ctx(tmp_path, monkeypatch):
     monkeypatch.setattr(lock, "pid_alive", lambda pid: pid != DEAD_PID and real(pid))
     target = tmp_path / "webapp"
     shutil.copytree(TARGETS / "webapp", target)
-    return init_run(str(target), runs_dir=tmp_path / "runs")
+    return init_run(str(target), runs_dir=tmp_path / "runs", lang="tr")
 
 
 @pytest.fixture

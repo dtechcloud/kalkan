@@ -13,7 +13,7 @@
   <a href="README.md">English</a>
 </p>
 
-kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Çıktı Türkçe bir rapordur. İstersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
+kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Rapor varsayılan olarak İngilizce. `--lang tr` ile rapor Türkçe olur ve istersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
 
 > **Durum (sürüm 1.15.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006), bir Docker motoru yanıt verdiğinde birim düzeyi kontrolleri ağsız bir konteynerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
 
@@ -105,7 +105,7 @@ Go kurman gerekmez. kalkan, Go 1.26.9'u SHA-256 kontrolüyle `.tools/go/` klasö
 
 Aynı anda birden fazla denetim çalıştırabilirsin. Her denetim için ayrı bir oturum veya terminal aç. Her orkestratör kendi run'ını `--run <run-id>` ile adlandırır ([docs/PLUGIN.md](docs/PLUGIN.md#parallel-audits)).
 
-Rapor `runs/<run-id>/report/` klasörüne yazılır: `REPORT.md`, `REPORT.html`, `EXECUTIVE.html`, `findings.sarif`, `findings.json` ve `summary.json`. `EXECUTIVE.html` yöneticiler için tek sayfalık bir özettir. Genel risk seviyesini, `REPORT.html` bağlantılı en önemli 10 bulguyu, sınıfları, bileşenleri, bağımlılıkları, araç sonuçlarını, kapsamı ve öncelikli aksiyonları gösterir. Denetim sonunda İngilizce sürümü de isteyip istemediğini sorar (`REPORT.en.md`, `REPORT.en.html`, `EXECUTIVE.en.html`).
+Rapor `runs/<run-id>/report/` klasörüne yazılır: `REPORT.md`, `REPORT.html`, `EXECUTIVE.html`, `findings.sarif`, `findings.json` ve `summary.json`. `EXECUTIVE.html` yöneticiler için tek sayfalık bir özettir. Genel risk seviyesini, `REPORT.html` bağlantılı en önemli 10 bulguyu, sınıfları, bileşenleri, bağımlılıkları, araç sonuçlarını, kapsamı ve öncelikli aksiyonları gösterir. Rapor varsayılan olarak İngilizce. Türkçe rapor için başlatma komutuna `--lang tr` ekle (`/kalkan <hedef> --lang tr` veya `kalkan-audit <hedef> --lang tr`). Claude Code oturumundaki Türkçe bir denetim, sonda İngilizce sürümü de isteyip istemediğini sorar (`REPORT.en.md`, `REPORT.en.html`, `EXECUTIVE.en.html`).
 
 ## Claude Code eklentisi olarak kurulum
 

@@ -1064,7 +1064,7 @@ def init_run(
     target: str,
     *,
     profile: str = "standard",
-    lang: str = "tr",
+    lang: str = "en",
     max_parallel: int = 6,
     docker: str = "auto",
     allow_build_network: bool = False,

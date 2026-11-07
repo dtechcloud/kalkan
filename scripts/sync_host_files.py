@@ -137,9 +137,10 @@ RUNBOOK_REPLACEMENTS: tuple[Replacement, ...] = (
         "between the two hosts.",
     ),
     Replacement(
-        "`$kalkan <target folder or git URL> [fast|standard|deep]` (default `standard`).",
-        "`$kalkan <target folder> [fast|standard|deep]` (default `standard`). Clone a git URL "
-        "target first: `run init` cannot clone in the Codex sandbox.",
+        "`$kalkan <target folder or git URL> [fast|standard|deep] [--lang tr]` (default "
+        "`standard`, English report).",
+        "`$kalkan <target folder> [fast|standard|deep] [--lang tr]` (default `standard`, English "
+        "report). Clone a git URL target first: `run init` cannot clone in the Codex sandbox.",
     ),
     Replacement(
         "- Unattended (no chat): `scripts/run-unattended.ps1 <target>` on Windows, "
@@ -190,7 +191,7 @@ SKILL_REPLACEMENTS: tuple[Replacement, ...] = (
     Replacement(
         "--profile <profile> --json`.",
         "--profile <profile> --json`. When the target is a git URL, do not run it: tell the "
-        "user in Turkish to clone the repository first and to give the local folder, because "
+        "user to clone the repository first and to give the local folder, because "
         "the engine cannot clone in the Codex sandbox. Stop.",
     ),
     Replacement(
@@ -236,8 +237,8 @@ SKILL_REPLACEMENTS: tuple[Replacement, ...] = (
         "- When Codex reports that the agent type in `agent` does not exist, never use another "
         "agent type instead. Run `kalkan task complete <id> --run <run-id> --json` once per "
         "task of the batch, so that the engine puts the tasks back in the queue. Then tell the "
-        "user in Turkish to mark the kalkan folder as trusted in Codex (`docs/CODEX.md`) and to "
-        "run `$kalkan devam <run-id>`. Stop.",
+        "user to mark the kalkan folder as trusted in Codex (`docs/CODEX.md`) and to "
+        "run `$kalkan resume <run-id>`. Stop.",
     ),
 )
 
@@ -254,7 +255,7 @@ PLUGIN_SKILL_REPLACEMENTS: tuple[Replacement, ...] = (
         "- Use Glob to check for `.venv/Scripts/kalkan.exe`. When it exists, the engine is "
         "`.venv/Scripts/kalkan.exe` (Windows). Otherwise it is `.venv/bin/kalkan` (Linux, "
         "macOS). Below, `kalkan` means that path.\n"
-        "- When neither exists, tell the user in Turkish to run `scripts/bootstrap.ps1` "
+        "- When neither exists, tell the user to run `scripts/bootstrap.ps1` "
         "(Windows) or `scripts/bootstrap.sh` (Linux, macOS) from the repository root, then "
         "stop.\n"
         "- Run every engine command from the repository root, one command per Bash call.",
@@ -264,12 +265,12 @@ PLUGIN_SKILL_REPLACEMENTS: tuple[Replacement, ...] = (
         f"`{PLUGIN_SETUP}` with the Bash timeout set to 600000 ms. It returns at once when the "
         "engine is current. On the first use and after a plugin update it installs the engine "
         "and the pinned scanners, which can take several minutes: tell the user so in one "
-        "Turkish sentence before you run it. Its last line `engine: <path>` names the engine.\n"
+        "sentence before you run it. Its last line `engine: <path>` names the engine.\n"
         f"- The engine is `{PLUGIN_ENGINE_WINDOWS}` on Windows and `{PLUGIN_ENGINE_POSIX}` on "
         "Linux and macOS. Below, `kalkan` means that path. Write it exactly as it appears in "
         "the `engine:` line, without quotes when it contains no space.\n"
         "- When the setup times out, run it once more: it keeps what it installed. When it "
-        "fails, show its error message to the user in Turkish, give them the setup command to "
+        "fails, show its error message to the user, give them the setup command to "
         "run in a terminal, then stop.\n"
         "- Run every engine command from the current folder, one command per Bash call.",
     ),
@@ -283,8 +284,8 @@ PLUGIN_SKILL_REPLACEMENTS: tuple[Replacement, ...] = (
         f"- Never read, write or edit files under the runs folder `{PLUGIN_RUNS}` yourself:",
     ),
     Replacement(
-        '| devam [<run-id>] [--headless]"',
-        '| devam [<run-id>] [--headless] | unattended <target> [fast|standard|deep]"',
+        '| resume [<run-id>] [--headless]"',
+        '| resume [<run-id>] [--headless] | unattended <target> [fast|standard|deep]"',
     ),
     Replacement(
         "## Start\n\n",
@@ -293,15 +294,17 @@ PLUGIN_SKILL_REPLACEMENTS: tuple[Replacement, ...] = (
         "this session. An unattended run takes hours and waits through usage limits by itself, "
         "so the user starts it in a terminal with one command: `kalkan-audit` checks the "
         "setup, runs the audit and prints the summary and the report paths. After the setup "
-        "command, give the user one Turkish message with the command, then stop. Copy the "
+        "command, give the user one message with the command, then stop. Copy the "
         f"command after the label `{PLUGIN_AUDIT_SH}` in the setup output for Git Bash, Linux "
         f"and macOS, and the command after `{PLUGIN_AUDIT_POWERSHELL}` for PowerShell on "
         "Windows when the output has that line. Replace `<target>` with the second argument "
         "(write a relative path as an absolute path) and append `--profile <third argument>` "
-        "when the third argument names a profile. Without a second argument, keep `<target>`. "
+        "when the third argument names a profile, and `--lang tr` when the arguments contain "
+        "it. Without a second argument, keep `<target>`. "
         "Add that `--open` opens the executive summary at the end, that `--tools-only` runs "
-        "only the scanners and SCA without Claude, that `devam <run-id>` in place of the "
-        "target resumes that run (`devam` alone resumes the newest run), that each audit can "
+        "only the scanners and SCA without Claude, that `--lang tr` gives a Turkish report, "
+        "that `resume <run-id>` in place of the target resumes that run (`resume` alone "
+        "resumes the newest run), that each audit can "
         "run in its own terminal at the same time, and that the report goes to "
         f"`{PLUGIN_RUNS}`.\n\n",
     ),

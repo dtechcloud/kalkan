@@ -148,6 +148,13 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         help="new run only: do not record it in runs/LATEST (a side audit next to another one)",
     )
     parser.add_argument(
+        "--lang",
+        choices=("en", "tr"),
+        default=None,
+        help="new run only: report language, en (default) or tr (Turkish, with an English "
+        "version on request)",
+    )
+    parser.add_argument(
         "--allow-build-network",
         action="store_true",
         help="new run only: let the app-level PoC sandbox build and pull the images of the "
@@ -317,6 +324,7 @@ def _cmd_audit(args: argparse.Namespace) -> int:
             (args.profile, "--profile"),
             (args.no_latest, "--no-latest"),
             (args.tools_only, "--tools-only"),
+            (args.lang, "--lang"),
         ):
             if given:
                 _say(f"{flag} has no effect with devam. The run keeps its settings.")
@@ -347,6 +355,7 @@ def _cmd_audit(args: argparse.Namespace) -> int:
             target,
             profile=(None if tools_only else args.profile) or loop_mod.DEFAULT_PROFILE,
             update_latest=not args.no_latest,
+            lang=args.lang or "en",
             mode=outcome.mode,
             live_paths=args.live,
             not_live_paths=args.not_live,
@@ -432,6 +441,8 @@ def _audit_command(
         parts.append("--tools-only")
     if args.no_latest:
         parts.append("--no-latest")
+    if args.lang:
+        parts += ["--lang", args.lang]
     return " ".join([*parts, extra])
 
 

@@ -32,7 +32,7 @@ def ctx(tmp_path, monkeypatch):
     monkeypatch.setattr(init_mod, "git_head", lambda directory: None)
     target = tmp_path / "webapp"
     shutil.copytree(TARGETS / "webapp", target)
-    run = init_run(str(target), runs_dir=tmp_path / "runs")
+    run = init_run(str(target), runs_dir=tmp_path / "runs", lang="tr")
     with state.transaction(run) as tx:
         tx.state["phase"] = "validate"
     return run

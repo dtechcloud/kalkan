@@ -273,10 +273,16 @@ def resume_prompt(run_id: str, skill: str = DEFAULT_SKILL) -> str:
 
 
 def init_command(
-    target: str, profile: str, *, latest: bool = True, python: str | None = None
+    target: str,
+    profile: str,
+    *,
+    latest: bool = True,
+    python: str | None = None,
+    lang: str = "en",
 ) -> list[str]:
     """Return the command that creates the run of a new audit:
-    ``<python> -m kalkan run init <target> --profile <profile> [--no-latest] --json``.
+    ``<python> -m kalkan run init <target> --profile <profile> [--no-latest] [--lang tr]
+    --json`` (English is the default of ``run init``).
 
     The caller passes a normalized target (an absolute folder or a git URL, never text that
     starts with ``-``).
@@ -284,6 +290,8 @@ def init_command(
     argv = [python or sys.executable, "-m", "kalkan", "run", "init", target, "--profile", profile]
     if not latest:
         argv.append("--no-latest")
+    if lang != "en":
+        argv += ["--lang", lang]
     return [*argv, "--json"]
 
 
@@ -669,10 +677,12 @@ def subprocess_run_creator(
     """
     env = {**os.environ, "PYTHONIOENCODING": "utf-8"}
 
-    def create(target: str, profile: str, latest: bool, timeout: float) -> RunCreation:
+    def create(
+        target: str, profile: str, latest: bool, timeout: float, lang: str = "en"
+    ) -> RunCreation:
         try:
             proc = runner(
-                init_command(target, profile, latest=latest, python=python),
+                init_command(target, profile, latest=latest, python=python, lang=lang),
                 cwd=os.fspath(cwd),
                 env=env,
                 stdin=subprocess.DEVNULL,
@@ -921,6 +931,7 @@ class UnattendedOptions:
     run_id: str | None = None
     latest: bool = True
     max_usd: float | None = None
+    lang: str = "en"
 
     def __post_init__(self) -> None:
         try:
@@ -1330,7 +1341,8 @@ class UnattendedLoop:
             f"{timeout / 60:.0f} minutes; it {latest} runs/LATEST"
         )
         self._say(f"run init: {target} ({options.profile})")
-        created = self._create_run(target, options.profile, options.latest, timeout)
+        extra = {"lang": options.lang} if options.lang != "en" else {}
+        created = self._create_run(target, options.profile, options.latest, timeout, **extra)
         if created.run_id is None:
             return self._finish(
                 EXIT_ERROR,

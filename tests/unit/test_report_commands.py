@@ -258,3 +258,18 @@ def test_write_report_returns_paths(runs):
     merge_run(run)
     written = write_report(run, model_of(run), lang="en", formats=["md", "html"])
     assert [path.name for path in written] == ["REPORT.en.md", "REPORT.en.html"]
+
+
+def test_the_run_language_gets_the_plain_file_names(runs):
+    run = runs / RUN_ID
+    merge_run(run)
+    state_path = run / "state.json"
+    state = json.loads(state_path.read_text(encoding="utf-8"))
+    state["options"]["lang"] = "en"
+    state_path.write_text(json.dumps(state), encoding="utf-8")
+    written = write_report(run, model_of(run), formats=["md", "html", "exec"])
+    assert [path.name for path in written] == ["REPORT.md", "REPORT.html", "EXECUTIVE.html"]
+    other = write_report(run, model_of(run), lang="tr", formats=["md", "html", "exec"])
+    assert [path.name for path in other] == ["REPORT.tr.md", "REPORT.tr.html", "EXECUTIVE.tr.html"]
+    page = (run / "report" / "EXECUTIVE.tr.html").read_text(encoding="utf-8")
+    assert 'href="REPORT.tr.html#' in page and 'href="REPORT.html#' not in page

@@ -8,8 +8,8 @@ This file is the runbook for OpenAI Codex. `CLAUDE.md` is the same runbook for C
 
 ## Run an audit
 
-- Start: `$kalkan <target folder> [fast|standard|deep]` (default `standard`). Clone a git URL target first: `run init` cannot clone in the Codex sandbox.
-- Resume after a break or a usage limit: `$kalkan devam <run-id>` (the start message names the run ID). `$kalkan devam` alone resumes the newest run.
+- Start: `$kalkan <target folder> [fast|standard|deep] [--lang tr]` (default `standard`, English report). Clone a git URL target first: `run init` cannot clone in the Codex sandbox.
+- Resume after a break or a usage limit: `$kalkan resume <run-id>` (the start message names the run ID; `devam` is the same command). `$kalkan resume` alone resumes the newest run.
 - Parallel audits: start each one in its own session. Every orchestrator names its own run with `--run <run-id>`, so the audits never disturb each other.
 - Unattended (no chat): `scripts/run-unattended.ps1 <target> --host codex` on Windows, `scripts/run-unattended.sh <target> --host codex` on Linux and macOS. `docs/CODEX.md` describes the `codex exec` round that the runner starts.
 - One command in a terminal without agents: `.venv/Scripts/kalkan audit <target> --tools-only` on Windows, `.venv/bin/kalkan audit <target> --tools-only` on Linux and macOS (scanners, SCA and the report). The agent phases run through the unattended runner above.
@@ -23,4 +23,4 @@ This file is the runbook for OpenAI Codex. `CLAUDE.md` is the same runbook for C
 - Never edit files under `src/`, `knowledge/`, `rules/`, `.claude/`, `.agents/`, `.codex/` or `third_party/` during an audit.
 - Never use the network for the audit, never run target code outside the engine, never push to git.
 - Keep the Codex sandbox of `.codex/config.toml` (`workspace-write`, network off, web search off). Never ask for escalated permissions during an audit.
-- Talk to the user in Turkish. Reports are Turkish by default and keep established English technical terms; the engine offers an English version at the end.
+- Talk to the user in the language the user writes in (English when unsure). Reports are English by default. With `--lang tr` the report is Turkish, keeps established English technical terms, and the engine offers an English version at the end.
