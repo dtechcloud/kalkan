@@ -17,7 +17,9 @@ Yardımın için teşekkürler. kalkan bir güvenlik aracı. Bu yüzden her değ
 2. Her pull request'te tek bir değişiklik yap. Testleri ekle veya güncelle.
 3. Kontrol listesini çalıştır: `pytest`, `ruff check .`, `ruff format --check .`, `python scripts/vendor_third_party.py --check`, `python scripts/sync_host_files.py --check`, `python scripts/build_plugin.py --check`.
 4. Commit mesajını Conventional Commits biçiminde yaz (`feat:`, `fix:`, `docs:`, `test:`, `chore:`, `refactor:`).
-5. Pull request'i aç. Değişikliği, testleri ve kontrol listesinin sonucunu yaz.
+5. Pull request'i `main` branch'ine aç. Değişikliği, testleri ve kontrol listesinin sonucunu yaz.
+
+`main` en yeni değişiklikleri, `stable` ise kullanıcıların kurduğu denenmiş sürümleri tutar. Merge edilen bir pull request kullanıcılara bir sonraki sürümle ulaşır.
 
 ## Kurallar
 

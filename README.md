@@ -15,7 +15,7 @@
 
 kalkan is a security audit toolkit for source code that runs inside Claude Code. One request starts a long, multi-phase audit of a folder or a git repository. All audit state lives on disk, so an audit continues where it stopped after a usage-limit reset. The output is an English report in Markdown, HTML, JSON and SARIF 2.1.0. With `--lang tr` the report is Turkish, and an English version follows on request.
 
-> **Status (version 1.16.0):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006) runs unit-level checks in a container without network when a Docker engine answers; without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
+> **Status (version 1.16.1):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006) runs unit-level checks in a container without network when a Docker engine answers; without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Quick start
 
@@ -26,16 +26,16 @@ You need git, Python 3.11 or later and Claude Code (signed in). Then run one lin
 Linux, macOS, Git Bash:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh
 ```
 
 Windows (PowerShell):
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.ps1)))
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))
 ```
 
-The installer checks the requirements, adds the kalkan marketplace, installs the kalkan plugin for your user, installs the pinned scanners and the local vulnerability databases, and runs `kalkan doctor`. The first run takes 5 to 15 minutes. Run the same line again to update kalkan. Each error names its fix. To see the commands first, add `--dry-run`: `... | sh -s -- --dry-run`. In PowerShell, write `-DryRun` after the last parenthesis.
+The installer follows the `stable` branch, which holds the tested releases (`main` holds the newest changes: `--source dtechcloud/kalkan#main`). It checks the requirements, adds the kalkan marketplace, installs the kalkan plugin for your user, installs the pinned scanners and the local vulnerability databases, and runs `kalkan doctor`. The first run takes 5 to 15 minutes. Run the same line again to update kalkan. Each error names its fix. To see the commands first, add `--dry-run`: `... | sh -s -- --dry-run`. In PowerShell, write `-DryRun` after the last parenthesis.
 
 Without the one-liner: `git clone https://github.com/dtechcloud/kalkan.git`, then `sh kalkan/scripts/install.sh` (Windows: `powershell -ExecutionPolicy Bypass -File kalkan\scripts\install.ps1`).
 
@@ -112,11 +112,11 @@ The report is in `runs/<run-id>/report/`: `REPORT.md`, `REPORT.html`, `EXECUTIVE
 The plugin runs kalkan from any folder, in the CLI or in the VS Code extension, without a checkout. The installer of the [quick start](#install-1-command) does these steps for you. By hand, they are:
 
 ```sh
-claude plugin marketplace add dtechcloud/kalkan
+claude plugin marketplace add dtechcloud/kalkan#stable
 claude plugin install kalkan@kalkan --scope user
 ```
 
-In a session: `/plugin install kalkan --marketplace dtechcloud/kalkan` (Claude Code 2.1.275 or later). In VS Code: `/plugins`, add the marketplace `dtechcloud/kalkan`, install `kalkan`. Then type `/kalkan https://github.com/org/repo deep` in any folder. The first run installs the engine and the scanners (5 to 15 minutes). Reports go to `~/kalkan-runs/`. Details: [docs/PLUGIN.md](docs/PLUGIN.md).
+In a session: `/plugin marketplace add dtechcloud/kalkan#stable`, then `/plugin install kalkan@kalkan`. In VS Code: `/plugins`, add the marketplace `dtechcloud/kalkan#stable`, install `kalkan`. Then type `/kalkan https://github.com/org/repo deep` in any folder. The first run installs the engine and the scanners (5 to 15 minutes). Reports go to `~/kalkan-runs/`. Details: [docs/PLUGIN.md](docs/PLUGIN.md).
 
 From a terminal: `kalkan-audit` of the [quick start](#audit-1-command) checks the setup, runs the audit and prints the summary. `kalkan-unattended` runs only the agent rounds of a run, for example `sh ~/.claude/plugins/data/kalkan-kalkan/bin/kalkan-unattended <target>` ([docs/PLUGIN.md](docs/PLUGIN.md#unattended-runs)).
 

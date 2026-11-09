@@ -7,7 +7,7 @@ Install or update kalkan as a Claude Code plugin with one command (Windows).
 The script does these steps. Run it again at any time: every step checks what is there first.
   1. Check git (Git for Windows: the plugin runs its setup and hook in Git Bash), Python 3.11 or
      later and the Claude Code CLI (signed in), and that git can read the repository.
-  2. Add the kalkan marketplace (claude plugin marketplace add dtechcloud/kalkan), or update
+  2. Add the kalkan marketplace (claude plugin marketplace add dtechcloud/kalkan#stable), or update
      it when it is there (claude plugin marketplace update kalkan).
   3. Install the plugin for your user (claude plugin install kalkan@kalkan --scope user), or
      update it (claude plugin update kalkan@kalkan).
@@ -21,14 +21,14 @@ the fix. Works with Windows PowerShell 5.1 and PowerShell 7. Linux and macOS use
 Run only the checks. Print every command that would change something.
 
 .PARAMETER Source
-The marketplace source (default: dtechcloud/kalkan; also a local path or another GitHub
+The marketplace source (default: dtechcloud/kalkan#stable, the tested releases; also a local path or another GitHub
 source that Claude Code accepts).
 
 .PARAMETER SkipSetup
 Leave out kalkan-setup (the next /kalkan in Claude Code runs it).
 
 .EXAMPLE
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.ps1)))
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))
 
 .EXAMPLE
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install.ps1 -DryRun
@@ -36,7 +36,7 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scripts\install.ps1 -DryRun
 [CmdletBinding()]
 param(
     [switch]$DryRun,
-    [string]$Source = 'dtechcloud/kalkan',
+    [string]$Source = 'dtechcloud/kalkan#stable',
     [switch]$SkipSetup
 )
 

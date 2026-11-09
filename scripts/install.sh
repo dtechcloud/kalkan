@@ -7,7 +7,7 @@
 #
 #   1. Check git, Python 3.11 or later and the Claude Code CLI (signed in), and that git can
 #      read the repository.
-#   2. Add the kalkan marketplace (claude plugin marketplace add dtechcloud/kalkan), or
+#   2. Add the kalkan marketplace (claude plugin marketplace add dtechcloud/kalkan#stable), or
 #      update it when it is there (claude plugin marketplace update kalkan).
 #   3. Install the plugin for your user (claude plugin install kalkan@kalkan --scope user), or
 #      update it (claude plugin update kalkan@kalkan).
@@ -18,7 +18,7 @@
 # Usage: sh scripts/install.sh [--dry-run] [--source SOURCE] [--skip-setup]
 #
 # Without a checkout:
-#   curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh
 # Options through the pipe: ... | sh -s -- --dry-run
 #
 # Exit codes: 0 done, 1 a check or a step failed (the message names the fix), 2 usage.
@@ -30,7 +30,7 @@ MARKETPLACE=kalkan
 PLUGIN=kalkan@kalkan
 DATA_ID=kalkan-kalkan
 
-source=$REPO
+source=$REPO#stable # the tested releases; main holds the newest changes
 dry_run=no
 skip_setup=no
 
@@ -42,7 +42,7 @@ Install or update kalkan as a Claude Code plugin: the marketplace, the plugin (u
 the pinned scanners and the vulnerability databases. Run it again to update.
 
   --dry-run          run only the checks; print every command that would change something
-  --source SOURCE    marketplace source (default: dtechcloud/kalkan; also a local path
+  --source SOURCE    marketplace source (default: dtechcloud/kalkan#stable; also a local path
                      or another GitHub source that Claude Code accepts)
   --skip-setup       leave out kalkan-setup (the next /kalkan in Claude Code runs it)
   -h, --help         show this text

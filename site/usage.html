@@ -54,8 +54,8 @@
             <button type="button" role="tab" aria-selected="true" data-tab="sh">Linux · macOS · Git Bash</button>
             <button type="button" role="tab" aria-selected="false" data-tab="ps">PowerShell</button>
           </div>
-          <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-          <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
           <p class="tr" lang="tr">İlk kurulum 5-15 dakika sürer. Aynı satır kalkan'ı günceller. Önce komutları görmek için <code>| sh</code> yerine <code>| sh -s -- --dry-run</code> yaz. PowerShell'de son parantezden sonra <code>-DryRun</code> ekle.</p>
           <p class="en" lang="en">The first install takes 5 to 15 minutes. The same line updates kalkan. To see the commands first, write <code>| sh -s -- --dry-run</code> in place of <code>| sh</code>. In PowerShell, add <code>-DryRun</code> after the last parenthesis.</p>
         </div>
