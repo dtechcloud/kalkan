@@ -88,58 +88,6 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         <div class="num"><b>8</b><span class="tr" lang="tr">çıktı: HTML, Markdown, SARIF, JSON, SBOM</span><span class="en" lang="en">deliverables: HTML, Markdown, SARIF, JSON, SBOM</span></div>
       </div>
     </section>
-    <!-- Open source -->
-    <section class="rule" aria-labelledby="h-open">
-      <div class="pad">
-        <div class="head">
-          <p class="kicker"><span class="tr" lang="tr">Açık kaynak</span><span class="en" lang="en">Open source</span></p>
-          <h2 id="h-open"><span class="tr" lang="tr">Herkes kendi projesini denetler.</span><span class="en" lang="en">Anyone can audit their own project.</span></h2>
-        </div>
-        <div class="paths one">
-          <div class="path">
-            <span class="tag"><span class="tr" lang="tr">Açık kaynak · ücretsiz</span><span class="en" lang="en">Open source · free</span></span>
-            <h3><span class="tr" lang="tr">Kendin çalıştır</span><span class="en" lang="en">Run it yourself</span></h3>
-            <ul class="ticks">
-              <li><span class="tr" lang="tr">MIT lisansı. Bütün kod açık, her satırı okuyabilirsin.</span><span class="en" lang="en">MIT license. All the code is open, you can read every line.</span></li>
-              <li><span class="tr" lang="tr">Tek komutla kurulum. Denetim kendi Claude Code oturumunda veya kendi API hesabınla çalışır.</span><span class="en" lang="en">One-command install. The audit runs in your own Claude Code session or on your own API account.</span></li>
-              <li><span class="tr" lang="tr">Kod, raporlar ve veritabanları kendi makinende kalır.</span><span class="en" lang="en">The code, the reports and the databases stay on your machine.</span></li>
-            </ul>
-            <a class="btn btn-primary" href="usage.html"><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Install</span></a>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Why -->
-    <section class="rule" aria-labelledby="h-why">
-      <div class="pad" style="padding-bottom: 0">
-        <div class="head">
-          <p class="kicker"><span class="tr" lang="tr">Neden kalkan</span><span class="en" lang="en">Why kalkan</span></p>
-          <h2 id="h-why"><span class="tr" lang="tr">Gürültü değil, kanıt.</span><span class="en" lang="en">Proof, not noise.</span></h2>
-          <p class="lede tr" lang="tr">Güvenlik tarayıcıları çok aday üretir. Dil modeli incelemeleri ise ikna edici ama kimsenin kontrol etmediği iddialar yazabilir. kalkan ikisini birleştirir ve her iddiayı kaynağa bağlar.</p>
-          <p class="lede en" lang="en">Security scanners produce many candidates. LLM reviews can write convincing claims that nobody checked. kalkan combines both and ties every claim to the source.</p>
-        </div>
-      </div>
-      <div class="grid-lines three">
-        <div class="card">
-          <span class="tag"><span class="tr" lang="tr">Sorun · tarayıcı gürültüsü</span><span class="en" lang="en">Problem · scanner noise</span></span>
-          <h3><span class="tr" lang="tr">Doğrulanmamış sonuç bulgu sayılmaz.</span><span class="en" lang="en">An unverified result is not a finding.</span></h3>
-          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 aday üretti. kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
-          <p class="en" lang="en">On OWASP Juice Shop, the tools alone gave 1,200 candidates. kalkan counts a tool result as a finding only after the agents trace and verify it in the code. The unverified ones stay in a separate list of the report.</p>
-        </div>
-        <div class="card">
-          <span class="tag"><span class="tr" lang="tr">Sorun · uydurma iddia</span><span class="en" lang="en">Problem · made-up claims</span></span>
-          <h3><span class="tr" lang="tr">Her iddia bir alıntı taşır.</span><span class="en" lang="en">Every claim carries a quote.</span></h3>
-          <p class="tr" lang="tr">Doğrulayıcı ajan her yanıtının arkasındaki kodu alıntılar. Motor her alıntıyı dosyada arar (±2 satır). Dosyada olmayan bir alıntı kanıt sayılmaz.</p>
-          <p class="en" lang="en">The verifier agent quotes the code behind each answer. The engine looks up every quote in the file (±2 lines). A quote that is not in the file counts as no evidence.</p>
-        </div>
-        <div class="card">
-          <span class="tag"><span class="tr" lang="tr">Sorun · yarıda kalan denetim</span><span class="en" lang="en">Problem · audits that stop halfway</span></span>
-          <h3><span class="tr" lang="tr">Limit dolsa da kaldığı yerden sürer.</span><span class="en" lang="en">A usage limit is only a pause.</span></h3>
-          <p class="tr" lang="tr">Denetimin bütün durumu diskte durur. Kullanım limiti dolarsa kalkan sıfırlanmayı bekler ve kaldığı yerden devam eder. Hiçbir görev kaybolmaz, hiçbiri iki kez çalışmaz.</p>
-          <p class="en" lang="en">All audit state lives on disk. When a usage limit stops the audit, kalkan waits for the reset and continues where it stopped. No task is lost, and none runs twice.</p>
-        </div>
-      </div>
-    </section>
     <!-- How it works: the animated flow -->
     <section class="rule" aria-labelledby="h-flow">
       <div class="pad" style="padding-bottom: 0">
@@ -210,6 +158,58 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
           </li>
         </ol>
         <p class="flow-base"><span class="tr" lang="tr">Motor dil modeli çağırmaz: durumu diskte tutar, şemaları ve alıntıları kontrol eder, kararı verir. Kullanım limiti dolarsa denetim bekler ve kaldığı yerden sürer.</span><span class="en" lang="en">The engine never calls a language model: it keeps the state on disk, checks the schemas and the quotes, and makes the verdict. A usage limit only pauses the audit; it continues where it stopped.</span></p>
+      </div>
+    </section>
+    <!-- Open source -->
+    <section class="rule" aria-labelledby="h-open">
+      <div class="pad">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Açık kaynak</span><span class="en" lang="en">Open source</span></p>
+          <h2 id="h-open"><span class="tr" lang="tr">Herkes kendi projesini denetler.</span><span class="en" lang="en">Anyone can audit their own project.</span></h2>
+        </div>
+        <div class="paths one">
+          <div class="path">
+            <span class="tag"><span class="tr" lang="tr">Açık kaynak · ücretsiz</span><span class="en" lang="en">Open source · free</span></span>
+            <h3><span class="tr" lang="tr">Kendin çalıştır</span><span class="en" lang="en">Run it yourself</span></h3>
+            <ul class="ticks">
+              <li><span class="tr" lang="tr">MIT lisansı. Bütün kod açık, her satırı okuyabilirsin.</span><span class="en" lang="en">MIT license. All the code is open, you can read every line.</span></li>
+              <li><span class="tr" lang="tr">Tek komutla kurulum. Denetim kendi Claude Code oturumunda veya kendi API hesabınla çalışır.</span><span class="en" lang="en">One-command install. The audit runs in your own Claude Code session or on your own API account.</span></li>
+              <li><span class="tr" lang="tr">Kod, raporlar ve veritabanları kendi makinende kalır.</span><span class="en" lang="en">The code, the reports and the databases stay on your machine.</span></li>
+            </ul>
+            <a class="btn btn-primary" href="usage.html"><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Install</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Why -->
+    <section class="rule" aria-labelledby="h-why">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Neden kalkan</span><span class="en" lang="en">Why kalkan</span></p>
+          <h2 id="h-why"><span class="tr" lang="tr">Gürültü değil, kanıt.</span><span class="en" lang="en">Proof, not noise.</span></h2>
+          <p class="lede tr" lang="tr">Güvenlik tarayıcıları çok aday üretir. Dil modeli incelemeleri ise ikna edici ama kimsenin kontrol etmediği iddialar yazabilir. kalkan ikisini birleştirir ve her iddiayı kaynağa bağlar.</p>
+          <p class="lede en" lang="en">Security scanners produce many candidates. LLM reviews can write convincing claims that nobody checked. kalkan combines both and ties every claim to the source.</p>
+        </div>
+      </div>
+      <div class="grid-lines three">
+        <div class="card">
+          <span class="tag"><span class="tr" lang="tr">Sorun · tarayıcı gürültüsü</span><span class="en" lang="en">Problem · scanner noise</span></span>
+          <h3><span class="tr" lang="tr">Doğrulanmamış sonuç bulgu sayılmaz.</span><span class="en" lang="en">An unverified result is not a finding.</span></h3>
+          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 aday üretti. kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
+          <p class="en" lang="en">On OWASP Juice Shop, the tools alone gave 1,200 candidates. kalkan counts a tool result as a finding only after the agents trace and verify it in the code. The unverified ones stay in a separate list of the report.</p>
+        </div>
+        <div class="card">
+          <span class="tag"><span class="tr" lang="tr">Sorun · uydurma iddia</span><span class="en" lang="en">Problem · made-up claims</span></span>
+          <h3><span class="tr" lang="tr">Her iddia bir alıntı taşır.</span><span class="en" lang="en">Every claim carries a quote.</span></h3>
+          <p class="tr" lang="tr">Doğrulayıcı ajan her yanıtının arkasındaki kodu alıntılar. Motor her alıntıyı dosyada arar (±2 satır). Dosyada olmayan bir alıntı kanıt sayılmaz.</p>
+          <p class="en" lang="en">The verifier agent quotes the code behind each answer. The engine looks up every quote in the file (±2 lines). A quote that is not in the file counts as no evidence.</p>
+        </div>
+        <div class="card">
+          <span class="tag"><span class="tr" lang="tr">Sorun · yarıda kalan denetim</span><span class="en" lang="en">Problem · audits that stop halfway</span></span>
+          <h3><span class="tr" lang="tr">Limit dolsa da kaldığı yerden sürer.</span><span class="en" lang="en">A usage limit is only a pause.</span></h3>
+          <p class="tr" lang="tr">Denetimin bütün durumu diskte durur. Kullanım limiti dolarsa kalkan sıfırlanmayı bekler ve kaldığı yerden devam eder. Hiçbir görev kaybolmaz, hiçbiri iki kez çalışmaz.</p>
+          <p class="en" lang="en">All audit state lives on disk. When a usage limit stops the audit, kalkan waits for the reset and continues where it stopped. No task is lost, and none runs twice.</p>
+        </div>
       </div>
     </section>
     <!-- Explore -->
