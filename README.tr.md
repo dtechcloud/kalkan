@@ -167,6 +167,32 @@ kalkan bir anahtarın yalnızca değişken adını kaydeder, değerini kaydetmez
 
 ## Nasıl çalışır
 
+```mermaid
+flowchart LR
+    T[("Kodun<br/>klasör veya git URL")] --> P
+    subgraph M["Senin makinen · ağ yok"]
+        P["Hazırlık<br/>salt okunur kopya, ajan<br/>talimat dosyaları etkisiz"] --> S["Tarama<br/>22 sabit sürümlü araç paralel<br/>+ çevrimdışı SCA"]
+    end
+    subgraph A["Ajanlar · paralel · salt okunur"]
+        R["Keşif<br/>4 ajan hedefi haritalar"] --> H["Av<br/>her avcı ajan bir grup<br/>kapsam birimi alır"]
+        H <-->|boşluklar| C["Eleştirmen<br/>sonraki dalgayı açar"]
+        H --> V["Doğrulama<br/>3 soru, her cevap<br/>kaynaktan alıntı taşır"]
+        V --> F["Son inceleme<br/>taze göz, doğrulayıcı notu yok"]
+    end
+    E{{"Motor, dil modeli yok<br/>durum diskte · şemaları ve<br/>alıntıları kontrol eder · kararı verir"}}
+    S -->|adaylar| R
+    V -.->|alıntılar| E
+    E -.->|karar| F
+    subgraph X["Sandbox · ağsız"]
+        D["Docker'da PoC<br/>salt okunur · cap-drop ALL<br/>180 sn sınır"]
+    end
+    F -->|doğrulanan| D
+    D -->|çalışma zamanı kanıtı| O
+    F --> O["Rapor<br/>EXECUTIVE.html · REPORT.md<br/>SARIF · SBOM"]
+```
+
+Her ok, `runs/<run-id>/` altında diskteki bir dosyadır. Bu yüzden kullanım limiti denetimi yalnızca duraklatır. Kararı ajanlar vermez: motor her alıntıyı dosyada arar (±2 satır). Eşleşen alıntısı olmayan bir iddia doğrulanmış sayılmaz.
+
 1. **Motor.** `kalkan`, çalışma zamanında hiçbir bağımlılığı olmayan deterministik bir Python CLI'ıdır. Hiçbir zaman dil modeli çağırmaz. Hedefi kopyalar, tarayıcıları ve SCA'yı çalıştırır, kapsamı planlar, ajanlara görev dağıtır, her ajan sonucunu kontrol eder ve kararı hesaplar.
 2. **Ajanlar.** `/kalkan` skill'i `kalkan run next` döngüsünü çalıştırır ve salt okunur alt ajanlar başlatır: recon, hunter, verifier, reviewer, consolidator, polisher, critic, sca-reach, poc-builder ve translator. Her alt ajan tek bir prompt dosyası okur ve tek bir JSON sonucu yazar.
 3. **Karar.** Verifier her aday için üç soruyu yanıtlar: saldırgan kontrolü, yetki sınırı ve eksik koruma. Her yanıtın arkasındaki kaynak satırını alıntılar. Motor her alıntıyı dosyada ±2 satır içinde arar. Doğrulanmış tek bir çürütme adayı reddeder. Üç kanıtlanmış yanıt onu doğrular. Geri kalan her durum `needs_validation` olur.

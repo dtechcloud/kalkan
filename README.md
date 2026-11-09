@@ -167,6 +167,32 @@ kalkan records only the name of a key variable, never its value. A low rate limi
 
 ## How it works
 
+```mermaid
+flowchart LR
+    T[("Your code<br/>folder or git URL")] --> P
+    subgraph M["Your machine · no network"]
+        P["Prep<br/>read-only copy, agent<br/>instruction files neutralized"] --> S["Scan<br/>22 pinned tools in parallel<br/>+ offline SCA"]
+    end
+    subgraph A["Agents · parallel · read-only"]
+        R["Recon<br/>4 agents map the target"] --> H["Hunt<br/>hunter agents, one batch<br/>of coverage units each"]
+        H <-->|gaps| C["Critic<br/>opens the next wave"]
+        H --> V["Verify<br/>3 questions,<br/>each answer quotes the source"]
+        V --> F["Final review<br/>fresh eyes, no verifier notes"]
+    end
+    E{{"Engine, no LLM<br/>state on disk · checks schemas<br/>and quotes · makes the verdict"}}
+    S -->|candidates| R
+    V -.->|quotes| E
+    E -.->|verdict| F
+    subgraph X["Sandbox · no network"]
+        D["PoC in Docker<br/>read-only · cap-drop ALL<br/>180 s limit"]
+    end
+    F -->|confirmed| D
+    D -->|runtime evidence| O
+    F --> O["Report<br/>EXECUTIVE.html · REPORT.md<br/>SARIF · SBOM"]
+```
+
+Every arrow is a file on disk under `runs/<run-id>/`, so a usage limit only pauses the audit. The agents never decide a verdict: the engine looks up each quote in the file (±2 lines), and a claim without a matching quote is not confirmed.
+
 1. **Engine.** `kalkan` is a deterministic Python CLI with no runtime dependencies. It never calls a language model. It copies the target, runs the scanners and SCA, plans the coverage, hands out agent tasks, checks every agent result and computes the verdicts.
 2. **Agents.** The `/kalkan` skill loops over `kalkan run next` and starts read-only subagents: recon, hunter, verifier, reviewer, consolidator, polisher, critic, sca-reach, poc-builder and translator. Each subagent reads one prompt file and writes one JSON result.
 3. **Verdicts.** A verifier answers three questions about each candidate (attacker control, privilege boundary, missing mitigation) and quotes the source behind each answer. The engine checks every quote against the file (±2 lines). Any verified refutation rejects the candidate, three established answers confirm it, and anything else needs validation.
