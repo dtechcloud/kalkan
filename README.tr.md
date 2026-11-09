@@ -15,7 +15,7 @@
 
 kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Rapor varsayılan olarak İngilizce. `--lang tr` ile rapor Türkçe olur ve istersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
 
-> **Durum (sürüm 1.16.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006), bir Docker motoru yanıt verdiğinde birim düzeyi kontrolleri ağsız bir konteynerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
+> **Durum (sürüm 1.16.1):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006), bir Docker motoru yanıt verdiğinde birim düzeyi kontrolleri ağsız bir konteynerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Hızlı başlangıç
 
@@ -26,16 +26,16 @@ Gerekenler: git, Python 3.11 veya üstü ve oturum açılmış Claude Code. Sonr
 Linux, macOS, Git Bash:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh
 ```
 
 Windows (PowerShell):
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.ps1)))
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))
 ```
 
-Kurulum betiği gereksinimleri kontrol eder. kalkan marketplace'ini ekler ve kalkan eklentisini kendi kullanıcın için kurar (user scope). Sonra sabit sürümlü tarayıcıları ve yerel güvenlik açığı veritabanlarını kurar. En son `kalkan doctor` çalıştırır. İlk kurulum 5-15 dakika sürer. kalkan'ı güncellemek için aynı satırı yeniden çalıştır. Her hata mesajı düzeltme komutunu verir. Komutları önce görmek için `--dry-run` ekle (`... | sh -s -- --dry-run`). PowerShell'de son parantezden sonra `-DryRun` yaz.
+Kurulum betiği `stable` branch'ini izler. Bu branch denenmiş sürümleri tutar (`main` en yeni değişiklikleri tutar: `--source dtechcloud/kalkan#main`). Betik gereksinimleri kontrol eder. kalkan marketplace'ini ekler ve kalkan eklentisini kendi kullanıcın için kurar (user scope). Sonra sabit sürümlü tarayıcıları ve yerel güvenlik açığı veritabanlarını kurar. En son `kalkan doctor` çalıştırır. İlk kurulum 5-15 dakika sürer. kalkan'ı güncellemek için aynı satırı yeniden çalıştır. Her hata mesajı düzeltme komutunu verir. Komutları önce görmek için `--dry-run` ekle (`... | sh -s -- --dry-run`). PowerShell'de son parantezden sonra `-DryRun` yaz.
 
 Tek satır olmadan: önce `git clone https://github.com/dtechcloud/kalkan.git` çalıştır. Sonra `sh kalkan/scripts/install.sh` çalıştır (Windows: `powershell -ExecutionPolicy Bypass -File kalkan\scripts\install.ps1`).
 
@@ -112,11 +112,11 @@ Rapor `runs/<run-id>/report/` klasörüne yazılır: `REPORT.md`, `REPORT.html`,
 Eklenti kalkan'ı her klasörden çalıştırır: CLI'da ve VS Code eklentisinde. Repoyu klonlaman gerekmez. [Hızlı başlangıç](#kurulum-1-komut) bölümündeki kurulum betiği bu adımları senin için yapar. Elle yapmak istersen:
 
 ```sh
-claude plugin marketplace add dtechcloud/kalkan
+claude plugin marketplace add dtechcloud/kalkan#stable
 claude plugin install kalkan@kalkan --scope user
 ```
 
-Oturum içinden: `/plugin install kalkan --marketplace dtechcloud/kalkan` (Claude Code 2.1.275 veya sonrası). VS Code'da: `/plugins` yaz, `dtechcloud/kalkan` marketplace'ini ekle, `kalkan` eklentisini kur. Sonra herhangi bir klasörde `/kalkan https://github.com/org/repo deep` yaz. İlk çalıştırma motoru ve tarayıcıları kurar (5-15 dakika). Raporlar `~/kalkan-runs/` klasörüne yazılır. Ayrıntılar: [docs/PLUGIN.md](docs/PLUGIN.md).
+Oturum içinden: önce `/plugin marketplace add dtechcloud/kalkan#stable`, sonra `/plugin install kalkan@kalkan`. VS Code'da: `/plugins` yaz, `dtechcloud/kalkan#stable` marketplace'ini ekle, `kalkan` eklentisini kur. Sonra herhangi bir klasörde `/kalkan https://github.com/org/repo deep` yaz. İlk çalıştırma motoru ve tarayıcıları kurar (5-15 dakika). Raporlar `~/kalkan-runs/` klasörüne yazılır. Ayrıntılar: [docs/PLUGIN.md](docs/PLUGIN.md).
 
 Terminalden: [hızlı başlangıçtaki](#denetim-1-komut) `kalkan-audit` kurulumu kontrol eder, denetimi çalıştırır ve özeti yazar. `kalkan-unattended` bir run'ın yalnızca ajan turlarını çalıştırır, örneğin `sh ~/.claude/plugins/data/kalkan-kalkan/bin/kalkan-unattended <hedef>` ([docs/PLUGIN.md](docs/PLUGIN.md#unattended-runs)).
 

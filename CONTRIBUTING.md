@@ -17,7 +17,9 @@ Thank you for your help. kalkan is a security tool, so every change must keep it
 2. Make one change per pull request. Add or update the tests.
 3. Run the checklist: `pytest`, `ruff check .`, `ruff format --check .`, `python scripts/vendor_third_party.py --check`, `python scripts/sync_host_files.py --check`, `python scripts/build_plugin.py --check`.
 4. Write the commit message in the Conventional Commits form (`feat:`, `fix:`, `docs:`, `test:`, `chore:`, `refactor:`).
-5. Open the pull request. Name the change, the tests and the result of the checklist.
+5. Open the pull request against `main`. Name the change, the tests and the result of the checklist.
+
+`main` holds the newest changes, and `stable` holds the tested releases that users install. A merged pull request reaches users with the next release.
 
 ## Rules
 

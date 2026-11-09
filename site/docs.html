@@ -45,7 +45,7 @@
           <h1 class="page-title" id="h-docs"><span class="tr" lang="tr">Kurulumdan kaldırmaya, bütün ayrıntılar.</span><span class="en" lang="en">Every detail, from install to uninstall.</span></h1>
           <p class="lede tr" lang="tr">Bu belgeler kalkan'ı kendi makinende kullanman için yazıldı. Dört bölüm var: başlangıç, denetim, makinende olanlar ve bakım. İçindekiler listesi bütün konuları gösterir.</p>
           <p class="lede en" lang="en">These pages are for you if you run kalkan on your own machine. They have four parts: getting started, the audit, your machine and maintenance. The contents list shows every topic.</p>
-          <p class="meta"><span class="tr" lang="tr">Sürüm 1.16.0 · Boyutlar 1.7.0 ile ölçüldü: Windows 11, 29 Ekim 2026</span><span class="en" lang="en">Version 1.16.0 · Sizes measured with 1.7.0: Windows 11, 29 October 2026</span></p>
+          <p class="meta"><span class="tr" lang="tr">Sürüm 1.16.1 · Boyutlar 1.7.0 ile ölçüldü: Windows 11, 29 Ekim 2026</span><span class="en" lang="en">Version 1.16.1 · Sizes measured with 1.7.0: Windows 11, 29 October 2026</span></p>
         </div>
         <details class="toc-m">
           <summary><span class="tr" lang="tr">İçindekiler</span><span class="en" lang="en">Contents</span></summary>
@@ -190,8 +190,8 @@
               <button type="button" role="tab" aria-selected="true" data-tab="sh">Linux · macOS · Git Bash</button>
               <button type="button" role="tab" aria-selected="false" data-tab="ps">PowerShell</button>
             </div>
-            <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-            <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
           </div>
           <h3><span class="tr" lang="tr">Betik ne yapar?</span><span class="en" lang="en">What the installer does</span></h3>
           <ol class="rules">
@@ -214,14 +214,14 @@
           <p class="tr" lang="tr">kalkan'ı güncellemek için aynı satırı yeniden çalıştır. Bir denetim çalışırken asla güncelleme yapma. Ayrıntılar: <a href="docs-maintenance.html#guncelleme">Güncelleme</a>.</p>
           <p class="en" lang="en">To update kalkan, run the same line again. Never update while an audit runs. Details: <a href="docs-maintenance.html#guncelleme">Updating</a>.</p>
           <h3><span class="tr" lang="tr">Elle kurulum</span><span class="en" lang="en">Manual install</span></h3>
-          <p class="tr" lang="tr">Betik yerine Claude Code CLI'ı da kullanabilirsin. Claude Code, marketplace'i git ile klonlar.</p>
-          <p class="en" lang="en">You can also use the Claude Code CLI in place of the installer. Claude Code clones the marketplace with git.</p>
-          <div class="code"><pre><code>claude plugin marketplace add dtechcloud/kalkan
+          <p class="tr" lang="tr">Betik yerine Claude Code CLI'ı da kullanabilirsin. Claude Code, marketplace'i git ile klonlar. <code>#stable</code> denenmiş sürümleri izler. En yeni değişiklikler için <code>#main</code> yaz.</p>
+          <p class="en" lang="en">You can also use the Claude Code CLI in place of the installer. Claude Code clones the marketplace with git. <code>#stable</code> follows the tested releases. For the newest changes, write <code>#main</code>.</p>
+          <div class="code"><pre><code>claude plugin marketplace add dtechcloud/kalkan#stable
 claude plugin install kalkan@kalkan --scope user</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
           <p class="tr" lang="tr">Sonra Claude Code'u yeniden başlat. İlk <code>/kalkan</code> motoru, tarayıcıları ve veritabanlarını kendisi kurar.</p>
           <p class="en" lang="en">Then restart Claude Code. The first <code>/kalkan</code> installs the engine, the scanners and the databases itself.</p>
-          <p class="tr" lang="tr">VS Code eklentisinde çalışma alanı güvenilir (trusted) olmalı. <code>/plugins</code> yaz. Marketplaces sekmesinde <code>dtechcloud/kalkan</code> ekle. Plugins sekmesinden kalkan'ı kur.</p>
-          <p class="en" lang="en">In the VS Code extension, the workspace must be trusted. Type <code>/plugins</code>. Add <code>dtechcloud/kalkan</code> on the Marketplaces tab. Install kalkan from the Plugins tab.</p>
+          <p class="tr" lang="tr">VS Code eklentisinde çalışma alanı güvenilir (trusted) olmalı. <code>/plugins</code> yaz. Marketplaces sekmesinde <code>dtechcloud/kalkan#stable</code> ekle. Plugins sekmesinden kalkan'ı kur.</p>
+          <p class="en" lang="en">In the VS Code extension, the workspace must be trusted. Type <code>/plugins</code>. Add <code>dtechcloud/kalkan#stable</code> on the Marketplaces tab. Install kalkan from the Plugins tab.</p>
         </section>
 
         <!-- First audit -->

@@ -17,15 +17,15 @@ The plugin lets you run a kalkan audit from any folder, in the Claude Code CLI o
 The installer does every step of this section and the setup below, and prints the audit command. It needs git, Python 3.11 or later and a signed-in Claude Code:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh
 ```
 
 ```powershell
-& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/install.ps1)))
+& ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))
 ```
 
 1. It checks git, Python, `claude --version` and `claude auth status --json` (signed in), and that git can read the repository (`git ls-remote` over https, then ssh). Each failure names its fix, for example `claude auth login`, or `gh auth setup-git` when your git needs a GitHub login.
-2. It runs `claude plugin marketplace add dtechcloud/kalkan`, or `claude plugin marketplace update kalkan` when the marketplace exists.
+2. It runs `claude plugin marketplace add dtechcloud/kalkan#stable`, or `claude plugin marketplace update kalkan` when the marketplace exists.
 3. It runs `claude plugin install kalkan@kalkan --scope user`, or `claude plugin update kalkan@kalkan` when the plugin exists.
 4. It runs the setup `sh <plugin folder>/bin/kalkan-setup <plugin data folder>`: the engine, the pinned scanners, the vulnerability databases and `kalkan doctor`. On Windows it finds `sh.exe` of Git for Windows.
 5. It prints the `kalkan-audit` command ([One-command audit](#one-command-audit)).
@@ -43,18 +43,20 @@ Pass options through the pipe with `... | sh -s -- --dry-run`, or after the last
 From a terminal:
 
 ```sh
-claude plugin marketplace add dtechcloud/kalkan
+claude plugin marketplace add dtechcloud/kalkan#stable
 claude plugin install kalkan@kalkan --scope user
 ```
 
 Or inside a Claude Code session:
 
 ```text
-/plugin marketplace add dtechcloud/kalkan
+/plugin marketplace add dtechcloud/kalkan#stable
 /plugin install kalkan@kalkan
 ```
 
-Claude Code 2.1.275 or later also takes one step: `/plugin install kalkan --marketplace dtechcloud/kalkan`. Restart Claude Code after the install.
+Restart Claude Code after the install.
+
+**Release channel.** `#stable` follows the `stable` branch: the tested releases. Pull requests go to `main`, and a release moves `stable` forward. To try the newest changes, add `dtechcloud/kalkan#main` in place of `#stable` (remove the marketplace first: `claude plugin marketplace remove kalkan`).
 
 Use the user scope (the default). A user-scope plugin works in every folder, also in a folder that Claude Code does not trust yet and under `claude -p`. A project-scope plugin loads only in a trusted folder.
 
@@ -62,10 +64,9 @@ Use the user scope (the default). A user-scope plugin works in every folder, als
 
 1. Make sure that the workspace is trusted. The extension does not work in Restricted Mode.
 2. Type `/plugins` in the Claude Code prompt box.
-3. Open the **Marketplaces** tab. Add `dtechcloud/kalkan`.
+3. Open the **Marketplaces** tab. Add `dtechcloud/kalkan#stable`.
 4. Open the **Plugins** tab. Select `kalkan`, then **Install for you**.
 
-Or open this link: `vscode://anthropic.claude-code/install-plugin?plugin=kalkan&marketplace=dtechcloud/kalkan`. Nothing installs until you pick a scope.
 
 ## Run an audit
 

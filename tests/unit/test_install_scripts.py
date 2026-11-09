@@ -244,7 +244,7 @@ def test_sh_dry_run_runs_only_the_checks(sh_fakes, tmp_path):
     proc = run([shell, str(INSTALL_SH), "--dry-run"], fakes, cwd=tmp_path)
     assert proc.returncode == 0, proc.stdout + proc.stderr
     lines = proc.stdout.splitlines()
-    assert "dry run: would run: claude plugin marketplace add dtechcloud/kalkan" in lines
+    assert "dry run: would run: claude plugin marketplace add dtechcloud/kalkan#stable" in lines
     assert "dry run: would run: claude plugin install kalkan@kalkan --scope user" in lines
     expected = f"dry run: would run: sh <plugin folder>/bin/kalkan-setup {fakes.data}"
     assert expected in lines
@@ -258,7 +258,7 @@ def test_sh_installs_then_updates(sh_fakes, tmp_path):
     first = run([shell, str(INSTALL_SH)], fakes, cwd=tmp_path)
     assert first.returncode == 0, first.stdout + first.stderr
     assert changes(fakes.calls) == [
-        "claude plugin marketplace add dtechcloud/kalkan",
+        "claude plugin marketplace add dtechcloud/kalkan#stable",
         "claude plugin install kalkan@kalkan --scope user",
         f"sh {fakes.setup}/kalkan-setup {fakes.data}",
     ]
@@ -294,7 +294,7 @@ def test_sh_needs_no_gh_when_git_can_read_the_repository(sh_fakes, tmp_path):
     fakes.remove("gh")
     proc = run([shell, str(INSTALL_SH)], fakes, cwd=tmp_path)
     assert proc.returncode == 0, proc.stdout + proc.stderr
-    assert "claude plugin marketplace add dtechcloud/kalkan" in changes(fakes.calls)
+    assert "claude plugin marketplace add dtechcloud/kalkan#stable" in changes(fakes.calls)
 
 
 def test_sh_stops_when_git_cannot_read_the_repository(sh_fakes, tmp_path):
@@ -373,7 +373,8 @@ def test_ps_dry_run_runs_only_the_checks(ps_fakes, tmp_path):
     shell, fakes = ps_fakes
     proc = run(ps_file(shell, "-DryRun"), fakes, cwd=tmp_path)
     assert proc.returncode == 0, proc.stdout + proc.stderr
-    assert "dry run: would run: claude plugin marketplace add dtechcloud/kalkan" in proc.stdout
+    expected_add = "dry run: would run: claude plugin marketplace add dtechcloud/kalkan#stable"
+    assert expected_add in proc.stdout
     assert "dry run: would run: claude plugin install kalkan@kalkan --scope user" in proc.stdout
     assert "<plugin folder>/bin/kalkan-setup" in proc.stdout
     assert changes(fakes.calls) == []
@@ -384,7 +385,7 @@ def test_ps_installs_then_updates(ps_fakes, tmp_path):
     first = run(ps_file(shell), fakes, cwd=tmp_path)
     assert first.returncode == 0, first.stdout + first.stderr
     assert changes(fakes.calls) == [
-        "claude plugin marketplace add dtechcloud/kalkan",
+        "claude plugin marketplace add dtechcloud/kalkan#stable",
         "claude plugin install kalkan@kalkan --scope user",
         f"sh {fakes.setup}/kalkan-setup {fakes.data}",
     ]
@@ -439,7 +440,7 @@ def test_the_ps_installer_file():
 @pytest.mark.parametrize("script", [INSTALL_SH, INSTALL_PS1])
 def test_the_installers_name_the_one_line_form(script):
     text = script.read_text(encoding="utf-8")
-    assert "https://raw.githubusercontent.com/dtechcloud/kalkan/main/scripts/" in text
+    assert "https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/" in text
 
 
 def test_shutil_finds_no_real_claude_in_the_fake_path(sh_fakes):
