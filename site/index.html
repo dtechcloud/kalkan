@@ -140,6 +140,78 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         </div>
       </div>
     </section>
+    <!-- How it works: the animated flow -->
+    <section class="rule" aria-labelledby="h-flow">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></p>
+          <h2 id="h-flow"><span class="tr" lang="tr">Adaydan alıntılı kanıta.</span><span class="en" lang="en">From candidates to quoted proof.</span></h2>
+          <p class="lede tr" lang="tr">Araçlar adayları bulur. Ajanlar paralel çalışır ve her iddiayı kaynaktan alıntılar. Motor alıntıları dosyada arar, kararı o verir. Kanıtı bir PoC ağsız bir sandbox'ta sınar.</p>
+          <p class="lede en" lang="en">The tools find the candidates. Agents work in parallel and quote the source for every claim. The engine looks up each quote in the file and makes the verdict. A PoC tests the proof in a sandbox without network.</p>
+        </div>
+      </div>
+      <div class="flow" data-flow>
+        <div class="flow-track" aria-hidden="true"><i></i></div>
+        <ol class="flow-stages">
+          <li class="flow-stage" style="--i: 0">
+            <span class="flow-n">01</span>
+            <h3><span class="tr" lang="tr">Tara</span><span class="en" lang="en">Scan</span></h3>
+            <p><span class="tr" lang="tr">22 sabit sürümlü araç ve yerel SCA paralel çalışır. Ağ kullanmazlar.</span><span class="en" lang="en">22 pinned tools and local SCA run in parallel, without network.</span></p>
+            <div class="flow-viz fv-chips" aria-hidden="true">
+              <b style="--k: 0">opengrep</b><b style="--k: 3">trivy</b><b style="--k: 1">gitleaks</b><b style="--k: 4">checkov</b><b style="--k: 2">osv</b><b style="--k: 5">grype</b><b style="--k: 1">bandit</b><b style="--k: 3">gosec</b><b style="--k: 0">zizmor</b><b style="--k: 2">+13</b>
+            </div>
+            <p class="flow-out"><span class="tr" lang="tr">→ adaylar · SARIF</span><span class="en" lang="en">→ candidates · SARIF</span></p>
+          </li>
+          <li class="flow-stage" style="--i: 1">
+            <span class="flow-n">02</span>
+            <h3><span class="tr" lang="tr">Ara</span><span class="en" lang="en">Hunt</span></h3>
+            <p><span class="tr" lang="tr">Avcı ajanlar kapsam birimlerini paralel tarar. Eleştirmen boşlukları bulur, yeni dalga açar.</span><span class="en" lang="en">Hunter agents cover the coverage units in parallel. A critic finds the gaps and opens a new wave.</span></p>
+            <div class="flow-viz fv-lanes" aria-hidden="true">
+              <span style="--s: 3.1s; --k: 0"><em>hunter·1</em><u></u></span>
+              <span style="--s: 4.3s; --k: 1"><em>hunter·2</em><u></u></span>
+              <span style="--s: 2.6s; --k: 2"><em>hunter·3</em><u></u></span>
+              <span style="--s: 3.7s; --k: 3"><em>hunter·4</em><u></u></span>
+              <span style="--s: 4.9s; --k: 4"><em>hunter·5</em><u></u></span>
+              <span class="fv-critic" style="--s: 5.4s; --k: 5"><em>critic</em><u></u></span>
+            </div>
+            <p class="flow-out"><span class="tr" lang="tr">→ iz taşıyan iddialar</span><span class="en" lang="en">→ claims with a trace</span></p>
+          </li>
+          <li class="flow-stage" style="--i: 2">
+            <span class="flow-n">03</span>
+            <h3><span class="tr" lang="tr">Doğrula</span><span class="en" lang="en">Verify</span></h3>
+            <p><span class="tr" lang="tr">Doğrulayıcı üç soruyu alıntıyla cevaplar. Motor her alıntıyı dosyada arar. Taze gözlü bir ajan son kez inceler.</span><span class="en" lang="en">A verifier answers three questions with quotes. The engine finds each quote in the file. A fresh-eyes agent reviews it once more.</span></p>
+            <div class="flow-viz fv-quotes" aria-hidden="true">
+              <span style="--k: 0"><i>✓</i><span class="tr" lang="tr">saldırgan ulaşır mı?</span><span class="en" lang="en">attacker control</span></span>
+              <span style="--k: 1"><i>✓</i><span class="tr" lang="tr">yetki sınırı aşılır mı?</span><span class="en" lang="en">privilege boundary</span></span>
+              <span style="--k: 2"><i>✓</i><span class="tr" lang="tr">önlem yok mu?</span><span class="en" lang="en">unmitigated</span></span>
+              <span class="fv-miss" style="--k: 3"><i>✗</i><span class="tr" lang="tr">alıntı dosyada yok</span><span class="en" lang="en">quote not in file</span></span>
+            </div>
+            <p class="flow-out"><span class="tr" lang="tr">→ doğrulandı · doğrulama bekliyor · reddedildi</span><span class="en" lang="en">→ confirmed · needs validation · rejected</span></p>
+          </li>
+          <li class="flow-stage" style="--i: 3">
+            <span class="flow-n">04</span>
+            <h3><span class="tr" lang="tr">Kanıtla</span><span class="en" lang="en">Prove</span></h3>
+            <p><span class="tr" lang="tr">Bir ajan küçük bir PoC yazar. Motor onu Docker'da ağsız ve salt okunur bir kapta çalıştırır.</span><span class="en" lang="en">An agent writes a small PoC. The engine runs it in Docker, in a read-only container without network.</span></p>
+            <div class="flow-viz fv-box" aria-hidden="true">
+              <span class="fv-box-head">sandbox</span>
+              <code>--network none</code><code>--read-only</code><code>--cap-drop ALL</code><code>uid 65534 · 180 s</code>
+              <span class="fv-box-out"><i>✓</i> <span class="tr" lang="tr">etki gösterildi</span><span class="en" lang="en">effect shown</span></span>
+            </div>
+            <p class="flow-out"><span class="tr" lang="tr">→ çalışma zamanı kanıtı</span><span class="en" lang="en">→ runtime evidence</span></p>
+          </li>
+          <li class="flow-stage" style="--i: 4">
+            <span class="flow-n">05</span>
+            <h3><span class="tr" lang="tr">Raporla</span><span class="en" lang="en">Report</span></h3>
+            <p><span class="tr" lang="tr">Aynı kök nedenli kayıtlar birleşir. Yönetici özeti ve makine okuyabilir çıktılar yazılır.</span><span class="en" lang="en">Records of one root cause fold into one. An executive summary and machine-readable files follow.</span></p>
+            <div class="flow-viz fv-files" aria-hidden="true">
+              <span style="--k: 0">EXECUTIVE.html</span><span style="--k: 1">REPORT.md</span><span style="--k: 2">findings.sarif</span><span style="--k: 3">sbom.cdx.json</span>
+            </div>
+            <p class="flow-out"><span class="tr" lang="tr">→ her bulgu kaynağını alıntılar</span><span class="en" lang="en">→ every finding quotes its source</span></p>
+          </li>
+        </ol>
+        <p class="flow-base"><span class="tr" lang="tr">Motor dil modeli çağırmaz: durumu diskte tutar, şemaları ve alıntıları kontrol eder, kararı verir. Kullanım limiti dolarsa denetim bekler ve kaldığı yerden sürer.</span><span class="en" lang="en">The engine never calls a language model: it keeps the state on disk, checks the schemas and the quotes, and makes the verdict. A usage limit only pauses the audit; it continues where it stopped.</span></p>
+      </div>
+    </section>
     <!-- Explore -->
     <section class="rule" aria-labelledby="h-explore">
       <div class="pad" style="padding-bottom: 0">

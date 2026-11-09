@@ -104,4 +104,11 @@
     addEventListener('resize', queue);
     markSection();
   }
+  // How it works (home): animate the flow only while it is on screen.
+  document.querySelectorAll('[data-flow]').forEach((flow) => {
+    if (!('IntersectionObserver' in window)) { flow.classList.add('is-live'); return; }
+    new IntersectionObserver((entries) => {
+      entries.forEach((entry) => flow.classList.toggle('is-live', entry.isIntersecting));
+    }, { threshold: 0.15 }).observe(flow);
+  });
 })();

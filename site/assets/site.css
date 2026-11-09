@@ -462,3 +462,73 @@ body { padding-top: env(safe-area-inset-top, 0px); }
 .toc-nav .toc-list + .kicker { margin-top: 0.85rem; }
 .toc-m nav .kicker { padding: 0.75rem 0.6rem 0.35rem; }
 .doc-sec > .btn { justify-self: start; }
+
+/* How it works (home): five stages on one signal track. The resting state is the full picture; the
+   animations only dim and light parts, so reduced motion and no script still show everything. */
+.flow { --cycle: 15s; position: relative; border-top: 1px solid var(--line); }
+.flow-stages { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+.flow-stage { position: relative; display: grid; gap: 0.7rem; align-content: start; grid-template-rows: auto auto auto 1fr auto; padding: 3.1rem clamp(1rem, 1.6vw, 1.4rem) 1.6rem; background: var(--canvas); min-width: 0; }
+.flow-stage h3 { margin: 0; color: var(--fg); font-size: 1.125rem; font-weight: 600; letter-spacing: -0.03em; }
+.flow-stage > p { margin: 0; font-size: 0.875rem; line-height: 1.6; }
+.flow-n { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.14em; color: var(--faint); }
+.flow-out { font-family: var(--mono); font-size: 0.72rem !important; line-height: 1.5 !important; color: var(--muted); }
+.flow-track { position: absolute; left: 0; right: 0; top: 2rem; height: 1px; z-index: 1; background: var(--line-strong); pointer-events: none; }
+.flow-track i { position: absolute; top: -3px; left: 10%; width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft), 0 0 18px var(--accent); opacity: 0; }
+.flow-viz { display: flex; flex-wrap: wrap; gap: 0.35rem; align-content: start; min-height: 7.2rem; padding: 0.75rem; border: 1px solid var(--line); border-radius: 0.5rem; background: var(--sunk); font-family: var(--mono); font-size: 0.68rem; line-height: 1.3; color: var(--body); }
+.fv-chips b { font-weight: 400; padding: 0.2rem 0.4rem; border: 1px solid var(--line-strong); border-radius: 0.3rem; color: var(--body); }
+.fv-lanes { display: grid; gap: 0.42rem; }
+.fv-lanes > span { display: grid; grid-template-columns: 4.6rem minmax(0, 1fr); align-items: center; gap: 0.5rem; }
+.fv-lanes em { font-style: normal; color: var(--muted); white-space: nowrap; }
+.fv-lanes u { position: relative; height: 4px; border-radius: 2px; background: var(--fill-strong); overflow: hidden; }
+.fv-lanes u::after { content: ""; position: absolute; inset: 0; width: 100%; border-radius: 2px; background: var(--fg); opacity: 0.75; }
+.fv-lanes .fv-critic em { color: var(--fg); }
+.fv-lanes .fv-critic u::after { background: repeating-linear-gradient(90deg, var(--fg) 0 6px, transparent 6px 9px); }
+.fv-quotes { display: grid; gap: 0.45rem; }
+.fv-quotes > span { display: flex; gap: 0.5rem; align-items: baseline; }
+.fv-quotes i { font-style: normal; color: var(--pass); }
+.fv-quotes .fv-miss { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--line-strong); }
+.fv-quotes .fv-miss i { color: var(--fail); text-decoration: none; }
+.fv-box { position: relative; display: grid; gap: 0.3rem; border-style: dashed; border-color: var(--line-strong); }
+.fv-box-head { position: absolute; top: -0.55rem; left: 0.6rem; padding: 0 0.35rem; background: var(--canvas); color: var(--muted); font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase; }
+.fv-box code { color: var(--body); }
+.fv-box-out { margin-top: 0.2rem; color: var(--fg); }
+.fv-box-out i { font-style: normal; color: var(--pass); }
+.fv-files { display: grid; gap: 0.4rem; }
+.fv-files > span::before { content: "↳ "; color: var(--faint); }
+.flow-base { position: relative; z-index: 2; background: var(--canvas); margin: 0; padding: 1.1rem clamp(1.25rem, 4vw, 3.5rem); font-family: var(--mono); font-size: 0.75rem; line-height: 1.6; color: var(--muted); }
+@supports (grid-template-rows: subgrid) {
+  /* Wide screens: the five columns share their rows, so the boxes line up. */
+  @media (min-width: 1081px) {
+    .flow-stages { grid-template-rows: repeat(5, auto); }
+    .flow-stage { grid-row: span 5; grid-template-rows: subgrid; row-gap: 0.7rem; }
+  }
+}
+@media (max-width: 1080px) {
+  .flow-stages { grid-template-columns: minmax(0, 1fr); }
+  .flow-stage { grid-template-rows: none; padding: 1.5rem clamp(1.25rem, 4vw, 2rem) 1.5rem 3.25rem; }
+  .flow-track { top: 0; bottom: 0; left: 1.6rem; right: auto; width: 1px; height: auto; }
+  .flow-track i { top: 10%; left: -3px; }
+  .flow-n { position: absolute; left: 0; top: 1.55rem; width: 3.2rem; text-align: center; background: var(--canvas); z-index: 2; padding: 0.2rem 0; }
+  .flow-viz { min-height: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .flow.is-live .flow-track i { animation: flow-signal var(--cycle) linear infinite; }
+  .flow.is-live .flow-stage { animation: flow-stage var(--cycle) ease-in-out infinite; animation-delay: calc((var(--i) * 0.2 - 0.02) * var(--cycle)); }
+  .flow.is-live .flow-stage .flow-n { animation: flow-n var(--cycle) ease-in-out infinite; animation-delay: inherit; }
+  .flow.is-live .fv-chips b { animation: flow-chip 2.6s ease-in-out infinite; animation-delay: calc(var(--k) * 0.38s); }
+  .flow.is-live .fv-lanes u::after { animation: flow-lane var(--s) cubic-bezier(.45, .05, .35, 1) infinite; animation-delay: calc(var(--k) * -0.9s); }
+  .flow.is-live .fv-quotes > span, .flow.is-live .fv-files > span { animation: flow-seq 5s ease-out infinite; animation-delay: calc(var(--k) * 0.55s); }
+  .flow.is-live .fv-box-out { animation: flow-seq 5s ease-out infinite; animation-delay: 1.6s; }
+  .flow.is-live .fv-box { animation: flow-box 5s ease-in-out infinite; }
+}
+@media (prefers-reduced-motion: no-preference) and (max-width: 1080px) {
+  .flow.is-live .flow-track i { animation-name: flow-signal-v; }
+}
+@keyframes flow-signal { 0% { left: 10%; opacity: 0; } 4% { opacity: 1; } 80% { left: 90%; opacity: 1; } 86%, 100% { left: 90%; opacity: 0; } }
+@keyframes flow-signal-v { 0% { top: 10%; opacity: 0; } 4% { opacity: 1; } 80% { top: 90%; opacity: 1; } 86%, 100% { top: 90%; opacity: 0; } }
+@keyframes flow-stage { 0%, 22%, 100% { background-color: var(--canvas); } 4%, 17% { background-color: var(--raise); } }
+@keyframes flow-n { 0%, 22%, 100% { color: var(--faint); } 4%, 17% { color: var(--accent); } }
+@keyframes flow-chip { 0%, 100% { border-color: var(--line); color: var(--faint); } 45%, 60% { border-color: var(--line-strong); color: var(--fg); } }
+@keyframes flow-lane { 0% { width: 0; opacity: 0.35; } 85% { width: 100%; opacity: 0.85; } 100% { width: 100%; opacity: 0; } }
+@keyframes flow-seq { 0% { opacity: 0.18; } 12%, 85% { opacity: 1; } 100% { opacity: 0.18; } }
+@keyframes flow-box { 0%, 100% { border-color: var(--line); } 35%, 70% { border-color: var(--line-strong); } }
