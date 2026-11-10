@@ -282,8 +282,8 @@ claude plugin list --json --data-size kalkan@kalkan</code></pre><button class="c
             <li><b class="tr" lang="tr">Raporlar</b><b class="en" lang="en">Reports</b><span class="tr" lang="tr">Raporlar kanıt olarak kodundan satırlar alıntılar. Bir raporu kodun kendisi kadar dikkatli paylaş.</span><span class="en" lang="en">The reports quote lines of your code as evidence. Share a report as carefully as the code.</span></li>
             <li><b class="tr" lang="tr">Denetim klasörü</b><b class="en" lang="en">Run folder</b><span class="tr" lang="tr">Kodun bir kopyasını ve bütün git geçmişini tutar. Geçmişte silinmiş bir sır da oradadır. Denetim bitince bu klasörü koru. <code>kalkan run clean &lt;run-id&gt;</code> kod kopyasını ve geçmiş kopyasını siler, raporu tutar.</span><span class="en" lang="en">It holds a copy of the code and the full git history. A secret that a commit deleted is still there. When the audit is done, protect this folder. <code>kalkan run clean &lt;run-id&gt;</code> deletes the code copy and the history copy, and keeps the report.</span></li>
           </ul>
-          <p class="tr" lang="tr">kalkan'ın ağı ne zaman kullandığı: <a href="#ag">Ağ davranışı</a>. Sözler ve testler: <a href="#guvenlik-modeli">Güvenlik modeli</a>.</p>
-          <p class="en" lang="en">When kalkan uses the network: <a href="#ag">Network behavior</a>. The promises and the tests: <a href="#guvenlik-modeli">Security model</a>.</p>
+          <p class="tr" lang="tr">kalkan'ın ağı ne zaman kullandığı: <a href="#ag">Ağ davranışı</a>. Taahhütler ve testler: <a href="#guvenlik-modeli">Güvenlik modeli</a>.</p>
+          <p class="en" lang="en">When kalkan uses the network: <a href="#ag">Network behavior</a>. The commitments and the tests: <a href="#guvenlik-modeli">Security model</a>.</p>
         </section>
 
         <!-- Network behavior -->
@@ -313,8 +313,8 @@ claude plugin list --json --data-size kalkan@kalkan</code></pre><button class="c
         <section class="doc-sec" id="guvenlik-modeli" aria-labelledby="h-model">
           <p class="kicker">20</p>
           <h2 id="h-model"><span class="tr" lang="tr">Güvenlik modeli</span><span class="en" lang="en">Security model</span></h2>
-          <p class="tr" lang="tr">kalkan güvenmediğin kodu denetler. Bu yüzden üç söz verir. Her sözü bir test korur.</p>
-          <p class="en" lang="en">kalkan audits code that you do not trust. Thus it makes three promises. A test holds each promise.</p>
+          <p class="tr" lang="tr">kalkan güvenmediğin kodu denetler. Bu yüzden güvenlik konusunda üç taahhüt verir. Her taahhüdü bir test korur.</p>
+          <p class="en" lang="en">kalkan audits code that you do not trust. Thus it makes three security commitments, and a test backs each one.</p>
           <ol class="rules">
             <li><span aria-hidden="true">01</span><span class="tr" lang="tr"><b>Denetlenen proje değişmez.</b> Denetim bir kopya üzerinde çalışır. Tuzaklı bir repo testi her dosyayı, klasörü ve değişiklik zamanını kontrol eder.</span><span class="en" lang="en"><b>The audited project never changes.</b> The audit works on a copy. A trap repository test checks every file, folder and modification time.</span></li>
             <li><span aria-hidden="true">02</span><span class="tr" lang="tr"><b>Ajanlar yalnız kendi sonuç dosyasına yazar.</b> Alt ajanların yalnız Read, Grep, Glob ve Write araçları var. Kabuk, web ve MCP aracı yok. Plugin hook'u onları kendi denetim klasörlerinde tutar.</span><span class="en" lang="en"><b>Agents write only their own result file.</b> The subagents have only Read, Grep, Glob and Write. They have no shell, no web and no MCP tools. The plugin hook keeps them in their own run folders.</span></li>
