@@ -57,6 +57,7 @@
           <div><dt>Hangi dilleri ve dosyaları kapsar?</dt><dd>Dil paketleri: C#, Go, Java, JavaScript, PHP, Python, Ruby, Rust, Solidity. Ayrıca C ve C++, Terraform, Kubernetes, Helm, Dockerfile, nginx, GitHub Actions, GitLab CI, Azure Pipelines, Tekton, OpenAPI.</dd></div>
           <div><dt>Codex ile çalışır mı?</dt><dd>Evet. <code>AGENTS.md</code> ve <code>$kalkan</code> skill'i OpenAI Codex CLI içindir. Gözetimsiz çalışma <code>--host codex</code> ile başlar.</dd></div>
           <div><dt>İki denetim aynı anda olur mu?</dt><dd>Evet. Her denetim kendi çalıştırma kimliğine bağlanır. Her birini ayrı bir terminalde başlat, yan denetime <code>--no-latest</code> ekle.</dd></div>
+          <div><dt>Bu site ziyaretçileri izliyor mu?</dt><dd>Site, ziyaretleri Azure Application Insights ile sayar: sayfa, ülke, tarayıcı ve nereden gelindiği. Çerez yazmaz, tarayıcıda veri saklamaz. Application Insights IP adresini tutmaz. Bu sayım yalnızca bu web sitesi için. kalkan aracı hiçbir veri göndermez.</dd></div>
         </dl>
         <dl class="faq en" lang="en">
           <div><dt>Does my code leave the machine?</dt><dd>The scanners and SCA run offline. The agents run in your own Claude Code session, and Claude Code sends the files it reads to Anthropic. That is your own Claude traffic. kalkan adds nothing to it.</dd></div>
@@ -71,6 +72,7 @@
           <div><dt>Which languages and files?</dt><dd>Language packs: C#, Go, Java, JavaScript, PHP, Python, Ruby, Rust, Solidity. Also C and C++, Terraform, Kubernetes, Helm, Dockerfile, nginx, GitHub Actions, GitLab CI, Azure Pipelines, Tekton, OpenAPI.</dd></div>
           <div><dt>Does it work with Codex?</dt><dd>Yes. <code>AGENTS.md</code> and the <code>$kalkan</code> skill are for the OpenAI Codex CLI. Unattended runs start with <code>--host codex</code>.</dd></div>
           <div><dt>Can two audits run at once?</dt><dd>Yes. Each audit binds to its own run ID. Start each one in its own terminal, and add <code>--no-latest</code> to the side audit.</dd></div>
+          <div><dt>Does this website track visitors?</dt><dd>The site counts visits with Azure Application Insights: the page, the country, the browser and the referrer. It sets no cookies and stores nothing in the browser. Application Insights does not keep the IP address. This count is for the website only. The kalkan tool sends no data.</dd></div>
         </dl>
       </div>
     </section>
@@ -112,5 +114,6 @@
   </div>
 </footer>
 <script src="assets/site.js"></script>
+<script src="assets/analytics.js"></script>
 </body>
 </html>

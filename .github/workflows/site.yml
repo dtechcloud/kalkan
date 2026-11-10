@@ -1,0 +1,97 @@
+# SPDX-License-Identifier: MIT
+#
+# Deploys the website (site/) to Azure Static Web Apps.
+#   stable -> the production environment (kalkan.dtechcloud.com)
+#   main   -> the staging environment
+#
+# Sign-in: OpenID Connect. GitHub gives the job a short-lived token, and Azure trades it for an
+# access token of a user-assigned managed identity. The identity has a federated credential
+# for each GitHub environment only, and the Contributor role on the Static Web App only.
+# GitHub stores no Azure secret: the job reads the deploy token at run time and masks it.
+# Every action is pinned by its full commit SHA; the comment names the release.
+
+name: site
+
+on:
+  push:
+    branches: [stable, main]
+    paths:
+      - "site/**"
+      - ".github/workflows/site.yml"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: site-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy (${{ github.ref_name == 'stable' && 'production' || 'staging' }})
+    if: github.ref_name == 'stable' || github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: ${{ github.ref_name == 'stable' && 'production' || 'staging' }}
+      url: ${{ steps.deploy.outputs.static_web_app_url }}
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      SWA_NAME: ${{ vars.AZURE_STATIC_WEB_APP }}
+      SWA_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Put the visit counter connection string in place (production only)
+        if: github.ref_name == 'stable'
+        env:
+          INSIGHTS: ${{ vars.APPINSIGHTS_CONNECTION_STRING }}
+        run: |
+          case "$INSIGHTS" in
+            InstrumentationKey=*) ;;
+            *) echo "::error::APPINSIGHTS_CONNECTION_STRING is not set"; exit 1 ;;
+          esac
+          python3 - <<'EOF'
+          import os
+          from pathlib import Path
+          path = Path("site/assets/analytics.js")
+          text = path.read_text(encoding="utf-8")
+          placeholder = "__KALKAN_INSIGHTS_CONNECTION_STRING__"
+          assert text.count(placeholder) == 1, "the placeholder must occur once"
+          path.write_text(text.replace(placeholder, os.environ["INSIGHTS"]), encoding="utf-8")
+          EOF
+
+      - name: Sign in to Azure (OIDC)
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Read the deploy token
+        id: token
+        run: |
+          token="$(az staticwebapp secrets list --name "$SWA_NAME" --resource-group "$SWA_GROUP" --query properties.apiKey --output tsv)"
+          if [ -z "$token" ]; then echo "::error::no deploy token"; exit 1; fi
+          echo "::add-mask::$token"
+          echo "value=$token" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy site/
+        id: deploy
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        with:
+          azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
+          action: upload
+          app_location: site
+          skip_app_build: true
+          skip_api_build: true
+          deployment_environment: ${{ github.ref_name != 'stable' && 'staging' || '' }}
+
+      - name: Sign out of Azure
+        if: always()
+        run: az logout || true
