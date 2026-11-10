@@ -69,8 +69,8 @@
             <div class="ev-foot"><span class="tr" lang="tr">Motor: 3 alıntı dosyada bulundu (±2 satır)</span><span class="en" lang="en">Engine: 3 quotes found in the file (±2 lines)</span><span aria-hidden="true">→</span><span class="pill ok"><span class="tr" lang="tr">onaylandı</span><span class="en" lang="en">confirmed</span></span></div>
           </figure>
           <ul class="rules">
-            <li><span>01</span><span class="tr" lang="tr">Doğrulayıcı her aday için üç soruyu yanıtlar: saldırgan girdiyi kontrol ediyor mu, bir yetki sınırı aşılıyor mu, önlem eksik mi?</span><span class="en" lang="en">The verifier answers three questions about each candidate: does an attacker control the input, does it cross a privilege boundary, is a mitigation missing?</span></li>
-            <li><span>02</span><span class="tr" lang="tr">Doğrulanmış tek bir çürütme adayı reddeder. Üç kanıtlı yanıt onaylar. Gerisi “doğrulama bekliyor” olarak raporda kalır.</span><span class="en" lang="en">One verified refutation rejects a candidate. Three established answers confirm it. Anything else stays in the report as “needs validation”.</span></li>
+            <li><span>01</span><span class="tr" lang="tr">Doğrulayıcı her şüpheli için üç soruyu yanıtlar: saldırgan girdiyi kontrol ediyor mu, bir yetki sınırı aşılıyor mu, önlem eksik mi?</span><span class="en" lang="en">The verifier answers three questions about each candidate: does an attacker control the input, does it cross a privilege boundary, is a mitigation missing?</span></li>
+            <li><span>02</span><span class="tr" lang="tr">Doğrulanmış tek bir çürütme şüpheliyi reddeder. Üç kanıtlı yanıt onaylar. Gerisi “doğrulama bekliyor” olarak raporda kalır.</span><span class="en" lang="en">One verified refutation rejects a candidate. Three established answers confirm it. Anything else stays in the report as “needs validation”.</span></li>
             <li><span>03</span><span class="tr" lang="tr"><code>standard</code> ve <code>deep</code> profillerinde taze bir gözden geçirici, doğrulayıcının gerekçesini görmeden her kaydı yeniden okur. Motor bir kaydı asla güçlendirmez.</span><span class="en" lang="en">In the standard and deep profiles, a fresh reviewer reads each record again without the verifier's reasoning. The engine never makes a record stronger.</span></li>
           </ul>
         </div>
@@ -127,9 +127,6 @@
         <div><b>17/19</b><p class="tr" lang="tr">Canlı ajan denetiminde (fast profili) bulunan yerleştirilmiş Python kod zafiyeti. Güvenli ikizlerde onaylanmış bulgu yok. 39 ajan görevi, 34 dakika.</p><p class="en" lang="en">Planted Python code vulnerabilities found in a live agent audit (fast profile). No confirmed finding on a secure twin. 39 agent tasks, 34 minutes.</p></div>
         <div><b class="tr" lang="tr">19,5 dk</b><b class="en" lang="en">19.5 min</b><p class="tr" lang="tr">OWASP Juice Shop v20.3.0, 1.466 dosya: 22 araç, SCA, birleştirme ve rapor. Kural paketleri bunun 16 dakikasını alır.</p><p class="en" lang="en">OWASP Juice Shop v20.3.0, 1,466 files: 22 tools, SCA, merge and report. The rule packs take 16 minutes of it.</p></div>
         <div><b class="tr" lang="tr">62 sn</b><b class="en" lang="en">62 s</b><p class="tr" lang="tr">DVWA, 252 dosya: aynı deterministik geçiş.</p><p class="en" lang="en">DVWA, 252 files: the same deterministic pass.</p></div>
-      </div>
-      <div class="pad" style="padding-top: 1.25rem; padding-bottom: 2.5rem">
-        <p class="note" style="margin:0"><span class="tr" lang="tr">Windows 11, 20 CPU. Deterministik ölçümler 1 Kasım 2026'da kalkan 1.7.3 ve 22 araçla yapıldı. Ayrıntılar: <code>benchmarks/results/SUMMARY.md</code>.</span><span class="en" lang="en">Windows 11, 20 CPUs. The deterministic measurements ran on 1 November 2026 with kalkan 1.7.3 and 22 tools. Details: <code>benchmarks/results/SUMMARY.md</code>.</span></p>
       </div>
     </section>
   </div>

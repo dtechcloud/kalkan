@@ -45,7 +45,7 @@
         <h1 id="h-hero" lang="en">Last stop before production.</h1>
         <div class="hero-grid">
           <div class="hero-copy">
-            <p class="hero-sub tr" lang="tr">Kaynak kodun için derin güvenlik denetimi, Claude Code içinde. 22 sabit sürümlü araç adayları bulur, ajanlar her birini kaynakta doğrular. Taramalar makinende kalır.</p>
+            <p class="hero-sub tr" lang="tr">Kaynak kodun için derin güvenlik denetimi, Claude Code içinde. 22 sabit sürümlü araç şüphelileri bulur, ajanlar her birini kaynakta doğrular. Taramalar makinende kalır.</p>
             <p class="hero-sub en" lang="en">A deep security audit of your source code, inside Claude Code. 22 pinned tools find the candidates, and agents verify each one in the source. The scans stay on your machine.</p>
             <div class="hero-install">
               <div class="code"><pre><code><span class="p">❯</span> claude plugin marketplace add dtechcloud/kalkan#stable
@@ -93,8 +93,8 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
       <div class="pad" style="padding-bottom: 0">
         <div class="head">
           <p class="kicker"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></p>
-          <h2 id="h-flow"><span class="tr" lang="tr">Adaydan alıntılı kanıta.</span><span class="en" lang="en">From candidates to quoted proof.</span></h2>
-          <p class="lede tr" lang="tr">Araçlar adayları bulur. Ajanlar paralel çalışır ve her iddiayı kaynaktan alıntılar. Motor alıntıları dosyada arar, kararı o verir. Kanıtı bir PoC ağsız bir sandbox'ta sınar.</p>
+          <h2 id="h-flow"><span class="tr" lang="tr">Şüpheden kanıta.</span><span class="en" lang="en">From candidates to quoted proof.</span></h2>
+          <p class="lede tr" lang="tr">Araçlar şüphelileri bulur. Ajanlar paralel çalışır ve her iddiayı kaynaktan alıntılar. Motor alıntıları dosyada arar, kararı o verir. Kanıtı ağsız bir sandbox'ta sınar.</p>
           <p class="lede en" lang="en">The tools find the candidates. Agents work in parallel and quote the source for every claim. The engine looks up each quote in the file and makes the verdict. A PoC tests the proof in a sandbox without network.</p>
         </div>
       </div>
@@ -108,7 +108,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
             <div class="flow-viz fv-chips" aria-hidden="true">
               <b style="--k: 0">opengrep</b><b style="--k: 3">trivy</b><b style="--k: 1">gitleaks</b><b style="--k: 4">checkov</b><b style="--k: 2">osv</b><b style="--k: 5">grype</b><b style="--k: 1">bandit</b><b style="--k: 3">gosec</b><b style="--k: 0">zizmor</b><b style="--k: 2">+13</b>
             </div>
-            <p class="flow-out"><span class="tr" lang="tr">→ adaylar · SARIF</span><span class="en" lang="en">→ candidates · SARIF</span></p>
+            <p class="flow-out"><span class="tr" lang="tr">→ şüpheliler · SARIF</span><span class="en" lang="en">→ candidates · SARIF</span></p>
           </li>
           <li class="flow-stage" style="--i: 1">
             <span class="flow-n">02</span>
@@ -139,7 +139,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
           <li class="flow-stage" style="--i: 3">
             <span class="flow-n">04</span>
             <h3><span class="tr" lang="tr">Kanıtla</span><span class="en" lang="en">Prove</span></h3>
-            <p><span class="tr" lang="tr">Bir ajan küçük bir PoC yazar. Motor onu Docker'da ağsız ve salt okunur bir kapta çalıştırır.</span><span class="en" lang="en">An agent writes a small PoC. The engine runs it in Docker, in a read-only container without network.</span></p>
+            <p><span class="tr" lang="tr">Bir ajan küçük bir PoC yazar. Motor onu Docker'da ağsız ve salt okunur bir konteynerde çalıştırır.</span><span class="en" lang="en">An agent writes a small PoC. The engine runs it in Docker, in a read-only container without network.</span></p>
             <div class="flow-viz fv-box" aria-hidden="true">
               <span class="fv-box-head">sandbox</span>
               <code>--network none</code><code>--read-only</code><code>--cap-drop ALL</code><code>uid 65534 · 180 s</code>
@@ -157,7 +157,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
             <p class="flow-out"><span class="tr" lang="tr">→ her bulgu kaynağını alıntılar</span><span class="en" lang="en">→ every finding quotes its source</span></p>
           </li>
         </ol>
-        <p class="flow-base"><span class="tr" lang="tr">Motor dil modeli çağırmaz: durumu diskte tutar, şemaları ve alıntıları kontrol eder, kararı verir. Kullanım limiti dolarsa denetim bekler ve kaldığı yerden sürer.</span><span class="en" lang="en">The engine never calls a language model: it keeps the state on disk, checks the schemas and the quotes, and makes the verdict. A usage limit only pauses the audit; it continues where it stopped.</span></p>
+        <p class="flow-base"><span class="tr" lang="tr">Motor dil modeli çağırmaz: durumu diskte tutar, şemaları ve alıntıları kontrol eder, kararı verir. Kullanım limiti dolarsa denetim bekler ve kaldığı yerden devam eder.</span><span class="en" lang="en">The engine never calls a language model: it keeps the state on disk, checks the schemas and the quotes, and makes the verdict. A usage limit only pauses the audit; it continues where it stopped.</span></p>
       </div>
     </section>
     <!-- Open source -->
@@ -187,7 +187,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         <div class="head">
           <p class="kicker"><span class="tr" lang="tr">Neden kalkan</span><span class="en" lang="en">Why kalkan</span></p>
           <h2 id="h-why"><span class="tr" lang="tr">Gürültü değil, kanıt.</span><span class="en" lang="en">Proof, not noise.</span></h2>
-          <p class="lede tr" lang="tr">Güvenlik tarayıcıları çok aday üretir. Dil modeli incelemeleri ise ikna edici ama kimsenin kontrol etmediği iddialar yazabilir. kalkan ikisini birleştirir ve her iddiayı kaynağa bağlar.</p>
+          <p class="lede tr" lang="tr">Güvenlik tarayıcıları çok sayıda şüpheli üretir. Dil modeli incelemeleri ise ikna edici ama kimsenin kontrol etmediği iddialar yazabilir. kalkan ikisini birleştirir ve her iddiayı kaynağa bağlar.</p>
           <p class="lede en" lang="en">Security scanners produce many candidates. LLM reviews can write convincing claims that nobody checked. kalkan combines both and ties every claim to the source.</p>
         </div>
       </div>
@@ -195,7 +195,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         <div class="card">
           <span class="tag"><span class="tr" lang="tr">Sorun · tarayıcı gürültüsü</span><span class="en" lang="en">Problem · scanner noise</span></span>
           <h3><span class="tr" lang="tr">Doğrulanmamış sonuç bulgu sayılmaz.</span><span class="en" lang="en">An unverified result is not a finding.</span></h3>
-          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 aday üretti. kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
+          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 şüpheli üretti. kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
           <p class="en" lang="en">On OWASP Juice Shop, the tools alone gave 1,200 candidates. kalkan counts a tool result as a finding only after the agents trace and verify it in the code. The unverified ones stay in a separate list of the report.</p>
         </div>
         <div class="card">
@@ -206,7 +206,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         </div>
         <div class="card">
           <span class="tag"><span class="tr" lang="tr">Sorun · yarıda kalan denetim</span><span class="en" lang="en">Problem · audits that stop halfway</span></span>
-          <h3><span class="tr" lang="tr">Limit dolsa da kaldığı yerden sürer.</span><span class="en" lang="en">A usage limit is only a pause.</span></h3>
+          <h3><span class="tr" lang="tr">Limit dolsa da kaldığı yerden devam eder.</span><span class="en" lang="en">A usage limit is only a pause.</span></h3>
           <p class="tr" lang="tr">Denetimin bütün durumu diskte durur. Kullanım limiti dolarsa kalkan sıfırlanmayı bekler ve kaldığı yerden devam eder. Hiçbir görev kaybolmaz, hiçbiri iki kez çalışmaz.</p>
           <p class="en" lang="en">All audit state lives on disk. When a usage limit stops the audit, kalkan waits for the reset and continues where it stopped. No task is lost, and none runs twice.</p>
         </div>
@@ -224,7 +224,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         <a href="how-it-works"><b><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></b><span class="tr" lang="tr">10 adımlık hat, alıntılı doğrulama, raporlar ve ölçümler.</span><span class="en" lang="en">The 10-step pipeline, quoted verification, reports and benchmarks.</span></a>
         <a href="tools"><b><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></b><span class="tr" lang="tr">22 sabit sürümlü araç: sürümleri ve görevleri.</span><span class="en" lang="en">22 pinned tools: their versions and their roles.</span></a>
         <a href="usage"><b><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></b><span class="tr" lang="tr">Kur, denetle, devam et. Komutlar ve profiller.</span><span class="en" lang="en">Install, audit, resume. Commands and profiles.</span></a>
-        <a href="security"><b><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></b><span class="tr" lang="tr">Üç söz ve her birini koruyan test.</span><span class="en" lang="en">Three promises and the test that holds each one.</span></a>
+        <a href="security"><b><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></b><span class="tr" lang="tr">Üç taahhüt ve her birini koruyan test.</span><span class="en" lang="en">Three commitments and the test behind each one.</span></a>
         <a href="docs"><b><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></b><span class="tr" lang="tr">Kurulum, denetim, makinende olanlar ve bakım.</span><span class="en" lang="en">Install, audit, what happens on your machine, and maintenance.</span></a>
         <a href="faq"><b><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></b><span class="tr" lang="tr">Veri, süre, ücret, API, CI ve diller.</span><span class="en" lang="en">Data, time, price, API, CI and languages.</span></a>
       </div>
@@ -233,7 +233,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
     <section class="rule closing" aria-labelledby="h-close">
       <div class="field" aria-hidden="true"><i class="a"></i><i class="b"></i></div>
       <div class="closing-in">
-        <h2 id="h-close"><span class="tr" lang="tr">Sürümden önce bir kez daha bak.</span><span class="en" lang="en">Look once more before the release.</span></h2>
+        <h2 id="h-close"><span class="tr" lang="tr">Canlıdan önce bir kez daha bak.</span><span class="en" lang="en">Look once more before production.</span></h2>
         <div class="code"><pre><code><span class="p">❯</span> kalkan-audit https://github.com/org/shop --profile deep --open</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
         <div class="cta">
           <a class="btn btn-primary" href="usage"><span class="tr" lang="tr">Ücretsiz kur</span><span class="en" lang="en">Install for free</span></a>
