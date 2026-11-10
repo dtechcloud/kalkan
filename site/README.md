@@ -1,7 +1,12 @@
 # kalkan website
 
-The product website. Plain, hand-written HTML with no build step: open `index.html` in a
-browser, or serve the folder with any static file server.
+The product website. Plain, hand-written HTML with no build step.
+
+The links are clean URLs: the home page is `./`, the other pages are `tools`, `docs#api` and
+so on, without `.html`. Azure Static Web Apps (and GitHub Pages, Netlify, Cloudflare Pages)
+serve `tools.html` for `/tools`. The old `.html` addresses answer with a 301 redirect to the
+clean one (`staticwebapp.config.json`). To preview locally, use a server that does the same,
+for example `npx @azure/static-web-apps-cli start site`.
 
 | File | Page |
 |---|---|
@@ -14,7 +19,6 @@ browser, or serve the folder with any static file server.
 | `docs-machine.html` | Docs, on your machine: what kalkan installs and where, disk usage, privacy, network, security model |
 | `docs-maintenance.html` | Docs, maintenance: updating, troubleshooting, uninstall, full cleanup |
 | `security.html` | Security |
-| `compare.html` | Compare |
 | `faq.html` | FAQ |
 | `404.html` | Page not found (the links start with `/`, because it answers any path) |
 | `assets/` | `site.css`, `site.js`, `analytics.js`, `kalkan-icon.svg` |
