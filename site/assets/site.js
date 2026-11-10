@@ -12,9 +12,10 @@
     const title = root.getAttribute(lang === 'en' ? 'data-title-en' : 'data-title-tr');
     if (title) document.title = title;
     document.querySelectorAll('[data-lang-set]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.langSet === lang)));
-    // Carry the language to the other pages, also where browser storage is off (file://).
+    // Carry the language to the other pages (links are clean: ./, tools, /docs), also where
+    // browser storage is off.
     document.querySelectorAll('a[href]').forEach((a) => {
-      const match = a.getAttribute('href').match(/^([\w-]+\.html)(#(?:en|tr))?$/);
+      const match = a.getAttribute('href').match(/^(\.\/|\/[\w-]*|[\w-]+)(#(?:en|tr))?$/);
       if (match) a.setAttribute('href', match[1] + (lang === 'tr' ? '#tr' : ''));
     });
   };

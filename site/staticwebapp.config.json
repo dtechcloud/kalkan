@@ -10,6 +10,66 @@
   },
   "routes": [
     {
+      "route": "/index.html",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/compare",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/compare.html",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/how-it-works.html",
+      "redirect": "/how-it-works",
+      "statusCode": 301
+    },
+    {
+      "route": "/tools.html",
+      "redirect": "/tools",
+      "statusCode": 301
+    },
+    {
+      "route": "/usage.html",
+      "redirect": "/usage",
+      "statusCode": 301
+    },
+    {
+      "route": "/security.html",
+      "redirect": "/security",
+      "statusCode": 301
+    },
+    {
+      "route": "/faq.html",
+      "redirect": "/faq",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs.html",
+      "redirect": "/docs",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs-audit.html",
+      "redirect": "/docs-audit",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs-machine.html",
+      "redirect": "/docs-machine",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs-maintenance.html",
+      "redirect": "/docs-maintenance",
+      "statusCode": 301
+    },
+    {
       "route": "/assets/*",
       "headers": {
         "Cache-Control": "public, max-age=3600"
@@ -30,5 +90,6 @@
   },
   "mimeTypes": {
     "svg": "image/svg+xml"
-  }
+  },
+  "trailingSlash": "never"
 }
