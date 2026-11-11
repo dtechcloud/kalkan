@@ -155,7 +155,9 @@ def check_page(page: str, report: str = "REPORT.html") -> _Checker:
         assert href == report or re.fullmatch(re.escape(report) + r"#f-[A-Za-z0-9_-]+", href)
     for style in checker.styles:  # only the computed bar widths
         assert re.fullmatch(r"width: \d{1,3}%", style), style
-    assert "@import" not in page and "url(" not in page
+    assert "@import" not in page
+    # only embedded data (the theme fonts and logo): no external request
+    assert all(u.startswith("data:") for u in re.findall(r"url\(([^)]*)\)", page))
     return checker
 
 
@@ -513,8 +515,10 @@ def test_a_full_pass_says_so():
 def test_design_contract(run):
     page = render_executive(model_of(run), "tr")
     assert '<meta name="viewport" content="width=device-width, initial-scale=1">' in page
-    assert "@media (prefers-color-scheme: dark)" in page
-    assert ':root[data-theme="dark"]' in page
+    # The theme "Gece": dark first, the light tokens by system setting or the toggle.
+    assert "@media (prefers-color-scheme: light)" in page
+    assert ':root[data-theme="dark"]' in page and ':root[data-theme="light"]' in page
+    assert 'font-family: "Geist"; ' in page and "logo-head" in page
     assert "@page { size: A4;" in page and "@media print" in page
     assert "@media (max-width: 640px)" in page
     # The same design tokens as REPORT.html.

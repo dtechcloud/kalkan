@@ -188,7 +188,9 @@ def test_html_is_well_formed_self_contained_and_escaped(model):
     assert "<script>alert" not in page
     assert "&lt;script&gt;alert(1)&lt;/script&gt;" in page
     assert "&lt;/code&gt;&lt;/pre&gt;&lt;script&gt;alert(3)" in page
-    assert "@import" not in page and "url(" not in page
+    assert "@import" not in page
+    # only embedded data (the theme fonts and logo): no external request
+    assert all(u.startswith("data:") for u in re.findall(r"url\(([^)]*)\)", page))
 
 
 def test_html_design_contract(model):
@@ -196,8 +198,10 @@ def test_html_design_contract(model):
     assert page.startswith("<!doctype html>")
     assert '<html lang="en">' in page
     assert '<meta name="viewport" content="width=device-width, initial-scale=1">' in page
-    assert "@media (prefers-color-scheme: dark)" in page
-    assert ':root[data-theme="dark"]' in page
+    # The theme "Gece": dark first, the light tokens by system setting or the toggle.
+    assert "@media (prefers-color-scheme: light)" in page
+    assert ':root[data-theme="dark"]' in page and ':root[data-theme="light"]' in page
+    assert 'font-family: "Geist"; ' in page and "logo-head" in page
     assert "@media print" in page
     assert "overflow-x: auto" in page
     assert 'class="tbl-wrap"' in page
