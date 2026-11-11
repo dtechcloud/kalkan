@@ -28,7 +28,7 @@ The site offers no paid service. The only contact is the "Contact us" / "Ä°letiÅ
 
 Every page carries English and Turkish in `<span class="en">` and `<span class="tr">` pairs. English is the default; `#tr` in the address or the TR button shows Turkish.
 `assets/site.js` switches the language and the theme and keeps the choice across pages. The
-look follows `docs/BRAND.md` (Geist and Geist Mono from Google Fonts, accent `#FF7A1A`,
+look follows `docs/BRAND.md` (Geist and Geist Mono, accent `#FF7A1A`,
 dark first).
 
 The four docs pages share one nav: the side table of contents (wide screens) and the
@@ -36,8 +36,9 @@ contents list (phones) show the same groups and numbers on each page. A link to 
 the same page starts with `#`, so that `site.js` can mark the section that you read. When you
 add, move or rename a docs section, change the nav and the section numbers on all four pages.
 
-The only external requests are the Google Fonts stylesheet and the font files. Everything
-else is in this folder.
+The fonts are in `assets/fonts` (Geist and Geist Mono subsets, SIL OFL 1.1,
+`scripts/build_report_fonts.py`). The only external requests are the visit counts
+(Application Insights, `assets/analytics.js`). Everything else is in this folder.
 
 ## Hosting and deploy
 
