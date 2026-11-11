@@ -3,7 +3,7 @@
 
 - Durum: kabul edildi
 - Tarih: 2026-10-29
-- İlgili: ADR-0004 (bu kararla güncellendi)
+- İlgili: ADR-0004 (bu kararla güncellendi). ADR-0008 (2026-11-11) uygulama düzeyi kısımlarının yerini alır: uygulama düzeyi etkin ve ağı yalnızca isteğe bağlı `--allow-build-network` ile kullanır.
 
 ## Bağlam
 

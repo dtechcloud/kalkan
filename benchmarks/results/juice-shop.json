@@ -11,9 +11,10 @@
     "cpu_count": 20
   },
   "kalkan": {
-    "version": "1.7.3",
-    "commit": "783a2f529b53891bda7a628f256eb8cb07104b4d",
-    "dirty": false
+    "version": "pre-release",
+    "commit": null,
+    "dirty": false,
+    "build": "a pre-release build of 2026-11-01"
   },
   "tools": {
     "actionlint": "1.7.12",

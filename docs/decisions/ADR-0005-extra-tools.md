@@ -32,7 +32,7 @@ On 2026-10-25, the project owner asked for the widest possible coverage of the s
 7. The license rule is in the "License policy" section below. GPL and AGPL tools run unmodified as separate processes (as Hadolint does).
 8. Before a tool enters, we compare it with the current tools on a corpus (at least the `vulnapp` fixture of kalkan and its safe twins).
 
-### Added in 1.5.0 (2026-10-25 and 2026-10-26)
+### Added on 2026-10-25 and 2026-10-26
 
 | Area | Tool or data | License | Installation | Plan |
 |---|---|---|---|---|

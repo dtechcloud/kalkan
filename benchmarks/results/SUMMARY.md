@@ -2,7 +2,7 @@
 
 Deterministic pipeline only, no LLM: `run init`, `scan all`, `sca sbom`, `sca match`, `merge`, `report`. Produced by `benchmarks/run_benchmark.py`; details in `benchmarks/results/<target>.json`.
 
-- kalkan 1.7.3 at commit 783a2f5
+- kalkan: a pre-release build of 2026-11-01 (all runs on 2026-11-01)
 - Host: Windows-11-10.0.26200-SP0, 20 CPUs
 - Tools: actionlint 1.7.12, bandit 1.9.4, checkov 3.3.22, flawfinder 2.0.20, gitleaks 8.30.1, gixy 0.2.55, go 1.26.9, gosec 2.29.0, govulncheck 1.8.0, grype 0.119.0, hadolint 2.15.1, helm 4.3.0, kingfisher 2.11.1, opengrep 1.30.1, osv-scanner 2.6.0, poutine 1.1.6, scorecard 5.5.0, shellcheck 0.11.0, syft 1.54.0, trivy 0.75.0, vacuum 0.33.0, zizmor 1.30.1
 
@@ -12,7 +12,7 @@ Deterministic pipeline only, no LLM: `run init`, `scan all`, `sca sbom`, `sca ma
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 | juice-shop | v20.3.0 (f189f52) | 1466 | angular, docker, docker-compose, express, github-actions, node, python, solidity, terraform | ok | 19.5 min | 18.8 min | 22.3 s | 1200 | 30 / 15 | 15 | 2 | 1 |
 | dvwa | master 068d974 | 252 | docker, docker-compose, github-actions, node, php, python | ok | 62.1 s | 52.8 s | 3.9 s | 361 | 2 / 1 | 0 | 0 | 0 |
-| vulnapp | fixture at kalkan 783a2f5 | 76 | c, django, docker, dotnet, express, flask, github-actions, go, helm, java, kubernetes, node, php, python, rails, ruby, spring, terraform | ok | 104.4 s | 73.8 s | 28.6 s | 476 | 140 / 67 | 0 | 3 | 0 |
+| vulnapp | fixture of the pre-release build | 76 | c, django, docker, dotnet, express, flask, github-actions, go, helm, java, kubernetes, node, php, python, rails, ruby, spring, terraform | ok | 104.4 s | 73.8 s | 28.6 s | 476 | 140 / 67 | 0 | 3 | 0 |
 
 ## Engines
 

@@ -6,7 +6,7 @@ kalkan audits code that you do not trust. This document states what kalkan guara
 
 1. **kalkan never modifies the audited project.** No file and no folder of the target changes. No process runs inside the target folder, except one read-only git process that copies the history (see promise 1).
 2. **The kalkan agents act only on their own result file.** A subagent reads the target copy and its task files, and writes exactly one file: its own `result.json`. It has no shell, no web access and no MCP tools.
-3. **No data leaves the machine, except the traffic of your own Claude session to Anthropic.** By default no scanner, no SCA tool and no engine command uses the network. The setup downloads, the database update, the clone of a git URL target, the sandbox base images of `kalkan sandbox pull` and the opt-in `--online` flag are the only other network uses, and you start each of them yourself. `kalkan audit` runs the setup downloads only with `--yes` or after you answer `y` to its question.
+3. **No data leaves the machine, except the traffic of your own Claude session to Anthropic or to your API provider.** By default no scanner, no SCA tool and no engine command uses the network. The setup downloads, the database update, the clone of a git URL target, the sandbox base images of `kalkan sandbox pull`, the opt-in `--online` flag and the opt-in `--allow-build-network` flag are the only other network uses, and you start each of them yourself. `kalkan audit` runs the setup downloads only with `--yes` or after you answer `y` to its question.
 
 ## Promise 1: the audited project is never modified
 
@@ -116,7 +116,7 @@ kalkan keeps its files in two folders: the kalkan home (the checkout, or `~/.cla
 | `<home>/.tools/go-build/`, `<home>/.tools/.tmp/` | the build and download folders of `kalkan tools install`, removed after use |
 | `<runs>/<run-id>/` | one run: the target copy, the history copy, the tool results, the work folders of the tools (`scans/.work/`, `sca/.work/`), the agent tasks and the report |
 
-**No kalkan tool writes outside these folders.** Measured on Windows 11 on 2026-10-29: the user profile (names, modification times, sizes) was snapshotted before and after `kalkan doctor`, `kalkan scan all` and `kalkan sca sbom`, `match` and `reach` on a run of the vulnapp fixture. Before the change:
+**No kalkan tool writes outside these folders.** Measured on Windows 11 on 2026-10-29: the user profile (names, modification times, sizes) was snapshotted before and after `kalkan doctor`, `kalkan scan all` and `kalkan sca sbom`, `match` and `reach` on a run of the vulnapp fixture. Before kalkan set the variables below, the same measurement showed:
 
 - opengrep wrote its log `~/.opengrep/semgrep.log` (262 KB of target paths and matched code; the version probe of the doctor wrote it too), unpacked its runtime into `%USERPROFILE%\AppData\Local\opengrep\v1.30.1` (277 MB in 84 files) and left 58 files (5.4 MB: `semgrep-*.rules` and its core input and output) in `%TEMP%`.
 - gosec and govulncheck filled the Go build cache `%LOCALAPPDATA%\go-build` (gosec 1,464 files, 93 MB; govulncheck 3 more).
@@ -136,20 +136,19 @@ The work folder of a tool run goes after a successful run; after a failed run it
 
 Not measured: Linux and macOS (the same variables are set; macOS takes the Go configuration folder from `HOME`, which kalkan leaves alone, so Go telemetry follows your own setting there), `kalkan sca update-db`, and a `kalkan tools install` that downloads.
 
-**Files of older versions.** kalkan 1.6.1 and earlier wrote the folders above: `~/.opengrep` (the log holds paths and code of audited targets), `%LOCALAPPDATA%\opengrep`, `%LOCALAPPDATA%\go-build`, `%APPDATA%\go\telemetry` and the pip cache. kalkan does not delete them, because other programs can use them. Delete them by hand when nothing else uses them.
-
 ## What leaves the machine
 
 | What | When | Destination | Data |
 |---|---|---|---|
-| Your Claude session | every audit | Anthropic | The prompts and the files that the session and its subagents read, the target code included. This is your own Claude Code traffic; kalkan adds nothing to it. Claude Code's own telemetry and error reports follow your Claude Code settings. |
-| Tool downloads | `kalkan tools install`, bootstrap, plugin setup, `kalkan audit --yes` (or `y` to its question) | GitHub releases, PyPI (Checkov, Bandit, flawfinder, gixy-ng, the zizmor wheels), get.helm.sh (helm), go.dev and the Go module proxy (the Go toolchain, govulncheck, poutine) | Only the pinned tool names and versions. Every release archive (the zizmor wheels and the Go toolchain included) is checked against its pinned SHA-256. pip installs Checkov, Bandit, flawfinder and gixy-ng by exact version, without a hash check. The Go checksum database verifies the modules of govulncheck and poutine. |
+| Your Claude session | every audit | Anthropic, or your API provider (Microsoft Foundry, Amazon Bedrock, Google Vertex AI) | The prompts and the files that the session and its subagents read, the target code included. This is your own Claude Code traffic; kalkan adds nothing to it. Claude Code's own telemetry and error reports follow your Claude Code settings. |
+| Tool downloads | `kalkan tools install`, bootstrap, plugin setup, `kalkan audit --yes` (or `y` to its question) | GitHub releases, PyPI (Checkov, Bandit, flawfinder, gixy-ng, the zizmor wheels), get.helm.sh (helm), go.dev and the Go module proxy (the Go toolchain, govulncheck, poutine) | Only the pinned tool names and versions. kalkan checks the 15 downloaded programs (the zizmor wheels included) and the Go toolchain against a pinned SHA-256. pip installs Checkov, Bandit, flawfinder and gixy-ng by exact version, without a hash check. The Go checksum database verifies the modules of govulncheck and poutine. |
 | Vulnerability databases | `kalkan sca update-db`, bootstrap, plugin setup, `kalkan audit --yes` (or `y` to its question) | the OSV bucket (osv-vulnerabilities.storage.googleapis.com), grype.anchore.io, vuln.go.dev, raw.githubusercontent.com (RetireJS repository) | Only ecosystem names, the Grype database request and the GET requests for `vulndb.zip` and `jsrepository-v5.json`. |
 | Installer | `scripts/install.sh`, `scripts/install.ps1` | github.com (the `gh` one-liner, `git ls-remote`, the marketplace clone and plugin install of Claude Code), then the tool and database downloads above | Requests for the kalkan repository with your `gh` and git credentials. |
 | Git clone | `run init <git URL>` | the git host of the URL | The clone request, with your git credentials. |
 | Online mode (opt-in) | `--online` on `scan` or `sca` | api.osv.dev, deps.dev, Maven Central, the Go proxy and checksum database, vuln.go.dev, the Trivy checks registry, grype.anchore.io | Package names and versions, module paths of the target. |
-| Sandbox base images (opt-in) | `kalkan sandbox pull` | the image registry (Docker Hub by default) | The names of the allowlisted base images. The audit itself never pulls an image; the PoC container has no network (`--network none`). |
-| Unattended runs | `kalkan unattended`, `kalkan audit` (agent mode) | Anthropic | The `claude -p` rounds of your own Claude account. `kalkan audit --tools-only` starts no round. |
+| Sandbox base images (opt-in) | `kalkan sandbox pull` | the image registry (Docker Hub by default) | The names of the allowlisted base images. Without `--allow-build-network` the audit never pulls an image. The unit-level PoC container has no network (`--network none`). |
+| App-level sandbox build (opt-in, off by default) | `kalkan audit --allow-build-network` or `kalkan run init --allow-build-network`, when a PoC needs the target's compose stack | the image registries and package sources that the target's compose files and Dockerfiles name | `docker compose pull` and `docker compose build` of the target's compose stack. The running stack stays on an internal network without internet (ADR-0008). |
+| Unattended runs | `kalkan unattended`, `kalkan audit` (agent mode) | Anthropic, or your API provider | The `claude -p` rounds of your own Claude account. `kalkan audit --tools-only` starts no round. |
 
 ## Residual risks
 

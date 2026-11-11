@@ -1,7 +1,7 @@
 # ADR-0001: The basic decisions of kalkan
 English | [Türkçe](ADR-0001-decisions.tr.md)
 
-- **Status:** Accepted. Later decisions changed some rows: the phase gates (ADR-0002), the "PoC" row (ADR-0004 and ADR-0006: unit level active since 1.7.0, app level deferred) and the "Extra scanners" row (ADR-0005).
+- **Status:** Accepted. Later decisions changed some rows: the phase gates (ADR-0002), the "PoC" row (ADR-0004, ADR-0006 and ADR-0008: the unit level and the app level are active) and the "Extra scanners" row (ADR-0005).
 - **Date:** 2026-10-15
 - **Decided by:** the project owner
 - **Sources:** a comparative analysis of five open-source AI security tools (see the context below)
