@@ -45,13 +45,14 @@ Azure Static Web Apps (Standard) serves the site. `.github/workflows/site.yml` d
 
 | Branch | Environment | Address |
 |---|---|---|
-| `stable` | production | kalkan.dtechcloud.com (the default host until the domain is set) |
+| `stable` | production | https://kalkan.dtechcloud.com |
 | `main` | staging | the staging host of the same Static Web App |
 
 The workflow signs in to Azure with OpenID Connect (OIDC): a user-assigned managed identity
-with a federated credential for each GitHub environment. GitHub stores no Azure secret. The
-identity has the Contributor role on the Static Web App only. The workflow reads the deploy
-token at run time and masks it in the log.
+with a federated credential for each GitHub environment. GitHub stores no Azure credential.
+The Azure identifiers are environment secrets, so the logs mask them. The identity has the
+Contributor role on the Static Web App only. The workflow reads the deploy token at run time
+and masks it in the log.
 
 Visit counts: `assets/analytics.js` loads the Application Insights JavaScript SDK (pinned
 version, SRI hash) without cookies or browser storage. Only the production deploy puts the
