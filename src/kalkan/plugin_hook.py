@@ -142,9 +142,18 @@ _NET_PROGRAM: Final = re.compile(
     r"(?:\.exe)?(?=$|[\s;&|)`'\"])"
 )
 _NET_URL: Final = re.compile(r"(?i)\b(?:https?|ftps?|wss?|sftp)://")
-_NET_GIT: Final = re.compile(
-    r"(?i)\bgit(?:\.exe)?(?:\s+-\S+(?:\s+\S+)?)*\s+"
-    r"(?:push|pull|fetch|clone|ls-remote|archive\s+--remote|remote\s+update|submodule\s+update)\b"
+# A git transfer: ``git``, then options (``-x`` or ``-x value``), then a transfer subcommand.
+# :func:`_is_git_transfer` reads the words one time. One regex with nested repetition backtracks
+# exponentially on ``git -! -! ...`` (CodeQL py/redos) and the hook would reach its timeout.
+_GIT_PROGRAM: Final = re.compile(r"(?i)\bgit(?:\.exe)?\Z")
+_GIT_TRANSFER: Final = re.compile(r"(?i)(?:push|pull|fetch|clone|ls-remote)\b")
+_GIT_TRANSFER_PAIRS: Final = tuple(
+    (re.compile(first), re.compile(second))
+    for first, second in (
+        (r"(?i)archive\Z", r"(?i)--remote\b"),
+        (r"(?i)remote\Z", r"(?i)update\b"),
+        (r"(?i)submodule\Z", r"(?i)update\b"),
+    )
 )
 _NET_PACKAGES: Final = re.compile(
     r"(?i)\b(?:pip3?|pipx|uv|npm|npx|pnpm|yarn|bun|gem|bundle|cargo|go|composer|dotnet|nuget)"
@@ -295,8 +304,32 @@ def is_network_command(command: object) -> bool:
     if not isinstance(command, str):
         return False
     return any(
-        pattern.search(command) for pattern in (_NET_PROGRAM, _NET_URL, _NET_GIT, _NET_PACKAGES)
-    )
+        pattern.search(command) for pattern in (_NET_PROGRAM, _NET_URL, _NET_PACKAGES)
+    ) or _is_git_transfer(command)
+
+
+def _is_git_transfer(command: str) -> bool:
+    """Return True when ``command`` holds a git transfer (``git -C repo push``, ``git fetch``).
+
+    One pass over the words, linear time. ``active``: the words since the last ``git`` are
+    options, so a subcommand can come next. ``after_flag``: the last word was an option, so the
+    next word can be its value.
+    """
+    active = after_flag = False
+    second: re.Pattern[str] | None = None
+    for word in command.split():
+        if second is not None and second.match(word):
+            return True
+        second = None
+        if active:
+            if _GIT_TRANSFER.match(word):
+                return True
+            second = next((b for a, b in _GIT_TRANSFER_PAIRS if a.match(word)), None)
+        flag = len(word) > 1 and word.startswith("-")
+        continues = active and (flag or after_flag)
+        after_flag = continues and flag
+        active = continues or bool(_GIT_PROGRAM.search(word))
+    return False
 
 
 def _split(command: str) -> list[str] | None:
