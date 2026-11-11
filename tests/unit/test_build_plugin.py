@@ -147,6 +147,38 @@ def test_the_wheel_carries_the_data_and_no_bytecode():
     assert not [name for name in names if name.endswith(".pyc") or "__pycache__" in name]
 
 
+def test_the_wheel_carries_the_license_texts_of_the_bundled_rule_packs(build):
+    (wheel,) = sorted((PLUGIN / "engine").glob("*.whl"))
+    licenses = f"kalkan-{project()['version']}.dist-info/licenses/"
+    with zipfile.ZipFile(wheel) as archive:
+        names = set(archive.namelist())
+        metadata = archive.read(f"kalkan-{project()['version']}.dist-info/METADATA").decode()
+    # kalkan's own code stays MIT.
+    assert "License-Expression: MIT" in metadata
+    assert {licenses + "LICENSE", licenses + "NOTICE"} <= names
+    # Every vendored upstream project, every bundled rule pack among them, has its license text.
+    folders = sorted(path for path in (ROOT / "third_party").iterdir() if path.is_dir())
+    assert folders
+    for folder in folders:
+        assert f"{licenses}third_party/{folder.name}/LICENSE" in names, folder.name
+    assert f"{licenses}third_party/gitlab-sast-rules/rules/lgpl/LICENSE" in names
+    expected = build.expected_license_files(ROOT, project())
+    assert "third_party/trailofbits-semgrep-rules/LICENSE" in expected
+
+
+def test_a_missing_license_text_makes_the_wheel_stale(build, tmp_path):
+    (wheel,) = sorted((PLUGIN / "engine").glob("*.whl"))
+    root = tmp_path / "repo"
+    for name in ("src", "knowledge", "rules"):
+        shutil.copytree(ROOT / name, root / name, ignore=shutil.ignore_patterns("__pycache__"))
+    shutil.copyfile(ROOT / "pyproject.toml", root / "pyproject.toml")
+    extra = root / "third_party" / "new-pack" / "LICENSE"
+    extra.parent.mkdir(parents=True)
+    extra.write_text("license\n", encoding="utf-8")
+    problems = build.wheel_problems(wheel, root, project())
+    assert any("licenses/third_party/new-pack/LICENSE is missing" in p for p in problems)
+
+
 def test_expected_payload_maps_the_source_folders(build):
     payload = build.expected_payload(ROOT)
     assert "kalkan/cli.py" in payload

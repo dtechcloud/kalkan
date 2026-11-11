@@ -6,9 +6,6 @@
 <title>Maintenance · Docs · kalkan</title>
 <meta name="description" content="kalkan docs: updating, troubleshooting, uninstalling and a full cleanup.">
 <link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -161,8 +158,8 @@
             <li><span aria-hidden="true">03</span><span class="tr" lang="tr">Yeni motoru kurar. Eksik araçları ve sürümü değişen araçları indirir. Kurulu ve sağlam araçları tutar.</span><span class="en" lang="en">It installs the new engine. It downloads missing tools and tools with a new version. It keeps the installed tools that are intact.</span></li>
             <li><span aria-hidden="true">04</span><span class="tr" lang="tr">7 günden genç bir zafiyet veritabanını tutar ve yeniden indirmez. Sonra <code>kalkan doctor</code> çalıştırır.</span><span class="en" lang="en">It keeps a vulnerability database that is younger than 7 days and does not download it again. Then it runs <code>kalkan doctor</code>.</span></li>
           </ol>
-          <p class="tr" lang="tr">Ölçüm: bir günlük veritabanlarıyla 1.6.1'den 1.7.0'a bir güncelleme 15 saniye sürdü. Kurulum dört veritabanının dördünü de tuttu.</p>
-          <p class="en" lang="en">Measurement: an update from 1.6.1 to 1.7.0 with databases one day old took 15 seconds. The setup kept all four databases.</p>
+          <p class="tr" lang="tr">Ölçüm: bir günlük veritabanlarıyla bir güncelleme 15 saniye sürdü (bir Windows 11 makinesinde bir kez ölçüldü). Kurulum dört veritabanının dördünü de tuttu.</p>
+          <p class="en" lang="en">Measurement: an update with databases one day old took 15 seconds (measured once on one Windows 11 machine). The setup kept all four databases.</p>
           <div class="behind">
             <p class="tr" lang="tr"><b>Bir denetim çalışırken güncelleme yapma.</b> Önce denetimin bitmesini bekle. Eski bir sürümün başlattığı bir denetim, güncellemeden sonra da <code>devam</code> ile sürer.</p>
             <p class="en" lang="en"><b>Never update while an audit runs.</b> Wait until the audit is done. An audit that an older version started also resumes with <code>devam</code> after the update.</p>
@@ -176,12 +173,12 @@ claude plugin update kalkan@kalkan</code></pre><button class="copy" type="button
           <p class="tr" lang="tr">Yerel eşleştirme yalnız son indirmedeki zafiyetleri bilir. <code>kalkan doctor</code>, bir veritabanı 7 günden eskiyse uyarır. Veritabanlarını bu komutla güncelle:</p>
           <p class="en" lang="en">Local matching knows only the vulnerabilities of the last download. <code>kalkan doctor</code> warns when a database is older than 7 days. Update the databases with this command:</p>
           <div class="code"><pre><code>kalkan sca update-db</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-          <p class="tr" lang="tr">Komut her veritabanına ayrı bakar: osv, grype, go ve retire. Geçerli, son indirmesi başarılı ve <code>--max-age</code> saatten (varsayılan 24) genç bir veritabanını tutar. Bunu bir satırla yazar, örneğin <code>osv: kept, 2 hours old</code>. <code>--force</code> her veritabanını yaşına bakmadan indirir. Taze veritabanlarıyla komut 0,3 saniye sürdü.</p>
-          <p class="en" lang="en">The command looks at each database on its own: osv, grype, go and retire. It keeps a database that is valid, whose last download ended ok and that is younger than <code>--max-age</code> hours (default 24). It prints this in one line, for example <code>osv: kept, 2 hours old</code>. <code>--force</code> downloads every database, whatever its age. With fresh databases, the command took 0.3 seconds.</p>
+          <p class="tr" lang="tr">Komut her veritabanına ayrı bakar: osv, grype, go ve retire. Geçerli, son indirmesi başarılı ve <code>--max-age</code> saatten (varsayılan 24) genç bir veritabanını tutar. Bunu bir satırla yazar, örneğin <code>osv: kept, 2 hours old</code>. <code>--force</code> her veritabanını yaşına bakmadan indirir. Taze veritabanlarıyla komut 0,3 saniye sürdü (bir Windows 11 makinesinde bir kez ölçüldü).</p>
+          <p class="en" lang="en">The command looks at each database on its own: osv, grype, go and retire. It keeps a database that is valid, whose last download ended ok and that is younger than <code>--max-age</code> hours (default 24). It prints this in one line, for example <code>osv: kept, 2 hours old</code>. <code>--force</code> downloads every database, whatever its age. With fresh databases, the command took 0.3 seconds (measured once on one Windows 11 machine).</p>
           <p class="tr" lang="tr">Kurulum betikleri, bootstrap betikleri ve <code>kalkan-audit</code> kurulum kontrolü <code>--max-age 168</code> (7 gün) kullanır. <code>--no-osv</code>, <code>--no-grype</code>, <code>--no-go</code> ve <code>--no-retire</code> bir veritabanını atlar. <code>--ecosystems</code> OSV ekosistemlerini seçer.</p>
           <p class="en" lang="en">The installers, the bootstrap scripts and the setup check of <code>kalkan-audit</code> use <code>--max-age 168</code> (7 days). <code>--no-osv</code>, <code>--no-grype</code>, <code>--no-go</code> and <code>--no-retire</code> skip one database. <code>--ecosystems</code> selects the OSV ecosystems.</p>
-          <p class="tr" lang="tr">Komut yalnız ekosistem adlarını ve arşiv isteklerini gönderir. Yavaş bir ağda veritabanlarının indirmesi 46 dakika sürdü.</p>
-          <p class="en" lang="en">The command sends only ecosystem names and archive requests. On a slow network, the download of the databases took 46 minutes.</p>
+          <p class="tr" lang="tr">Komut yalnız ekosistem adlarını ve arşiv isteklerini gönderir. Yavaş bir ağda veritabanlarının bir indirmesi 46 dakika sürdü (bir kez ölçüldü).</p>
+          <p class="en" lang="en">The command sends only ecosystem names and archive requests. On a slow network, one download of the databases took 46 minutes (measured once).</p>
           <h3><span class="tr" lang="tr">Sürümü gör</span><span class="en" lang="en">See the version</span></h3>
           <div class="code"><pre><code>claude plugin list
 kalkan --version</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
@@ -189,7 +186,6 @@ kalkan --version</code></pre><button class="copy" type="button" aria-label="Kopy
           <p class="en" lang="en"><code>claude plugin list</code> shows the version of the installed plugin. <code>kalkan --version</code> prints the version of the engine.</p>
           <p class="tr" lang="tr">Bir güncellemeden sonra eski plugin sürümünün klasörü <code>.orphaned_at</code> işaretiyle kalır. Claude Code bu klasörü 14 gün sonra arka planda siler, ama yalnız en az bir plugin kuruluyken.</p>
           <p class="en" lang="en">After an update, the folder of the old plugin version stays with an <code>.orphaned_at</code> marker. Claude Code deletes this folder 14 days later in a background cleanup, but only while at least one plugin is installed.</p>
-          <p class="note"><span class="tr" lang="tr">kalkan 1.6.1 veya önceki bir sürümü kullandıysan, o sürüm kalkan klasörleri dışında dosya bıraktı. Bu dosyalar: <a href="#eski-surumler">Eski sürümlerin bıraktığı dosyalar</a>.</span><span class="en" lang="en">If you used kalkan 1.6.1 or an older version, the old version left files outside the kalkan folders. These files: <a href="#eski-surumler">Files that older versions left</a>.</span></p>
         </section>
 
         <!-- Troubleshooting -->
@@ -206,7 +202,7 @@ kalkan --version</code></pre><button class="copy" type="button" aria-label="Kopy
             <div><dt>Kurulum Python'u bulamıyor.</dt><dd>Kurulum Python 3.11 veya üstünü arar: <code>py -3</code>, <code>python3</code>, <code>python</code>. Python'u kur. Sonra kurulumu yeniden çalıştır. Debian veya Ubuntu'da <code>python -m venv</code> başarısız olursa <code>python3-venv</code> paketini kur.</dd></div>
             <div><dt>Komut çıkış kodu 5 ile durdu.</dt><dd>Kurulum eksik: bir araç, bir veritabanı veya Claude Code oturumu yok. Mesaj düzeltmeyi verir. <code>--yes</code> eksik araçları ve veritabanlarını sormadan kurar. Claude Code olmadan <code>--tools-only</code> çalışır.</dd></div>
             <div><dt><code>kalkan doctor</code> veritabanı uyarısı veriyor.</dt><dd>Doctor, bir veritabanı eksikse veya 7 günden eskiyse uyarır. <code>kalkan sca update-db</code> çalıştır. Komut 24 saatten genç ve sağlam bir veritabanını tutar. <code>kalkan sca update-db --force</code> her veritabanını yaşına bakmadan yeniden indirir. Ayrıntılar: <a href="#guncelleme">Güncelleme</a>.</dd></div>
-            <div><dt>Disk doluyor.</dt><dd>Veri klasörü 5,23 GB tutar. Her denetim ayrıca kodun bir kopyasını ve git geçmişini tutar. Eski denetimlerden yer açmak için: <a href="docs-machine#disk">Disk kullanımı</a>.</dd></div>
+            <div><dt>Disk doluyor.</dt><dd>Veri klasörü yaklaşık 5,5 GB tutar. Her denetim ayrıca kodun bir kopyasını ve git geçmişini tutar. Eski denetimlerden yer açmak için: <a href="docs-machine#disk">Disk kullanımı</a>.</dd></div>
             <div><dt>Rapor uzun yol uyarısı veriyor (Windows).</dt><dd>Opengrep, yolu 260 veya daha fazla karakter olan dosyaları atlar. <code>KALKAN_RUNS_DIR</code> değişkenine <code>C:\kr</code> gibi kısa bir klasör ver. Klasör hedefin dışında olmalı. Değişkeni Claude Code'u başlatan ortamda ayarla, örneğin PowerShell'de <code>$env:KALKAN_RUNS_DIR = "C:\kr"</code>. Sonra yeni bir denetim başlat.</dd></div>
             <div><dt>Denetim yarıda kaldı.</dt><dd>Mola veya kullanım limitinden sonra <code>/kalkan devam &lt;run-id&gt;</code> yaz. Terminalde <code>kalkan-audit devam &lt;run-id&gt;</code> çalıştır. Durma mesajı çalıştırma kimliğini söyler. Hiçbir görev kaybolmaz.</dd></div>
             <div><dt>İki denetimi aynı anda çalıştırmak istiyorum.</dt><dd>Her denetimi kendi Claude Code oturumunda veya terminalinde başlat. Yan denetime <code>--no-latest</code> ekle. Yan denetimi yalnız çalıştırma kimliğiyle sürdür.</dd></div>
@@ -226,7 +222,7 @@ kalkan --version</code></pre><button class="copy" type="button" aria-label="Kopy
             <div><dt>The setup does not find Python.</dt><dd>The setup looks for Python 3.11 or later: <code>py -3</code>, <code>python3</code>, <code>python</code>. Install Python. Then run the setup again. On Debian or Ubuntu, if <code>python -m venv</code> fails, install the <code>python3-venv</code> package.</dd></div>
             <div><dt>The command stopped with exit code 5.</dt><dd>The setup is incomplete: a tool, a database or the Claude Code login is missing. The message names the fix. <code>--yes</code> installs the missing tools and databases without a question. Without Claude Code, <code>--tools-only</code> works.</dd></div>
             <div><dt><code>kalkan doctor</code> warns about a database.</dt><dd>Doctor warns when a database is missing or older than 7 days. Run <code>kalkan sca update-db</code>. The command keeps a sound database that is younger than 24 hours. <code>kalkan sca update-db --force</code> downloads every database again, whatever its age. Details: <a href="#guncelleme">Updating</a>.</dd></div>
-            <div><dt>The disk fills up.</dt><dd>The data folder uses 5.23 GB. Each audit also keeps a copy of the code and of the git history. To free the space of old audits: <a href="docs-machine#disk">Disk usage</a>.</dd></div>
+            <div><dt>The disk fills up.</dt><dd>The data folder uses about 5.5 GB. Each audit also keeps a copy of the code and of the git history. To free the space of old audits: <a href="docs-machine#disk">Disk usage</a>.</dd></div>
             <div><dt>The report warns about long paths (Windows).</dt><dd>Opengrep skips files with a path of 260 or more characters. Set <code>KALKAN_RUNS_DIR</code> to a short folder such as <code>C:\kr</code>. The folder must be outside the target. Set the variable in the environment that starts Claude Code, for example <code>$env:KALKAN_RUNS_DIR = "C:\kr"</code> in PowerShell. Then start a new audit.</dd></div>
             <div><dt>The audit stopped halfway.</dt><dd>After a break or a usage limit, type <code>/kalkan devam &lt;run-id&gt;</code>. In a terminal, run <code>kalkan-audit devam &lt;run-id&gt;</code>. The stop message names the run ID. No task is lost.</dd></div>
             <div><dt>I want to run two audits at once.</dt><dd>Start each audit in its own Claude Code session or terminal. Add <code>--no-latest</code> to the side audit. Resume the side audit only with its run ID.</dd></div>
@@ -320,19 +316,6 @@ kalkan clean --all</code></pre><button class="copy" type="button" aria-label="Ko
             <li><b class="tr" lang="tr">Docker imajları</b><b class="en" lang="en">Docker images</b><span class="tr" lang="tr"><code>kalkan sandbox pull</code> ile temel imaj indirdiysen onları Docker'dan sil. Yalnız kalkan için indirdiğin imajları sil, çünkü başka projeler de aynı imajları kullanabilir. Önce <code>docker image ls</code> ile listeyi gör.</span><span class="en" lang="en">If you pulled base images with <code>kalkan sandbox pull</code>, delete them from Docker. Delete only the images that you pulled for kalkan, because other projects can use the same images. First, see the list with <code>docker image ls</code>.</span></li>
           </ul>
           <div class="code"><pre><code>docker image rm python:3.12-slim node:22-slim golang:1.26 eclipse-temurin:21-jdk php:8.3-cli ruby:3.3-slim mcr.microsoft.com/dotnet/sdk:10.0</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-          <h3 id="eski-surumler"><span class="tr" lang="tr">Eski sürümlerin bıraktığı dosyalar</span><span class="en" lang="en">Files that older versions left</span></h3>
-          <p class="tr" lang="tr">kalkan 1.6.1 ve önceki sürümler kalkan klasörleri dışında dosya bırakırdı. 1.7.0'dan beri bu dosyalar kalkan klasörlerinde durur. Eski bir sürüm kullandıysan Windows'ta bu dosyaları silebilirsin:</p>
-          <p class="en" lang="en">kalkan 1.6.1 and older versions left files outside the kalkan folders. Since 1.7.0, these files are in the kalkan folders. If you used an older version, you can delete these files on Windows:</p>
-          <ul class="files wide">
-            <li><code>%USERPROFILE%\.opengrep\</code><span class="tr" lang="tr">Eski opengrep günlüğü.</span><span class="en" lang="en">The old opengrep log.</span></li>
-            <li><code>%LOCALAPPDATA%\opengrep\</code><span class="tr" lang="tr">Eski opengrep çalışma ortamı, yaklaşık 290 MB.</span><span class="en" lang="en">The old opengrep runtime, about 290 MB.</span></li>
-            <li><code>%TEMP%\semgrep-*.rules</code><span class="tr" lang="tr">opengrep'in geçici kural dosyaları.</span><span class="en" lang="en">The temporary rule files of opengrep.</span></li>
-            <li><span><code>%LOCALAPPDATA%\go-build\</code>, <code>%APPDATA%\go\telemetry\</code></span><span class="tr" lang="tr">Go derleme önbelleği ve Go telemetrisi. Bu klasörleri yalnız başka bir Go işi kullanmıyorsa sil.</span><span class="en" lang="en">The Go build cache and the Go telemetry. Delete these folders only when no other Go work uses them.</span></li>
-          </ul>
-          <div class="code"><pre><code><span class="m"># PowerShell</span>
-Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$HOME\.opengrep", "$env:LOCALAPPDATA\opengrep", "$env:TEMP\semgrep-*.rules"</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-          <p class="tr" lang="tr">Linux ve macOS'ta aynı araçlar ev klasörünün altındaki klasörleri kullandı, örneğin <code>~/.opengrep</code>. Bu klasörleri ölçmedik.</p>
-          <p class="en" lang="en">On Linux and macOS, the same tools used folders below the home folder, for example <code>~/.opengrep</code>. We did not measure these folders.</p>
           <p class="tr" lang="tr"><code>PATH</code>'te, sistem paketlerinde ve servislerde geri alınacak bir şey yok. Python, git ve Claude Code kalkan'dan önce de vardı. Onları kaldırma kararı senindir.</p>
           <p class="en" lang="en">There is nothing to undo in <code>PATH</code>, in the system packages or in the services. Python, git and Claude Code were there before kalkan. The decision to remove them is yours.</p>
           <a class="btn" href="docs"><span class="tr" lang="tr">Başa dön: Başlangıç →</span><span class="en" lang="en">Back to the start: Getting started →</span></a>
@@ -372,7 +355,7 @@ Remove-Item -Recurse -Force -ErrorAction SilentlyContinue "$HOME\.opengrep", "$e
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

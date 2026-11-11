@@ -6,9 +6,6 @@
 <title>Audit · Docs · kalkan</title>
 <meta name="description" content="kalkan docs: the audit steps, the tools, agent verification, the PoC sandbox, SCA, reports and CI/CD.">
 <link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -144,14 +141,14 @@
         <section class="doc-sec" id="nasil-calisir" aria-labelledby="h-how">
           <p class="kicker">07</p>
           <h2 id="h-how"><span class="tr" lang="tr">kalkan nasıl çalışır</span><span class="en" lang="en">How kalkan works</span></h2>
-          <p class="tr" lang="tr">kalkan iki parçadan oluşur. Motor deterministik bir Python aracıdır ve hiçbir dil modelini çağırmaz. Ajanlar, Claude Code içinde çalışan salt okunur alt ajanlardır.</p>
-          <p class="en" lang="en">kalkan has two parts. The engine is a deterministic Python tool, and it never calls a language model. The agents are read-only subagents in Claude Code.</p>
+          <p class="tr" lang="tr">kalkan iki parçadan oluşur. Motor deterministik bir Python aracıdır ve bir karar vermek için hiçbir dil modelini çağırmaz. Ajanlar, Claude Code içinde çalışan alt ajanlardır. Her ajan kaynağı okur ve tek bir sonuç dosyası yazar (kabuk yok, web yok, düzenleme yok). <code>kalkan audit</code> ve <code>kalkan unattended</code>, ajan işi için Claude Code (veya Codex) turları başlatır.</p>
+          <p class="en" lang="en">kalkan has two parts. The engine is a deterministic Python tool, and it makes no model call to decide a verdict. The agents are subagents in Claude Code. Each agent reads the source and writes one result file (no shell, no web, no edits). <code>kalkan audit</code> and <code>kalkan unattended</code> start Claude Code (or Codex) rounds for the agent work.</p>
           <p class="tr" lang="tr">Motor bütün durumu diskte tutar ve her sonraki adımı seçer. Her ajan sonucunu şemaya ve alıntılara karşı kontrol eder. Kararları kendisi hesaplar. Bu yüzden bir denetim, kullanım limitinden sonra kaldığı yerden devam eder.</p>
           <p class="en" lang="en">The engine keeps all state on disk and chooses every next step. It checks every agent result against its schema and its quotes. It computes the verdicts itself. Thus an audit continues where it stopped after a usage limit.</p>
           <h3><span class="tr" lang="tr">Aşamalar</span><span class="en" lang="en">Phases</span></h3>
           <ol class="rules">
             <li><span aria-hidden="true">01</span><span class="tr" lang="tr"><b>Hazırlık.</b> Motor hedefi kopyalar. Hedefin ajan talimat dosyalarını (<code>CLAUDE.md</code>, <code>AGENTS.md</code> ve diğerleri) etkisiz kılar.</span><span class="en" lang="en"><b>Prep.</b> The engine copies the target. It neutralizes the agent instruction files of the target (<code>CLAUDE.md</code>, <code>AGENTS.md</code> and others).</span></li>
-            <li><span aria-hidden="true">02</span><span class="tr" lang="tr"><b>Tarayıcılar.</b> 22 sabit sürümlü araç (Go dahil) kopyayı ağsız tarar.</span><span class="en" lang="en"><b>Scanners.</b> 22 pinned tools (Go included) scan the copy without network.</span></li>
+            <li><span aria-hidden="true">02</span><span class="tr" lang="tr"><b>Tarayıcılar.</b> 22 sabit sürümlü araç (Go dahil) kopyayı sırayla ve ağsız tarar.</span><span class="en" lang="en"><b>Scanners.</b> 22 pinned tools (Go included) scan the copy one after another, without network.</span></li>
             <li><span aria-hidden="true">03</span><span class="tr" lang="tr"><b>SCA.</b> Motor bağımlılıkları yerel zafiyet veritabanlarıyla eşleştirir.</span><span class="en" lang="en"><b>SCA.</b> The engine matches the dependencies with local vulnerability databases.</span></li>
             <li><span aria-hidden="true">04</span><span class="tr" lang="tr"><b>Keşif (ajan).</b> Dört ajan ürünü, rolleri, saldırı yüzeylerini ve çalışma ortamını haritalar.</span><span class="en" lang="en"><b>Recon (agents).</b> Four agents map the product, the principals, the attack surfaces and the execution.</span></li>
             <li><span aria-hidden="true">05</span><span class="tr" lang="tr"><b>Plan.</b> Motor kapsam defterini yazar. Her yüzey ve zafiyet sınıfı bir birimdir.</span><span class="en" lang="en"><b>Plan.</b> The engine writes the coverage ledger. Each surface and vulnerability class is one unit.</span></li>
@@ -168,8 +165,8 @@
         <section class="doc-sec" id="araclar" aria-labelledby="h-tools">
           <p class="kicker">08</p>
           <h2 id="h-tools"><span class="tr" lang="tr">Araçlar ve tarayıcılar</span><span class="en" lang="en">Tools and scanners</span></h2>
-          <p class="tr" lang="tr">kalkan 22 aracı sabit sürümle kurar: 21 tarayıcı ve Go araç zinciri. Her indirmeyi SHA-256 ile kontrol eder. Senin Go kurman gerekmez.</p>
-          <p class="en" lang="en">kalkan installs 22 tools at pinned versions: 21 scanners and the Go toolchain. It checks every download with SHA-256. You do not need to install Go.</p>
+          <p class="tr" lang="tr">kalkan 22 aracı sabit sürümle kurar: 21 tarayıcı ve Go araç zinciri. Kurulum, indirilen 15 programı ve Go araç zincirini sabit bir SHA-256 değeriyle kontrol eder. pip, 4 Python aracını (checkov, bandit, flawfinder, gixy) tam sürümüyle kurar, hash kontrolü yapmaz. Go checksum veritabanı, <code>go install</code> ile derlenen 2 aracı (govulncheck, poutine) kontrol eder. Senin Go kurman gerekmez.</p>
+          <p class="en" lang="en">kalkan installs 22 tools at pinned versions: 21 scanners and the Go toolchain. Setup checks the 15 downloaded programs and the Go toolchain against a pinned SHA-256. pip installs the 4 Python tools (checkov, bandit, flawfinder, gixy) by exact version, without a hash check. The Go checksum database checks the 2 tools that <code>go install</code> builds (govulncheck, poutine). You do not need to install Go.</p>
           <div class="table-wrap">
             <table>
               <thead><tr><th><span class="tr" lang="tr">Alan</span><span class="en" lang="en">Area</span></th><th><span class="tr" lang="tr">Tarayıcılar</span><span class="en" lang="en">Scanners</span></th></tr></thead>
@@ -182,8 +179,8 @@
               </tbody>
             </table>
           </div>
-          <p class="tr" lang="tr">Sürümler ve görevler: <a href="tools">Araçlar</a>. Tarayıcılar hedefin kendi bastırma işaretlerini (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> ve diğerleri) yok sayar.</p>
-          <p class="en" lang="en">Versions and roles: <a href="tools">Tools</a>. The scanners ignore the suppression markers of the target (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> and others).</p>
+          <p class="tr" lang="tr">Sürümler ve görevler: <a href="tools">Araçlar</a>. Tarayıcılar varsayılan olarak hedefin kendi bastırma işaretlerini (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> ve diğerleri) yok sayar. <code>kalkan scan --honor-suppressions</code> bu işaretleri dikkate alır.</p>
+          <p class="en" lang="en">Versions and roles: <a href="tools">Tools</a>. By default, the scanners ignore the suppression markers of the target (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> and others). <code>kalkan scan --honor-suppressions</code> keeps them.</p>
           <h3><span class="tr" lang="tr">Kurulum yeri</span><span class="en" lang="en">Install location</span></h3>
           <p class="tr" lang="tr">Araçlar veri klasörünün <code>.tools/</code> klasöründe durur: bkz. <a href="docs-machine#nereye">Nereye kurar?</a></p>
           <p class="en" lang="en">The tools are in the <code>.tools/</code> folder of the data folder: see <a href="docs-machine#nereye">Where does it install it?</a></p>
@@ -192,14 +189,14 @@
             <li><code>pyenv/</code><span class="tr" lang="tr">4 pip aracı ayrı bir venv'de: Checkov, Bandit, flawfinder, gixy.</span><span class="en" lang="en">4 pip tools in their own venv: Checkov, Bandit, flawfinder, gixy.</span></li>
             <li><code>go/</code><span class="tr" lang="tr">Go 1.26.9 araç zinciri. gosec ve govulncheck onunla çalışır.</span><span class="en" lang="en">The Go 1.26.9 toolchain. gosec and govulncheck run with it.</span></li>
             <li><code>installed.json</code><span class="tr" lang="tr">kalkan'ın kurduğu her aracın sürümü, yolu ve SHA-256 değeri.</span><span class="en" lang="en">The version, the path and the SHA-256 of each tool that kalkan installed.</span></li>
-            <li><code>cache/opengrep/</code><span class="tr" lang="tr">opengrep çalışma ortamı. kalkan onu ilk kullanımda açar (289,8 MB).</span><span class="en" lang="en">The opengrep runtime. kalkan unpacks it on first use (289.8 MB).</span></li>
+            <li><code>cache/opengrep/</code><span class="tr" lang="tr">opengrep çalışma ortamı. kalkan onu ilk kullanımda açar (289,8 MB, bir Windows 11 makinesinde bir kez ölçüldü).</span><span class="en" lang="en">The opengrep runtime. kalkan unpacks it on first use (289.8 MB, measured once on one Windows 11 machine).</span></li>
           </ul>
           <h3><span class="tr" lang="tr">Araçları kontrol et</span><span class="en" lang="en">Check the tools</span></h3>
           <div class="code"><pre><code>kalkan doctor
 kalkan tools list
 kalkan tools verify --quick</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-          <p class="tr" lang="tr"><code>kalkan doctor</code> her aracı, veritabanlarını, git'i ve Claude Code oturumunu kontrol eder. Sorunlu her satır kendi düzeltme komutunu yazar, örneğin <code>kalkan tools install --force gosec</code>. <code>kalkan tools verify</code> kurulu her dosyanın SHA-256 değerini yeniden hesaplar. Go'nun 15.045 dosyası için bu, virüs tarayıcılı bir Windows makinesinde 8 dakika sürdü. <code>--quick</code> hızlı kontroldür.</p>
-          <p class="en" lang="en"><code>kalkan doctor</code> checks every tool, the databases, git and the Claude Code login. Each failed row names its own fix, for example <code>kalkan tools install --force gosec</code>. <code>kalkan tools verify</code> hashes every installed file again. For the 15,045 files of Go, this took 8 minutes on Windows with a virus scanner. <code>--quick</code> is the fast check.</p>
+          <p class="tr" lang="tr"><code>kalkan doctor</code> her aracı, veritabanlarını, git'i ve Claude Code oturumunu kontrol eder. Sorunlu her satır kendi düzeltme komutunu yazar, örneğin <code>kalkan tools install --force gosec</code>. <code>kalkan tools verify</code> kurulu her dosyanın SHA-256 değerini yeniden hesaplar. Go'nun 15.045 dosyası için bu iş 8 dakika sürdü (virüs tarayıcılı bir Windows 11 makinesinde bir kez ölçüldü). <code>--quick</code> hızlı kontroldür.</p>
+          <p class="en" lang="en"><code>kalkan doctor</code> checks every tool, the databases, git and the Claude Code login. Each failed row names its own fix, for example <code>kalkan tools install --force gosec</code>. <code>kalkan tools verify</code> hashes every installed file again. For the 15,045 files of Go, this took 8 minutes (measured once on one Windows 11 machine with a virus scanner). <code>--quick</code> is the fast check.</p>
           <p class="note"><span class="tr" lang="tr">Windows on ARM (<code>windows-arm64</code>) için Trivy, Opengrep, Hadolint ve Grype derlemesi yok. kalkan bu tarayıcıları atlar ve nedenini yazar.</span><span class="en" lang="en">Trivy, Opengrep, Hadolint and Grype have no build for Windows on ARM (<code>windows-arm64</code>). kalkan skips these scanners and records the reason.</span></p>
         </section>
 
@@ -210,8 +207,8 @@ kalkan tools verify --quick</code></pre><button class="copy" type="button" aria-
           <p class="tr" lang="tr">Tarayıcılar çok sayıda şüpheli üretir. Bir araç sonucu, bir ajan onu kaynak kodda doğrulayana kadar <b>doğrulanmamış araç sonucu</b> olarak kalır. Rapor bu sonuçları ayrı bir listede gösterir.</p>
           <p class="en" lang="en">The scanners produce many candidates. A tool result stays an <b>unverified tool result</b> until an agent verifies it in the source code. The report shows these results in a separate list.</p>
           <h3><span class="tr" lang="tr">Ajanlar</span><span class="en" lang="en">The agents</span></h3>
-          <p class="tr" lang="tr">kalkan'ın 10 ajan rolü var. Hepsi salt okunur çalışır ve yalnız kendi sonuç dosyasını yazar.</p>
-          <p class="en" lang="en">kalkan has 10 agent roles. All of them are read-only, and each writes only its own result file.</p>
+          <p class="tr" lang="tr">kalkan'ın 10 ajan rolü var. Her ajan kaynağı okur ve tek bir sonuç dosyası yazar: kendi sonucunu. Kabuk yok, web yok, düzenleme yok.</p>
+          <p class="en" lang="en">kalkan has 10 agent roles. Each agent reads the source and writes one result file: its own result. No shell, no web, no edits.</p>
           <ul class="files">
             <li><code>recon</code><span class="tr" lang="tr">Ürünü, rolleri, saldırı yüzeylerini ve çalışma ortamını alıntılarla haritalar.</span><span class="en" lang="en">Maps the product, the principals, the attack surfaces and the execution, with quotes.</span></li>
             <li><code>hunter</code><span class="tr" lang="tr">Kapsam birimlerini toplu olarak arar. Kaynağa dayanan iddialar yazar.</span><span class="en" lang="en">Searches batches of coverage units. Writes candidates that rest on the source.</span></li>
@@ -265,15 +262,15 @@ kalkan tools verify --quick</code></pre><button class="copy" type="button" aria-
           </ul>
 
           <h3><span class="tr" lang="tr">Açmak için</span><span class="en" lang="en">Turning it on</span></h3>
-          <p class="tr" lang="tr">Sandbox için Docker gerekir. Denetim sırasında kalkan <b>hiçbir imaj indirmez</b>. Temel imajları önceden sen indirirsin. Her dil için ayrı bir imaj vardır; yalnızca ihtiyacın olanı indirebilirsin.</p>
-          <p class="en" lang="en">The sandbox needs Docker. During an audit kalkan <b>pulls no image</b>. You download the base images beforehand. There is one image per language, and you can pull only the one you need.</p>
-          <div class="code"><pre><code><span class="m"># Durumu gör: Docker açık mı, hangi imajlar var</span>
+          <p class="tr" lang="tr">Sandbox için Docker gerekir. <code>--allow-build-network</code> olmadan kalkan denetim sırasında <b>hiçbir imaj çekmez ve derlemez</b>. Temel imajları önceden sen indirirsin. Her dil için ayrı bir imaj vardır. Yalnızca ihtiyacın olanı indirebilirsin.</p>
+          <p class="en" lang="en">The sandbox needs Docker. Without <code>--allow-build-network</code>, kalkan <b>pulls and builds no image</b> during an audit. You download the base images beforehand. There is one image per language, and you can pull only the one you need.</p>
+          <div class="code"><pre><code><span class="m"># Status: is Docker running, which images exist</span>
 kalkan sandbox status
 
-<span class="m"># Yalnızca Python projeleri için</span>
+<span class="m"># Only for Python projects</span>
 kalkan sandbox pull python:3.12-slim
 
-<span class="m"># Hepsi (Python, Node, Go, Java, PHP, Ruby, .NET)</span>
+<span class="m"># All of them (Python, Node, Go, Java, PHP, Ruby, .NET)</span>
 kalkan sandbox pull</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
           <p class="tr" lang="tr">İmajlar Docker'ın kendi alanında durur, kalkan klasöründe değil. <code>kalkan</code> yazan yerde motorun tam yolunu kullan: bkz. <a href="docs#kullanim">Komutlar ve yollar</a>.</p>
           <p class="en" lang="en">The images live in Docker's own storage, not in the kalkan folder. Where it says <code>kalkan</code>, use the full engine path: see <a href="docs#kullanim">Commands and paths</a>.</p>
@@ -290,8 +287,8 @@ kalkan sandbox pull</code></pre><button class="copy" type="button" aria-label="K
             <p class="tr" lang="tr"><b>Docker yoksa denetim yine çalışır.</b> <code>poc</code> aşaması atlanır ve rapor bunu söyler. Bulgular motorun kaynak kodda doğruladığı alıntılara dayanır. <code>standard</code> ve <code>deep</code> profillerinde son inceleme de vardır. Tek fark, kod bulgularının güven düzeyinin en fazla <b>medium</b> olmasıdır.</p>
             <p class="en" lang="en"><b>Without Docker the audit still runs.</b> The <code>poc</code> phase is skipped and the report says so. The findings rest on the quotes that the engine verified in the source. The <code>standard</code> and <code>deep</code> profiles also have the final review. The only difference is that a code finding reaches at most <b>medium</b> confidence.</p>
           </div>
-          <p class="tr" lang="tr">Birim düzeyi yetmezse ajan uygulama düzeyi PoC seçebilir. Motor projenin compose yığınını yalnız iç ağda, internetsiz ve dışarı port açmadan başlatır, istekleri ayrı bir istemci konteynerinden gönderir. Privileged servis, host ağı, Docker soketi veya hedef dışına bağlama isteyen bir yığın hiç başlatılmaz. İmaj derlemek veya indirmek senin onayını ister: <code>--allow-build-network</code>.</p>
-          <p class="en" lang="en">When the unit level is not enough, the agent can choose an app-level PoC. The engine starts the compose stack of the project only on an internal network, without internet and without published ports, and sends the requests from a separate client container. A stack that asks for a privileged service, the host network, the Docker socket or a mount outside the target never starts. Building or pulling images needs your consent: <code>--allow-build-network</code>.</p>
+          <p class="tr" lang="tr">Birim düzeyi yetmezse ajan uygulama düzeyi PoC seçebilir. Motor projenin compose yığınını yalnız iç ağda, internetsiz ve dışarı port açmadan başlatır, istekleri ayrı bir istemci konteynerinden gönderir. Privileged servis, host ağı, Docker soketi veya hedef dışına bağlama isteyen bir yığın hiç başlatılmaz. İmaj derlemek veya indirmek senin onayını ister: <code>--allow-build-network</code> (isteğe bağlı, varsayılan kapalı). Bu bayrakla PoC sandbox'ı, hedefin compose yığınının imajlarını ağ erişimiyle çeker ve derler. Çalışan yığın internete hiç çıkmaz.</p>
+          <p class="en" lang="en">When the unit level is not enough, the agent can choose an app-level PoC. The engine starts the compose stack of the project only on an internal network, without internet and without published ports, and sends the requests from a separate client container. A stack that asks for a privileged service, the host network, the Docker socket or a mount outside the target never starts. Building or pulling images needs your consent: <code>--allow-build-network</code> (opt-in, off by default). With it, the PoC sandbox pulls and builds the images of the target's compose stack with network access. The running stack never gets internet.</p>
         </section>
 
         <!-- SCA and vulnerability databases -->
@@ -307,8 +304,8 @@ kalkan sandbox pull</code></pre><button class="copy" type="button" aria-label="K
             <li><span aria-hidden="true">04</span><span class="tr" lang="tr">govulncheck, Go kodunun zafiyetli koda ulaşıp ulaşmadığını kontrol eder. Diğer dillerde <code>sca-reach</code> ajanı kritik ve yüksek kayıtları alıntılarla kontrol eder.</span><span class="en" lang="en">govulncheck checks whether the Go code reaches the vulnerable code. For other languages, the <code>sca-reach</code> agent checks the critical and high records with quotes.</span></li>
           </ol>
           <h3><span class="tr" lang="tr">Veritabanları</span><span class="en" lang="en">The databases</span></h3>
-          <p class="tr" lang="tr">Veritabanları veri klasörünün <code>.tools/vulndb/</code> klasöründe durur. 29 Ekim 2026'da toplam 3,67 GB tuttular.</p>
-          <p class="en" lang="en">The databases are in the <code>.tools/vulndb/</code> folder of the data folder. On 29 October 2026, they used 3.67 GB in total.</p>
+          <p class="tr" lang="tr">Veritabanları veri klasörünün <code>.tools/vulndb/</code> klasöründe durur. 29 Ekim 2026'da toplam 3,67 GB tuttular (bir Windows 11 makinesinde bir kez ölçüldü).</p>
+          <p class="en" lang="en">The databases are in the <code>.tools/vulndb/</code> folder of the data folder. On 29 October 2026, they used 3.67 GB in total (measured once on one Windows 11 machine).</p>
           <ul class="files">
             <li><b>Grype</b><span class="tr" lang="tr">3,36 GB. Grype'ın zafiyet veritabanı.</span><span class="en" lang="en">3.36 GB. The vulnerability database of Grype.</span></li>
             <li><b>OSV</b><span class="tr" lang="tr">0,30 GB. 13 ekosistem: npm, PyPI, Go, Maven, RubyGems, Packagist, crates.io, NuGet, Pub, Hex, CRAN, SwiftURL, GitHub Actions.</span><span class="en" lang="en">0.30 GB. 13 ecosystems: npm, PyPI, Go, Maven, RubyGems, Packagist, crates.io, NuGet, Pub, Hex, CRAN, SwiftURL, GitHub Actions.</span></li>
@@ -451,7 +448,7 @@ sh "$HOME/kalkan/scripts/bootstrap.sh"</code></pre><button class="copy" type="bu
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

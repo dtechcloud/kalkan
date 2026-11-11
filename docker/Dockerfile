@@ -17,12 +17,18 @@
 #   WITH_GO=true|false        The pinned Go toolchain and the tools that need Go (gosec,
 #                             govulncheck, ...). Default: true.
 
-# python:3.12-slim (Debian trixie, Python 3.12.15). The digest is the multi-platform image index,
-# read from the Docker Hub registry on 2026-10-16. Change the tag and the digest together.
-ARG PYTHON_IMAGE=python:3.12.15-slim-trixie@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1
+# The base image: the stage pinned-python below, unless --build-arg PYTHON_IMAGE names another
+# image (BuildKit then skips the pinned stage).
+ARG PYTHON_IMAGE=pinned-python
 ARG WITH_GPL=true
 ARG WITH_HADOLINT=true
 ARG WITH_GO=true
+
+# python:3.12-slim (Debian trixie, Python 3.12.15). The digest is the multi-platform image index,
+# read from the Docker Hub registry on 2026-10-16. Change the tag and the digest together.
+# The image is on a FROM line of its own, so that Dependabot can update the tag and the digest
+# (.github/dependabot.yml: patch releases of Python 3.12 only).
+FROM python:3.12.15-slim-trixie@sha256:a6e34c598f2467ed0e9a8d349809fcd8b5c603269512df273a0bb1784edc11b1 AS pinned-python
 
 # ---------------------------------------------------------------------------------------------
 # base: Python, git, CA certificates and the non-root user. No compilers.

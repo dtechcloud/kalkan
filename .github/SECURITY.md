@@ -30,4 +30,14 @@ Bir açık için herkese açık issue açma.
 1. GitHub'ın özel açık bildirimini kullan: bu reponun **Security** sekmesi, sonra **Report a vulnerability**.
 2. Bunu kullanamıyorsan kalkan@dtechcloud.com adresine yaz. Konuya "security" ekle.
 
-kalkan sürümünü, işletim sistemini, sorunu gösteren adımları ve etkisini yaz. 5 iş günü içinde cevap verir ve düzeltme planını söyleriz. Yalnız son sürüm güvenlik düzeltmesi alır.
+kalkan sürümünü, işletim sistemini, sorunu gösteren adımları ve etkisini yaz. 5 iş günü içinde cevap verir ve düzeltme planını söyleriz.
+
+## Kapsam
+
+Kapsamda: kalkan motoru, kurulum betikleri, Claude Code eklentisi, Codex dosyaları ve PoC sandbox'ı. Özellikle [docs/SECURITY.md](../docs/SECURITY.md) içindeki üç sözü bozan her yol ilgimizi çeker: denetlenen projede bir değişiklik, bir ajanın kendi sonuç dosyası dışına yazması veya makineden çıkan veri.
+
+Kapsam dışında: kalkan'ın çalıştırdığı tarayıcılardaki açıklar (onları kendi projelerine bildir) ve kalkan'ın başka kod hakkında raporladığı bulgular.
+
+## Desteklenen sürümler
+
+Yalnız son sürüm güvenlik düzeltmesi alır.

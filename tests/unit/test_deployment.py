@@ -29,7 +29,7 @@ def make_target(root: Path) -> Path:
         "charts/app/templates/deploy.yaml": "kind: Deployment\n",
         "ops/helmish/Chart.yaml": "name: other\n",
         "ops/helmish/values.yaml": "replicas: 2\n",
-        "k8s/aks/deployment.yaml": "apiVersion: apps/v1\nkind: Deployment\n",
+        "k8s/prod/deployment.yaml": "apiVersion: apps/v1\nkind: Deployment\n",
         "infra/main.tf": 'resource "x" "y" {}\n',
         "app/settings.yaml": "debug: true\n",
         "app/main.py": "print('hi')\n",
@@ -79,7 +79,7 @@ def test_scan_lists_the_sets_and_never_counts_application_files(tmp_path):
         ("compose", "deploy/compose.prod.yaml"),
         ("helm", "charts/app"),
         ("helm", "ops/helmish"),
-        ("kubernetes", "k8s/aks"),
+        ("kubernetes", "k8s/prod"),
         ("terraform", "infra"),
     }
     assert "ops/helmish/values.yaml" in scan.files
@@ -90,14 +90,14 @@ def test_scan_lists_the_sets_and_never_counts_application_files(tmp_path):
 def test_the_scope_rule_is_conservative(tmp_path):
     files = set(scan_deployments(make_target(tmp_path)).files)
     is_deploy = files.__contains__
-    live = ["k8s/aks"]
+    live = ["k8s/prod"]
     assert deployment_scope(finding("docker-compose.yml"), live, is_deploy) == SCOPE_TEMPLATE
-    assert deployment_scope(finding("k8s/aks/deployment.yaml"), live, is_deploy) == SCOPE_LIVE
+    assert deployment_scope(finding("k8s/prod/deployment.yaml"), live, is_deploy) == SCOPE_LIVE
     # A finding that also touches application code is never template only.
     mixed = finding("docker-compose.yml", "app/main.py")
     assert deployment_scope(mixed, live, is_deploy) is None
     # Any file in the live deployment makes the finding live.
-    both = finding("docker-compose.yml", "k8s/aks/deployment.yaml")
+    both = finding("docker-compose.yml", "k8s/prod/deployment.yaml")
     assert deployment_scope(both, live, is_deploy) == SCOPE_LIVE
     # Without a live path nothing is classified.
     assert deployment_scope(finding("docker-compose.yml"), [], is_deploy) is None
@@ -106,7 +106,7 @@ def test_the_scope_rule_is_conservative(tmp_path):
 def test_code_that_production_does_not_load_is_template_by_its_sinks(tmp_path):
     files = set(scan_deployments(make_target(tmp_path)).files)
     is_deploy = files.__contains__
-    live, not_live = ["k8s/aks"], ["app/compose_plugin"]
+    live, not_live = ["k8s/prod"], ["app/compose_plugin"]
     # The vulnerable operation runs only in the not-live plugin: template, also from live code.
     called = {
         "trace": [
@@ -135,7 +135,7 @@ def test_code_that_production_does_not_load_is_template_by_its_sinks(tmp_path):
         == SCOPE_TEMPLATE
     )
     # A live path wins over a not-live path.
-    assert deployment_scope(finding("k8s/aks/deployment.yaml"), live, is_deploy, ["k8s"]) == (
+    assert deployment_scope(finding("k8s/prod/deployment.yaml"), live, is_deploy, ["k8s"]) == (
         SCOPE_LIVE
     )
     # Without a not-live path an application sink keeps the old rule.
@@ -150,9 +150,9 @@ def test_unsafe_live_paths_are_refused(bad):
 
 def test_a_missing_live_path_is_refused(tmp_path):
     make_target(tmp_path)
-    assert check_live_paths(["k8s\\aks\\"], tmp_path) == ["k8s/aks"]
+    assert check_live_paths(["k8s\\prod\\"], tmp_path) == ["k8s/prod"]
     with pytest.raises(ValueError, match="no such file"):
-        check_live_paths(["k8s/gke"], tmp_path)
+        check_live_paths(["k8s/staging"], tmp_path)
 
 
 def test_the_overall_risk_leaves_template_findings_out(tmp_path):
@@ -166,7 +166,7 @@ def test_the_overall_risk_leaves_template_findings_out(tmp_path):
         kalkan_version="0.0.0-test",
         findings_available=True,
         confirmed=[template, live],
-        live_paths=["k8s/aks"],
+        live_paths=["k8s/prod"],
         deployment_files=files,
     )
     assert posture(model) == "medium"
@@ -174,7 +174,7 @@ def test_the_overall_risk_leaves_template_findings_out(tmp_path):
     assert [item["id"] for item in top_findings(model)] == [live["id"], template["id"]]
     page = render_executive(model, "en")
     assert "(template only)" in page
-    assert "Live deployment: k8s/aks." in page
+    assert "Live deployment: k8s/prod." in page
     # Without the live path both count, and the page names the deployments of the repository.
     model.live_paths = []
     model.deployments = [{"kind": "compose", "path": "docker-compose.yml", "files": 1}]
@@ -194,17 +194,17 @@ def test_the_overall_risk_leaves_template_findings_out(tmp_path):
 def test_run_init_and_run_set_store_the_live_paths(tmp_path, monkeypatch, capsys):
     monkeypatch.setenv("KALKAN_RUNS_DIR", str(tmp_path / "runs"))
     target = make_target(tmp_path / "target")
-    assert main(["run", "init", str(target), "--live", "k8s/aks", "--json"]) == 0
+    assert main(["run", "init", str(target), "--live", "k8s/prod", "--json"]) == 0
     run_id = json.loads(capsys.readouterr().out)["run_id"]
     run_dir = tmp_path / "runs" / run_id
     state = json.loads((run_dir / "state.json").read_text(encoding="utf-8"))
-    assert state["options"]["live_paths"] == ["k8s/aks"]
+    assert state["options"]["live_paths"] == ["k8s/prod"]
     manifest = json.loads((run_dir / "target-manifest.json").read_text(encoding="utf-8"))
-    assert {"kind": "kubernetes", "path": "k8s/aks", "files": 1} in manifest["deployments"]["sets"]
+    assert {"kind": "kubernetes", "path": "k8s/prod", "files": 1} in manifest["deployments"]["sets"]
 
     assert main(["run", "set", "--live", "charts/app", "--json"]) == 0
     out = json.loads(capsys.readouterr().out)
-    assert out["live_paths"] == ["charts/app"] and out["previous_live_paths"] == ["k8s/aks"]
+    assert out["live_paths"] == ["charts/app"] and out["previous_live_paths"] == ["k8s/prod"]
     assert main(["run", "set", "--no-live", "--json"]) == 0
     capsys.readouterr()
     state = json.loads((run_dir / "state.json").read_text(encoding="utf-8"))

@@ -208,8 +208,8 @@ def test_the_report_states_the_poc_scope_in_its_language():
     from kalkan.findings.merge import POC_OUT_OF_SCOPE
     from kalkan.report import i18n
 
-    # A run before 1.7.0 recorded the ADR-0004 scope statement: it reads as "that version had
-    # no sandbox", never as a limit of this version.
+    # A pre-release run without a sandbox recorded the ADR-0004 scope statement: it reads as
+    # "that run had no sandbox", never as a limit of this version.
     english = i18n.poc_observed("en", POC_OUT_OF_SCOPE)
     assert english.startswith("The kalkan version that made this audit had no PoC sandbox.")
     assert "ADR-0004" not in english

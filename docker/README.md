@@ -1,6 +1,8 @@
 # kalkan container image
 
-`docker/Dockerfile` builds an image with the kalkan engine and the pinned scanners. Use it to run the deterministic engine (`kalkan audit --tools-only`, or `run init`, `scan`, `sca`, `report` one by one) on a machine without a local install, or in CI. The image does not contain Claude Code. See [Claude Code and /kalkan](#claude-code-and-kalkan).
+`docker/Dockerfile` builds an image with the kalkan engine and the pinned scanners.
+
+**Status: not built for the current tool set.** The last image build that this page records is from 2026-10-16. kalkan added several scanners after that day, and nobody built and tested an image with the current tool set. CI builds the image, but that job does not gate a merge. The sizes and results below are from 2026-10-16. Use it to run the deterministic engine (`kalkan audit --tools-only`, or `run init`, `scan`, `sca`, `report` one by one) on a machine without a local install, or in CI. The image does not contain Claude Code. See [Claude Code and /kalkan](#claude-code-and-kalkan).
 
 One command audits a folder without agents (Linux and macOS, PowerShell below):
 
@@ -19,7 +21,7 @@ New-Item -ItemType Directory -Force kalkan-runs, kalkan-vulndb | Out-Null
 docker run --rm -v "C:\src\myapp:/src:ro" -v "${PWD}\kalkan-runs:/work/runs" -v "${PWD}\kalkan-vulndb:/opt/kalkan/.tools/vulndb" kalkan:local audit /src --tools-only --yes
 ```
 
-With `--yes`, the first run downloads the vulnerability databases into `kalkan-vulndb` (3.67 GB on disk on 2026-10-29). Later runs use them and need no network. The report is in `kalkan-runs/<run-id>/report/`, and the last lines of the output name the files. Leave out `--yes` in CI to fail with exit code 5 instead of a download when the databases are missing.
+With `--yes`, the first run downloads the vulnerability databases into `kalkan-vulndb` (3.67 GB on disk on 2026-10-29, measured once on one Windows 11 machine). Later runs use them and need no network. The report is in `kalkan-runs/<run-id>/report/`, and the last lines of the output name the files. Leave out `--yes` in CI to fail with exit code 5 instead of a download when the databases are missing.
 
 The PoC verification sandbox (ADR-0006) uses the allowlisted base images of `src/kalkan/sandbox/images.json`, which `kalkan sandbox pull` downloads. This document is about `docker/Dockerfile` only.
 
@@ -81,11 +83,11 @@ The build downloads the scanners from their GitHub releases, the pip tools from 
 | `WITH_GO` | `true` | Go 1.26.9 and the tools that need Go. `false` leaves them out. |
 | `GO_VERSION` | `1.26.9` | Go release. Change it only together with the two checksums and the `go` entry of `src/kalkan/tools/manifest.json` (a unit test compares them). |
 | `GO_SHA256_AMD64`, `GO_SHA256_ARM64` | pinned | SHA-256 of `go<version>.linux-<arch>.tar.gz` from https://go.dev/dl/. |
-| `PYTHON_IMAGE` | pinned tag and digest | Base image. Change the tag and the digest together. |
+| `PYTHON_IMAGE` | `pinned-python` | Base image. The default is the stage `pinned-python`: `python:3.12.15-slim-trixie` with a pinned digest (Dependabot updates the tag and the digest together). Another value replaces it, for example an image from your own registry. |
 
 Any value other than `true` or `false` for `WITH_GPL`, `WITH_HADOLINT` or `WITH_GO` stops the build.
 
-The manifest has `linux-arm64` assets for every binary tool, so `docker buildx build --platform linux/arm64` can work. Only `linux/amd64` was built and tested. No image was built after version 1.4.0, so the tools that 1.5.0 and later added never ran in the image.
+The manifest has `linux-arm64` assets for every binary tool, so `docker buildx build --platform linux/arm64` can work. Only `linux/amd64` was built and tested. The tools that kalkan added after 2026-10-16 never ran in a tested image.
 
 ## Run
 
@@ -128,7 +130,7 @@ Notes:
 - On Linux, `--user "$(id -u):$(id -g)"` lets the container write to your runs folder. Docker Desktop on Windows and macOS does not need it. When the runs folder is not writable, the entry point prints a warning.
 - The target mount is read-only (`:ro`). `run init` copies the target into the run folder.
 - A git URL target (`run init <url>`) and `kalkan sca update-db` need the network. The scanners and the SCA steps use none (local mode, docs/SECURITY.md): they read the databases in `/opt/kalkan/.tools/vulndb`. The image ships no database. Run `update-db` (or `audit --yes`) once with a host folder or a volume at `/opt/kalkan/.tools/vulndb` to keep them. The folder belongs to the `kalkan` user in the image, so a new named volume there is writable for uid 10001. With `--user`, mount a host folder that you own instead. Without a database, `sca match` records a database gap, and `kalkan audit` stops with exit code 5 unless `--yes` is given. Add `--network none` to a command that must not use the network.
-- Since 1.7.0 opengrep unpacks its runtime into `/opt/kalkan/.tools/cache`, not below `HOME` (docs/SECURITY.md, "What kalkan writes where"). When `HOME` is not writable (for example with `--user` or `--read-only`), the entry point moves `HOME` to a new folder in `/tmp`.
+- opengrep unpacks its runtime into `/opt/kalkan/.tools/cache`, not below `HOME` (docs/SECURITY.md, "What kalkan writes where"). When `HOME` is not writable (for example with `--user` or `--read-only`), the entry point moves `HOME` to a new folder in `/tmp`.
 - The root file system can be read-only: add `--read-only --tmpfs /tmp`.
 - `kalkan doctor` reports Docker, Node.js and Claude Code as missing. These results are warnings. The PoC sandbox needs Docker and is not available in the container. A `needs_validation` finding then keeps its verdict and gets the blocker `sandbox_unavailable`.
 - `kalkan doctor` reports every manifest tool that the image leaves out as `fail`: the GPL tools with `WITH_GPL=false`, and Go and the tools that need it with `WITH_GO=false`. The engine skips these scanners, and `kalkan audit` stops with exit code 5 (setup needed) in such an image: use the default build for `kalkan audit`.
@@ -188,7 +190,7 @@ The image does not contain Claude Code. Use one of these two ways:
 
 ## Image size
 
-Measured on 2026-10-16 with Docker Desktop 28.3.2 (linux/amd64), with the tools of that day and the older build argument `WITH_HADOLINT` (now `WITH_GPL`):
+Measured once on 2026-10-16 with Docker Desktop 28.3.2 (linux/amd64), with the tools of that day and the older build argument `WITH_HADOLINT` (now `WITH_GPL`):
 
 | Build | Size on disk (`docker image ls`) | Compressed content |
 |---|---|---|

@@ -6,9 +6,6 @@
 <title>How it works · kalkan</title>
 <meta name="description" content="How kalkan works: the 10-step pipeline, quoted verification, reports and benchmarks.">
 <link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -43,12 +40,12 @@
         <div class="head">
           <p class="kicker"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></p>
           <h1 class="page-title" id="h-how"><span class="tr" lang="tr">Motor yönetir. Ajanlar düşünür.</span><span class="en" lang="en">The engine drives. The agents reason.</span></h1>
-          <p class="lede tr" lang="tr">kalkan motoru deterministik bir Python aracı ve hiçbir dil modelini çağırmaz. Hedefi kopyalar, tarayıcıları çalıştırır, görevleri dağıtır, her ajan sonucunu şemaya ve alıntılara karşı kontrol eder, kararı kendisi hesaplar.</p>
-          <p class="lede en" lang="en">The kalkan engine is a deterministic Python tool, and it never calls a language model. It copies the target, runs the scanners, hands out the tasks, checks every agent result against its schema and its quotes, and computes the verdicts itself.</p>
+          <p class="lede tr" lang="tr">kalkan motoru deterministik bir Python aracı ve bir karar vermek için hiçbir dil modelini çağırmaz. Hedefi kopyalar, tarayıcıları çalıştırır, görevleri dağıtır, her ajan sonucunu şemaya ve alıntılara karşı kontrol eder, kararı kendisi hesaplar. <code>kalkan audit</code> ve <code>kalkan unattended</code>, ajan işi için Claude Code (veya Codex) turları başlatır.</p>
+          <p class="lede en" lang="en">The kalkan engine is a deterministic Python tool, and it makes no model call to decide a verdict. It copies the target, runs the scanners, hands out the tasks, checks every agent result against its schema and its quotes, and computes the verdicts itself. <code>kalkan audit</code> and <code>kalkan unattended</code> start Claude Code (or Codex) rounds for the agent work.</p>
         </div>
         <ol class="grid-lines steps">
-          <li><span class="n">01</span><b><span class="tr" lang="tr">Hazırlık</span><span class="en" lang="en">Prep</span></b><span class="tr" lang="tr">Hedefin kopyası alınır. Ajan talimat dosyaları etkisiz kalır.</span><span class="en" lang="en">kalkan copies the target and neutralizes its agent instruction files.</span></li>
-          <li><span class="n">02</span><b><span class="tr" lang="tr">Tarayıcılar</span><span class="en" lang="en">Scanners</span></b><span class="tr" lang="tr">22 sabit sürümlü araç, ağ olmadan.</span><span class="en" lang="en">22 pinned tools, without network.</span></li>
+          <li><span class="n">01</span><b><span class="tr" lang="tr">Hazırlık</span><span class="en" lang="en">Prep</span></b><span class="tr" lang="tr">kalkan hedefi kopyalar ve ajan talimat dosyalarını etkisiz kılar.</span><span class="en" lang="en">kalkan copies the target and neutralizes its agent instruction files.</span></li>
+          <li><span class="n">02</span><b><span class="tr" lang="tr">Tarayıcılar</span><span class="en" lang="en">Scanners</span></b><span class="tr" lang="tr">22 sabit sürümlü araç, sırayla ve ağ olmadan.</span><span class="en" lang="en">22 pinned tools, one after another, without network.</span></li>
           <li><span class="n">03</span><b>SCA</b><span class="tr" lang="tr">SBOM, yerel OSV ve Grype veritabanları, bilinen zararlı paketler.</span><span class="en" lang="en">SBOM, local OSV and Grype databases, known malicious packages.</span></li>
           <li class="ai"><span class="n">04</span><b><span class="tr" lang="tr">Keşif</span><span class="en" lang="en">Recon</span></b><span class="tr" lang="tr">Ürün, roller, saldırı yüzeyleri ve çalışma ortamı.</span><span class="en" lang="en">Product, principals, attack surfaces and execution.</span></li>
           <li><span class="n">05</span><b>Plan</b><span class="tr" lang="tr">Kapsam defteri: her yüzey bir birim.</span><span class="en" lang="en">Coverage ledger: one unit per surface.</span></li>
@@ -56,7 +53,7 @@
           <li class="ai"><span class="n">07</span><b><span class="tr" lang="tr">Doğrulama</span><span class="en" lang="en">Verify</span></b><span class="tr" lang="tr">Üç soru, her yanıta bir alıntı.</span><span class="en" lang="en">Three questions, one quote per answer.</span></li>
           <li class="ai"><span class="n">08</span><b><span class="tr" lang="tr">İnceleme ve birleştirme</span><span class="en" lang="en">Review and consolidate</span></b><span class="tr" lang="tr">Taze bir gözden geçirici her kaydı kaynakla yeniden okur. Aynı kök neden tek bulgu olur.</span><span class="en" lang="en">A fresh reviewer reads each record against the source again. One root cause becomes one finding.</span></li>
           <li class="ai"><span class="n">09</span><b>PoC sandbox</b><span class="tr" lang="tr">Docker varsa küçük bir doğrulama programı ağsız bir konteynerde çalışır.</span><span class="en" lang="en">If Docker answers, a small proof program runs in a container without network.</span></li>
-          <li><span class="n">10</span><b><span class="tr" lang="tr">Rapor</span><span class="en" lang="en">Report</span></b><span class="tr" lang="tr">Türkçe, istenirse İngilizce. 8 çıktı.</span><span class="en" lang="en">Turkish, English on request. 8 deliverables.</span></li>
+          <li><span class="n">10</span><b><span class="tr" lang="tr">Rapor</span><span class="en" lang="en">Report</span></b><span class="tr" lang="tr">Varsayılan İngilizce, <code>--lang tr</code> ile Türkçe. 8 çıktı.</span><span class="en" lang="en">English by default, Turkish with <code>--lang tr</code>. 8 deliverables.</span></li>
         </ol>
         <div class="split">
           <figure class="evidence" lang="en">
@@ -120,11 +117,13 @@
         <div class="head">
           <p class="kicker"><span class="tr" lang="tr">Ölçümler</span><span class="en" lang="en">Benchmarks</span></p>
           <h2 id="h-bench"><span class="tr" lang="tr">İddia değil, ölçüm.</span><span class="en" lang="en">Measured, not claimed.</span></h2>
+          <p class="lede tr" lang="tr">Bu satırdaki her sayı 2026-11-01'de bir ön sürüm derlemesiyle, bir Windows 11 makinesinde (20 CPU) ölçüldü. Ölçüm yalnız deterministik hattı kapsar, ajanları kapsamaz.</p>
+          <p class="lede en" lang="en">Every number on this row was measured on 2026-11-01 with a pre-release build, on one Windows 11 machine (20 CPUs). The runs cover only the deterministic pipeline, not the agents.</p>
         </div>
       </div>
       <div class="grid-lines bench">
-        <div><b>157/157</b><p class="tr" lang="tr">Test uygulamasına yerleştirilmiş zafiyetlerin hepsini deterministik motorlar buldu (1.7.3). 154 güvenli ikizde 1 yanlış pozitif.</p><p class="en" lang="en">The deterministic engines found every planted vulnerability in the test app (1.7.3). 1 false positive on 154 secure twins.</p></div>
-        <div><b>17/19</b><p class="tr" lang="tr">Canlı ajan denetiminde (fast profili) bulunan yerleştirilmiş Python kod zafiyeti. Güvenli ikizlerde onaylanmış bulgu yok. 39 ajan görevi, 34 dakika.</p><p class="en" lang="en">Planted Python code vulnerabilities found in a live agent audit (fast profile). No confirmed finding on a secure twin. 39 agent tasks, 34 minutes.</p></div>
+        <div><b>157/157</b><p class="tr" lang="tr">Test uygulamasına yerleştirilmiş zafiyetlerin hepsini deterministik motorlar buldu. 154 güvenli ikizde 1 yanlış pozitif.</p><p class="en" lang="en">The deterministic engines found every planted vulnerability in the test app. 1 false positive on 154 secure twins.</p></div>
+        <div><b class="tr" lang="tr">1.200</b><b class="en" lang="en">1,200</b><p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçların ürettiği şüpheli. Ajanlar doğrulamadan hiçbiri bulgu sayılmaz.</p><p class="en" lang="en">Candidates from the tools alone on OWASP Juice Shop. None counts as a finding until the agents verify it.</p></div>
         <div><b class="tr" lang="tr">19,5 dk</b><b class="en" lang="en">19.5 min</b><p class="tr" lang="tr">OWASP Juice Shop v20.3.0, 1.466 dosya: 22 araç, SCA, birleştirme ve rapor. Kural paketleri bunun 16 dakikasını alır.</p><p class="en" lang="en">OWASP Juice Shop v20.3.0, 1,466 files: 22 tools, SCA, merge and report. The rule packs take 16 minutes of it.</p></div>
         <div><b class="tr" lang="tr">62 sn</b><b class="en" lang="en">62 s</b><p class="tr" lang="tr">DVWA, 252 dosya: aynı deterministik geçiş.</p><p class="en" lang="en">DVWA, 252 files: the same deterministic pass.</p></div>
       </div>
@@ -161,7 +160,7 @@
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

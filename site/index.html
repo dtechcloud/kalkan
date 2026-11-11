@@ -6,9 +6,6 @@
 <title>kalkan · Last stop before production</title>
 <meta name="description" content="kalkan: security audit for source code, inside Claude Code. Open source and free.">
 <link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="assets/site.css">
 </head>
 <body>
@@ -41,23 +38,23 @@
     <section class="hero" aria-labelledby="h-hero">
       <div class="field" aria-hidden="true"><i class="a"></i><i class="b"></i><i class="c"></i></div>
       <div class="hero-in">
-        <p class="eyebrow"><span class="tr" lang="tr"><b>v1.16.1</b> · Açık kaynak, MIT · Claude Code ve Codex</span><span class="en" lang="en"><b>v1.16.1</b> · Open source, MIT · Claude Code and Codex</span></p>
+        <p class="eyebrow"><span class="tr" lang="tr"><b>v1.0.0</b> · Açık kaynak, MIT · Claude Code ve Codex</span><span class="en" lang="en"><b>v1.0.0</b> · Open source, MIT · Claude Code and Codex</span></p>
         <h1 id="h-hero" lang="en">Last stop before production.</h1>
         <div class="hero-grid">
           <div class="hero-copy">
-            <p class="hero-sub tr" lang="tr">Kaynak kodun için derin güvenlik denetimi, Claude Code içinde. 22 sabit sürümlü araç şüphelileri bulur, ajanlar her birini kaynakta doğrular. Taramalar makinende kalır.</p>
-            <p class="hero-sub en" lang="en">A deep security audit of your source code, inside Claude Code. 22 pinned tools find the candidates, and agents verify each one in the source. The scans stay on your machine.</p>
+            <p class="hero-sub tr" lang="tr">Kaynak kodun için derin güvenlik denetimi, Claude Code içinde. 22 sabit sürümlü araç şüphelileri bulur, ajanlar önemli olanları kaynakta doğrular. Taramalar makinende kalır.</p>
+            <p class="hero-sub en" lang="en">A deep security audit of your source code, inside Claude Code. 22 pinned tools find the candidates, and agents verify the important ones in the source. The scans stay on your machine.</p>
             <div class="hero-install">
               <div class="code"><pre><code><span class="p">❯</span> claude plugin marketplace add dtechcloud/kalkan#stable
 <span class="p">❯</span> claude plugin install kalkan@kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-              <p class="meta"><span class="tr" lang="tr">Sonra Claude Code'u yeniden başlat ve <code>/kalkan &lt;klasör veya git URL&gt;</code> yaz. İlk çalıştırma araçları ve veritabanlarını kurar (5-15 dakika).</span><span class="en" lang="en">Then restart Claude Code and type <code>/kalkan &lt;folder or git URL&gt;</code>. The first run sets up the tools and the databases (5 to 15 minutes).</span></p>
+              <p class="meta"><span class="tr" lang="tr">Sonra Claude Code'u yeniden başlat ve <code>/kalkan &lt;klasör veya git URL&gt;</code> yaz. İlk çalıştırma araçları ve veritabanlarını kurar (5-15 dakika, bir Windows 11 makinesinde bir kez ölçüldü).</span><span class="en" lang="en">Then restart Claude Code and type <code>/kalkan &lt;folder or git URL&gt;</code>. The first run sets up the tools and the databases (5 to 15 minutes, measured once on one Windows 11 machine).</span></p>
               <a class="alt-link" href="docs#kurulum"><span class="tr" lang="tr">Diğer kurulum yolları →</span><span class="en" lang="en">Other ways to install →</span></a>
             </div>
             <div class="cta">
               <a class="btn btn-primary" href="usage"><span class="tr" lang="tr">Tüm komutlar</span><span class="en" lang="en">All commands</span></a>
               <a class="btn" href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a>
             </div>
-            <p class="meta"><span class="tr" lang="tr">Windows 11, Linux, macOS · Claude Code CLI 2.1+ veya VS Code eklentisi · Python 3.11+</span><span class="en" lang="en">Windows 11, Linux, macOS · Claude Code CLI 2.1+ or the VS Code extension · Python 3.11+</span></p>
+            <p class="meta"><span class="tr" lang="tr">Windows 11, Linux, macOS · Claude Code CLI 2.1+ (<code>--max-usd</code> için 2.1.217+) veya VS Code eklentisi · Python 3.11+. Bütün araç setini Windows 11'de test ettik. Linux ve macOS'ta CI birim testlerini çalıştırır.</span><span class="en" lang="en">Windows 11, Linux, macOS · Claude Code CLI 2.1+ (2.1.217+ for <code>--max-usd</code>) or the VS Code extension · Python 3.11+. The full tool set is tested on Windows 11. Linux and macOS run the unit tests in CI.</span></p>
           </div>
           <figure class="term" aria-label="kalkan-audit">
             <div class="term-bar" aria-hidden="true"><i></i><i></i><i></i><span>kalkan-audit · shop</span></div>
@@ -80,11 +77,11 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
     <!-- Numbers -->
     <section class="rule" aria-label="Sayılar / Numbers">
       <div class="grid-lines nums" style="border-top: 0">
-        <div class="num"><b>22</b><span class="tr" lang="tr">sabit sürümlü araç, SHA-256 kontrollü</span><span class="en" lang="en">pinned tools, SHA-256 checked</span></div>
+        <div class="num"><b>22</b><span class="tr" lang="tr">sabit sürümlü araç, 16'sı SHA-256 kontrollü</span><span class="en" lang="en">pinned tools, 16 with a SHA-256 check</span></div>
         <div class="num"><b>839</b><span class="tr" lang="tr">Opengrep kuralı: 106 kalkan, 733 seçilmiş</span><span class="en" lang="en">Opengrep rules: 106 own, 733 curated</span></div>
         <div class="num"><b>198</b><span class="tr" lang="tr">deepsec'ten port edilmiş regex matcher</span><span class="en" lang="en">regex matchers ported from deepsec</span></div>
         <div class="num"><b>42</b><span class="tr" lang="tr">zafiyet sınıfı bilgi paketi</span><span class="en" lang="en">vulnerability class packs</span></div>
-        <div class="num"><b>10</b><span class="tr" lang="tr">ajan rolü, yalnız okuma yetkili</span><span class="en" lang="en">agent roles, read-only</span></div>
+        <div class="num"><b>10</b><span class="tr" lang="tr">ajan rolü: kaynağı okur, tek sonuç dosyası yazar</span><span class="en" lang="en">agent roles: read the source, write one result file</span></div>
         <div class="num"><b>8</b><span class="tr" lang="tr">çıktı: HTML, Markdown, SARIF, JSON, SBOM</span><span class="en" lang="en">deliverables: HTML, Markdown, SARIF, JSON, SBOM</span></div>
       </div>
     </section>
@@ -104,7 +101,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
           <li class="flow-stage" style="--i: 0">
             <span class="flow-n">01</span>
             <h3><span class="tr" lang="tr">Tara</span><span class="en" lang="en">Scan</span></h3>
-            <p><span class="tr" lang="tr">22 sabit sürümlü araç ve yerel SCA paralel çalışır. Ağ kullanmazlar.</span><span class="en" lang="en">22 pinned tools and local SCA run in parallel, without network.</span></p>
+            <p><span class="tr" lang="tr">22 sabit sürümlü araç ve yerel SCA sırayla çalışır. Ağ kullanmazlar.</span><span class="en" lang="en">22 pinned tools and local SCA run one after another, without network.</span></p>
             <div class="flow-viz fv-chips" aria-hidden="true">
               <b style="--k: 0">opengrep</b><b style="--k: 3">trivy</b><b style="--k: 1">gitleaks</b><b style="--k: 4">checkov</b><b style="--k: 2">osv</b><b style="--k: 5">grype</b><b style="--k: 1">bandit</b><b style="--k: 3">gosec</b><b style="--k: 0">zizmor</b><b style="--k: 2">+13</b>
             </div>
@@ -157,7 +154,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
             <p class="flow-out"><span class="tr" lang="tr">→ her bulgu kaynağını alıntılar</span><span class="en" lang="en">→ every finding quotes its source</span></p>
           </li>
         </ol>
-        <p class="flow-base"><span class="tr" lang="tr">Motor dil modeli çağırmaz: durumu diskte tutar, şemaları ve alıntıları kontrol eder, kararı verir. Kullanım limiti dolarsa denetim bekler ve kaldığı yerden devam eder.</span><span class="en" lang="en">The engine never calls a language model: it keeps the state on disk, checks the schemas and the quotes, and makes the verdict. A usage limit only pauses the audit; it continues where it stopped.</span></p>
+        <p class="flow-base"><span class="tr" lang="tr">Motor bir karar vermek için dil modeli çağırmaz: durumu diskte tutar, şemaları ve alıntıları kontrol eder, kararı verir. Ajan işi Claude Code (veya Codex) içinde çalışır. Kullanım limiti dolarsa denetim bekler ve kaldığı yerden devam eder.</span><span class="en" lang="en">The engine makes no model call to decide a verdict: it keeps the state on disk, checks the schemas and the quotes, and makes the verdict. The agent work runs in Claude Code (or Codex). A usage limit only pauses the audit. The audit continues where it stopped.</span></p>
       </div>
     </section>
     <!-- Open source -->
@@ -172,9 +169,9 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
             <span class="tag"><span class="tr" lang="tr">Açık kaynak · ücretsiz</span><span class="en" lang="en">Open source · free</span></span>
             <h3><span class="tr" lang="tr">Kendin çalıştır</span><span class="en" lang="en">Run it yourself</span></h3>
             <ul class="ticks">
-              <li><span class="tr" lang="tr">MIT lisansı. Bütün kod açık, her satırı okuyabilirsin.</span><span class="en" lang="en">MIT license. All the code is open, you can read every line.</span></li>
+              <li><span class="tr" lang="tr">kalkan'ın kendi kodu MIT lisanslı. Bütün kod açık, her satırı okuyabilirsin. Paketle gelen Opengrep kural paketleri kendi lisanslarını korur.</span><span class="en" lang="en">MIT license for kalkan's own code. All the code is open, and you can read every line. The bundled Opengrep rule packs keep their own licenses.</span></li>
               <li><span class="tr" lang="tr">Tek komutla kurulum. Denetim kendi Claude Code oturumunda veya kendi API hesabınla çalışır.</span><span class="en" lang="en">One-command install. The audit runs in your own Claude Code session or on your own API account.</span></li>
-              <li><span class="tr" lang="tr">Kod, raporlar ve veritabanları kendi makinende kalır.</span><span class="en" lang="en">The code, the reports and the databases stay on your machine.</span></li>
+              <li><span class="tr" lang="tr">Taramalar, raporlar ve veritabanları kendi makinende kalır. Ajanlar okudukları dosyaları Anthropic'e veya API sağlayıcına gönderir.</span><span class="en" lang="en">The scans, the reports and the databases stay on your machine. The agents send the files they read to Anthropic or to your API provider.</span></li>
             </ul>
             <a class="btn btn-primary" href="usage"><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Install</span></a>
           </div>
@@ -195,8 +192,8 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
         <div class="card">
           <span class="tag"><span class="tr" lang="tr">Sorun · tarayıcı gürültüsü</span><span class="en" lang="en">Problem · scanner noise</span></span>
           <h3><span class="tr" lang="tr">Doğrulanmamış sonuç bulgu sayılmaz.</span><span class="en" lang="en">An unverified result is not a finding.</span></h3>
-          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 şüpheli üretti. kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
-          <p class="en" lang="en">On OWASP Juice Shop, the tools alone gave 1,200 candidates. kalkan counts a tool result as a finding only after the agents trace and verify it in the code. The unverified ones stay in a separate list of the report.</p>
+          <p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçlar 1200 şüpheli üretti (2026-11-01'de bir ön sürüm derlemesiyle ölçüldü). kalkan bir araç sonucunu ajanlar kodda izleyip doğrulamadan bulgu saymaz. Doğrulanmayanlar raporda ayrı bir listede kalır.</p>
+          <p class="en" lang="en">On OWASP Juice Shop, the tools alone gave 1,200 candidates (measured on 2026-11-01 with a pre-release build). kalkan counts a tool result as a finding only after the agents trace and verify it in the code. The unverified ones stay in a separate list of the report.</p>
         </div>
         <div class="card">
           <span class="tag"><span class="tr" lang="tr">Sorun · uydurma iddia</span><span class="en" lang="en">Problem · made-up claims</span></span>
@@ -273,7 +270,7 @@ Open the executive summary: ~/kalkan-runs/20261026T091512Z-shop-3f2a/report/EXEC
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

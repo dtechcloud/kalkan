@@ -32,7 +32,7 @@ Proje sahibi 2026-10-25'te güvenlik ekosisteminin olabildiğince geniş kapsanm
 7. Lisans kuralı aşağıdaki "Lisans politikası" bölümünde. GPL ve AGPL araçlar değiştirilmeden ayrı süreç olarak çalışır (Hadolint gibi).
 8. Araç girmeden önce bir corpus üzerinde mevcut araçlarla karşılaştırılır (en az kalkan'ın `vulnapp` fixture'ı ve güvenli ikizleri).
 
-### 1.5.0'da eklenenler (2026-10-25 ve 2026-10-26)
+### 2026-10-25 ve 2026-10-26'da eklenenler
 
 | Alan | Araç veya veri | Lisans | Kurulum | Plan |
 |---|---|---|---|---|

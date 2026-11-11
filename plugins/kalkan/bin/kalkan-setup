@@ -14,7 +14,8 @@
 #      ~/kalkan-runs.
 #   5. Copy the launchers (bin/kalkan-audit, bin/kalkan-unattended and their .cmd files for
 #      Windows) to <data>/bin. That path stays the same after a plugin update.
-#   6. Install the pinned scanners: kalkan tools install --all (downloads, SHA-256 checked).
+#   6. Install the pinned scanners: kalkan tools install --all (binary downloads SHA-256
+#      checked, pip tools by exact version, go install tools by the Go checksum database).
 #   7. Download the local vulnerability databases: kalkan sca update-db --max-age 168 (network;
 #      sends only ecosystem names). A database younger than 168 hours (7 days, the stale limit
 #      of kalkan doctor) is kept, so a plugin update within a week downloads nothing. A failure
