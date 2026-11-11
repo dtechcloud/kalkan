@@ -21,7 +21,7 @@ This document tells a coding agent (or a human) how to develop kalkan. The root 
 
 ## Branches
 
-- `main`: the newest changes. Every change, also from the maintainers, comes as a pull request. CI must pass on the six test jobs and the image build. Nobody pushes to `main` directly.
+- `main`: the newest changes. Every change, also from the maintainers, comes as a pull request. CI must pass on the six test jobs, the workflow lint and the image build. Nobody pushes to `main` directly.
 - `stable`: the tested releases. The installers, the README and the site point the plugin marketplace to `dtechcloud/kalkan#stable`, so users get a change only after a release. Only the maintainers move `stable`, and only forward to a commit of `main`.
 - A fix for a vulnerability in kalkan starts in a GitHub security advisory (a temporary private fork), not in a public pull request.
 
