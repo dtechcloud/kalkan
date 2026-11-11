@@ -163,9 +163,16 @@ def test_dockerfile_never_uses_a_latest_tag(dockerfile_text: str) -> None:
     assert re.search(r"latest", dockerfile_text, re.IGNORECASE) is None
 
 
+def test_base_stage_starts_from_the_pinned_image(dockerfile: Dockerfile) -> None:
+    # The pinned image has a FROM line of its own (Dependabot reads it); PYTHON_IMAGE names it.
+    assert dockerfile.stages[0].name == "pinned-python"
+    assert dockerfile.global_args["PYTHON_IMAGE"] == "pinned-python"
+    assert dockerfile.stages[1].name == "base"
+    assert dockerfile.stage("base").image == "pinned-python"
+
+
 def test_final_stage_derives_from_the_base_stage(dockerfile: Dockerfile) -> None:
     assert dockerfile.final.image == "base"
-    assert dockerfile.stages[0].name == "base"
 
 
 # ---------------------------------------------------------------------------------------------

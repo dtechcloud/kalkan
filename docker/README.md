@@ -81,7 +81,7 @@ The build downloads the scanners from their GitHub releases, the pip tools from 
 | `WITH_GO` | `true` | Go 1.26.9 and the tools that need Go. `false` leaves them out. |
 | `GO_VERSION` | `1.26.9` | Go release. Change it only together with the two checksums and the `go` entry of `src/kalkan/tools/manifest.json` (a unit test compares them). |
 | `GO_SHA256_AMD64`, `GO_SHA256_ARM64` | pinned | SHA-256 of `go<version>.linux-<arch>.tar.gz` from https://go.dev/dl/. |
-| `PYTHON_IMAGE` | pinned tag and digest | Base image. Change the tag and the digest together. |
+| `PYTHON_IMAGE` | `pinned-python` | Base image. The default is the stage `pinned-python`: `python:3.12.15-slim-trixie` with a pinned digest (Dependabot updates the tag and the digest together). Another value replaces it, for example an image from your own registry. |
 
 Any value other than `true` or `false` for `WITH_GPL`, `WITH_HADOLINT` or `WITH_GO` stops the build.
 

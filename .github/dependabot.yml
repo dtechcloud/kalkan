@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: MIT
+#
+# Version updates for the pinned inputs of the repository. A pin by commit SHA or digest is
+# safe but never moves by itself; Dependabot opens one weekly pull request per ecosystem.
+# The cooldown waits 7 days after a release, so a compromised release has time to be found
+# and pulled before it reaches us.
+#
+# Not covered here: the scanner pins in src/kalkan/tools/manifest.json (the maintainers update
+# them with their cross-check) and the Go toolchain in docker/Dockerfile (GO_VERSION and its two
+# SHA-256 values; a unit test compares them with the manifest).
+
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: ci
+
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    ignore:
+      # The image stays on Python 3.12 (tests/unit/test_dockerfile.py): patch releases only.
+      - dependency-name: python
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    commit-message:
+      prefix: chore
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      dev-tools:
+        patterns: ["*"]
+    commit-message:
+      prefix: chore
