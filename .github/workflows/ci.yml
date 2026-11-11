@@ -58,6 +58,42 @@ jobs:
       - name: Test (no external scanners, no Docker)
         run: pytest -m "not tools and not docker"
 
+  workflows:
+    # The workflow files: actionlint (syntax, expressions, shellcheck on the run steps) and zizmor
+    # (security: injection, permissions, credentials, pins). kalkan installs the three tools from
+    # its manifest, so they are the pinned versions with a checked SHA-256.
+    name: workflow lint (actionlint, zizmor)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.13"
+
+      - name: Install kalkan
+        run: python -m pip install -e .
+
+      - name: Install the pinned actionlint, shellcheck and zizmor
+        run: kalkan tools install --json actionlint shellcheck zizmor > "$RUNNER_TEMP/tools.json"
+
+      - name: Lint the workflows (actionlint with shellcheck)
+        run: |
+          tool() { jq -er --arg n "$1" '.results[] | select(.name == $n) | .path' "$RUNNER_TEMP/tools.json"; }
+          "$(tool actionlint)" -no-color -shellcheck="$(tool shellcheck)"
+
+      - name: Audit the workflows (zizmor, with the online audits)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          zizmor="$(jq -er '.results[] | select(.name == "zizmor") | .path' "$RUNNER_TEMP/tools.json")"
+          "$zizmor" --no-progress --format=github .github/workflows
+
   docker:
     # Optional: a failure here does not fail the workflow. The image is built, never pushed.
     name: docker image (build only)
