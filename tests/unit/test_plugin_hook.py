@@ -6,6 +6,7 @@ from __future__ import annotations
 import io
 import json
 import sys
+import time
 from pathlib import Path
 
 import pytest
@@ -508,6 +509,14 @@ def test_bad_session_ids_never_create_files(data):
         "npm install left-pad",
         "scp file host:",
         "/usr/bin/curl x",
+        "git -c a=b -C repo pull",
+        "git -C - push",
+        "GIT.exe ls-remote origin",
+        "cd x&&git push;",
+        "git -C repo archive --remote=x HEAD",
+        "git remote update",
+        "git -C repo submodule update --init",
+        "git" + " -!" * 44 + " status; git push origin main",
     ],
 )
 def test_network_commands_are_recognized(command):
@@ -516,10 +525,36 @@ def test_network_commands_are_recognized(command):
 
 @pytest.mark.parametrize(
     "command",
-    ["git status", "ls -la", "echo since", "cat function.py", "python -m pytest", "git log -p"],
+    [
+        "git status",
+        "ls -la",
+        "echo since",
+        "cat function.py",
+        "python -m pytest",
+        "git log -p",
+        "git status push",
+        "git -C repo log push",
+        "legit push",
+        "git archive HEAD",
+        "git remote -v",
+        "git pushx",
+    ],
 )
 def test_plain_commands_are_not_network_commands(command):
     assert not hook.is_network_command(command)
+
+
+@pytest.mark.parametrize(
+    "command",
+    ["git" + " -!" * 50_000, "git -a " * 50_000 + "status", "git -C" + " -" * 100_000],
+    ids=["options", "many-gits", "dashes"],
+)
+def test_the_git_check_takes_linear_time(command):
+    # A regex with nested repetition took seconds at 40 options and passed the 30 s hook
+    # timeout soon after (CodeQL py/redos). These inputs take well under 0.5 s.
+    start = time.perf_counter()
+    assert not hook.is_network_command(command)
+    assert time.perf_counter() - start < 5
 
 
 # --- saved tool outputs (Claude Code writes a large tool output to a file) ---------------------

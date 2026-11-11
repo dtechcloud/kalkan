@@ -49,9 +49,14 @@ Contract:
      from the ``Error:`` line of the chart's section of the stderr log.
 3. **Scan** (one run), working directory ``<work>/helm`` (Checkov writes URIs relative to it)::
 
-       <tool venv python> -I -X utf8 -c <checkov.LAUNCHER> -d <work>/helm -o sarif
+       <tool venv python> -I -X utf8 -c <checkov.LAUNCHER> -d . -o sarif
            --output-file-path <work>/results --framework kubernetes --skip-download --quiet
            --compact
+
+   ``-d .`` (the working directory is the scan root): the Kubernetes framework of Checkov drops
+   every file whose full path contains ``/.``. An absolute root under a hidden folder (the
+   plugin data folder ``~/.claude/...``, the work folder ``scans/.work``) would hide every
+   Kubernetes result on Linux and macOS. A relative root keeps the URIs unchanged.
 
    The launcher, the empty home folder and ``CKV_SKIP_PACKAGE_UPDATE_CHECK=true`` are those of
    the ``checkov`` adapter (no config discovery, no platform key, no version check). Exit codes
@@ -521,7 +526,7 @@ class HelmCheckovAdapter(ToolAdapter):
         """Return the Checkov arguments (module docstring, point 3)."""
         return [
             "-d",
-            str(self.render_root(ctx)),
+            ".",
             "-o",
             "sarif",
             "--output-file-path",

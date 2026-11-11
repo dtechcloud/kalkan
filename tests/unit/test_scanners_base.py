@@ -1011,7 +1011,7 @@ def test_checkov_launcher_turns_config_discovery_off(tmp_path):
     adapter = CheckovAdapter()
     [item] = adapter.invocations(ctx, entry, out)
     assert list(item.argv[:6]) == [str(python), "-I", "-X", "utf8", "-c", LAUNCHER]
-    assert item.argv[6:8] == ("-d", str(ctx.target_dir))
+    assert item.argv[6:8] == ("-d", ".")
     assert "m.get_default_config_paths = lambda argv: []" in LAUNCHER
     ignored, honored = adapter.suppression_sources(ctx)
     assert any("config discovery turned off" in item for item in ignored)

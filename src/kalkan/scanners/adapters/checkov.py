@@ -3,9 +3,14 @@
 
 Command line, checked against ``checkov --help`` of the pinned version 3.3.22::
 
-    <tool venv python> -I -X utf8 -c <LAUNCHER> -d <target> -o sarif
+    <tool venv python> -I -X utf8 -c <LAUNCHER> -d . -o sarif
         --output-file-path <run>/scans/.work/checkov/results --skip-download --quiet --compact
         --skip-framework helm,kustomize,sca_package,sca_image
+
+``-d .`` (the working directory is the scan root): the Kubernetes framework of Checkov drops
+every file whose full path contains ``/.``. An absolute root under a hidden folder (the
+plugin data folder ``~/.claude/...``, the work folder ``scans/.work``) would hide every
+Kubernetes result on Linux and macOS. A relative root keeps the URIs unchanged.
 
 Checkov writes ``results_sarif.sarif`` into the output folder (inside the work folder
 ``scans/.work/checkov/``); :func:`run_adapter` checks it and moves it to
@@ -115,7 +120,7 @@ class CheckovAdapter(ToolAdapter):
     def arguments(self, ctx: ScanContext, out: Path) -> list[str]:
         return [
             "-d",
-            str(ctx.target_dir),
+            ".",
             "-o",
             "sarif",
             "--output-file-path",

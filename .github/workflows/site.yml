@@ -39,7 +39,7 @@ jobs:
       url: ${{ steps.deploy.outputs.static_web_app_url }}
     permissions:
       contents: read
-      id-token: write
+      id-token: write # the OIDC token that azure/login trades for an Azure access token
     env:
       SWA_NAME: ${{ secrets.AZURE_STATIC_WEB_APP }}
       SWA_GROUP: ${{ secrets.AZURE_RESOURCE_GROUP }}
@@ -83,9 +83,11 @@ jobs:
           echo "::add-mask::$token"
           echo "value=$token" >> "$GITHUB_OUTPUT"
 
+      # The pin is the commit of the tag v1, the only release tag. The repository also has a
+      # branch v1 on a newer commit, so zizmor reports the comment as ambiguous.
       - name: Deploy site/
         id: deploy
-        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1
+        uses: Azure/static-web-apps-deploy@1a947af9992250f3bc2e68ad0754c0b0c11566c9 # v1 # zizmor: ignore[ref-version-mismatch]
         with:
           azure_static_web_apps_api_token: ${{ steps.token.outputs.value }}
           action: upload

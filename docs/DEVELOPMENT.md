@@ -21,7 +21,7 @@ This document tells a coding agent (or a human) how to develop kalkan. The root 
 
 ## Branches
 
-- `main`: the newest changes. Every change, also from the maintainers, comes as a pull request. CI must pass on the six test jobs. The image build job runs too, but it does not gate (`continue-on-error`). Nobody pushes to `main` directly.
+- `main`: the newest changes. Every change, also from the maintainers, comes as a pull request. CI must pass on the six test jobs and the workflow lint. The image build job runs too, but it does not gate (`continue-on-error`). Nobody pushes to `main` directly.
 - `stable`: the tested releases. The installers, the README and the site point the plugin marketplace to `dtechcloud/kalkan#stable`, so users get a change only after a release. Only the maintainers move `stable`, and only forward to a commit of `main`.
 - A fix for a vulnerability in kalkan starts in a GitHub security advisory (a temporary private fork), not in a public pull request.
 
@@ -50,7 +50,7 @@ Never skip the checklist. If a check fails, fix it and run the whole checklist a
 - The engine (`src/kalkan`) makes no model call to decide a verdict. The host agent and its subagents do all reasoning. `kalkan audit` and `kalkan unattended` only start Claude Code or Codex rounds.
 - The engine owns the run state and the verdicts. Agents return JSON results. The engine checks the schema and the quotes, and then computes the verdict.
 - Keep all run state under `runs/<run-id>/`. Never write run state under `.claude/` or `.git/`.
-- Support Windows, Linux and macOS natively. The full tool set is tested on Windows 11. Linux and macOS run the unit tests in CI. Use `pathlib`. Do not use a POSIX-only API without a Windows path. Store paths with forward slashes.
+- Support Windows, Linux and macOS natively. The full tool set is tested on Windows 11 and on Ubuntu 24.04 (one run in a container on 2026-11-11). macOS runs the unit tests in CI. Use `pathlib`. Do not use a POSIX-only API without a Windows path. Store paths with forward slashes.
 - Use Python 3.11 or later. Keep the runtime dependencies few and pinned.
 - Run external scanners as separate processes with pinned versions. Never install "latest".
 

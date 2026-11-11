@@ -47,7 +47,9 @@ KNOWN_UNPLANTED = {
 
 
 def _ignore(folder: str, names: list[str]) -> set[str]:
-    skipped = {name for name in names if name in {"obj", "bin"}}
+    # IDE build output of the C# folder only; native/bin holds a fixture item.
+    in_csharp = Path(folder).name == "csharp"
+    skipped = {name for name in names if in_csharp and name in {"obj", "bin"}}
     if Path(folder).resolve() == FIXTURE:
         skipped |= {name for name in names if name in ANSWER_FILES}
     return skipped

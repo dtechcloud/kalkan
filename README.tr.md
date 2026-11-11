@@ -89,7 +89,7 @@ Bir kalkan checkout'unda aynı komut `kalkan audit <hedef>` olur. Önce aşağı
 - Claude Code CLI, sürüm 2.1 veya üstü (`--max-usd` için 2.1.217 veya üstü). Bir Claude planıyla oturumu açık olmalı ya da bir API anahtarıyla ayarlanmış olmalı ([API anahtarıyla çalıştırma](#api-anahtarıyla-çalıştırma)). `--tools-only` denetimi Claude Code istemez.
 - İlk kurulum için internet erişimi. Bootstrap betiği sabit sürümlü araçları indirir. Go araç zinciri de bunlara dahildir. Betik yerel güvenlik açığı veritabanlarını da indirir (`kalkan sca update-db`): yaklaşık 290 MB OSV veritabanı ve Grype veritabanı (diskte 3,67 GB, 2026-10-29'da bir Windows 11 makinesinde bir kez ölçüldü). Denetimin kendisi ağı yalnızca Claude oturumun, git URL hedefinin klonu ve isteğe bağlı `--allow-build-network` bayrağı için kullanır.
 - İsteğe bağlı: Docker (PoC doğrulama sandbox'ı ve konteyner imajı için).
-- Windows 11, Linux veya macOS. Bütün araç setini Windows 11'de test ettik. Linux ve macOS'ta CI birim testlerini çalıştırır.
+- Windows 11, Linux veya macOS. Bütün araç setini Windows 11'de ve Ubuntu 24.04'te test ettik (Ubuntu: 2026-11-11'de bir konteynerde bir kez). macOS'ta CI birim testlerini çalıştırır.
 
 Go kurman gerekmez. kalkan, Go 1.26.9'u SHA-256 kontrolüyle `.tools/go/` klasörüne kurar. gosec ve govulncheck bu Go ile çalışır. poutine bu Go ile derlenir. Sistemdeki Go 1.26 veya üstü yalnızca bu kopya eksikse kullanılır.
 
