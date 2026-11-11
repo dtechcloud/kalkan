@@ -204,7 +204,7 @@ def test_checkov_command_cwd_and_env(tmp_path):
     assert list(item.argv) == [
         str(TOOL),
         "-d",
-        str(ctx.target_dir),
+        ".",
         "-o",
         "sarif",
         "--output-file-path",

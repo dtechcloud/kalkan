@@ -123,7 +123,7 @@ def test_invocations_render_each_chart_offline_then_run_checkov(tmp_path, with_c
     assert list(last.argv) == [
         str(Path("/opt/checkov")),
         "-d",
-        str(work / "helm"),
+        ".",
         "-o",
         "sarif",
         "--output-file-path",
@@ -310,7 +310,7 @@ def _recorded_runner(*, deps_chart: str = "missing"):
             shutil.copytree(rendered, out, dirs_exist_ok=True)
             return ProcessOutcome(0)
         doc = json.loads(json.dumps(sarif))
-        root = Path(argv[argv.index("-d") + 1])
+        root = Path(cwd) / argv[argv.index("-d") + 1]
         [part] = [path.name for path in root.iterdir() if (path / "shop").is_dir()]
         for result in doc["runs"][0]["results"]:
             location = result["locations"][0]["physicalLocation"]["artifactLocation"]

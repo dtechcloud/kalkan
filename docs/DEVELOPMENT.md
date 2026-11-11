@@ -50,7 +50,7 @@ Never skip the checklist. If a check fails, fix it and run the whole checklist a
 - The engine (`src/kalkan`) makes no model call to decide a verdict. The host agent and its subagents do all reasoning. `kalkan audit` and `kalkan unattended` only start Claude Code or Codex rounds.
 - The engine owns the run state and the verdicts. Agents return JSON results. The engine checks the schema and the quotes, and then computes the verdict.
 - Keep all run state under `runs/<run-id>/`. Never write run state under `.claude/` or `.git/`.
-- Support Windows, Linux and macOS natively. The full tool set is tested on Windows 11. Linux and macOS run the unit tests in CI. Use `pathlib`. Do not use a POSIX-only API without a Windows path. Store paths with forward slashes.
+- Support Windows, Linux and macOS natively. The full tool set is tested on Windows 11 and on Ubuntu 24.04 (one run in a container on 2026-11-11). macOS runs the unit tests in CI. Use `pathlib`. Do not use a POSIX-only API without a Windows path. Store paths with forward slashes.
 - Use Python 3.11 or later. Keep the runtime dependencies few and pinned.
 - Run external scanners as separate processes with pinned versions. Never install "latest".
 
