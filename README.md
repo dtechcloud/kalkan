@@ -89,7 +89,7 @@ From a kalkan checkout (after the bootstrap below), the same command is `kalkan 
 - Claude Code CLI 2.1 or later (2.1.217 or later for `--max-usd`), signed in with a Claude plan or set up with an API key ([Running with an API key](#running-with-an-api-key)). `--tools-only` audits need no Claude Code.
 - Internet access for the first setup: the bootstrap script downloads the pinned tools, the Go toolchain included, and the local vulnerability databases (`kalkan sca update-db`: about 290 MB of OSV databases and the Grype database: 3.67 GB on disk, measured once on one Windows 11 machine on 2026-10-29). An audit itself uses no network except your Claude session, the clone of a git URL target and the opt-in `--allow-build-network` flag.
 - Optional: Docker (the PoC verification sandbox and the container image).
-- Windows 11, Linux or macOS. The full tool set is tested on Windows 11. Linux and macOS run the unit tests in CI.
+- Windows 11, Linux or macOS. The full tool set is tested on Windows 11 and on Ubuntu 24.04 (one run in a container on 2026-11-11). macOS runs the unit tests in CI.
 
 You do not need to install Go. kalkan installs Go 1.26.9 into `.tools/go/` (SHA-256 checked), runs gosec and govulncheck with it and builds poutine with it. A system Go 1.26 or later is used only when that copy is missing.
 

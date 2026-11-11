@@ -42,7 +42,8 @@ FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "vulnapp"
 EXPECTED = FIXTURE / "EXPECTED.json"
 #: Fixture root files that describe the answers; they are not part of the target.
 ANSWER_FILES = frozenset({"README.md", "EXPECTED.json", "INJECTION-NOTE.md"})
-#: Build output that an IDE can leave in the C# folders; not fixture data.
+#: Build output that an IDE can leave in the C# folder (csharp/bin, csharp/obj); not fixture
+#: data. Only there: native/bin holds a fixture item (the committed binary).
 BUILD_FOLDERS = frozenset({"obj", "bin"})
 LINE_SLACK = 2
 WINDOWS = os.name == "nt"
@@ -55,7 +56,8 @@ WORKFLOWS = [
 
 
 def _ignore(folder: str, names: list[str]) -> set[str]:
-    skipped = {name for name in names if name in BUILD_FOLDERS}
+    in_csharp = Path(folder).name == "csharp"
+    skipped = {name for name in names if in_csharp and name in BUILD_FOLDERS}
     if Path(folder).resolve() == FIXTURE:
         skipped |= {name for name in names if name in ANSWER_FILES}
     return skipped
