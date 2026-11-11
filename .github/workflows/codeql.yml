@@ -1,0 +1,54 @@
+# SPDX-License-Identifier: MIT
+#
+# CodeQL code scanning (advanced setup). It replaces the default setup, because only an advanced
+# setup reads a configuration file: .github/codeql/codeql-config.yml leaves out the deliberately
+# vulnerable test targets. The languages, the query suite and the categories are the ones of
+# the default setup, so the existing alerts continue.
+# Every action is pinned by its full commit SHA; the comment names the release.
+
+name: CodeQL
+
+on:
+  push:
+    branches: [main, stable]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "23 4 * * 1"
+
+permissions: {}
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read # CodeQL reads the workflow run of a private or internal repository
+      security-events: write # upload the results to code scanning
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [actions, javascript-typescript, python]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up CodeQL
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          category: /language:${{ matrix.language }}
