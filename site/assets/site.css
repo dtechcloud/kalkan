@@ -1,3 +1,6 @@
+/* Geist and Geist Mono (SIL OFL 1.1, fonts/OFL.txt), served from this origin: scripts/build_report_fonts.py. */
+@font-face { font-family: "Geist"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("fonts/Geist-subset.woff2") format("woff2"); }
+@font-face { font-family: "Geist Mono"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("fonts/GeistMono-subset.woff2") format("woff2"); }
 :root {
   /* Layout: one 72rem frame between two hairline rails; each section opens on a rule with a cross at each rail. Dark first. */
   color-scheme: dark;
