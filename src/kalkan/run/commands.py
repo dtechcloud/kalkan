@@ -170,7 +170,7 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         default=None,
         metavar="PATH",
         help="a folder or file of the target that holds the deployment running in production "
-        "(repeatable, for example --live k8s/aks); findings only in other deployment files "
+        "(repeatable, for example --live deploy/helm); findings only in other deployment files "
         "count as template only",
     )
     init.add_argument(
@@ -179,8 +179,8 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         default=None,
         metavar="PATH",
         help="a folder or file of the target with code that production does not load "
-        "(repeatable, for example a provisioner plugin of another deployment); a finding whose "
-        "sinks are all there counts as template only",
+        "(repeatable, for example a plugin folder that only another product loads); a finding "
+        "whose sinks are all there counts as template only",
     )
     init.add_argument(
         "--no-latest",

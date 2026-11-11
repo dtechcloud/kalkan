@@ -15,7 +15,7 @@
 
 kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Rapor varsayılan olarak İngilizce. `--lang tr` ile rapor Türkçe olur ve istersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
 
-> **Durum (sürüm 1.16.1):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006), bir Docker motoru yanıt verdiğinde birim düzeyi kontrolleri ağsız bir konteynerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
+> **Durum (sürüm 1.0.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006, ADR-0008), bir Docker motoru yanıt verdiğinde kontrollerini ağsız konteynerlerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Hızlı başlangıç
 
@@ -35,7 +35,7 @@ Windows (PowerShell):
 & ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))
 ```
 
-Kurulum betiği `stable` branch'ini izler. Bu branch denenmiş sürümleri tutar (`main` en yeni değişiklikleri tutar: `--source dtechcloud/kalkan#main`). Betik gereksinimleri kontrol eder. kalkan marketplace'ini ekler ve kalkan eklentisini kendi kullanıcın için kurar (user scope). Sonra sabit sürümlü tarayıcıları ve yerel güvenlik açığı veritabanlarını kurar. En son `kalkan doctor` çalıştırır. İlk kurulum 5-15 dakika sürer. kalkan'ı güncellemek için aynı satırı yeniden çalıştır. Her hata mesajı düzeltme komutunu verir. Komutları önce görmek için `--dry-run` ekle (`... | sh -s -- --dry-run`). PowerShell'de son parantezden sonra `-DryRun` yaz.
+Kurulum betiği `stable` branch'ini izler. Bu branch denenmiş sürümleri tutar (`main` en yeni değişiklikleri tutar: `--source dtechcloud/kalkan#main`). Betik gereksinimleri kontrol eder. kalkan marketplace'ini ekler ve kalkan eklentisini kendi kullanıcın için kurar (user scope). Sonra sabit sürümlü tarayıcıları ve yerel güvenlik açığı veritabanlarını kurar. En son `kalkan doctor` çalıştırır. İlk kurulum 5-15 dakika sürer (bir Windows 11 makinesinde bir kez ölçüldü). kalkan'ı güncellemek için aynı satırı yeniden çalıştır. Her hata mesajı düzeltme komutunu verir. Komutları önce görmek için `--dry-run` ekle (`... | sh -s -- --dry-run`). PowerShell'de son parantezden sonra `-DryRun` yaz.
 
 Tek satır olmadan: önce `git clone https://github.com/dtechcloud/kalkan.git` çalıştır. Sonra `sh kalkan/scripts/install.sh` çalıştır (Windows: `powershell -ExecutionPolicy Bypass -File kalkan\scripts\install.ps1`).
 
@@ -79,17 +79,17 @@ Komut şu adımları yapar:
 3. Headless Claude Code turlarını başlatır. Turlar hedefi haritalar, bulgu arar, bulguları doğrular ve inceler. Kullanım limiti dolarsa turlar sıfırlanmayı bekler ve sıfırlanma saatini yazar. `--tools-only` bu adımı atlar. O zaman rapor her sonucu doğrulanmamış araç sonucu olarak işaretler.
 4. Kısa bir özet yazar: genel risk, ciddiyete göre bulgular ve en önemli 3 bulgu. Sonra `~/kalkan-runs/<run-id>/report/` klasöründeki dosyaları listeler: `EXECUTIVE.html` (önce bunu aç), `REPORT.html`, `REPORT.md`, `findings.sarif`, `findings.json`, `summary.json` ve SBOM.
 
-Çıkış kodları: 0 bitti, 1 eksik kaldı veya durdu (mesaj devam komutunu verir), 5 kurulum gerekli (mesaj düzeltmeyi verir).
+Çıkış kodları: 0 bitti, 1 eksik kaldı veya durdu (mesaj devam komutunu verir), 2 kullanım hatası, 5 kurulum gerekli (mesaj düzeltmeyi verir).
 
-Bir kalkan checkout'unda aynı komut `kalkan audit <hedef>` olur. Önce aşağıdaki bootstrap'i çalıştır ve venv'i etkinleştir. Venv etkin değilse Windows'ta `.venv\Scripts\kalkan.exe audit <hedef>`, Linux ve macOS'ta `.venv/bin/kalkan audit <hedef>` yaz. Konteyner imajı yerel kurulum olmadan `kalkan audit /src --tools-only` çalıştırır ([docker/README.md](docker/README.md)).
+Bir kalkan checkout'unda aynı komut `kalkan audit <hedef>` olur. Önce aşağıdaki bootstrap'i çalıştır ve venv'i etkinleştir. Venv etkin değilse Windows'ta `.venv\Scripts\kalkan.exe audit <hedef>`, Linux ve macOS'ta `.venv/bin/kalkan audit <hedef>` yaz. Konteyner imajı yerel kurulum olmadan `kalkan audit /src --tools-only` çalıştırır. Bu imajı güncel araç seti için derlemedik ([docker/README.md](docker/README.md)).
 
 ## Gereksinimler
 
 - Python 3.11 veya üstü ve git (Windows'ta Git for Windows).
-- Claude Code CLI, sürüm 2.1 veya üstü. Bir Claude planıyla oturumu açık olmalı ya da bir API anahtarıyla ayarlanmış olmalı ([API anahtarıyla çalıştırma](#api-anahtarıyla-çalıştırma)). `--tools-only` denetimi Claude Code istemez.
-- İlk kurulum için internet erişimi. Bootstrap betiği sabit sürümlü araçları indirir. Go araç zinciri de bunlara dahildir. Betik yerel güvenlik açığı veritabanlarını da indirir (`kalkan sca update-db`): yaklaşık 290 MB OSV veritabanı ve Grype veritabanı (2026-10-29'da diskte 3,67 GB). Denetimin kendisi, Claude oturumun dışında ağı kullanmaz.
+- Claude Code CLI, sürüm 2.1 veya üstü (`--max-usd` için 2.1.217 veya üstü). Bir Claude planıyla oturumu açık olmalı ya da bir API anahtarıyla ayarlanmış olmalı ([API anahtarıyla çalıştırma](#api-anahtarıyla-çalıştırma)). `--tools-only` denetimi Claude Code istemez.
+- İlk kurulum için internet erişimi. Bootstrap betiği sabit sürümlü araçları indirir. Go araç zinciri de bunlara dahildir. Betik yerel güvenlik açığı veritabanlarını da indirir (`kalkan sca update-db`): yaklaşık 290 MB OSV veritabanı ve Grype veritabanı (diskte 3,67 GB, 2026-10-29'da bir Windows 11 makinesinde bir kez ölçüldü). Denetimin kendisi ağı yalnızca Claude oturumun, git URL hedefinin klonu ve isteğe bağlı `--allow-build-network` bayrağı için kullanır.
 - İsteğe bağlı: Docker (PoC doğrulama sandbox'ı ve konteyner imajı için).
-- Windows 11, Linux veya macOS. Sürüm 1.5.0'dan beri testler yalnızca Windows 11'de çalıştı.
+- Windows 11, Linux veya macOS. Bütün araç setini Windows 11'de test ettik. Linux ve macOS'ta CI birim testlerini çalıştırır.
 
 Go kurman gerekmez. kalkan, Go 1.26.9'u SHA-256 kontrolüyle `.tools/go/` klasörüne kurar. gosec ve govulncheck bu Go ile çalışır. poutine bu Go ile derlenir. Sistemdeki Go 1.26 veya üstü yalnızca bu kopya eksikse kullanılır.
 
@@ -128,7 +128,7 @@ Terminalden: [hızlı başlangıçtaki](#denetim-1-komut) `kalkan-audit` kurulum
 | `standard` | 150 | 2 | Varsayılan |
 | `deep` | 400 | 3 | Büyük veya kritik sistemler |
 
-Sürüm 1.6.0'dan önceki adlar (`hizli`, `quick`, `standart`, `derin`) hâlâ çalışır. Eski bir sürümün başlattığı denetim de kaldığı yerden devam eder.
+Eski adlar `hizli`, `quick`, `standart` ve `derin` hâlâ çalışır.
 
 ## Gözetimsiz çalışma
 
@@ -159,7 +159,7 @@ kalkan bir anahtarın yalnızca değişken adını kaydeder, değerini kaydetmez
 
 ## Disk kullanımı ve temizlik
 
-- `kalkan clean`, kalkan'ın makinede tuttuklarını boyutlarıyla gösterir: motor, araçlar, güvenlik açığı veritabanları, önbellekler ve run'lar. 2026-10-29'da Windows'ta ölçüldü (eklenti): araçlar 1,53 GB, veritabanları 3,67 GB. `kalkan doctor` aynı boyutları `footprint` satırında gösterir.
+- `kalkan clean`, kalkan'ın makinede tuttuklarını boyutlarıyla gösterir: motor, araçlar, güvenlik açığı veritabanları, önbellekler ve run'lar. 2026-10-29'da bir Windows 11 makinesinde bir kez ölçüldü (eklenti): araçlar 1,53 GB, veritabanları 3,67 GB. `kalkan doctor` aynı boyutları `footprint` satırında gösterir.
 - `kalkan run clean <run-id>`, biten bir run'ın hedef kopyasını, geçmiş kopyasını ve iş klasörlerini siler. Raporu bırakır. `--dry-run` önce boyutları gösterir.
 - `kalkan clean --runs`, `--caches`, `--databases`, `--tools` veya `--all` bir bölümü siler. Önce silinecekleri listeler ve onay ister (`--dry-run` yalnızca listeler, `-y` soruyu atlar). Yalnızca kalkan'ın kendi klasörlerini siler. Bir bağlantıyı (symlink, junction) bağlantı olarak siler; bağlantının gösterdiği klasör yerinde kalır.
 - `kalkan sca update-db`, 24 saatten yeni bir veritabanını yeniden indirmez (`--force` indirir). Kurulum betikleri 7 günden yeni veritabanlarını tutar. Bir hafta içindeki yeni bir kurulum hiçbir veritabanı indirmez.
@@ -171,15 +171,15 @@ kalkan bir anahtarın yalnızca değişken adını kaydeder, değerini kaydetmez
 flowchart LR
     T[("Kodun<br/>klasör veya git URL")] --> P
     subgraph M["Senin makinen · ağ yok"]
-        P["Hazırlık<br/>salt okunur kopya, ajan<br/>talimat dosyaları etkisiz"] --> S["Tarama<br/>22 sabit sürümlü araç paralel<br/>+ çevrimdışı SCA"]
+        P["Hazırlık<br/>salt okunur kopya, ajan<br/>talimat dosyaları etkisiz"] --> S["Tarama<br/>22 sabit sürümlü araç, sırayla<br/>+ çevrimdışı SCA"]
     end
-    subgraph A["Ajanlar · paralel · salt okunur"]
+    subgraph A["Ajanlar · paralel · kaynağı okur, tek sonuç dosyası yazar"]
         R["Keşif<br/>4 ajan hedefi haritalar"] --> H["Av<br/>her avcı ajan bir grup<br/>kapsam birimi alır"]
         H <-->|boşluklar| C["Eleştirmen<br/>sonraki dalgayı açar"]
         H --> V["Doğrulama<br/>3 soru, her cevap<br/>kaynaktan alıntı taşır"]
         V --> F["Son inceleme<br/>taze göz, doğrulayıcı notu yok"]
     end
-    E{{"Motor, dil modeli yok<br/>durum diskte · şemaları ve<br/>alıntıları kontrol eder · kararı verir"}}
+    E{{"Motor, karar için model çağrısı yok<br/>durum diskte · şemaları ve<br/>alıntıları kontrol eder · kararı verir"}}
     S -->|adaylar| R
     V -.->|alıntılar| E
     E -.->|karar| F
@@ -193,8 +193,8 @@ flowchart LR
 
 Her ok, `runs/<run-id>/` altında diskteki bir dosyadır. Bu yüzden kullanım limiti denetimi yalnızca duraklatır. Kararı ajanlar vermez: motor her alıntıyı dosyada arar (±2 satır). Eşleşen alıntısı olmayan bir iddia doğrulanmış sayılmaz.
 
-1. **Motor.** `kalkan`, çalışma zamanında hiçbir bağımlılığı olmayan deterministik bir Python CLI'ıdır. Hiçbir zaman dil modeli çağırmaz. Hedefi kopyalar, tarayıcıları ve SCA'yı çalıştırır, kapsamı planlar, ajanlara görev dağıtır, her ajan sonucunu kontrol eder ve kararı hesaplar.
-2. **Ajanlar.** `/kalkan` skill'i `kalkan run next` döngüsünü çalıştırır ve salt okunur alt ajanlar başlatır: recon, hunter, verifier, reviewer, consolidator, polisher, critic, sca-reach, poc-builder ve translator. Her alt ajan tek bir prompt dosyası okur ve tek bir JSON sonucu yazar.
+1. **Motor.** `kalkan`, çalışma zamanında hiçbir bağımlılığı olmayan deterministik bir Python CLI'ıdır. Bir karar vermek için dil modeli çağırmaz. `kalkan audit` ve `kalkan unattended`, ajan işi için Claude Code (veya Codex) turları başlatır. Motor hedefi kopyalar, tarayıcıları ve SCA'yı çalıştırır, kapsamı planlar, ajanlara görev dağıtır, her ajan sonucunu kontrol eder ve kararı hesaplar.
+2. **Ajanlar.** `/kalkan` skill'i `kalkan run next` döngüsünü çalıştırır ve alt ajanlar başlatır. Bu ajanlar kaynağı okur ve tek bir sonuç dosyası yazar (kabuk yok, web yok, düzenleme yok): recon, hunter, verifier, reviewer, consolidator, polisher, critic, sca-reach, poc-builder ve translator. Her alt ajan tek bir prompt dosyası okur ve tek bir JSON sonucu yazar.
 3. **Karar.** Verifier her aday için üç soruyu yanıtlar: saldırgan kontrolü, yetki sınırı ve eksik koruma. Her yanıtın arkasındaki kaynak satırını alıntılar. Motor her alıntıyı dosyada ±2 satır içinde arar. Doğrulanmış tek bir çürütme adayı reddeder. Üç kanıtlanmış yanıt onu doğrular. Geri kalan her durum `needs_validation` olur.
 4. **Son inceleme.** `standard` ve `deep` profillerinde yeni bir reviewer, doğrulanan ve doğrulama bekleyen her son kaydı verifier'ın gerekçesini görmeden kaynakla karşılaştırır. Motor `verified`, `downgrade` veya `reject` kararını uygular. Bir kaydı hiçbir zaman güçlendirmez.
 5. **Aşamalar:** prep → deterministik tarayıcılar → SCA → recon → plan → hunt ⇄ critic → validate (verify, son inceleme, sonra birleştirme: consolidator aynı kök nedenli kayıtları gruplar, motor onları tek bir birincil bulgunun altında listeler. Türkçe bir çalıştırmada sonra polisher eksik Türkçe harfleri geri koyar. Motor bir alanı yalnızca başka hiçbir şey değişmediyse kabul eder) → poc → merge → report.
@@ -217,8 +217,8 @@ OWASP Juice Shop, DVWA ve test fixture'ı üzerinde deterministik kısmın bench
 
 - Denetim, hedefin `runs/<run-id>/target/` altındaki kopyası üzerinde çalışır. Hedefin ajan talimat dosyaları `.kalkan-neutralized` ekiyle yeniden adlandırılır. Örnekler: `CLAUDE.md`, `AGENTS.md`, `.claude/`, `.cursorrules`.
 - Alt ajanların yalnızca Read, Grep, Glob ve Write araçları var. Shell ve web erişimleri yok. Her prompt, hedefin talimat değil veri olduğunu söyler.
-- Tarayıcılar, hedefin kendi bastırma işaretlerini yok sayar. Örnekler: `# nosec`, `gitleaks:allow`, `checkov:skip` ([ADR-0003](docs/decisions/ADR-0003-target-suppressions.md)).
-- Tarayıcılar hedef kodu hiçbir zaman çalıştırmaz. PoC doğrulama sandbox'ı kontrollerini yalnızca hedefin kopyası üzerinde, ağsız bir konteynerde çalıştırır (ADR-0006).
+- Tarayıcılar varsayılan olarak hedefin kendi bastırma işaretlerini yok sayar. Örnekler: `# nosec`, `gitleaks:allow`, `checkov:skip` ([ADR-0003](docs/decisions/ADR-0003-target-suppressions.md)). `kalkan scan --honor-suppressions` bu işaretleri korur.
+- Tarayıcılar hedef kodu hiçbir zaman çalıştırmaz. PoC doğrulama sandbox'ı kontrollerini yalnızca hedefin kopyası üzerinde, ağsız konteynerlerde çalıştırır (ADR-0006, ADR-0008).
 
 ## Güvenlik güvenceleri
 
@@ -230,7 +230,7 @@ Ayrıntılar ve testler [docs/SECURITY.md](docs/SECURITY.md) dosyasında (İngil
 - Hedef bir git çalışma ağacıysa kalkan geçmişin özel bir kopyasını `runs/<run-id>/source/` klasörüne alır. Komut: `git clone --mirror --no-local`. Kopyanın orijinale bağlantısı kalmaz.
 - `gitleaks-history` ve `kingfisher-history` yalnızca bu kopyayı tarar. Hiçbir tarayıcı orijinal yolu almaz.
 - Runs klasörü hedefin içindeyse `run init` reddeder. `KALKAN_RUNS_DIR` değişkenine hedefin dışında bir klasör ver.
-- Test: tuzaklı bir repo kuruldu (fsmonitor, textconv, filter, hook). Her dosyanın hash'i, boyutu ve zamanı `run init`, `scan all` ve `sca match` öncesinde ve sonrasında aynı kaldı. Hiçbir tuzak çalışmadı.
+- Test: tuzaklı bir repo kuruldu (fsmonitor, textconv, filter, hook). Her dosyanın hash'i, boyutu ve zamanı `run init`, `scan all` ve `sca match` öncesinde ve sonrasında aynı kaldı. Hiçbir tuzak çalışmadı. Gerçek tarayıcılı adımlar `tools` testleridir: elle çalışırlar, CI onları atlar.
 
 **2. Ajanlar yalnızca kendi sonuç dosyalarına yazar.**
 
@@ -238,7 +238,7 @@ Ayrıntılar ve testler [docs/SECURITY.md](docs/SECURITY.md) dosyasında (İngil
 - Eklenti: PreToolUse hook'u (`kalkan.plugin_hook`) bir kalkan alt ajanının her çağrısına `allow` veya `deny` verir. Okuma yalnızca kendi run'ının `target/` ve `tasks/` klasörlerinde serbest. Tek istisna: Claude Code'un `tool-results` klasörüne kaydettiği, aynı oturumun araç çıktıları (yalnızca Read). Yazma yalnızca kendi görevinin `result.json` dosyasına serbest. Bash, Edit, WebFetch, WebSearch ve MCP araçları reddedilir.
 - Bir oturum kalkan denetimi yürütürken hook o oturumun ağ araçlarını da reddeder. Diğer oturumlara dokunmaz.
 
-**3. Senin Claude oturumunun Anthropic trafiği dışında hiçbir veri makineden çıkmaz.**
+**3. Senin Claude oturumunun Anthropic'e veya API sağlayıcına giden trafiği dışında hiçbir veri makineden çıkmaz.**
 
 - Varsayılan yerel mod: hiçbir tarayıcı ve SCA aracı ağı kullanmaz. OSV-Scanner `--offline` ile çalışır. Grype indirdiği veritabanını güncelleme yapmadan kullanır.
 - Kingfisher bulduğu sırları sağlayıcı servisine sormaz (`--no-validate`) ve güncelleme kontrolü yapmaz (`--no-update-check`). Bu iki bayrak `--online` ile de kapalı kalır. Sır değerleri kalkan dosyalarına yazılmaz.
@@ -248,16 +248,17 @@ Ayrıntılar ve testler [docs/SECURITY.md](docs/SECURITY.md) dosyasında (İngil
 - `kalkan sca update-db` veritabanlarını bir kez indirir: OSV, Grype, govulncheck'in Go veritabanı ve projeye gömülü JavaScript kütüphaneleri için RetireJS deposu. Yalnızca ekosistem adlarını ve arşiv isteklerini gönderir. Bootstrap ve eklenti kurulumu bu komutu çalıştırır.
 - Veritabanı eksikse `sca match` çevrimiçi sorgu yapmaz. Raporda bir veritabanı boşluğu gösterir.
 - `--online` bayrağı isteğe bağlıdır. Bu bayrak paket adlarını çevrimiçi servislere gönderir.
-- Test: araçlar, bağlantıları sayan yerel bir tuzak proxy ile çalıştı. Yerel modda sıfır bağlantı oldu.
+- `--allow-build-network` bayrağı isteğe bağlıdır ve varsayılan olarak kapalıdır. Bu bayrakla uygulama seviyesindeki PoC sandbox'ı, hedefin compose yığınının imajlarını ağ erişimiyle çeker ve derler. Çalışan yığın internete hiç çıkmaz. Bu bayrak olmadan kalkan denetim sırasında hiçbir imaj çekmez ve derlemez.
+- Test: araçlar, bağlantıları sayan yerel bir tuzak proxy ile çalıştı. Yerel modda sıfır bağlantı oldu. Bu bir `tools` testidir: elle çalışır, CI onu atlar.
 
-**Makineden ne çıkar:** Claude oturumunun Anthropic trafiği (ajanların okuduğu hedef kodu dahil), araç ve veritabanı indirmeleri (kurulumda), git URL hedefinin klonu, `kalkan sandbox pull` ile indirilen sandbox temel imajları ve `--online` seçeneği.
+**Makineden ne çıkar:** Claude oturumunun Anthropic'e veya API sağlayıcına giden trafiği (ajanların okuduğu hedef kodu dahil), araç ve veritabanı indirmeleri (kurulumda), git URL hedefinin klonu, `kalkan sandbox pull` ile indirilen sandbox temel imajları, isteğe bağlı `--online` bayrağı ve isteğe bağlı `--allow-build-network` bayrağı.
 
 **Kalan riskler:** Eklenti modunda ana oturum senin izin moduna uyar. `bypassPermissions` ile çalışırsan diğer çağrıların izin soruları kalkar. Hook'un `deny` kararı bu modda da geçerli (Claude Code 2.1.301 ile ölçüldü). Ağ komutu listesi bir sezgiseldir. Codex modunda alt ajanın shell'i var. Tam liste: [docs/SECURITY.md](docs/SECURITY.md#residual-risks).
 
 ## Sorun giderme
 
 - `kalkan doctor` sabit sürümlü her aracı kontrol eder. Go araç zinciri de bunlara dahildir. Eksik veya bozuk bir araç `fail` verir. O satır düzeltme komutunu yazar, örneğin `kalkan tools install go` veya `kalkan tools install --force gosec`. Docker motoru, git veya Claude CLI eksikse sonuç `warn` olur. Claude CLI'da oturum açık değilse sonuç yine `warn` olur (düzeltme: `claude auth login`). Doctor klasörün trust durumunu da gösterir. Manifestteki her araç kendi satırını alır. Bu yüzden yeni bir tarayıcı için doctor değişmez.
-- `kalkan tools install --all` her şeyi yeniden kurar. Sağlam araçlara dokunmaz. `kalkan tools verify` kurulu her dosyanın hash'ini yeniden hesaplar. Go'nun 15045 dosyası için bu, virüs tarayıcılı bir Windows makinesinde 8 dakika sürdü. `kalkan tools verify --quick`, doctor'ın kullandığı hızlı kontroldür.
+- `kalkan tools install --all` her şeyi yeniden kurar. Sağlam araçlara dokunmaz. `kalkan tools verify` kurulu her dosyanın hash'ini yeniden hesaplar. Go'nun 15045 dosyası için bu, virüs tarayıcılı bir Windows makinesinde 8 dakika sürdü (bir kez ölçüldü). `kalkan tools verify --quick`, doctor'ın kullandığı hızlı kontroldür.
 - `go.mod` dosyası 1.26.9'dan yeni bir Go isteyen bir hedef (örneğin `go 1.27`): kalkan Go'yu `GOTOOLCHAIN=local` ile çalıştırır. Bu yüzden gosec ve govulncheck o modülde başarısız olur. Durum dosyası nedenini yazar.
 - Windows'ta Opengrep, yolu 260 veya daha fazla karakter olan dosyaları atlar. Rapor uzun yol uyarısı verirse `KALKAN_RUNS_DIR` değişkenine kısa bir klasör ver (örneğin `C:\kr`). Sonra yeni bir denetim başlat.
 - Windows'ta poutine 1.1.6 ve Scorecard 5.5.0, GitHub Actions iş akışlarını görmez. Yerel modları yolları `/` ile karşılaştırır. Bu iş akışlarını orada zizmor ve actionlint kontrol eder. `scans/poutine.status.json` ve `scans/scorecard.status.json` atlanan dosyaları `platform_gap` altında listeler. poutine, Windows'ta GitLab CI ve Azure Pipelines dosyalarını okumaya devam eder.
@@ -270,7 +271,7 @@ Ayrıntılar ve testler [docs/SECURITY.md](docs/SECURITY.md) dosyasında (İngil
 ## Diğer belgeler
 
 - Mimari ve sözleşmeler: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/ENGINE-SPEC.md](docs/ENGINE-SPEC.md), [docs/PHASES.md](docs/PHASES.md).
-- [docker/README.md](docker/README.md): bütün araçları içeren konteyner imajı.
+- [docker/README.md](docker/README.md): bütün araçları içeren konteyner imajı (güncel araç seti için derlenmedi).
 - [docs/PLUGIN.md](docs/PLUGIN.md): Claude Code eklentisi (kurulum, veri klasörleri, izinler).
 - [docs/SECURITY.md](docs/SECURITY.md): güvenlik güvenceleri, makineden çıkan veriler, kalan riskler.
 - [docs/CODEX.md](docs/CODEX.md): OpenAI Codex CLI desteği.
@@ -279,7 +280,7 @@ Ayrıntılar ve testler [docs/SECURITY.md](docs/SECURITY.md) dosyasında (İngil
 
 ## Teşekkürler
 
-kalkan aşağıdaki projelerin emeği üzerine kurulu. Yazarlarına ve katkı verenlerine teşekkür ederiz. Kopyalanan dosyalar, sabitlenen commit'ler ve lisanslar [THIRD_PARTY.md](THIRD_PARTY.md) ve [NOTICE](NOTICE) dosyalarında. kalkan ayrıca 21 açık kaynak tarayıcı çalıştırır. Her birinin kendi lisansı var ([THIRD_PARTY.md](THIRD_PARTY.md#external-tools-installed-at-setup-time-not-part-of-this-repository)).
+kalkan aşağıdaki projelerin emeği üzerine kurulu. Yazarlarına ve katkı verenlerine teşekkür ederiz. Kopyalanan dosyalar, sabitlenen commit'ler ve lisanslar [THIRD_PARTY.md](THIRD_PARTY.md) ve [NOTICE](NOTICE) dosyalarında. kalkan ayrıca 21 açık kaynak araç çalıştırır: 20 tarayıcı ve yalnızca Helm chart'larını çizen helm. Her birinin kendi lisansı var ([THIRD_PARTY.md](THIRD_PARTY.md#external-tools-installed-at-setup-time-not-part-of-this-repository)).
 
 | Proje | Yazar | kalkan'ın kullandığı |
 |---|---|---|
@@ -311,4 +312,17 @@ Yalnız sana ait olan veya test etmek için yazılı izin aldığın kodu denetl
 
 ## Lisans
 
-kalkan'ın kodu MIT lisanslı ([LICENSE](LICENSE)). `third_party/` altındaki içerik, `rules/opengrep-packs/` içindeki kural paketleri ve farklı SPDX başlığı taşıyan dosyalar kendi upstream lisanslarını korur: MIT, Apache-2.0, LGPL-2.1, LGPL-3.0, GPL-3.0 (Minded Security kuralları) ve AGPL-3.0 (Trail of Bits kuralları). `KALKAN_RULE_PACKS=osi` AGPL paketini kapatır. Ayrıntı: [NOTICE](NOTICE), [THIRD_PARTY.md](THIRD_PARTY.md).
+kalkan'ın kodu MIT lisanslı ([LICENSE](LICENSE)). `third_party/` altındaki içerik, `rules/opengrep-packs/` içindeki kural paketleri ve farklı SPDX başlığı taşıyan dosyalar kendi upstream lisanslarını korur: MIT, Apache-2.0, LGPL-2.1, LGPL-3.0, GPL-3.0 (Minded Security kuralları) ve AGPL-3.0 (Trail of Bits kuralları).
+
+Eklentinin motor wheel'i seçilmiş Opengrep kural paketlerini içerir. Her paket kendi lisansını korur:
+
+| Lisans | Kural paketleri |
+|---|---|
+| MIT | 0xdea, elttam, Aikido, semgrep-codeql, GitLab sast-rules'un MIT bölümü |
+| LGPL-3.0-only | GitLab sast-rules'un `rules/lgpl` bölümü |
+| LGPL-2.1-only | Atlassian |
+| LGPL-3.0-or-later | njsscan, mobsfscan |
+| GPL-3.0-only | Minded Security |
+| AGPL-3.0-only | Trail of Bits |
+
+Wheel, her paketin ve diğer kopyalanan projelerin lisans metnini `.dist-info/licenses/third_party/` klasöründe taşır. `KALKAN_RULE_PACKS=osi` AGPL paketini kapatır. Ayrıntı: [NOTICE](NOTICE), [THIRD_PARTY.md](THIRD_PARTY.md).

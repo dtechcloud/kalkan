@@ -8,7 +8,7 @@ English | [Türkçe](ADR-0007-permissive-rule-packs.tr.md)
 
 ## Context
 
-Version 1.15.0 removed the opengrep-rules pack (461 kept rules). Its license is LGPL-2.1 with the Commons Clause, and the Commons Clause forbids paid consulting and support services that take their value from the rules. On the vulnapp fixture, 17 planted items lost their only pack result. kalkan's own rules still found all 17.
+On 2026-11-06, kalkan removed the opengrep-rules pack (461 kept rules). Its license is LGPL-2.1 with the Commons Clause, and the Commons Clause forbids paid consulting and support services that take their value from the rules. On the vulnapp fixture, 17 planted items lost their only pack result. kalkan's own rules still found all 17.
 
 The project owner asked for replacement rules with a free license: redistribution in an MIT repository and commercial use, paid consulting included, must be allowed. A survey on 2026-11-07 read the LICENSE of every candidate at its repository. No single free pack covers as many languages as the removed pack.
 
@@ -37,7 +37,7 @@ The project owner asked for replacement rules with a free license: redistributio
 ## Consequences
 
 - The packs hold 733 kept rules in 55 bundles (505 before). With kalkan's own 106 rules, Opengrep runs 839 rules.
-- On vulnapp, 34 planted items have a pack result (18 before). 8 of the 17 items that 1.15.0 lost have a pack result again, all through semgrep-codeql. Nothing touches a secure twin, and the results outside the planted items stay the same 3. The adapter run takes 17.6 s (the three earlier packs alone: 14.7 s).
+- On vulnapp, 34 planted items have a pack result (18 before). 8 of the 17 items that the removal lost have a pack result again, all through semgrep-codeql. Nothing touches a secure twin, and the results outside the planted items stay the same 3. The adapter run takes 17.6 s (the three earlier packs alone: 14.7 s).
 - The semgrep-codeql subset is chosen on vulnapp, so its result on vulnapp is no independent measurement. A benchmark on other targets must confirm its value.
 - Gaps that stay open: Python SSRF, JavaScript SSTI and XXE, Go XSS, Java XXE, PHP SQL injection and command injection, Ruby command injection and open redirect, and Solidity (no free Solidity pack was found).
 - `curation.json` and `scripts/build_opengrep_packs.py` gain `keep_only` and the drop kind `unmeasured`.

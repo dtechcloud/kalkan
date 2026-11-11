@@ -1,8 +1,8 @@
 # ADR-0004: PoC sandbox v1 kapsamı dışında
 [English](ADR-0004-sandbox-v2.md) | Türkçe
 
-- Durum: ADR-0006 ile güncellendi (2026-10-29). Sandbox 1.7.0'dan beri birim düzeyinde etkin, uygulama düzeyi ertelendi; aşağıdaki kapsam dışı
-  kararı yalnızca v1 için geçerliydi.
+- Durum: ADR-0006 (2026-10-29) ve ADR-0008 (2026-11-11) ile güncellendi. Sandbox birim düzeyinde ve uygulama düzeyinde etkin. Aşağıdaki kapsam dışı
+  kararı yalnızca v1 için geçerliydi. Burada v1 ve v2, ilk geliştirme planının aşamalarıdır, sürüm numarası değildir.
 - Tarih: 2026-10-16
 
 ## Bağlam

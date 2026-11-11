@@ -3,7 +3,7 @@ English | [Türkçe](ADR-0006-sandbox-active.tr.md)
 
 - Status: accepted
 - Date: 2026-10-29
-- Related: ADR-0004 (this decision updates it)
+- Related: ADR-0004 (this decision updates it). ADR-0008 (2026-11-11) replaces the app-level parts: the app level is active, and it uses the network only with the opt-in `--allow-build-network`.
 
 ## Context
 

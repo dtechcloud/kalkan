@@ -1,8 +1,8 @@
 # ADR-0004: The PoC sandbox is out of the v1 scope
 English | [Türkçe](ADR-0004-sandbox-v2.tr.md)
 
-- Status: updated by ADR-0006 (2026-10-29). The sandbox is active at the unit level since 1.7.0, and the app level is deferred. The out-of-scope
-  decision below applied only to v1.
+- Status: updated by ADR-0006 (2026-10-29) and ADR-0008 (2026-11-11). The sandbox is active at the unit level and at the app level. The out-of-scope
+  decision below applied only to v1. Here v1 and v2 are stages of the first development plan, not release numbers.
 - Date: 2026-10-16
 
 ## Context

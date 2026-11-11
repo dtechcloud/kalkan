@@ -43,15 +43,15 @@
         <div class="head">
           <p class="kicker"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></p>
           <h1 class="page-title" id="h-tools"><span class="tr" lang="tr">22 araç. Tek komut. Tarama sırasında ağ yok.</span><span class="en" lang="en">22 tools. One command. No network during the scan.</span></h1>
-          <p class="lede tr" lang="tr">22 aracın 21'i tarayıcıdır, biri Go 1.26.9 araç zinciridir. Her araç sabit bir sürümde gelir ve kurulumda SHA-256 ile kontrol edilir. Eksik bir aracı kalkan kendisi kurar, Go dahil. Tarayıcılar hedefin kendi bastırma işaretlerini (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> ve diğerleri) yok sayar.</p>
-          <p class="lede en" lang="en">21 of the 22 tools are scanners, and one is the Go 1.26.9 toolchain. Every tool comes at a pinned version, and the setup checks it with SHA-256. kalkan installs a missing tool itself, Go included. The scanners ignore the target's own suppression markers (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> and others).</p>
+          <p class="lede tr" lang="tr">22 aracın 21'i taramada çalışır: 20 tarayıcı ve diğer tarayıcılar için Helm chart'larını render eden helm. 22. araç Go 1.26.9 araç zinciridir. Her araç sabit bir sürümde gelir. Kurulum, indirilen 15 programı ve Go araç zincirini sabit bir SHA-256 değeriyle kontrol eder. pip, 4 Python aracını (checkov, bandit, flawfinder, gixy) tam sürümüyle kurar, hash kontrolü yapmaz. Go checksum veritabanı, <code>go install</code> ile derlenen 2 aracı (govulncheck, poutine) kontrol eder. Eksik bir aracı kalkan kendisi kurar, Go dahil. Tarayıcılar varsayılan olarak hedefin kendi bastırma işaretlerini (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> ve diğerleri) yok sayar. <code>kalkan scan --honor-suppressions</code> bu işaretleri dikkate alır.</p>
+          <p class="lede en" lang="en">21 of the 22 tools run in the scan: 20 scanners, and helm, which renders Helm charts for the other scanners. The 22nd is the Go 1.26.9 toolchain. Every tool comes at a pinned version. Setup checks the 15 downloaded programs and the Go toolchain against a pinned SHA-256. pip installs the 4 Python tools (checkov, bandit, flawfinder, gixy) by exact version, without a hash check. The Go checksum database checks the 2 tools that <code>go install</code> builds (govulncheck, poutine). kalkan installs a missing tool itself, Go included. By default, the scanners ignore the target's own suppression markers (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> and others). <code>kalkan scan --honor-suppressions</code> keeps them.</p>
         </div>
       </div>
       <div class="grid-lines tools">
         <div class="group">
           <div class="group-h"><h3><span class="tr" lang="tr">Kod kalıpları</span><span class="en" lang="en">Code patterns</span></h3><span>5</span></div>
           <ul class="tl">
-            <li><b>Opengrep</b><em>1.30.1</em><small><span class="tr" lang="tr">106 kalkan kuralı + 10 açık lisanslı paketten 733 kural (GitLab, Trail of Bits, 0xdea, elttam, njsscan, mobsfscan, Atlassian, Minded Security, Aikido, semgrep-codeql)</span><span class="en" lang="en">106 own rules + 733 rules from 10 openly licensed packs (GitLab, Trail of Bits, 0xdea, elttam, njsscan, mobsfscan, Atlassian, Minded Security, Aikido, semgrep-codeql)</span></small></li>
+            <li><b>Opengrep</b><em>1.30.1</em><small><span class="tr" lang="tr">106 kalkan kuralı + 10 açık lisanslı paketten 733 kural (GitLab, Trail of Bits, 0xdea, elttam, njsscan, mobsfscan, Atlassian, Minded Security, Aikido, semgrep-codeql). Her paket kendi lisansını korur.</span><span class="en" lang="en">106 own rules + 733 rules from 10 openly licensed packs (GitLab, Trail of Bits, 0xdea, elttam, njsscan, mobsfscan, Atlassian, Minded Security, Aikido, semgrep-codeql). Each pack keeps its own license.</span></small></li>
             <li><b>Bandit</b><em>1.9.4</em><small>Python</small></li>
             <li><b>gosec</b><em>2.29.0</em><small>Go</small></li>
             <li><b>ShellCheck</b><em>0.11.0</em><small><span class="tr" lang="tr">Kabuk betikleri</span><span class="en" lang="en">Shell scripts</span></small></li>
@@ -104,6 +104,7 @@
       </div>
       <div class="pad" style="padding-top: 1.5rem; padding-bottom: 2.5rem">
         <p class="note" style="margin:0"><span class="tr" lang="tr">Dil paketleri: C#, Go, Java, JavaScript, PHP, Python, Ruby, Rust, Solidity. Projeye kopyalanmış JavaScript kütüphanelerini RetireJS verisi, bilinen zararlı paket sürümlerini <code>malicious-dependency</code> kuralı bulur.</span><span class="en" lang="en">Language packs: C#, Go, Java, JavaScript, PHP, Python, Ruby, Rust, Solidity. RetireJS data finds JavaScript libraries copied into the project, and the <code>malicious-dependency</code> rule finds known malicious package versions.</span></p>
+        <p class="note" style="margin:0.75rem 0 0"><span class="tr" lang="tr">Lisanslar: kalkan'ın kendi kodu MIT lisanslı. Paketle gelen Opengrep kural paketleri kendi lisanslarını korur: MIT (0xdea, elttam, Aikido, semgrep-codeql ve GitLab'ın MIT kısmı), LGPL-3.0-only (GitLab'ın <code>rules/lgpl</code> kısmı), LGPL-2.1-only (Atlassian), LGPL-3.0-or-later (njsscan, mobsfscan), GPL-3.0-only (Minded Security) ve AGPL-3.0-only (Trail of Bits). Motor wheel'i her lisans metnini <code>.dist-info/licenses/third_party/</code> klasöründe taşır. <code>KALKAN_RULE_PACKS=osi</code> AGPL paketini kapatır.</span><span class="en" lang="en">Licenses: kalkan's own code is MIT. The bundled Opengrep rule packs keep their own licenses: MIT (0xdea, elttam, Aikido, semgrep-codeql and the MIT part of GitLab), LGPL-3.0-only (the <code>rules/lgpl</code> part of GitLab), LGPL-2.1-only (Atlassian), LGPL-3.0-or-later (njsscan, mobsfscan), GPL-3.0-only (Minded Security) and AGPL-3.0-only (Trail of Bits). The engine wheel carries each license text in its <code>.dist-info/licenses/third_party/</code> folder. <code>KALKAN_RULE_PACKS=osi</code> turns the AGPL pack off.</span></p>
       </div>
     </section>
   </div>
@@ -138,7 +139,7 @@
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

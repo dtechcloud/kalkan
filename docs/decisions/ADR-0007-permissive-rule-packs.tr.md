@@ -8,7 +8,7 @@
 
 ## Bağlam
 
-Sürüm 1.15.0, opengrep-rules paketini çıkardı (tutulan 461 kural). Paketin lisansı Commons Clause eklenmiş LGPL-2.1. Commons Clause, değerini bu kurallardan alan ücretli danışmanlık ve destek hizmetlerini yasaklıyor. vulnapp fixture'ında 17 yerleştirilmiş açık, tek paket sonucunu kaybetti. kalkan'ın kendi kuralları 17'sini de bulmaya devam etti.
+kalkan, 2026-11-06'da opengrep-rules paketini çıkardı (tutulan 461 kural). Paketin lisansı Commons Clause eklenmiş LGPL-2.1. Commons Clause, değerini bu kurallardan alan ücretli danışmanlık ve destek hizmetlerini yasaklıyor. vulnapp fixture'ında 17 yerleştirilmiş açık, tek paket sonucunu kaybetti. kalkan'ın kendi kuralları 17'sini de bulmaya devam etti.
 
 Proje sahibi serbest lisanslı yedek kurallar istedi: bir MIT reposunda yeniden dağıtıma ve ücretli danışmanlık dahil ticari kullanıma izin verilmeli. 2026-11-07'deki tarama, her adayın LICENSE dosyasını kendi reposunda okudu. Hiçbir serbest paket, çıkarılan paket kadar dili tek başına kapsamıyor.
 
@@ -37,7 +37,7 @@ Proje sahibi serbest lisanslı yedek kurallar istedi: bir MIT reposunda yeniden 
 ## Sonuçlar
 
 - Paketler 55 bundle'da 733 kural tutar (önce 505). kalkan'ın kendi 106 kuralıyla Opengrep 839 kural çalıştırır.
-- vulnapp'te 34 yerleştirilmiş açığın paket sonucu var (önce 18). 1.15.0'ın kaybettiği 17 açığın 8'i yine paket sonucu alır, hepsi semgrep-codeql üzerinden. Hiçbir sonuç güvenli bir ikize değmez ve yerleştirilmiş açıkların dışındaki sonuçlar aynı 3 sonuç olarak kalır. Adaptör 17,6 saniye sürer (önceki üç paket tek başına: 14,7 saniye).
+- vulnapp'te 34 yerleştirilmiş açığın paket sonucu var (önce 18). Paket çıkınca kaybedilen 17 açığın 8'i yine paket sonucu alır, hepsi semgrep-codeql üzerinden. Hiçbir sonuç güvenli bir ikize değmez ve yerleştirilmiş açıkların dışındaki sonuçlar aynı 3 sonuç olarak kalır. Adaptör 17,6 saniye sürer (önceki üç paket tek başına: 14,7 saniye).
 - semgrep-codeql alt kümesi vulnapp üzerinde seçildi. Bu yüzden vulnapp'teki sonucu bağımsız bir ölçüm değil. Değerini başka hedeflerde bir benchmark doğrulamalı.
 - Açık kalan boşluklar: Python SSRF, JavaScript SSTI ve XXE, Go XSS, Java XXE, PHP SQL injection ve komut enjeksiyonu, Ruby komut enjeksiyonu ve open redirect, ayrıca Solidity (serbest bir Solidity paketi bulunamadı).
 - `curation.json` ve `scripts/build_opengrep_packs.py`, `keep_only` anahtarını ve `unmeasured` çıkarma türünü kazanır.

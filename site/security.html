@@ -63,14 +63,14 @@
         <div class="promise">
           <span class="big">03</span>
           <h3><span class="tr" lang="tr">Veri makinede kalır.</span><span class="en" lang="en">Data stays on the machine.</span></h3>
-          <p class="tr" lang="tr">Tarayıcılar ve SCA varsayılan olarak ağsız çalışır. Dışarı çıkan tek trafik, senin Claude oturumunun Anthropic'e trafiği. Proxy tuzağı testinde gerçek araçlar sıfır bağlantı açtı.</p>
-          <p class="en" lang="en">The scanners and SCA run without network by default. The only traffic that leaves is your own Claude session to Anthropic. In the proxy trap test, the real tools opened zero connections.</p>
+          <p class="tr" lang="tr">Tarayıcılar ve SCA varsayılan olarak ağsız çalışır. Dışarı çıkan tek trafik kendi Claude oturumundur: Anthropic'e veya API sağlayıcına gider. Hedef bir git URL'si ise kalkan onu önce klonlar. <code>--allow-build-network</code> ile (isteğe bağlı, varsayılan kapalı) uygulama seviyesindeki PoC sandbox'ı, hedefin compose yığınının imajlarını ağ erişimiyle çeker ve derler. Çalışan yığın internete hiç çıkmaz. Proxy tuzağı testinde gerçek araçlar sıfır bağlantı açtı.</p>
+          <p class="en" lang="en">The scanners and SCA run without network by default. The only traffic that leaves is your own Claude session, to Anthropic or to your API provider. A git URL target is cloned first. With <code>--allow-build-network</code> (opt-in, off by default), the app-level PoC sandbox pulls and builds the images of the target's compose stack with network access. The running stack never gets internet. In the proxy trap test, the real tools opened zero connections.</p>
         </div>
       </div>
       <div class="pad" style="padding-top: 0">
         <ul class="also">
           <li><span class="tr" lang="tr">Hedefin <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.claude/</code>, <code>.cursorrules</code> gibi talimat dosyaları <code>.kalkan-neutralized</code> adıyla etkisiz kalır.</span><span class="en" lang="en">Instruction files of the target (<code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.claude/</code>, <code>.cursorrules</code> and others) get the suffix <code>.kalkan-neutralized</code>.</span></li>
-          <li><span class="tr" lang="tr">Her ajan istemi hedefin talimat değil veri olduğunu söyler. Canlı testte hedefteki saldırgan yorumu ajan rapor etti, uygulamadı.</span><span class="en" lang="en">Every agent prompt says that the target is data, not instructions. In a live test, the agent reported a hostile comment in the target and did not obey it.</span></li>
+          <li><span class="tr" lang="tr">Her ajan istemi hedefin talimat değil veri olduğunu söyler. Ajanlar hedefteki talimatlara asla uymaz. Motor bir iddiayı yalnız dosyada bulduğu alıntılarla kabul eder. Test uygulaması bu savunmanın test tasarımını taşır (<code>tests/fixtures/vulnapp/INJECTION-NOTE.md</code>): test, kopyaya saldırgan bir <code>CLAUDE.md</code> yazar ve motorun onu etkisiz kılmasını bekler.</span><span class="en" lang="en">Every agent prompt says that the target is data, not instructions. The agents never follow instructions in it. The engine accepts a claim only with quotes that it finds in the file. The test app carries the test design for this defense (<code>tests/fixtures/vulnapp/INJECTION-NOTE.md</code>): a test writes a hostile <code>CLAUDE.md</code> into a copy, and the engine must neutralize it.</span></li>
           <li><span class="tr" lang="tr">Tarayıcılar hedef kodu asla çalıştırmaz. Docker varsa PoC sandbox hedef kodu yalnız kopyadan, ağsız bir konteynerde çalıştırır.</span><span class="en" lang="en">The scanners never run target code. With Docker, the PoC sandbox runs target code only from the copy, in a container without network.</span></li>
           <li><span class="tr" lang="tr">Kingfisher bulduğu bir sırrı sağlayıcısında asla denemez. Hiçbir sır değeri bir kalkan dosyasına yazılmaz.</span><span class="en" lang="en">Kingfisher never tries a found secret at its provider. No secret value reaches a kalkan file.</span></li>
         </ul>
@@ -108,7 +108,7 @@
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

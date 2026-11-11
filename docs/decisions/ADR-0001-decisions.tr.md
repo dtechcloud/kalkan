@@ -1,7 +1,7 @@
 # ADR-0001: Kalkan'ın temel kararları
 [English](ADR-0001-decisions.md) | Türkçe
 
-- **Durum:** Kabul edildi. Sonraki kararlar bazı satırları değiştirdi: faz kapıları ADR-0002, "PoC" satırı ADR-0004 ve ADR-0006 (1.7.0'dan beri birim düzeyi etkin, uygulama düzeyi ertelendi), "Ek tarayıcılar" satırı ADR-0005.
+- **Durum:** Kabul edildi. Sonraki kararlar bazı satırları değiştirdi: faz kapıları ADR-0002, "PoC" satırı ADR-0004, ADR-0006 ve ADR-0008 (birim düzeyi ve uygulama düzeyi etkin), "Ek tarayıcılar" satırı ADR-0005.
 - **Tarih:** 2026-10-15
 - **Karar veren:** proje sahibi
 - **Kaynaklar:** beş açık kaynak AI güvenlik aracının karşılaştırmalı analizi (aşağıdaki bağlama bak)

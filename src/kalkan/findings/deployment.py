@@ -7,9 +7,9 @@ production, and kalkan cannot tell which from the source. The user names the liv
 with ``run init --live <path>`` (or ``run set --live`` after the audit), and the report then
 separates a production risk from a risk that exists only in an unused template.
 
-Application code can be outside production too: a plugin that only one deployment loads, for
-example a Docker Compose provisioner when production runs on Kubernetes. The user names such
-code with ``run init --not-live <path>`` (or ``run set --not-live``).
+Application code can be outside production too: for example a plugin folder that only another
+product loads. The user names such code with ``run init --not-live <path>`` (or ``run set
+--not-live``).
 
 The rule is conservative:
 

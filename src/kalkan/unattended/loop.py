@@ -168,7 +168,7 @@ def usd_arg(text: str) -> float:
 
 
 def profile_arg(value: str) -> str:
-    """The argparse type of ``--profile``: an accepted name (also a name before 1.6.0, such as
+    """The argparse type of ``--profile``: an accepted name (also an older name, such as
     ``derin``), turned into its canonical name."""
     try:
         return budget.canonical_profile(value)

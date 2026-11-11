@@ -56,8 +56,8 @@
           </div>
           <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
           <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
-          <p class="tr" lang="tr">İlk kurulum 5-15 dakika sürer. Aynı satır kalkan'ı günceller. Önce komutları görmek için <code>| sh</code> yerine <code>| sh -s -- --dry-run</code> yaz. PowerShell'de son parantezden sonra <code>-DryRun</code> ekle.</p>
-          <p class="en" lang="en">The first install takes 5 to 15 minutes. The same line updates kalkan. To see the commands first, write <code>| sh -s -- --dry-run</code> in place of <code>| sh</code>. In PowerShell, add <code>-DryRun</code> after the last parenthesis.</p>
+          <p class="tr" lang="tr">İlk kurulum 5-15 dakika sürer (bir Windows 11 makinesinde bir kez ölçüldü). Aynı satır kalkan'ı günceller. Önce komutları görmek için <code>| sh</code> yerine <code>| sh -s -- --dry-run</code> yaz. PowerShell'de son parantezden sonra <code>-DryRun</code> ekle.</p>
+          <p class="en" lang="en">The first install takes 5 to 15 minutes (measured once on one Windows 11 machine). The same line updates kalkan. To see the commands first, write <code>| sh -s -- --dry-run</code> in place of <code>| sh</code>. In PowerShell, add <code>-DryRun</code> after the last parenthesis.</p>
         </div>
         <div class="use">
           <div class="use-h"><span class="n">2</span><h3><span class="tr" lang="tr">Denetle</span><span class="en" lang="en">Audit</span></h3></div>
@@ -83,7 +83,7 @@
             <tbody>
               <tr><td><span class="tr" lang="tr">Yerel klasörü denetle (standard profili)</span><span class="en" lang="en">Audit a local folder (standard profile)</span></td><td><code>kalkan-audit C:/code/shop</code></td></tr>
               <tr><td><span class="tr" lang="tr">İlk bakış veya derin denetim</span><span class="en" lang="en">A first look, or a deep audit</span></td><td><code>--profile fast</code> · <code>--profile deep</code></td></tr>
-              <tr><td><span class="tr" lang="tr">Yalnız tarayıcılar, SCA ve rapor; Claude Code olmadan (CI)</span><span class="en" lang="en">Scanners, SCA and the report only, without Claude Code (CI)</span></td><td><code>--tools-only</code></td></tr>
+              <tr><td><span class="tr" lang="tr">Yalnız tarayıcılar, SCA ve rapor, Claude Code olmadan (CI)</span><span class="en" lang="en">Scanners, SCA and the report only, without Claude Code (CI)</span></td><td><code>--tools-only</code></td></tr>
               <tr><td><span class="tr" lang="tr">Sonda yönetici özetini aç</span><span class="en" lang="en">Open the executive summary at the end</span></td><td><code>--open</code></td></tr>
               <tr><td><span class="tr" lang="tr">Eksik araç ve veritabanını sormadan kur</span><span class="en" lang="en">Install missing tools and databases without a question</span></td><td><code>--yes</code></td></tr>
               <tr><td><span class="tr" lang="tr">İki denetim aynı anda: yan denetim</span><span class="en" lang="en">Two audits at once: the side audit</span></td><td><code>--no-latest</code></td></tr>
@@ -106,6 +106,7 @@
             <h3><span class="tr" lang="tr">Çıkış kodları</span><span class="en" lang="en">Exit codes</span></h3>
             <div><b>0</b><span class="tr" lang="tr">Denetim bitti.</span><span class="en" lang="en">The audit is done.</span></div>
             <div><b>1</b><span class="tr" lang="tr">Eksik veya durdu. Mesaj devam komutunu verir.</span><span class="en" lang="en">Incomplete or stopped. The message names the resume command.</span></div>
+            <div><b>2</b><span class="tr" lang="tr">Kullanım hatası, örneğin bilinmeyen bir seçenek.</span><span class="en" lang="en">A usage error, for example an unknown option.</span></div>
             <div><b>5</b><span class="tr" lang="tr">Kurulum gerekli. Mesaj çözümü verir.</span><span class="en" lang="en">Setup needed. The message names the fix.</span></div>
           </div>
         </div>
@@ -143,7 +144,7 @@
     </div>
     <div class="legal">
       <span>© 2026 kalkan · MIT</span>
-      <span><span class="tr" lang="tr">Opengrep, Trivy ve diğer araçlar kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy and the other tools come with their own licenses. Product names belong to their owners.</span></span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
     </div>
   </div>
 </footer>

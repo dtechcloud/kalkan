@@ -152,9 +152,10 @@ CONFIRMED_FIELDS: Final = (
 BLOCKER_CONFIRMED_FIELDS_MISSING: Final = "confirmed_fields_missing"
 BLOCKER_SANDBOX_INFEASIBLE: Final = "sandbox_infeasible"
 BLOCKER_SANDBOX_UNAVAILABLE: Final = "sandbox_unavailable"
-#: The PoC scope statement of runs before 1.7.0 (ADR-0004, replaced by ADR-0006): those runs
-#: wrote it as the ``observed_result`` of each skipped PoC. ``i18n.poc_observed`` still matches
-#: this exact text, so keep the value. A run of 1.7.0 or later writes ``sandbox_unavailable``.
+#: The PoC scope statement of pre-release runs without a sandbox (ADR-0004, replaced by
+#: ADR-0006): those runs wrote it as the ``observed_result`` of each skipped PoC.
+#: ``i18n.poc_observed`` matches this exact text, so keep the value. The engine never writes it:
+#: a skipped PoC gets ``sandbox_unavailable``. The match depends on the text, not on a version.
 POC_OUT_OF_SCOPE: Final = (
     "PoC sandbox is not part of this version (ADR-0004); findings rest on engine-verified "
     "static evidence and the final review"

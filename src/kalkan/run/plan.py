@@ -15,8 +15,8 @@ Unit levels (:data:`LEVELS`, fine to coarse):
 - ``subsystem``, ``folder`` and ``all``: one unit per (group, class), where the group is the
   subsystem group, the folder of the file (:func:`folder_of`) or :data:`ALL_GROUP`. Surface
   ``<group>#all-entry-surfaces``. ``fast`` uses the fixed subsystem identity
-  ``profile/quick/all-in-scope-subsystems`` (Cloudflare rule; the identity keeps the profile
-  name before 1.6.0) and the boundary ``profile/quick/all-trust-boundaries``; ``standard`` and
+  ``profile/quick/all-in-scope-subsystems`` (Cloudflare rule; the identity keeps the older
+  profile name ``quick``) and the boundary ``profile/quick/all-trust-boundaries``; ``standard`` and
   ``deep`` use the boundary ``<group>#all-trust-boundaries`` and the group as subsystem.
 
 ``standard`` and ``deep`` start at ``surface``, ``fast`` at ``subsystem``. The planner takes the

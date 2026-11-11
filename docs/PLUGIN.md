@@ -4,10 +4,10 @@ The plugin lets you run a kalkan audit from any folder, in the Claude Code CLI o
 
 ## Requirements
 
-- Claude Code 2.1 or later (tested with 2.1.301), signed in.
+- Claude Code 2.1 or later (2.1.217 or later for `--max-usd`, tested with 2.1.301), signed in.
 - Python 3.11 or later (`py -3`, `python3` or `python` on `PATH`).
 - git. On Windows: Git for Windows. The skill runs the engine through the Bash tool (Git Bash), and the permission hook runs in Git Bash.
-- Network for the first setup: the pinned scanners and the local vulnerability databases (about 290 MB of OSV databases and the Grype database, 3.3 GB on disk on 2026-10-16). On Windows the release archives of the scanners hold about 530 MB (the sizes in `src/kalkan/tools/manifest.json`). pip gets Checkov, Bandit, flawfinder and gixy from PyPI, and Go gets the modules of govulncheck and poutine. Every release archive is checked against its pinned SHA-256 (docs/SECURITY.md names the exceptions). After the setup, an audit uses no network except your Claude session (docs/SECURITY.md).
+- Network for the first setup: the pinned scanners and the local vulnerability databases (about 290 MB of OSV databases and the Grype database, 3.67 GB on disk on 2026-10-29, measured once on one Windows 11 machine). On Windows the release archives of the scanners hold about 530 MB (the sizes in `src/kalkan/tools/manifest.json`). pip gets Checkov, Bandit, flawfinder and gixy from PyPI, and Go gets the modules of govulncheck and poutine. The setup checks the 15 downloaded programs and the Go toolchain against a pinned SHA-256. pip installs the 4 Python tools by exact version, without a hash check. The Go checksum database checks the 2 tools that `go install` builds (docs/SECURITY.md). After the setup, an audit uses no network except your Claude session, the clone of a git URL target and the opt-in `--allow-build-network` (docs/SECURITY.md).
 - Optional: Docker (the PoC verification sandbox). You do not need Go: the setup installs Go 1.26.9.
 
 ## Install
@@ -89,7 +89,7 @@ The first `/kalkan` runs the setup (step 1 below). The skill tells you so, becau
 4. It runs `kalkan doctor`.
 5. It records the wheel hash. After a plugin update the next `/kalkan` installs the new engine.
 
-When the setup fails, the skill shows the error and the command. You can run the same command in a terminal (the path of an install from GitHub; `<version>` is the plugin version, for example `1.7.3`):
+When the setup fails, the skill shows the error and the command. You can run the same command in a terminal (the path of an install from GitHub; `<version>` is the plugin version, for example `1.0.0`):
 
 ```sh
 sh ~/.claude/plugins/cache/kalkan/kalkan/<version>/bin/kalkan-setup ~/.claude/plugins/data/kalkan-kalkan
@@ -107,7 +107,7 @@ Add `--force` to repeat every step.
 | PowerShell | `& "$HOME\.claude\plugins\data\kalkan-kalkan\bin\kalkan-audit.cmd" <target>` |
 | cmd | `"%USERPROFILE%\.claude\plugins\data\kalkan-kalkan\bin\kalkan-audit.cmd" <target>` |
 
-- **Options:** `--profile fast|standard|deep` (default `standard`), `--tools-only`, `--open`, `--yes`, `--no-latest`, `--max-hours N` (default 24), `--json`. `devam [<run-id>]` in place of the target resumes a run (`devam` alone: the newest run). The run keeps its mode and profile.
+- **Options:** `--profile fast|standard|deep` (default `standard`), `--tools-only`, `--open`, `--yes`, `--no-latest`, `--lang en|tr` (default `en`), `--allow-build-network`, `--live PATH`, `--not-live PATH` (both repeatable), `--max-hours N` (default 24), `--max-usd N`, `--json`. `kalkan audit --help` explains each one. `devam [<run-id>]` in place of the target resumes a run (`devam` alone: the newest run). The run keeps its mode and profile.
 - **Setup check.** The command runs the doctor checks that the audit needs: every pinned tool, the vulnerability databases, and in agent mode the Claude Code CLI and its login. A missing tool or database is installed only with `--yes`, or after you answer `y` in a terminal (`kalkan tools install --all`, `kalkan sca update-db`). Otherwise the command prints the two fix commands with the engine path and stops with exit code 5. A missing or signed-out Claude Code also stops agent mode with exit code 5 and names `--tools-only` as the way without agents.
 - **Run.** The command creates the run itself (`~/kalkan-runs/<run-id>`) and prints its ID. Then it runs the scanners and SCA in its own process, one line per step, so no Claude Code round spends time or usage on them.
 - **Agents.** Then the unattended runner takes over, bound to the run ID: the rounds `claude -p "/kalkan:kalkan devam <run-id> --headless"` run in `~/kalkan-runs` as described under [Unattended runs](#unattended-runs). A watcher prints the phase changes and the task counts. A usage limit prints its reset time. The log goes to `~/kalkan-runs/unattended-<UTC time>.log`.
@@ -132,12 +132,12 @@ Add `--force` to repeat every step.
 3. Resume after a stop: write `devam <run-id>` in place of the target and the profile. The stop message names this command. `devam` alone resumes the newest run.
 
 - **Stable path.** The plugin folder has the version in its path (`.../cache/kalkan/kalkan/<version>/`). So the setup copies `bin/kalkan-unattended` and `bin/kalkan-audit` (sh) and their `.cmd` files (Windows) to `bin/` in the plugin data folder, and refreshes the copies at every `/kalkan`. Each copy finds the venv in its parent folder. The copy in the plugin folder uses `CLAUDE_PLUGIN_DATA` instead.
-- **Options.** The launcher passes all arguments to `kalkan unattended`: `--run RUN_ID` (with `devam`, the same as `devam RUN_ID`), `--profile`, `--no-latest`, `--max-hours N` (default 24), `--round-hours N` (default 6), `--log-dir DIR`, `--dry-run`, `--json`. `--dry-run` prints the `run init` command and the `claude -p` command line and starts nothing. A relative target path counts from the current folder of the terminal. `--host codex` needs a checkout (docs/CODEX.md).
+- **Options.** The launcher passes all arguments to `kalkan unattended`: `--run RUN_ID` (with `devam`, the same as `devam RUN_ID`), `--profile`, `--no-latest`, `--lang en|tr`, `--max-hours N` (default 24), `--max-usd N`, `--round-hours N` (default 6), `--host claude|codex`, `--log-dir DIR`, `--dry-run`, `--json`. `--dry-run` prints the `run init` command and the `claude -p` command line and starts nothing. A relative target path counts from the current folder of the terminal. `--host codex` needs a checkout (docs/CODEX.md).
 - **Run.** For a new target the launcher first creates the run itself: `kalkan run init <target> --profile <profile> --json` in the plugin venv (with `--no-latest` when you give it). It prints `run <run-id> created` and binds to that run. `devam <run-id>` binds to that run. `devam` alone binds to the run in `~/kalkan-runs/LATEST` once, at the start. A later change of `LATEST` never moves the launcher to another run.
 - **Rounds.** Every round runs `claude -p "/kalkan:kalkan devam <run-id> --headless" --permission-mode dontAsk --output-format stream-json --verbose`. The full skill name never starts another `/kalkan` command. After each round the launcher reads `kalkan run status --run <run-id> --json`.
 - **Working folder.** The rounds run in the runs folder `~/kalkan-runs` (or `KALKAN_RUNS_DIR`). A user-scope plugin works in any folder. The runs folder holds no `CLAUDE.md` or `.claude/settings.json` of a target, and every resume finds the same folder. A runs folder inside a `.claude` folder is refused, because Claude Code never lets a subagent write there.
 - **Trust.** The launcher checks no folder trust: the plugin hook allows the engine commands and the result files also in an untrusted folder (see the test results below). A checkout still needs a trusted folder.
-- **Output.** The log goes to `~/kalkan-runs/unattended-<UTC time>.log`, the report to `~/kalkan-runs/<run-id>/report/`. Exit codes: 0 done. 1 incomplete, stopped (the message names the resume command with the run ID), `run init` failed, or the run folder is gone. 5 `claude` not on PATH.
+- **Output.** The log goes to `~/kalkan-runs/unattended-<UTC time>.log`, the report to `~/kalkan-runs/<run-id>/report/`. Exit codes: 0 done. 1 incomplete, stopped (the message names the resume command with the run ID), `run init` failed, or the run folder is gone. 2 usage error. 5 `claude` not on PATH.
 - **Errors.** Without the plugin data folder or the engine, the launcher stops with exit code 1 and tells you to type `/kalkan unattended` in Claude Code once.
 - **cmd.exe.** cmd.exe interprets `&`, `|`, `<`, `>`, `^` and `%` in an argument without double quotes. Quote a target path with such a character, or use Git Bash.
 - **Test state.** The launchers, the setup copy and the plugin mode of `kalkan unattended` are tested with fake engines and with a dry run in a real plugin venv (Windows 11, Git Bash, PowerShell 7, cmd). A live unattended run through `kalkan-unattended` is not measured yet. `kalkan-audit` hands a run to the same loop: on 2026-10-31 `kalkan-audit devam` drove a live agent audit to `done`. The rounds use the same `claude -p ... --permission-mode dontAsk` call as the headless test runs below.
@@ -158,7 +158,6 @@ You can audit several projects at the same time: one Claude Code session or one 
 - A new run becomes the newest run (`LATEST`). Add `--no-latest` to keep `LATEST` unchanged, for example for a short side audit: `/kalkan C:/code/tool fast --no-latest` or `kalkan-unattended C:/code/tool --profile fast --no-latest`. Then resume it only with its run ID.
 - In PowerShell, use `& "$HOME\.claude\plugins\data\kalkan-kalkan\bin\kalkan-unattended.cmd"` with the same arguments.
 - Engine commands by hand: `kalkan run init <target> --no-latest --json` creates a run without touching `LATEST`. Every later command takes `--run <run-id>` (`run status`, `run next`, `run step`, `run wait`, `run resume`, `task complete`, `report`, ...).
-- Earlier versions followed `LATEST`: the skill drove whatever run it named, and an unattended run stopped (`run_changed`) when another `run init` moved it. A workaround that patches `kalkan.run.ids.write_latest` and passes `--run` by hand is no longer needed.
 
 ## Where the data lives
 
@@ -186,12 +185,12 @@ A plugin cannot ship permission rules, so the plugin uses two other ways:
 
 So `/kalkan` also works in `dontAsk` mode and in a folder that you never trusted.
 
-**Speed.** Each hook call starts Git Bash (about 0.2 s on Windows; about 0.4 to 0.6 s when Python decides, measured on 2026-10-16). The hook starts only for Read, Grep, Glob, Write, NotebookEdit, WebFetch, WebSearch and MCP tools, and for Bash and PowerShell commands that mention kalkan or a network word. The launcher then exits without Python unless the call mentions kalkan or a session runs an audit.
+**Speed.** Each hook call starts Git Bash (about 0.2 s on Windows; about 0.4 to 0.6 s when Python decides, measured once on 2026-10-16 on one Windows 11 machine). The hook starts only for Read, Grep, Glob, Write, NotebookEdit, WebFetch, WebSearch and MCP tools, for Bash commands that mention kalkan or a network word, and for PowerShell commands that mention a network word. The launcher then exits without Python unless the call mentions kalkan or a session runs an audit.
 
 ## Update and uninstall
 
 - Update: run the installer line again ([Install](#one-command-recommended)). By hand: `claude plugin marketplace update kalkan`, then `claude plugin update kalkan@kalkan`, then restart Claude Code. The next `/kalkan` (or `kalkan-setup`) installs the new engine. It keeps every vulnerability database that is younger than 7 days (`kalkan sca update-db --max-age 168`), so an update within a week downloads no database. Never update while an audit runs.
-- Disk usage: `kalkan clean` prints the size of the engine, the tools, the databases, the caches and the runs. In the plugin, run the engine of the venv: `~/.claude/plugins/data/kalkan-kalkan/venv/Scripts/kalkan.exe clean` on Windows, `~/.claude/plugins/data/kalkan-kalkan/venv/bin/kalkan clean` elsewhere. Measured on 2026-10-29 on Windows: tools 1.53 GB in 34,272 files, databases 3.67 GB in 4,744 files. `kalkan doctor` shows the same sizes in its `footprint` row.
+- Disk usage: `kalkan clean` prints the size of the engine, the tools, the databases, the caches and the runs. In the plugin, run the engine of the venv: `~/.claude/plugins/data/kalkan-kalkan/venv/Scripts/kalkan.exe clean` on Windows, `~/.claude/plugins/data/kalkan-kalkan/venv/bin/kalkan clean` elsewhere. Measured once on 2026-10-29 on one Windows 11 machine: tools 1.53 GB in 34,272 files, databases 3.67 GB in 4,744 files. `kalkan doctor` shows the same sizes in its `footprint` row.
 - After an audit: `kalkan run clean <run-id>` deletes the target copy, the history copy and the work folders of a finished run and keeps its report (`--dry-run` shows the size first).
 - Free more space: `kalkan clean --runs` (with `--keep-reports` each `report/` stays), `--caches`, `--databases`, `--tools`. The command lists what goes and asks first; `--dry-run` only lists, `-y` skips the question. `kalkan tools install --all` and `kalkan sca update-db` bring deleted tools and databases back (`kalkan doctor` and `kalkan audit` name them); the next scan fills the caches again.
 - Uninstall:
@@ -199,7 +198,6 @@ So `/kalkan` also works in `dontAsk` mode and in a folder that you never trusted
   2. `claude plugin uninstall kalkan@kalkan` removes the plugin and the data folder `~/.claude/plugins/data/kalkan-kalkan/` with the engine venv (add `--keep-data` to keep that folder). Claude Code keeps its copy of the plugin in `~/.claude/plugins/cache/kalkan/` with an `.orphaned_at` marker until it removes it itself.
   3. `claude plugin marketplace remove kalkan`.
   4. The runs folder `~/kalkan-runs` is outside the plugin folders and stays; after `kalkan clean --all` it holds no run. Delete it by hand.
-- kalkan 1.6.1 and earlier also wrote `~/.opengrep`, `%LOCALAPPDATA%\opengrep`, `%LOCALAPPDATA%\go-build` and `%APPDATA%\go\telemetry` (docs/SECURITY.md). Delete them by hand when no other program uses them.
 
 ## Test results of the open points
 
@@ -217,9 +215,13 @@ Measured on 2026-10-16 with Claude Code 2.1.301 on Windows 11 (user name with `Ã
 | Does the hook let a subagent write its result in `dontAsk` mode, in an untrusted folder? | Yes, with the runs in `~/kalkan-runs`. A full `fast` audit of a one-file Flask app ran to the end: 12 subagents (4 recon, 4 hunter, 1 critic, 3 verifier), 12 result files accepted, 54 engine commands, 2 confirmed findings, all reports written, 0.12 USD with Haiku. |
 | The final plugin files (Bash hook with `if`) | `/kalkan devam --headless` resumed the run that had failed without hooks and finished it: 15 subagents, 16 result files, 37 engine commands, 0 denied calls, 3 confirmed findings. |
 | Is the hook needed? (`disableAllHooks`) | Yes. In one run the model quoted the setup path, the `allowed-tools` rule did not match the quoted command, and `dontAsk` denied it. In a second run (unquoted paths) the engine commands ran, the subagents could read (the skill's `allowed-tools` grant also covered their Read and Glob calls), but all four result writes were denied. Without a skill, Read and Glob outside the current folder are denied in `dontAsk` mode. |
-| Does `if` limit the hook? | Yes. With `"if": "Bash(*kalkan*)"` the launcher started for the engine command and not for `echo hello`. The plugin uses `if` filters for Bash and PowerShell (kalkan and network words since the security hardening), so other sessions pay nothing for their other commands. Write, Read, Grep and Glob calls start the launcher, which exits after about 0.4 s when the event does not mention kalkan (0.6 s for a kalkan call, measured in Git Bash on a busy machine). |
+| Does `if` limit the hook? | Yes. With `"if": "Bash(*kalkan*)"` the launcher started for the engine command and not for `echo hello`. The plugin uses `if` filters for Bash (kalkan and network words) and PowerShell (network words), so other sessions pay nothing for their other commands. Write, Read, Grep and Glob calls start the launcher, which exits after about 0.4 s when the event does not mention kalkan (0.6 s for a kalkan call, measured in Git Bash on a busy machine). |
 | First setup on Windows | About 15 minutes (8 binaries, then Checkov and Bandit with pip, which took about 10 minutes). A repeated setup with every tool present: 2.5 to 3.5 minutes (hash checks and `kalkan doctor`). A current engine: 1.6 s. |
 | Git Bash and `/kalkan` | Git Bash rewrites the argument `/kalkan ...` of `claude -p` into `C:/Program Files/Git/kalkan ...`. Set `MSYS_NO_PATHCONV=1`, or start `claude -p` from PowerShell. |
+
+## Licenses
+
+kalkan's own code is MIT (`plugins/kalkan/LICENSE`). The engine wheel also carries the curated Opengrep rule packs (`kalkan/_data/rules/opengrep-packs/`). They keep their own licenses: MIT (0xdea, elttam, aikido, semgrep-codeql and the MIT part of gitlab), LGPL-3.0-only (the `rules/lgpl` part of gitlab), LGPL-2.1-only (atlassian), LGPL-3.0-or-later (njsscan, mobsfscan), GPL-3.0-only (mindedsecurity) and AGPL-3.0-only (trailofbits). The wheel carries each license text in its `.dist-info/licenses/third_party/` folder. `KALKAN_RULE_PACKS=osi` turns the AGPL pack off. THIRD_PARTY.md lists every component.
 
 ## Development
 

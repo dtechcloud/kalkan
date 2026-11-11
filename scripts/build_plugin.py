@@ -7,7 +7,9 @@ the engine. This script writes:
 - `.claude-plugin/marketplace.json`: the marketplace `kalkan` with one plugin.
 - `plugins/kalkan/.claude-plugin/plugin.json`: the plugin manifest (version from pyproject).
 - `plugins/kalkan/engine/kalkan-<version>-py3-none-any.whl`: the engine wheel (`src/kalkan`
-  plus `knowledge/` and `rules/` as package data).
+  plus `knowledge/` and `rules/` as package data). Its `.dist-info/licenses/` folder holds the
+  files of the pyproject `license-files` list: kalkan's LICENSE and NOTICE and the license
+  texts of the vendored upstream projects, among them the bundled rule packs.
 - `plugins/kalkan/engine/SHA256SUMS`: the SHA-256 of the wheel; `kalkan-setup` reads it.
 - `plugins/kalkan/LICENSE` and `plugins/kalkan/NOTICE`: copies of the repository files.
 
@@ -40,7 +42,15 @@ import zipfile
 from collections.abc import Sequence
 from pathlib import Path
 
-__all__ = ["BuildError", "check", "expected_payload", "main", "wheel_problems", "write"]
+__all__ = [
+    "BuildError",
+    "check",
+    "expected_license_files",
+    "expected_payload",
+    "main",
+    "wheel_problems",
+    "write",
+]
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -68,7 +78,7 @@ _SKIP_NAMES = {".DS_Store", "Thumbs.db"}
 
 PLUGIN_DESCRIPTION = (
     "Resumable security audit of a local folder or a git URL: pinned deterministic scanners "
-    "plus Claude Code subagents, with engine-verified evidence and Turkish or English reports. "
+    "plus Claude Code subagents, with engine-verified evidence and English or Turkish reports. "
     "Run /kalkan:kalkan <target> [fast|standard|deep]."
 )
 KEYWORDS = ["security", "audit", "sast", "sca", "code-review"]
@@ -156,6 +166,19 @@ def expected_payload(root: Path) -> dict[str, bytes]:
     return payload
 
 
+def expected_license_files(root: Path, project: dict) -> dict[str, bytes]:
+    """Return the files that the wheel must hold in `.dist-info/licenses/`, by relative path.
+
+    The pyproject `license-files` globs name them. A glob that matches nothing adds nothing.
+    """
+    files: dict[str, bytes] = {}
+    for pattern in project.get("license-files") or []:
+        for path in sorted(root.glob(pattern)):
+            if path.is_file():
+                files[path.relative_to(root).as_posix()] = path.read_bytes()
+    return files
+
+
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
@@ -179,6 +202,12 @@ def wheel_problems(wheel: Path, root: Path, project: dict) -> list[str]:
             problems.append(f"{name}: {extra} is not in the source tree")
         for key in sorted(set(expected) & found):
             if _sha256(archive.read(key)) != _sha256(expected[key]):
+                problems.append(f"{name}: {key} differs from the source tree")
+        for relative, data in expected_license_files(root, project).items():
+            key = f"{dist_info}licenses/{relative}"
+            if key not in members:
+                problems.append(f"{name}: {key} is missing")
+            elif _sha256(archive.read(key)) != _sha256(data):
                 problems.append(f"{name}: {key} differs from the source tree")
         entry_points = dist_info + "entry_points.txt"
         if entry_points not in members:

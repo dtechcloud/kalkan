@@ -4,12 +4,23 @@ build-backend = "hatchling.build"
 
 [project]
 name = "kalkan"
-version = "1.16.1"
+version = "1.0.0"
 description = "Resumable, AI-assisted security audit toolkit driven by Claude Code."
 readme = "README.md"
 requires-python = ">=3.11"
+# MIT covers kalkan's own code. The wheel also bundles the curated Opengrep rule packs of
+# rules/opengrep-packs/, which keep their own licenses (THIRD_PARTY.md: MIT, LGPL-2.1, LGPL-3.0,
+# GPL-3.0 and AGPL-3.0). Their license texts, and those of the other vendored upstream
+# projects, go into the .dist-info/licenses/ folder of the wheel.
 license = "MIT"
-license-files = ["LICENSE", "NOTICE"]
+license-files = [
+    "LICENSE",
+    "NOTICE",
+    "third_party/*/LICENSE",
+    "third_party/*/COPYRIGHT",
+    "third_party/*/NOTICE",
+    "third_party/gitlab-sast-rules/rules/lgpl/LICENSE",
+]
 authors = [{ name = "The kalkan authors", email = "kalkan@dtechcloud.com" }]
 keywords = ["security", "sast", "sca", "audit", "claude-code"]
 classifiers = [

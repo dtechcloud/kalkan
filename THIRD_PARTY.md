@@ -13,7 +13,7 @@ kalkan keeps verbatim copies of selected upstream files under `third_party/`. `t
 | open-code-review | https://github.com/alibaba/open-code-review | `11ac6d4` | Apache-2.0 | Security sections of the language rule documents, conservative review filter |
 | gitlab-sast-rules | https://gitlab.com/gitlab-org/security-products/sast-rules | `53bf5cf` (v2.10.1, 2026-09-21) | MIT (243 files) and LGPL-3.0-only (152 files of `rules/lgpl`), by the license header of each file | Opengrep rule pack (C#, Java, JavaScript, Python, Scala, Kotlin, Swift) |
 | 0xdea-semgrep-rules | https://github.com/0xdea/semgrep-rules | `dae50da` (2026-09-25) | MIT | Opengrep rule pack (C and C++) |
-| trailofbits-semgrep-rules | https://github.com/trailofbits/semgrep-rules | `31390b3` (2025-11-12) | AGPL-3.0-only | Opengrep rule pack (Go, Python, Ruby, JavaScript, HCL, Ansible, generic) |
+| trailofbits-semgrep-rules | https://github.com/trailofbits/semgrep-rules | `31390b3` (2025-11-12) | AGPL-3.0-only | Opengrep rule pack (Go, Python, Ruby, JavaScript, HCL, Ansible YAML, JVM, Swift, generic) |
 | atlassian-sast-ruleset | https://github.com/atlassian-labs/atlassian-sast-ruleset | `800d288` (2026-09-25) | LGPL-2.1-only | Opengrep rule pack (Java: FreeMarker, Jackson, Java I/O, JMX, JNDI, Soy, Spring, XStream; ADR-0007) |
 | elttam-semgrep-rules | https://github.com/elttam/semgrep-rules | `2442685` (2026-08-03) | MIT | Opengrep rule pack (Java, Go, C#, JavaScript, Python, PHP; ADR-0007) |
 | njsscan-rules | https://github.com/ajinabraham/njsscan | `b1a0797` (2026-10-23) | LGPL-3.0-or-later | Opengrep rule pack (Node.js, Electron; ADR-0007) |
@@ -25,7 +25,7 @@ kalkan keeps verbatim copies of selected upstream files under `third_party/`. `t
 The rule packs (ADR-0005 K.8 and its license policy of 2026-10-25; ADR-0007 for the packs of 2026-11-07):
 
 - The copies hold only rule files, no test sources. GitLab: only the files with the header `MIT (c) GitLab Inc.` or `GNU Lesser General Public License v3.0`; not copied are `rules/lgpl-cc` (Commons Clause), `rules/gitlab` (GitLab Enterprise Edition license), `c` (GPL-2.0) and `go` (Apache-2.0). ADR-0005 names the GitLab license "LGPL-2.1"; the files say LGPL-3.0.
-- License texts: each folder keeps the upstream license files. The LGPL-3.0 adds permissions to the GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.txt); the upstream repository does not ship that text.
+- License texts: each folder keeps the upstream license files. The engine wheel of the plugin carries them in its `.dist-info/licenses/third_party/` folder (pyproject `license-files`). The LGPL-3.0 adds permissions to the GPL-3.0 (https://www.gnu.org/licenses/gpl-3.0.txt); the upstream repository does not ship that text. The full GPL-3.0 text is the license file of `third_party/mindedsecurity-android-rules/`, so the wheel carries it too.
 - AGPL-3.0 (Trail of Bits): the rule files stay unmodified in `third_party/` with the license, and the changed bundles in `rules/opengrep-packs/trailofbits/` stay under AGPL-3.0 with their source in this repository. AGPL-3.0 allows commercial use. kalkan is not offered as a network service.
 - `KALKAN_RULE_PACKS=osi` turns the AGPL pack off (docs/ENGINE-SPEC.md, section 13).
 - Removed on 2026-11-06: the opengrep-rules pack (`f1d2b56`, LGPL-2.1 with the Commons Clause License Condition v1.0). The Commons Clause forbids selling a product or service whose value derives from the rules, consulting and support services included, and the license is not OSI-approved. `KALKAN_RULE_PACKS` ignores the old pack name.
@@ -57,7 +57,7 @@ Rules for ported code:
 
 ## External tools (installed at setup time, not part of this repository)
 
-The bootstrap scripts download these tools in pinned versions and verify them. kalkan runs each tool as a separate process.
+The bootstrap scripts download these tools in pinned versions. The setup checks the 15 downloaded programs and the Go toolchain against a pinned SHA-256. pip installs the 4 Python tools by exact version, without a hash check. The Go checksum database checks the 2 tools that `go install` builds. kalkan runs each tool as a separate process.
 
 | Tool | Version | License | Note |
 |---|---|---|---|
