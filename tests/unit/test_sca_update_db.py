@@ -155,7 +155,7 @@ def new_status(root: Path, when: dict[str, str] | str, **parts: dict) -> None:
 
 
 def old_status(root: Path, when: str) -> None:
-    """Write a status.json of the format before the freshness check (kalkan 1.6.1)."""
+    """Write a status.json of the format before the freshness check (an older build)."""
     status = {
         "root": root.as_posix(),
         "updated_at": when,

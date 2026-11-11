@@ -985,7 +985,7 @@ def test_a_present_go_tool_still_removes_an_old_build_folder(tmp_path):
     install(["fakego"], repo_root=root, manifest=manifest, key=KEY, runner=runner, finder=find)
     leftover = root / ".tools" / "go-build" / "gopath" / "pkg" / "mod" / "old.txt"
     leftover.parent.mkdir(parents=True)
-    leftover.write_text("left by kalkan 1.6.1", encoding="utf-8")
+    leftover.write_text("left by an older build", encoding="utf-8")
     (present,) = install(
         ["fakego"], repo_root=root, manifest=manifest, key=KEY, runner=runner, finder=find
     )

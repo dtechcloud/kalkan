@@ -10,7 +10,7 @@ most ledger units of one group in one hunt task):
 | ``standard`` (``standart``) | 150 | 2 | 4 | yes |
 | ``deep`` (``derin``) | 400 | 3 | 3 | yes |
 
-The aliases are the names before 1.6.0. They stay valid, and :func:`canonical_profile` turns
+The aliases are older names. They stay valid, and :func:`canonical_profile` turns
 them into the canonical name.
 
 ``budget.reserve_critic`` equals the number of critic waves: one critic task per wave stays
@@ -99,8 +99,8 @@ PROFILES: Final[Mapping[str, Profile]] = {
     "standard": Profile("standard", 150, 2, 4),
     "deep": Profile("deep", 400, 3, 3),
 }
-#: Accepted profile names and their canonical name. ``quick`` and the Turkish names are the
-#: names before 1.6.0.
+#: Accepted profile names and their canonical name. ``quick`` and the Turkish names are older
+#: names that stay valid.
 PROFILE_ALIASES: Final[Mapping[str, str]] = {
     "fast": "fast",
     "quick": "fast",

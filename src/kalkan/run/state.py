@@ -493,7 +493,7 @@ def load_state(run_dir: str | os.PathLike[str]) -> dict[str, Any]:
 
 
 def _normalize_profile(state: dict[str, Any]) -> None:
-    """Turn a profile name from before 1.6.0 (``quick``) into its canonical name (``fast``)."""
+    """Turn an older profile name (``quick``) into its canonical name (``fast``)."""
     options = state.get("options")
     if isinstance(options, dict) and isinstance(options.get("profile"), str):
         options["profile"] = budget.PROFILE_ALIASES.get(options["profile"], options["profile"])

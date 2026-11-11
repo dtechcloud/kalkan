@@ -682,7 +682,7 @@ def test_full_pipeline_with_crash_and_resume(environment, capsys):
             "title": pending["title"],
             "class": "idor",
             "reason": pending["duplicate_reason"],
-            # The folded record's PoC status stays visible on the primary (1.13.0).
+            # The folded record's PoC status stays visible on the primary.
             "poc_status": pending["poc"]["status"],
         }
     ]

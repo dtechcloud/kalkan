@@ -1,5 +1,5 @@
-"""Profile names since 1.6.0: ``fast``, ``standard`` and ``deep``. The names before 1.6.0
-(``quick``, ``hizli``, ``standart``, ``derin``) stay accepted, and an older run state resumes."""
+"""Profile names: ``fast``, ``standard`` and ``deep``. The older names (``quick``, ``hizli``,
+``standart``, ``derin``) stay accepted, and an older run state resumes."""
 
 import argparse
 import json

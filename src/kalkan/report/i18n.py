@@ -1218,8 +1218,8 @@ def poc_observed(lang: str, text: object) -> object:
     """Return the report text of a PoC ``observed_result`` in the report language.
 
     A skipped PoC (the ``sandbox_unavailable`` key) reads as "the sandbox did not run", and the
-    scope statement of a run before 1.7.0 (:data:`POC_OUT_OF_SCOPE`, ADR-0004) reads as "that
-    version had no sandbox". Any other text is returned as it is."""
+    scope statement of a pre-release run without a sandbox (:data:`POC_OUT_OF_SCOPE`, ADR-0004)
+    reads as "that run had no sandbox". Any other text is returned as it is."""
     from kalkan.findings.merge import BLOCKER_SANDBOX_UNAVAILABLE, POC_OUT_OF_SCOPE
 
     if isinstance(text, str) and text.strip() == POC_OUT_OF_SCOPE:

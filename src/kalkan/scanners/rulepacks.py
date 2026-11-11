@@ -76,7 +76,7 @@ OSI_GROUP = "osi"
 GROUPS = (OSI_GROUP, "agpl")
 #: Packs of earlier versions, with the reason of the removal. ``KALKAN_RULE_PACKS`` ignores them.
 REMOVED_PACKS = {
-    "opengrep-rules": "removed in 1.15.0: LGPL-2.1 with the Commons Clause is not OSI-approved",
+    "opengrep-rules": "removed: LGPL-2.1 with the Commons Clause is not OSI-approved",
 }
 CURATION_FILE = "curation.json"
 INDEX_FILE = "index.json"

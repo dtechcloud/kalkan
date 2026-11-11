@@ -58,8 +58,8 @@ __all__ = [
 ]
 
 #: The fixed subsystem identity of the fast profile (Cloudflare rule). The identity strings keep
-#: the profile name of kalkan before 1.6.0 (``quick``), so that the coverage IDs of a run stay the
-#: same when a newer engine resumes it.
+#: the older profile name ``quick``, so that the coverage IDs of a run never change, also when a
+#: newer engine resumes it.
 FAST_SUBSYSTEM: Final = "profile/quick/all-in-scope-subsystems"
 #: The coarsened boundary identity of a fast unit (all boundaries of one subsystem).
 FAST_BOUNDARY: Final = "profile/quick/all-trust-boundaries"

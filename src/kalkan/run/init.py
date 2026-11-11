@@ -1079,7 +1079,7 @@ def init_run(
 ) -> RunContext:
     """Create a run for ``target`` (a local folder or a git URL) and return its context.
 
-    ``profile`` accepts ``fast``, ``standard`` and ``deep`` and their names before 1.6.0;
+    ``profile`` accepts ``fast``, ``standard`` and ``deep`` and their older names;
     the state stores the English name. ``runs_dir`` overrides :func:`kalkan.run.ids.runs_root`.
     ``ref`` (git URL targets only) checks out a tag, branch or commit (:func:`checkout_ref`).
     ``update_latest`` False leaves ``runs/LATEST`` unchanged. ``mode`` ``tools-only`` records
