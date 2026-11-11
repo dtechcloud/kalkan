@@ -62,6 +62,8 @@ The light theme uses a darker accent. On the light ground it has a contrast of 4
 
 Geist and Geist Mono have the SIL Open Font License 1.1. The SVG files carry the letters as outlines, so a viewer needs no font.
 
+The HTML reports (`REPORT.html`, `EXECUTIVE.html`) use the theme "Gece" (`src/kalkan/report/theme.py`): the dark tokens of the site first, its light tokens with the theme toggle or a light system setting, and the light tokens in print. They embed subsets of both fonts (`scripts/build_report_fonts.py`) and the logo as data URIs, so a report needs no network.
+
 ## Look
 
 Two thin rails frame the page. A small cross marks each point where a section line meets a rail. A fine grain and blurred color fields lie behind the first section.

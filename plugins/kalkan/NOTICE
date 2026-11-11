@@ -88,3 +88,12 @@ hereby granted, free of charge, to any person obtaining a copy of this software 
 associated documentation files, to deal in the software without restriction, subject to
 including the copyright notice and this permission notice in all copies or substantial
 portions. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+------------------------------------------------------------------------
+Geist and Geist Mono fonts (SIL OFL 1.1) - https://github.com/vercel/geist-font
+------------------------------------------------------------------------
+Copyright 2026 The Geist Project Authors (https://github.com/vercel/geist-font)
+
+Subsets of the fonts are embedded in the HTML reports
+(src/kalkan/report/assets). The license text is
+src/kalkan/report/assets/OFL.txt.
