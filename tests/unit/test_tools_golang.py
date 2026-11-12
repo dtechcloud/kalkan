@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -137,8 +138,9 @@ def test_build_env_drops_the_go_settings_of_the_caller(tmp_path):
         assert removed not in env, removed
     assert env["GOPROXY"] == "https://proxy.example"
     assert env["GONOPROXY"] == "corp.example"
-    assert env["HOME"] == "/home/u"
     build = tmp_path / ".tools" / "go-build"
+    # macOS: HOME names the Go configuration folder (telemetry off, kalkan.tools.toolhome).
+    assert env["HOME"] == (str(build / "config") if sys.platform == "darwin" else "/home/u")
     assert env["GOPATH"] == str(build / "gopath")
     assert env["GOMODCACHE"] == str(build / "gopath" / "pkg" / "mod")
     assert env["GOCACHE"] == str(build / "cache")
