@@ -25,6 +25,7 @@ Thumbs.db
 # Claude Code local settings (per user)
 .claude/settings.local.json
 /.bench-runs/
+/platform-check/
 /.dev-runs/
 
 # .NET build output (C# Dev Kit restores the test fixtures)
