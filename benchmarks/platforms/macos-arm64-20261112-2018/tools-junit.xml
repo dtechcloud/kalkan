@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="54" time="232.013" timestamp="2026-11-12T23:23:11.482156+03:00" hostname="[host]"><testcase classname="tests.integration.test_adr0005_tools" name="test_kingfisher_finds_the_fixture_secrets_offline_and_writes_no_value" time="3.851" /><testcase classname="tests.integration.test_adr0005_tools" name="test_kingfisher_history_finds_a_deleted_credential_offline" time="7.875" /><testcase classname="tests.integration.test_adr0005_tools" name="test_kingfisher_network_features_reach_the_trap" time="7.609" /><testcase classname="tests.integration.test_adr0005_tools" name="test_linters_find_exactly_the_planted_items_offline[shellcheck]" time="0.254" /><testcase classname="tests.integration.test_adr0005_tools" name="test_linters_find_exactly_the_planted_items_offline[flawfinder]" time="0.238" /><testcase classname="tests.integration.test_adr0005_tools" name="test_linters_find_exactly_the_planted_items_offline[gixy]" time="0.232" /><testcase classname="tests.integration.test_adr0005_tools" name="test_shellcheck_records_that_inline_directives_stay_effective" time="0.052" /><testcase classname="tests.integration.test_adr0005_tools" name="test_checkov_runs_every_offline_framework_without_a_connection" time="14.946" /><testcase classname="tests.integration.test_cicd_tools" name="test_zizmor_local_mode_finds_the_workflow_items" time="0.440" /><testcase classname="tests.integration.test_cicd_tools" name="test_zizmor_ignores_the_target_suppressions_by_default" time="0.320" /><testcase classname="tests.integration.test_cicd_tools" name="test_actionlint_finds_the_untrusted_input" time="0.438" /><testcase classname="tests.integration.test_cicd_tools" name="test_actionlint_ignores_the_target_configuration_by_default" time="0.536" /><testcase classname="tests.integration.test_cicd_tools" name="test_poutine_local_mode_makes_no_connection" time="0.637" /><testcase classname="tests.integration.test_cicd_tools" name="test_scorecard_local_checks_make_no_connection" time="9.084" /><testcase classname="tests.integration.test_go_tools" name="test_gosec_runs_with_the_kalkan_go_and_finds_the_expected_items" time="7.689" /><testcase classname="tests.integration.test_go_tools" name="test_govulncheck_local_mode_makes_no_connection_and_marks_x_text" time="3.259" /><testcase classname="tests.integration.test_go_tools" name="test_gosec_records_the_packages_whose_modules_are_missing" time="3.848" /><testcase classname="tests.integration.test_go_tools" name="test_gosec_and_govulncheck_load_a_vendored_module_completely" time="4.367" /><testcase classname="tests.integration.test_go_tools" name="test_govulncheck_names_the_packages_whose_modules_are_missing" time="0.529" /><testcase classname="tests.integration.test_k3_k9_tools" name="test_helm_checkov_finds_the_fixture_chart_items_offline" time="3.251" /><testcase classname="tests.integration.test_k3_k9_tools" name="test_helm_checkov_downloads_no_chart_and_no_schema" time="2.710" /><testcase classname="tests.integration.test_k3_k9_tools" name="test_vacuum_finds_exactly_the_fixture_items_offline" time="0.878" /><testcase classname="tests.integration.test_k3_k9_tools" name="test_vacuum_fetches_nothing_and_reads_nothing_outside_the_target" time="0.449" /><testcase classname="tests.integration.test_opengrep_packs" name="test_rule_packs_on_vulnapp_offline" time="15.372" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[trivy]" time="37.507" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[checkov]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[hadolint]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[gitleaks]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[kingfisher]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[opengrep]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[opengrep-packs]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[bandit]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[shellcheck]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[flawfinder]" time="0.001" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[gixy]" time="0.002" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_required_engine_ran_ok[matcher]" time="0.000" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_other_engines_did_not_fail" time="0.006" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_status_files_match_results" time="0.004" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_candidates_validate_against_the_schema" time="0.074" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_expected_issues_are_found" time="0.008" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_sbom_is_cyclonedx" time="0.000" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_default_mode_ignores_target_suppressions" time="13.431" /><testcase classname="tests.integration.test_scan_vulnapp" name="test_honor_mode_restores_tool_suppressions" time="0.001" /><testcase classname="tests.integration.test_security_promises" name="test_scan_and_sca_never_touch_the_original_or_the_network" time="64.679" /><testcase classname="tests.integration.test_tool_footprint" name="test_the_tools_write_nothing_into_the_profile" time="10.816"><failure message="AssertionError: ['Library', 'Library/Application Support', 'Library/Application Support/go', 'Library/Application Support/go/telemetry...y/local', 'Library/Application Support/go/telemetry/local/asm@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count', ...]&#10;assert {'.config', '...ming/go', ...} == {'.config', '...ming/go', ...}&#10;  &#10;  Extra items in the left set:&#10;  'Library/Application Support/go/telemetry/local/compile@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count'&#10;[+6 more lines; full report in element text]">tmp_path = PosixPath('/private/var/folders/m8/0rm1dkzn359d62fl3rvb_72w0000gn/T/pytest-of-[user]/pytest-0/test_the_tools_write_nothing_i0')
+profile = PosixPath('/private/var/folders/m8/0rm1dkzn359d62fl3rvb_72w0000gn/T/pytest-of-[user]/pytest-0/test_the_tools_write_nothing_i0/profile')
+
+    def test_the_tools_write_nothing_into_the_profile(tmp_path, profile):
+        manifest = load_manifest()
+        before = entries(profile)
+        ctx = target(tmp_path)
+        ran: list[str] = []
+        opengrep = resolve("opengrep", manifest=manifest)
+        if opengrep is not None:
+            output = probe_tool_version(opengrep.argv, manifest.get("opengrep"))
+            assert output is not None and manifest.get("opengrep").version in output
+            result = run_adapter(OpengrepAdapter(), ctx)
+            assert result.status == "ok", result.message
+            ran.append("opengrep")
+        for adapter in (GosecAdapter(), GovulncheckAdapter()):
+            if not adapter.applies(ctx)[0] or resolve(adapter.tool, manifest=manifest) is None:
+                continue
+            result = run_adapter(adapter, ctx)
+            assert result.status == "ok", (adapter.name, result.message)
+            ran.append(adapter.name)
+        if not ran:
+            pytest.skip("opengrep, gosec and govulncheck are not installed")
+&gt;       assert entries(profile) == before, sorted(entries(profile) - before)
+E       AssertionError: ['Library', 'Library/Application Support', 'Library/Application Support/go', 'Library/Application Support/go/telemetry...y/local', 'Library/Application Support/go/telemetry/local/asm@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count', ...]
+E       assert {'.config', '...ming/go', ...} == {'.config', '...ming/go', ...}
+E         
+E         Extra items in the left set:
+E         'Library/Application Support/go/telemetry/local/compile@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count'
+E         'Library/Application Support/go/telemetry'
+E         'Library/Application Support/go/telemetry/local/weekends'
+E         'Library/Application Support/go/telemetry/local'
+E         'Library/Application Support/go/telemetry/local/go@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count'...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/integration/test_tool_footprint.py:103: AssertionError</failure></testcase><testcase classname="tests.integration.test_version_probes" name="test_doctor_probes_every_installed_tool_without_a_connection" time="7.647" /><testcase classname="tests.integration.test_version_probes" name="test_the_trap_sees_a_version_command_with_its_network_feature_on" time="0.234" /><testcase classname="tests.unit.test_opengrep_rules" name="test_scan_loads_every_rule" time="3.277" /><testcase classname="tests.unit.test_opengrep_rules" name="test_every_rule_is_exercised_by_the_fixture" time="0.002" /><testcase classname="tests.unit.test_opengrep_rules" name="test_every_planted_item_is_detected" time="0.004" /><testcase classname="tests.unit.test_opengrep_rules" name="test_no_rule_fires_on_a_secure_twin" time="0.002" /><testcase classname="tests.unit.test_opengrep_rules" name="test_every_result_belongs_to_a_planted_item" time="0.001" /><testcase classname="tests.unit.test_opengrep_rules" name="test_sarif_ingest_gives_each_result_the_class_of_its_rule" time="0.003" /><testcase classname="tests.unit.test_sca_commands" name="test_real_syft_sbom_on_the_depapp" time="1.174"><failure message="AssertionError: assert 3 == 2&#10; +  where 3 = &lt;built-in method get of dict object at 0x10afbf1c0&gt;('Go')&#10; +    where &lt;built-in method get of dict object at 0x10afbf1c0&gt; = {'Go': 3, 'PyPI': 3, 'npm': 4}.get">tmp_path = PosixPath('/private/var/folders/m8/0rm1dkzn359d62fl3rvb_72w0000gn/T/pytest-of-[user]/pytest-0/test_real_syft_sbom_on_the_dep0')
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x10ae48470&gt;
+
+    @pytest.mark.tools
+    def test_real_syft_sbom_on_the_depapp(tmp_path, monkeypatch):
+        pytest.importorskip("kalkan.scanners.registry")
+        from kalkan.tools.resolve import resolve
+    
+        if resolve("syft") is None:
+            pytest.skip("syft is not installed")
+        root = tmp_path / "runs"
+        run = root / RUN_ID
+        shutil.copytree(DEPAPP, run / "target")
+        monkeypatch.setenv("KALKAN_RUNS_DIR", str(root))
+        summary = commands.run_sbom(run)
+        assert summary["engine"] == "syft"
+        assert summary["by_ecosystem"].get("PyPI") == 3
+&gt;       assert summary["by_ecosystem"].get("Go") == 2
+E       AssertionError: assert 3 == 2
+E        +  where 3 = &lt;built-in method get of dict object at 0x10afbf1c0&gt;('Go')
+E        +    where &lt;built-in method get of dict object at 0x10afbf1c0&gt; = {'Go': 3, 'PyPI': 3, 'npm': 4}.get
+
+tests/unit/test_sca_commands.py:491: AssertionError</failure></testcase></testsuite></testsuites>

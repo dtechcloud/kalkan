@@ -1,0 +1,555 @@
+{
+  "schema_version": 1,
+  "kalkan_version": "1.0.0",
+  "platform": "darwin-arm64",
+  "repo_root": "~/kalkan-platform-check",
+  "ok": true,
+  "exit_code": 0,
+  "summary": {
+    "ok": 35,
+    "warn": 1,
+    "fail": 0,
+    "info": 3
+  },
+  "checks": [
+    {
+      "name": "python",
+      "status": "ok",
+      "detail": "Python 3.12.10",
+      "data": {
+        "version": "3.12.10",
+        "executable": "~/kalkan-platform-check/.venv/bin/python"
+      }
+    },
+    {
+      "name": "platform",
+      "status": "ok",
+      "detail": "darwin-arm64",
+      "data": {
+        "key": "darwin-arm64"
+      }
+    },
+    {
+      "name": "git",
+      "status": "ok",
+      "detail": "git version 2.54.0 (Apple Git-157)",
+      "data": {
+        "path": "/usr/bin/git",
+        "version": "2.54.0"
+      }
+    },
+    {
+      "name": "docker-client",
+      "status": "ok",
+      "detail": "Docker version 28.5.1, build e180ab8",
+      "data": {
+        "path": "/usr/local/bin/docker",
+        "version": "28.5.1"
+      }
+    },
+    {
+      "name": "docker-engine",
+      "status": "ok",
+      "detail": "engine 28.5.1",
+      "data": {
+        "version": "28.5.1"
+      }
+    },
+    {
+      "name": "manifest",
+      "status": "ok",
+      "detail": "22 tools pinned",
+      "data": {
+        "source": "manifest.json"
+      }
+    },
+    {
+      "name": "node",
+      "status": "ok",
+      "detail": "v22.18.0",
+      "data": {
+        "path": "~/.nvm/versions/node/v22.18.0/bin/node",
+        "version": "22.18.0"
+      }
+    },
+    {
+      "name": "claude",
+      "status": "ok",
+      "detail": "2.1.310 (Claude Code); signed in",
+      "data": {
+        "path": "~/.local/bin/claude",
+        "version": "2.1.310",
+        "auth": "subscription",
+        "auth_source": "login",
+        "logged_in": true
+      }
+    },
+    {
+      "name": "unattended:print-mode",
+      "status": "ok",
+      "detail": "claude -p supports --permission-mode dontAsk and --output-format stream-json",
+      "data": {
+        "permission_mode": true,
+        "stream_json": true,
+        "dont_ask": true,
+        "verbose": true,
+        "permission_modes": [
+          "acceptEdits",
+          "auto",
+          "bypassPermissions",
+          "manual",
+          "dontAsk",
+          "plan"
+        ],
+        "output_formats": [
+          "text",
+          "json",
+          "stream-json"
+        ]
+      }
+    },
+    {
+      "name": "unattended:auto-continue",
+      "status": "info",
+      "detail": "autoContinueAtUsageLimit is not set in ~/.claude/settings.json. kalkan unattended waits for usage-limit resets by itself and does not need it.",
+      "data": {
+        "path": "~/.claude/settings.json",
+        "value": null,
+        "state": "absent"
+      }
+    },
+    {
+      "name": "unattended:workspace-trust",
+      "status": "warn",
+      "detail": "Claude Code does not trust this folder yet, so it ignores the project permissions and subagents cannot write their results. Run `claude` in this folder once and accept the trust dialog.",
+      "data": {
+        "repo": "~/kalkan-platform-check",
+        "trusted": false
+      }
+    },
+    {
+      "name": "unattended:codex",
+      "status": "info",
+      "detail": "codex-cli 0.160.0 (~/.nvm/versions/node/v22.18.0/bin/codex)",
+      "data": {
+        "path": "~/.nvm/versions/node/v22.18.0/bin/codex",
+        "version": "0.160.0"
+      }
+    },
+    {
+      "name": "tool:trivy",
+      "status": "ok",
+      "detail": "0.75.0 installed, SHA-256 ok",
+      "data": {
+        "version": "0.75.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/trivy/0.75.0/bin/trivy",
+        "hash_ok": true,
+        "reported_version": "0.75.0"
+      }
+    },
+    {
+      "name": "tool:gitleaks",
+      "status": "ok",
+      "detail": "8.30.1 installed, SHA-256 ok",
+      "data": {
+        "version": "8.30.1",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/gitleaks/8.30.1/bin/gitleaks",
+        "hash_ok": true,
+        "reported_version": "8.30.1"
+      }
+    },
+    {
+      "name": "tool:opengrep",
+      "status": "ok",
+      "detail": "1.30.1 installed, SHA-256 ok",
+      "data": {
+        "version": "1.30.1",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/opengrep/1.30.1/bin/opengrep",
+        "hash_ok": true,
+        "reported_version": "1.30.1"
+      }
+    },
+    {
+      "name": "tool:hadolint",
+      "status": "ok",
+      "detail": "2.15.1 installed, SHA-256 ok",
+      "data": {
+        "version": "2.15.1",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/hadolint/2.15.1/bin/hadolint",
+        "hash_ok": true,
+        "reported_version": "2.15.1"
+      }
+    },
+    {
+      "name": "tool:go",
+      "status": "ok",
+      "detail": "1.26.9 installed, executable SHA-256 ok, 15045 files, tree SHA-256 recorded at install",
+      "data": {
+        "version": "1.26.9",
+        "kind": "toolchain",
+        "installed": true,
+        "path": ".tools/go/1.26.9/go/bin/go",
+        "hash_ok": true,
+        "reported_version": "1.26.9",
+        "source": "kalkan"
+      }
+    },
+    {
+      "name": "tool:gosec",
+      "status": "ok",
+      "detail": "2.29.0 installed, SHA-256 ok; runs with Go 1.26.9 (kalkan)",
+      "data": {
+        "version": "2.29.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/gosec/2.29.0/bin/gosec",
+        "hash_ok": true,
+        "reported_version": "2.29.0",
+        "go": {
+          "path": "~/kalkan-platform-check/.tools/go/1.26.9/go/bin/go",
+          "version": "1.26.9",
+          "source": "kalkan",
+          "root": "~/kalkan-platform-check/.tools/go/1.26.9/go"
+        }
+      }
+    },
+    {
+      "name": "tool:osv-scanner",
+      "status": "ok",
+      "detail": "2.6.0 installed, SHA-256 ok",
+      "data": {
+        "version": "2.6.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/osv-scanner/2.6.0/bin/osv-scanner",
+        "hash_ok": true,
+        "reported_version": "2.6.0"
+      }
+    },
+    {
+      "name": "tool:syft",
+      "status": "ok",
+      "detail": "1.54.0 installed, SHA-256 ok",
+      "data": {
+        "version": "1.54.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/syft/1.54.0/bin/syft",
+        "hash_ok": true,
+        "reported_version": "1.54.0"
+      }
+    },
+    {
+      "name": "tool:grype",
+      "status": "ok",
+      "detail": "0.119.0 installed, SHA-256 ok",
+      "data": {
+        "version": "0.119.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/grype/0.119.0/bin/grype",
+        "hash_ok": true,
+        "reported_version": "0.119.0"
+      }
+    },
+    {
+      "name": "tool:checkov",
+      "status": "ok",
+      "detail": "3.3.22 installed, SHA-256 ok",
+      "data": {
+        "version": "3.3.22",
+        "kind": "pip",
+        "installed": true,
+        "path": ".tools/pyenv/bin/checkov",
+        "hash_ok": true,
+        "reported_version": "3.3.22"
+      }
+    },
+    {
+      "name": "tool:bandit",
+      "status": "ok",
+      "detail": "1.9.4 installed, SHA-256 ok",
+      "data": {
+        "version": "1.9.4",
+        "kind": "pip",
+        "installed": true,
+        "path": ".tools/pyenv/bin/bandit",
+        "hash_ok": true,
+        "reported_version": "1.9.4"
+      }
+    },
+    {
+      "name": "tool:govulncheck",
+      "status": "ok",
+      "detail": "1.8.0 installed, SHA-256 ok; runs with Go 1.26.9 (kalkan)",
+      "data": {
+        "version": "1.8.0",
+        "kind": "go-install",
+        "installed": true,
+        "path": ".tools/govulncheck/1.8.0/bin/govulncheck",
+        "hash_ok": true,
+        "reported_version": "1.26.6",
+        "go": {
+          "path": "~/kalkan-platform-check/.tools/go/1.26.9/go/bin/go",
+          "version": "1.26.9",
+          "source": "kalkan",
+          "root": "~/kalkan-platform-check/.tools/go/1.26.9/go"
+        }
+      }
+    },
+    {
+      "name": "tool:zizmor",
+      "status": "ok",
+      "detail": "1.30.1 installed, SHA-256 ok",
+      "data": {
+        "version": "1.30.1",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/zizmor/1.30.1/bin/zizmor",
+        "hash_ok": true,
+        "reported_version": "1.30.1"
+      }
+    },
+    {
+      "name": "tool:actionlint",
+      "status": "ok",
+      "detail": "1.7.12 installed, SHA-256 ok",
+      "data": {
+        "version": "1.7.12",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/actionlint/1.7.12/bin/actionlint",
+        "hash_ok": true,
+        "reported_version": "1.7.12"
+      }
+    },
+    {
+      "name": "tool:poutine",
+      "status": "ok",
+      "detail": "1.1.6 installed, SHA-256 ok; runs with Go 1.26.9 (kalkan)",
+      "data": {
+        "version": "1.1.6",
+        "kind": "go-install",
+        "installed": true,
+        "path": ".tools/poutine/1.1.6/bin/poutine",
+        "hash_ok": true,
+        "reported_version": "1.1.6",
+        "go": {
+          "path": "~/kalkan-platform-check/.tools/go/1.26.9/go/bin/go",
+          "version": "1.26.9",
+          "source": "kalkan",
+          "root": "~/kalkan-platform-check/.tools/go/1.26.9/go"
+        }
+      }
+    },
+    {
+      "name": "tool:scorecard",
+      "status": "ok",
+      "detail": "5.5.0 installed, SHA-256 ok",
+      "data": {
+        "version": "5.5.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/scorecard/5.5.0/bin/scorecard",
+        "hash_ok": true,
+        "reported_version": "5.5.0"
+      }
+    },
+    {
+      "name": "tool:kingfisher",
+      "status": "ok",
+      "detail": "2.11.1 installed, SHA-256 ok",
+      "data": {
+        "version": "2.11.1",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/kingfisher/2.11.1/bin/kingfisher",
+        "hash_ok": true,
+        "reported_version": "2.11.1"
+      }
+    },
+    {
+      "name": "tool:shellcheck",
+      "status": "ok",
+      "detail": "0.11.0 installed, SHA-256 ok",
+      "data": {
+        "version": "0.11.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/shellcheck/0.11.0/bin/shellcheck",
+        "hash_ok": true,
+        "reported_version": "0.11.0"
+      }
+    },
+    {
+      "name": "tool:flawfinder",
+      "status": "ok",
+      "detail": "2.0.20 installed, SHA-256 ok",
+      "data": {
+        "version": "2.0.20",
+        "kind": "pip",
+        "installed": true,
+        "path": ".tools/pyenv/bin/flawfinder",
+        "hash_ok": true,
+        "reported_version": "2.0.20"
+      }
+    },
+    {
+      "name": "tool:gixy",
+      "status": "ok",
+      "detail": "0.2.55 installed, SHA-256 ok",
+      "data": {
+        "version": "0.2.55",
+        "kind": "pip",
+        "installed": true,
+        "path": ".tools/pyenv/bin/gixy",
+        "hash_ok": true,
+        "reported_version": "0.2.55"
+      }
+    },
+    {
+      "name": "tool:helm",
+      "status": "ok",
+      "detail": "4.3.0 installed, SHA-256 ok",
+      "data": {
+        "version": "4.3.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/helm/4.3.0/bin/helm",
+        "hash_ok": true,
+        "reported_version": "4.3.0"
+      }
+    },
+    {
+      "name": "tool:vacuum",
+      "status": "ok",
+      "detail": "0.33.0 installed, SHA-256 ok",
+      "data": {
+        "version": "0.33.0",
+        "kind": "binary",
+        "installed": true,
+        "path": ".tools/vacuum/0.33.0/bin/vacuum",
+        "hash_ok": true,
+        "reported_version": "0.33.0"
+      }
+    },
+    {
+      "name": "paths",
+      "status": "ok",
+      "detail": "home ~/kalkan-platform-check (checkout); runs ~/kalkan-platform-check/runs; data from the checkout",
+      "data": {
+        "home": "~/kalkan-platform-check",
+        "home_source": "checkout",
+        "runs": "~/kalkan-platform-check/runs",
+        "data_source": "checkout",
+        "knowledge": "~/kalkan-platform-check/knowledge",
+        "rules": "~/kalkan-platform-check/rules"
+      }
+    },
+    {
+      "name": "vulndb",
+      "status": "ok",
+      "detail": "OSV: 13 ecosystems, Grype: ready, Go: the vuln.go.dev archive, modified 2026-11-11T02:51:11Z, RetireJS: 75 libraries, updated 2026-11-12T20:22:53Z; updated 2026-11-12T20:22:53Z",
+      "data": {
+        "root": "~/kalkan-platform-check/.tools/vulndb",
+        "osv_ecosystems": [
+          "CRAN",
+          "GitHub Actions",
+          "Go",
+          "Hex",
+          "Maven",
+          "NuGet",
+          "Packagist",
+          "Pub",
+          "PyPI",
+          "RubyGems",
+          "SwiftURL",
+          "crates.io",
+          "npm"
+        ],
+        "grype": true,
+        "go": {
+          "source": "official",
+          "url": "https://vuln.go.dev/vulndb.zip",
+          "sha256": "714ff02d9533ec6ca269e565b61b27cbd959aa0af89d51f318261322e875861c",
+          "bytes": 3599175,
+          "last_modified": "Thu, 12 Nov 2026 11:15:42 GMT",
+          "modified": "2026-11-11T02:51:11Z",
+          "entries": 4801,
+          "ignored_members": 0,
+          "updated_at": "2026-11-12T20:22:52Z"
+        },
+        "retire": {
+          "source": "https://raw.githubusercontent.com/RetireJS/retire.js/master/repository/jsrepository-v5.json",
+          "upstream": "github.com/RetireJS/retire.js",
+          "license": "Apache-2.0",
+          "file": "jsrepository-v5.json",
+          "sha256": "f97d00752635a5309b27fabffbece8e0a1a964711a7b2452e2e8a91b2fee5e49",
+          "bytes": 642685,
+          "etag": "\"9c2557b6f853abbaf129a426a12f1f111ef4a0efd5d2eae3b14e1c1f2e22810e\"",
+          "last_modified": null,
+          "updated_at": "2026-11-12T20:22:53Z",
+          "libraries": 75,
+          "vulnerabilities": 810,
+          "extractors": 333,
+          "hashes": 17,
+          "skipped_extractors": 0,
+          "unsupported_extractors": {
+            "ast": 66,
+            "func": 48
+          }
+        },
+        "age_days": 0
+      }
+    },
+    {
+      "name": "disk",
+      "status": "ok",
+      "detail": "21.1 GB free",
+      "data": {
+        "free_bytes": 21131722752,
+        "min_free_bytes": 5000000000
+      }
+    },
+    {
+      "name": "footprint",
+      "status": "info",
+      "detail": "5.45 GB in 38,100 files: tools 1.46 GB, databases 3.73 GB, caches 257.1 MB, runs 0 B (0 runs); details and cleanup: kalkan clean",
+      "data": {
+        "runs": {
+          "bytes": 0,
+          "files": 0
+        },
+        "caches": {
+          "bytes": 257087393,
+          "files": 96
+        },
+        "databases": {
+          "bytes": 3730176833,
+          "files": 4833
+        },
+        "tools": {
+          "bytes": 1459855603,
+          "files": 33171
+        },
+        "runs_count": 0
+      }
+    },
+    {
+      "name": "runs-writable",
+      "status": "ok",
+      "detail": "~/kalkan-platform-check/runs is writable",
+      "data": {
+        "path": "~/kalkan-platform-check/runs"
+      }
+    }
+  ]
+}

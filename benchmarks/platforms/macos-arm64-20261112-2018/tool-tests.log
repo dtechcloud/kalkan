@@ -1,0 +1,70 @@
+............................................F........F                   [100%]
+=================================== FAILURES ===================================
+________________ test_the_tools_write_nothing_into_the_profile _________________
+
+tmp_path = PosixPath('/private/var/folders/m8/0rm1dkzn359d62fl3rvb_72w0000gn/T/pytest-of-[user]/pytest-0/test_the_tools_write_nothing_i0')
+profile = PosixPath('/private/var/folders/m8/0rm1dkzn359d62fl3rvb_72w0000gn/T/pytest-of-[user]/pytest-0/test_the_tools_write_nothing_i0/profile')
+
+    def test_the_tools_write_nothing_into_the_profile(tmp_path, profile):
+        manifest = load_manifest()
+        before = entries(profile)
+        ctx = target(tmp_path)
+        ran: list[str] = []
+        opengrep = resolve("opengrep", manifest=manifest)
+        if opengrep is not None:
+            output = probe_tool_version(opengrep.argv, manifest.get("opengrep"))
+            assert output is not None and manifest.get("opengrep").version in output
+            result = run_adapter(OpengrepAdapter(), ctx)
+            assert result.status == "ok", result.message
+            ran.append("opengrep")
+        for adapter in (GosecAdapter(), GovulncheckAdapter()):
+            if not adapter.applies(ctx)[0] or resolve(adapter.tool, manifest=manifest) is None:
+                continue
+            result = run_adapter(adapter, ctx)
+            assert result.status == "ok", (adapter.name, result.message)
+            ran.append(adapter.name)
+        if not ran:
+            pytest.skip("opengrep, gosec and govulncheck are not installed")
+>       assert entries(profile) == before, sorted(entries(profile) - before)
+E       AssertionError: ['Library', 'Library/Application Support', 'Library/Application Support/go', 'Library/Application Support/go/telemetry...y/local', 'Library/Application Support/go/telemetry/local/asm@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count', ...]
+E       assert {'.config', '...ming/go', ...} == {'.config', '...ming/go', ...}
+E         
+E         Extra items in the left set:
+E         'Library/Application Support/go/telemetry/local/compile@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count'
+E         'Library/Application Support/go/telemetry'
+E         'Library/Application Support/go/telemetry/local/weekends'
+E         'Library/Application Support/go/telemetry/local'
+E         'Library/Application Support/go/telemetry/local/go@go1.26.9-go1.26.9-darwin-arm64-2026-11-12.v1.count'...
+E         
+E         ...Full output truncated, use '-vv' to show
+
+tests/integration/test_tool_footprint.py:103: AssertionError
+______________________ test_real_syft_sbom_on_the_depapp _______________________
+
+tmp_path = PosixPath('/private/var/folders/m8/0rm1dkzn359d62fl3rvb_72w0000gn/T/pytest-of-[user]/pytest-0/test_real_syft_sbom_on_the_dep0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x10ae48470>
+
+    @pytest.mark.tools
+    def test_real_syft_sbom_on_the_depapp(tmp_path, monkeypatch):
+        pytest.importorskip("kalkan.scanners.registry")
+        from kalkan.tools.resolve import resolve
+    
+        if resolve("syft") is None:
+            pytest.skip("syft is not installed")
+        root = tmp_path / "runs"
+        run = root / RUN_ID
+        shutil.copytree(DEPAPP, run / "target")
+        monkeypatch.setenv("KALKAN_RUNS_DIR", str(root))
+        summary = commands.run_sbom(run)
+        assert summary["engine"] == "syft"
+        assert summary["by_ecosystem"].get("PyPI") == 3
+>       assert summary["by_ecosystem"].get("Go") == 2
+E       AssertionError: assert 3 == 2
+E        +  where 3 = <built-in method get of dict object at 0x10afbf1c0>('Go')
+E        +    where <built-in method get of dict object at 0x10afbf1c0> = {'Go': 3, 'PyPI': 3, 'npm': 4}.get
+
+tests/unit/test_sca_commands.py:491: AssertionError
+=========================== short test summary info ============================
+FAILED tests/integration/test_tool_footprint.py::test_the_tools_write_nothing_into_the_profile
+FAILED tests/unit/test_sca_commands.py::test_real_syft_sbom_on_the_depapp - A...
+2 failed, 52 passed, 4618 deselected in 232.02s (0:03:52)
