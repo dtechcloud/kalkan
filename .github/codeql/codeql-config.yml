@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: MIT
+#
+# CodeQL configuration (.github/workflows/codeql.yml).
+#
+# The two folders hold deliberately vulnerable code: the targets of the scanner and report
+# tests. Their alerts are true and intended, and they hid the alerts in the kalkan code.
+
+name: kalkan CodeQL configuration
+
+paths-ignore:
+  - tests/fixtures
+  - tests/golden
