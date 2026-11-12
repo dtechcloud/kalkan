@@ -1,0 +1,91 @@
+{
+  "version": 1,
+  "slug": "rce",
+  "description": "exec, spawn, eval, Function constructor with potential user input",
+  "class": "os-command-injection",
+  "cwe": [
+    "CWE-78",
+    "CWE-94"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "child_process.*exec\\s*\\(",
+      "flags": "",
+      "label": "child_process exec"
+    },
+    {
+      "regex": "\\bexec\\s*\\(\\s*[`'\"]",
+      "flags": "",
+      "label": "exec with string"
+    },
+    {
+      "regex": "\\bexecSync\\s*\\(",
+      "flags": "",
+      "label": "execSync"
+    },
+    {
+      "regex": "\\bspawn\\s*\\(",
+      "flags": "",
+      "label": "spawn"
+    },
+    {
+      "regex": "\\bspawnSync\\s*\\(",
+      "flags": "",
+      "label": "spawnSync"
+    },
+    {
+      "regex": "\\beval\\s*\\(",
+      "flags": "",
+      "label": "eval"
+    },
+    {
+      "regex": "new\\s+Function\\s*\\(",
+      "flags": "",
+      "label": "new Function()"
+    },
+    {
+      "regex": "require\\s*\\(\\s*['\"]child_process['\"]",
+      "flags": "",
+      "label": "child_process import"
+    },
+    {
+      "regex": "from\\s+['\"]child_process['\"]",
+      "flags": "",
+      "label": "child_process import"
+    },
+    {
+      "regex": "vm\\.runIn(New|This)Context\\s*\\(",
+      "flags": "",
+      "label": "vm context execution"
+    }
+  ],
+  "examples": [
+    "child_process.exec(cmd);",
+    "exec(`ls ${dir}`);",
+    "execSync(\"whoami\");",
+    "spawn(\"sh\", [\"-c\", cmd]);",
+    "spawnSync(\"git\", [\"status\"]);",
+    "eval(userInput);",
+    "new Function(\"return \" + body)();",
+    "const cp = require(\"child_process\");",
+    "import { exec } from \"child_process\";",
+    "vm.runInNewContext(code, ctx);",
+    "vm.runInThisContext(snippet);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rce.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "slug": "cache-key-scope",
+  "description": "Cache keys that may lack user/team scoping — cross-tenant risk",
+  "class": "multi-tenant",
+  "cwe": [
+    "CWE-284"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "redis\\.(get|set|hget|hset|setex)\\s*\\(\\s*`",
+      "flags": "",
+      "label": "Redis template key — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "redis\\.(get|set|hget|hset|setex)\\s*\\(\\s*['\"]",
+      "flags": "",
+      "label": "Redis string key — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "cache\\.(get|set|has)\\s*\\(\\s*`",
+      "flags": "",
+      "label": "cache template key — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "cache\\.(get|set|has)\\s*\\(\\s*['\"]",
+      "flags": "",
+      "label": "cache string key — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "cacheKey\\s*=\\s*`",
+      "flags": "",
+      "label": "cacheKey template literal — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "cache_key\\s*=\\s*`",
+      "flags": "",
+      "label": "cache_key template literal — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    },
+    {
+      "regex": "\\.get\\s*\\(\\s*`[^`]*:",
+      "flags": "",
+      "label": "KV get with colon-separated key — no user/team scoping visible in key construction",
+      "not_near": [
+        {
+          "regex": "userId|user_id|teamId|team_id|ownerId|owner_id|auth\\.|session\\.|projectId|project_id",
+          "flags": "i",
+          "before": 1,
+          "after": 1
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "const cached = await redis.get(`feature:${name}`);",
+    "await redis.set(`config:${name}`, value);",
+    "await redis.hget(`map:${k}`, field);",
+    "await redis.hset(`map:${k}`, field, value);",
+    "await redis.setex(`token:${name}`, 60, value);",
+    "await redis.get(\"global-counter\");",
+    "await redis.set(\"singleton\", value);",
+    "await cache.get(`feature:${flag}`);",
+    "await cache.set(`feature:${flag}`, value);",
+    "cache.has(`flag:${name}`);",
+    "cache.get(\"global-counter\");",
+    "cache.set(\"singleton\", payload);",
+    "const cacheKey = `feature:${name}`;",
+    "const cache_key = `feature:${name}`;",
+    "await store.get(`feature:flag:${id}`);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/cache-key-scope.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,49 @@
+rules:
+  - id: codeql-go-weak-rsa-key
+    message: >-
+      RSA key size is less than 2048 bits. Keys smaller than 2048 bits are
+      considered weak. Use at least 2048 bits, preferably 4096.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-326: Inadequate Encryption Strength"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/326.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-326/InsufficientKeySize.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-326/InsufficientKeySize.ql
+    patterns:
+      - pattern: rsa.GenerateKey($RAND, $BITS)
+      - metavariable-comparison:
+          metavariable: $BITS
+          comparison: $BITS < 2048
+
+  - id: codeql-go-weak-dsa-key
+    message: >-
+      DSA is deprecated for new applications. Use ECDSA or Ed25519 instead.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-326: Inadequate Encryption Strength"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/326.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-326/InsufficientKeySize.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-326/InsufficientKeySize.ql
+    pattern: dsa.GenerateKey(...)

@@ -1,0 +1,34 @@
+rules:
+  - id: codeql-actions-unpinned-action
+    message: >-
+      Action is not pinned to a specific commit SHA. Pin actions to a full
+      commit hash to prevent supply chain attacks.
+    severity: WARNING
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-829: Inclusion of Functionality from Untrusted Control Sphere"
+      technology:
+        - github-actions
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/829.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-829/UnpinnedActionsTag.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-829/UnpinnedActionsTag.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    patterns:
+      - pattern: "uses: $ACTION@$VERSION"
+      - metavariable-regex:
+          metavariable: $VERSION
+          regex: '^(v\d+|v\d+\.\d+|v\d+\.\d+\.\d+|main|master|latest)$'
+      - metavariable-regex:
+          metavariable: $ACTION
+          regex: '^(?!actions/).*'

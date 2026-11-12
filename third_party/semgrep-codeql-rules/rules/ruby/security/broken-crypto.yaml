@@ -1,0 +1,78 @@
+rules:
+  - id: codeql-ruby-weak-crypto-md5
+    message: >-
+      Use of MD5 hashing algorithm. MD5 is cryptographically broken and should
+      not be used for security purposes.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - ruby
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Digest::MD5.hexdigest(...)
+      - pattern: Digest::MD5.digest(...)
+      - pattern: OpenSSL::Digest::MD5.new(...)
+
+  - id: codeql-ruby-weak-crypto-sha1
+    message: >-
+      Use of SHA-1 hashing algorithm. SHA-1 is cryptographically weak and should
+      not be used for security purposes.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - ruby
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Digest::SHA1.hexdigest(...)
+      - pattern: Digest::SHA1.digest(...)
+      - pattern: OpenSSL::Digest::SHA1.new(...)
+
+  - id: codeql-ruby-weak-crypto-des
+    message: >-
+      Use of DES encryption algorithm. DES is cryptographically broken. Use AES
+      instead.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - ruby
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: OpenSSL::Cipher.new("DES")
+      - pattern: OpenSSL::Cipher.new("des")
+      - pattern: OpenSSL::Cipher.new("DES-...")

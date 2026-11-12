@@ -1,0 +1,59 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan polish task result (docs/ENGINE-SPEC.md section 18). Only fields with a restored letter appear. The engine accepts a field only when it differs from the input text in the Turkish letters alone and keeps every code token.",
+  "required": [
+    "task_id",
+    "records"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-polish$"
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "fields"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^KF-[0-9A-F]{16}$"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "$comment": "The whole field text with the Turkish letters restored. Every other character stays as it was.",
+              "required": [
+                "path",
+                "text"
+              ],
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "pattern": "^/[a-z_]+(/([a-z_]+|[0-9]+))*$",
+                  "description": "The path of an input field, unchanged."
+                },
+                "text": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}

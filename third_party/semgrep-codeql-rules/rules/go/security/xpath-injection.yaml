@@ -1,0 +1,31 @@
+rules:
+  - id: codeql-go-xpath-injection
+    message: >-
+      XPath query built from user input may be vulnerable to XPath injection.
+      Use parameterized queries or proper escaping.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-643: Improper Neutralization of Data within XPath Expressions"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/643.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-643/XPathInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-643/XPathInjection.ql
+    pattern-either:
+      - pattern: xmlquery.QueryAll($DOC, $QUERY + $INPUT)
+      - pattern: xmlquery.QueryAll($DOC, fmt.Sprintf($FMT, ...))
+      - pattern: xmlquery.Query($DOC, $QUERY + $INPUT)
+      - pattern: xmlquery.Query($DOC, fmt.Sprintf($FMT, ...))
+      - pattern: xpath.MustCompile($QUERY + $INPUT)
+      - pattern: xpath.MustCompile(fmt.Sprintf($FMT, ...))
+      - pattern: xpath.Compile($QUERY + $INPUT)
+      - pattern: xpath.Compile(fmt.Sprintf($FMT, ...))

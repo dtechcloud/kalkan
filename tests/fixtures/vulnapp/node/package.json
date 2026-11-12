@@ -1,0 +1,24 @@
+{
+  "name": "vulnapp-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node.js part of the kalkan vulnapp fixture. Do not deploy.",
+  "main": "server.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cookie-parser": "1.4.7",
+    "cors": "2.8.5",
+    "escape-html": "1.0.3",
+    "express": "4.21.2",
+    "jsonwebtoken": "9.0.2",
+    "libxmljs": "1.0.11",
+    "lodash": "4.17.15",
+    "minimist": "1.2.0",
+    "mongodb": "6.12.0",
+    "mysql": "2.18.1",
+    "node-serialize": "0.0.4"
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "slug": "lockfile-insecure-url",
+  "description": "Lockfile entry downloads a package over plain HTTP (no TLS)",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829",
+    "CWE-319"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/package-lock.json",
+    "**/npm-shrinkwrap.json",
+    "**/yarn.lock",
+    "**/pnpm-lock.yaml"
+  ],
+  "exclude_file_patterns": [
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\"resolved\"\\s*:\\s*\"http://",
+      "flags": "i",
+      "label": "npm resolved URL over http",
+      "paths": [
+        "**/package-lock.json",
+        "**/npm-shrinkwrap.json"
+      ]
+    },
+    {
+      "regex": "^\\s+resolved\\s+\"?http://",
+      "flags": "i",
+      "label": "yarn resolved URL over http",
+      "paths": [
+        "**/yarn.lock"
+      ]
+    },
+    {
+      "regex": "\\btarball:\\s*[\"']?http://",
+      "flags": "i",
+      "label": "pnpm tarball URL over http",
+      "paths": [
+        "**/pnpm-lock.yaml"
+      ]
+    }
+  ],
+  "examples": [
+    "      \"resolved\": \"http://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz\",",
+    "  resolved \"http://registry.example.internal/left-pad/-/left-pad-1.3.0.tgz#5b8a3a7765dfe001261dde915589e782f8c94d1e\"",
+    "    resolution: {integrity: sha512-AAAA, tarball: http://npm.example.internal/a/-/a-1.0.0.tgz}"
+  ],
+  "source": null,
+  "notes": "kalkan rule (ADR-0005, K.12; the validate-https check of lockfile-lint). A man in the middle can replace a package that a lockfile downloads over http. The integrity hash protects only when it is there and the tool checks it."
+}

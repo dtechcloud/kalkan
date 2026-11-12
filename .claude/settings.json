@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(.venv/Scripts/kalkan.exe *)",
+      "Bash(.venv/bin/kalkan *)",
+      "Read",
+      "Grep",
+      "Glob",
+      "Edit(/runs/*/tasks/*/result.json)"
+    ],
+    "deny": [
+      "WebFetch",
+      "WebSearch",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(git push *)",
+      "PowerShell(curl *)",
+      "PowerShell(wget *)",
+      "PowerShell(Invoke-WebRequest *)",
+      "PowerShell(Invoke-RestMethod *)",
+      "PowerShell(iwr *)",
+      "PowerShell(irm *)",
+      "PowerShell(git push *)",
+      "Edit(/.git/**)",
+      "Read(**/.env)",
+      "Read(**/.env.*)"
+    ]
+  }
+}

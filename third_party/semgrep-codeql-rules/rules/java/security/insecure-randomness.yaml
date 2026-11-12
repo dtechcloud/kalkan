@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-java-insecure-random
+    message: >-
+      java.util.Random is not cryptographically secure. Use SecureRandom for
+      security-sensitive operations.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-338: Use of Cryptographically Weak Pseudo-Random Number Generator"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/338.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-338/InsecureRandomness.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-338/InsecureRandomness.ql
+    pattern-either:
+      - pattern: new Random()
+      - pattern: new Random($SEED)
+      - pattern: Math.random()

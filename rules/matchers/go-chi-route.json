@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "slug": "go-chi-route",
+  "description": "Chi router registrations and route groups (gated on Chi)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go",
+      "chi"
+    ],
+    "sentinel_files": [
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "github\\.com/go-chi/chi"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:r|router|api)\\.(?:Get|Post|Put|Patch|Delete|Method|Handle|HandleFunc)\\s*\\(",
+      "flags": "",
+      "label": "Chi method registration"
+    },
+    {
+      "regex": "\\bchi\\.NewRouter\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "chi.NewRouter() init"
+    },
+    {
+      "regex": "\\.Route\\s*\\(",
+      "flags": "",
+      "label": "Chi .Route (subroute scope)"
+    },
+    {
+      "regex": "\\.Group\\s*\\(",
+      "flags": "",
+      "label": "Chi .Group (middleware scope)"
+    },
+    {
+      "regex": "\\.Mount\\s*\\(",
+      "flags": "",
+      "label": "Chi .Mount (subrouter — middleware inheritance gotcha)"
+    },
+    {
+      "regex": "\\bchi\\.URLParam\\s*\\(",
+      "flags": "",
+      "label": "chi.URLParam (untrusted input)"
+    }
+  ],
+  "examples": [
+    "r := chi.NewRouter()",
+    "r.Get(\"/users\", listUsers)",
+    "router.Post(\"/login\", login)",
+    "api.Put(\"/items/{id}\", update)",
+    "r.Patch(\"/profile\", patch)",
+    "r.Delete(\"/items/{id}\", deleteItem)",
+    "r.Method(\"OPTIONS\", \"/cors\", corsHandler)",
+    "r.Handle(\"/static/*\", fileServer)",
+    "r.HandleFunc(\"/health\", healthHandler)",
+    "r.Route(\"/admin\", func(r chi.Router) {})",
+    "r.Group(func(r chi.Router) {})",
+    "r.Mount(\"/api\", apiRouter())",
+    "id := chi.URLParam(r, \"id\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-chi-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [chi]; kalkan uses tech go (or chi) and a manifest that names chi."
+}

@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "slug": "rs-rocket-route",
+  "description": "Rocket route attributes and mount! macro (gated on Rocket)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "rocket"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\brocket\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "#\\[\\s*(?:get|post|put|patch|delete|head|options)\\s*\\(\\s*\"[^\"]+\"\\s*\\)",
+      "flags": "",
+      "label": "Rocket route attribute"
+    },
+    {
+      "regex": "\\brocket::routes!\\s*\\[",
+      "flags": "",
+      "label": "routes![...] macro"
+    },
+    {
+      "regex": "\\.mount\\s*\\(\\s*\"[^\"]+\"",
+      "flags": "",
+      "label": ".mount() registration"
+    },
+    {
+      "regex": "Json<[^>]+>|Form<[^>]+>|Query<[^>]+>",
+      "flags": "",
+      "label": "guard / extractor (untrusted)"
+    }
+  ],
+  "examples": [
+    "#[get(\"/world\")]",
+    "#[post(\"/login\")]",
+    "#[ put ( \"/items/<id>\" ) ]",
+    "#[delete(\"/users/<id>\")]",
+    "rocket::routes![index, login, logout]",
+    "rocket.mount(\"/api\", routes![hello])",
+    "fn create(form: Form<NewUser>) -> Status {}",
+    "fn show(id: u32, query: Query<Filter>) -> Json<User> {}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-rocket-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [rocket]; kalkan uses tech rust (or rocket) and a manifest that names rocket."
+}

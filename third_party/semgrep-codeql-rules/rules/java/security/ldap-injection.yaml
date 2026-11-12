@@ -1,0 +1,25 @@
+rules:
+  - id: codeql-java-ldap-injection
+    message: >-
+      LDAP query built from user input may be vulnerable to LDAP injection.
+      Use proper escaping or parameterized queries.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-090: Improper Neutralization of Special Elements used in an LDAP Query"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/90.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-090/LdapInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-090/LdapInjection.ql
+    pattern-either:
+      - pattern: $CTX.search(..., $FILTER + $VAR, ...)
+      - pattern: new SearchControls().setSearchFilter($FILTER + $VAR)

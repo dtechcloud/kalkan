@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "slug": "cross-tenant-id",
+  "description": "User-supplied IDs used in DB lookups without ownership verification — cross-tenant risk",
+  "class": "idor",
+  "cwe": [
+    "CWE-639"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/services/**/endpoints/**/*.ts",
+    "**/services/**/endpoint/**/*.ts",
+    "**/services/**/src/index.ts",
+    "**/apps/**/route.ts",
+    "**/apps/**/route.*.ts",
+    "**/app/api/**/*.ts"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "get\\w+By(Id|Uid)\\s*\\(\\s*(parsed\\.(body|query|params)|req\\.(body|query|params))",
+      "flags": "",
+      "label": "DB lookup with user-supplied ID from request"
+    },
+    {
+      "regex": "(teamId|ownerId|userId|installationId|configurationId|integrationConfigurationId)\\s*[:=]\\s*(parsed|req)\\.(body|query|params)",
+      "flags": "",
+      "label": "Tenant/user ID extracted from request input"
+    },
+    {
+      "regex": "getTeamById\\s*\\(\\s*\\w+\\.(ownerId|teamId)",
+      "flags": "",
+      "label": "getTeamById with potentially unverified ownerId"
+    },
+    {
+      "regex": "find(One)?By(Id|Uid)\\s*\\(\\s*(parsed|req)\\.",
+      "flags": "",
+      "label": "findById with user-supplied ID"
+    }
+  ],
+  "examples": [
+    "const t = await getTeamById(parsed.body.teamId);",
+    "const u = await getUserById(req.params.userId);",
+    "const i = await getInstallationByUid(parsed.query.installationUid);",
+    "const teamId = parsed.body.teamId;",
+    "const ownerId = req.params.ownerId;",
+    "const userId = parsed.query.userId;",
+    "const installationId = parsed.body.installationId;",
+    "const configurationId = parsed.body.configurationId;",
+    "const integrationConfigurationId = req.body.integrationConfigurationId;",
+    "const t = getTeamById(install.ownerId);",
+    "const t = getTeamById(record.teamId);",
+    "const r = await findById(parsed.params.id);",
+    "const r = await findOneById(req.body.id);",
+    "const r = await findByUid(parsed.body.uid);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/cross-tenant-id.ts"
+  },
+  "notes": ""
+}

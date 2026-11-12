@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "js-koa-route",
+  "description": "Koa route registrations and middleware (gated on Koa)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "koa"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:router|app)\\.(?:get|post|put|patch|del|delete|all|use)\\s*\\(",
+      "flags": "",
+      "label": "Koa router method registration"
+    },
+    {
+      "regex": "new\\s+Koa\\s*\\(",
+      "flags": "",
+      "label": "new Koa() instantiation"
+    },
+    {
+      "regex": "\\bKoaRouter\\s*\\(|@koa/router",
+      "flags": "",
+      "label": "@koa/router import or factory"
+    },
+    {
+      "regex": "async\\s*\\(\\s*ctx\\s*[,)]",
+      "flags": "",
+      "label": "Koa middleware (ctx) signature"
+    },
+    {
+      "regex": "\\bctx\\.(?:request|query|params|state|throw)\\b",
+      "flags": "",
+      "label": "ctx.* accessor"
+    }
+  ],
+  "examples": [
+    "const app = new Koa();",
+    "router.get(\"/users\", handler)",
+    "router.post('/login', handler);",
+    "router.put(\"/x\", h)",
+    "router.del('/y', h)",
+    "app.use(authMiddleware)",
+    "import KoaRouter from \"@koa/router\";",
+    "const r = KoaRouter();",
+    "app.use(async (ctx, next) => { await next(); })",
+    "async (ctx) => ctx.body = {}",
+    "ctx.request.body",
+    "ctx.query.page",
+    "ctx.params.id",
+    "ctx.state.user",
+    "ctx.throw(401)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-koa-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

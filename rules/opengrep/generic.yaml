@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules that work on the raw text of any file (regex mode).
+# Original rules written for kalkan. Rule ID form: kalkan.generic.<class>.<name>.
+#
+# Gitleaks and Trivy skip AWS keys that end in "EXAMPLE" (the AWS documentation key pair).
+# These rules do not skip them, so a planted documentation key is still reported.
+rules:
+  - id: kalkan.generic.hardcoded-secrets.aws-access-key-id
+    languages: [regex]
+    severity: WARNING
+    message: >-
+      This file contains an AWS access key ID. A key in source code or configuration leaks with
+      every copy of the repository. Remove the key, rotate it in IAM, and load credentials from the
+      environment, an instance role or a secret manager.
+    metadata:
+      cwe:
+        - "CWE-798: Use of Hard-coded Credentials"
+      kalkan_class: hardcoded-secrets
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/798.html
+        - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+      category: security
+      technology: [aws]
+    pattern-regex: (?<![A-Za-z0-9])(AKIA|ASIA|ABIA|ACCA)[A-Z0-9]{16}(?![A-Za-z0-9])
+
+  - id: kalkan.generic.hardcoded-secrets.aws-secret-access-key
+    languages: [regex]
+    severity: WARNING
+    message: >-
+      This file assigns a literal AWS secret access key. Remove the key, rotate it in IAM, and load
+      credentials from the environment, an instance role or a secret manager.
+    metadata:
+      cwe:
+        - "CWE-798: Use of Hard-coded Credentials"
+      kalkan_class: hardcoded-secrets
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/798.html
+        - https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html
+      category: security
+      technology: [aws]
+    pattern-regex: (?i)aws_?secret_?access_?key["']?\s*[:=]\s*["']?[A-Za-z0-9/+]{40}(?![A-Za-z0-9/+=])

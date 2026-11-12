@@ -1,0 +1,110 @@
+rules:
+  - id: codeql-js-express-helmet-missing
+    message: >-
+      Express app without Helmet middleware. Use Helmet to set security-related
+      HTTP headers.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-693: Protection Mechanism Failure"
+      technology:
+        - express
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/693.html
+        - https://helmetjs.github.io/
+    patterns:
+      - pattern: |
+          $APP = express();
+          ...
+          $APP.listen(...);
+      - pattern-not: |
+          $APP = express();
+          ...
+          $APP.use(helmet(...));
+          ...
+          $APP.listen(...);
+
+  - id: codeql-js-express-cors-all-origins
+    message: >-
+      CORS configured to allow all origins. Restrict to specific trusted
+      origins in production.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-942: Overly Permissive Cross-domain Whitelist"
+      technology:
+        - express
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+    pattern-either:
+      - pattern: "cors({ origin: \"*\" })"
+      - pattern: "cors({ origin: true })"
+      - pattern: 'res.header("Access-Control-Allow-Origin", "*")'
+
+  - id: codeql-js-express-body-parser-limit
+    message: >-
+      Express body parser without size limit. Set a limit to prevent denial of
+      service attacks.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      technology:
+        - express
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/400.html
+    patterns:
+      - pattern-either:
+          - pattern: express.json()
+          - pattern: express.urlencoded()
+          - pattern: bodyParser.json()
+          - pattern: bodyParser.urlencoded()
+      - pattern-not: "express.json({ limit: $LIMIT })"
+      - pattern-not: "express.urlencoded({ limit: $LIMIT })"
+
+  - id: codeql-js-express-session-insecure
+    message: >-
+      Express session with insecure cookie settings. Set secure and httpOnly
+      flags for session cookies.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      technology:
+        - express
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+    patterns:
+      - pattern: "session({ ..., cookie: { ..., secure: false, ... }, ... })"

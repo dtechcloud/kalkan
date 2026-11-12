@@ -1,0 +1,2 @@
+# Plain YAML without apiVersion and kind: not Kubernetes.
+log_level: info

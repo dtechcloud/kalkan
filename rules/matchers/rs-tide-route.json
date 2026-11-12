@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "slug": "rs-tide-route",
+  "description": "Tide route handlers (gated on Tide)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "tide"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\btide\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bapp\\.at\\s*\\(\\s*\"[^\"]+\"\\s*\\)\\.(?:get|post|put|patch|delete|all)\\s*\\(",
+      "flags": "",
+      "label": "app.at('/path').<verb>(handler)"
+    },
+    {
+      "regex": "\\btide::new\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "tide::new() factory"
+    },
+    {
+      "regex": "\\bMiddleware\\b",
+      "flags": "",
+      "label": "Middleware trait — auth wiring"
+    }
+  ],
+  "examples": [
+    "app.at(\"/users\").get(list_users);",
+    "app.at(\"/login\").post(handle_login);",
+    "app.at(\"/items/:id\").put(update_item);",
+    "app.at(\"/items/:id\").delete(remove_item);",
+    "app.at(\"/all\").all(any_handler);",
+    "let mut app = tide::new();",
+    "impl Middleware<State> for AuthGuard {",
+    "use tide::Middleware;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-tide-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [tide]; kalkan uses tech rust (or tide) and a manifest that names tide."
+}

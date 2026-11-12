@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "php-magento-controller",
+  "description": "Magento 2 controllers and webapi routes (gated on Magento)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/Controller/**/*.php",
+    "**/etc/webapi.xml"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "php",
+      "magento"
+    ],
+    "sentinel_files": [
+      "**/composer.json",
+      "**/registration.php",
+      "**/etc/module.xml"
+    ],
+    "sentinel_contains": [
+      "(?i:magento)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "extends\\s+\\\\?Magento\\\\Framework\\\\App\\\\Action\\\\Action\\b",
+      "flags": "",
+      "label": "Magento Action subclass"
+    },
+    {
+      "regex": "implements\\s+\\\\?Magento\\\\Framework\\\\App\\\\(?:Action\\\\)?HttpGetActionInterface",
+      "flags": "",
+      "label": "HttpGetActionInterface implementation"
+    },
+    {
+      "regex": "<route\\s+url=[\"'][^\"']+[\"']\\s+method=[\"'][A-Z]+[\"']",
+      "flags": "",
+      "label": "webapi.xml <route> declaration"
+    },
+    {
+      "regex": "\\$this->getRequest\\s*\\(\\s*\\)->getParam\\s*\\(",
+      "flags": "",
+      "label": "request param accessor"
+    }
+  ],
+  "examples": [
+    "class Index extends \\Magento\\Framework\\App\\Action\\Action { public function execute() {} }",
+    "class View extends Magento\\Framework\\App\\Action\\Action\n{\n    public function execute() {}\n}",
+    "class Get implements \\Magento\\Framework\\App\\Action\\HttpGetActionInterface { }",
+    "class List implements Magento\\Framework\\App\\HttpGetActionInterface { }",
+    "<route url=\"/V1/products\" method=\"GET\">",
+    "<route url='/V1/orders/:orderId' method='POST'>",
+    "<route url=\"/V1/customers/me\" method=\"PUT\">",
+    "$id = $this->getRequest()->getParam('id');",
+    "$sku = $this->getRequest( )->getParam(\"sku\");"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-magento-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [magento]; kalkan uses tech php (or magento) and a Magento composer.json, registration.php or module.xml."
+}

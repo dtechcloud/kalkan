@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "go-fiber-route",
+  "description": "Fiber route registrations (gated on Fiber)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go",
+      "fiber"
+    ],
+    "sentinel_files": [
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "github\\.com/gofiber/fiber"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:app|api|router|g)\\.(?:Get|Post|Put|Patch|Delete|All)\\s*\\(",
+      "flags": "",
+      "label": "Fiber method registration"
+    },
+    {
+      "regex": "\\bfiber\\.New\\s*\\(",
+      "flags": "",
+      "label": "fiber.New() init"
+    },
+    {
+      "regex": "\\.Group\\s*\\(",
+      "flags": "",
+      "label": "Fiber .Group (auth scope)"
+    },
+    {
+      "regex": "\\bc\\.(?:Query|Params|Body(?:Parser)?|Get|FormValue|Cookies)\\b",
+      "flags": "",
+      "label": "Request accessor (untrusted input)"
+    }
+  ],
+  "examples": [
+    "app := fiber.New()",
+    "app.Get(\"/users\", listUsers)",
+    "api.Post(\"/login\", login)",
+    "router.Put(\"/items/:id\", update)",
+    "g.Patch(\"/profile\", patch)",
+    "app.Delete(\"/items/:id\", deleteItem)",
+    "app.All(\"/proxy\", proxy)",
+    "v1 := app.Group(\"/v1\")",
+    "q := c.Query(\"q\")",
+    "id := c.Params(\"id\")",
+    "if err := c.BodyParser(&u); err != nil {}",
+    "body := c.Body()",
+    "auth := c.Get(\"Authorization\")",
+    "name := c.FormValue(\"name\")",
+    "session := c.Cookies(\"session\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-fiber-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [fiber]; kalkan uses tech go (or fiber) and a manifest that names fiber."
+}

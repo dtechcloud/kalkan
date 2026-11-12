@@ -1,0 +1,376 @@
+[
+  {
+    "verdict": "rejected",
+    "fingerprint": "missing-authz:app/routes.py:admin",
+    "title": "Router `admin` | <script>alert('x')</script> yetki atlatma",
+    "description": "Aday, /admin rotasının yetkilendirmeyi atladığını iddia etti.",
+    "claimed_root_cause": "admin, yetki kontrolünü atlıyor iddiası.",
+    "trace": [
+      {
+        "kind": "sink",
+        "file": "app/routes.py",
+        "line": 31,
+        "scope": "admin",
+        "description": "Ayarları güncelliyor."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/routes.py",
+        "line": 30,
+        "description": "require_authorization ayarlardan önce çalışıyor."
+      }
+    ],
+    "reason": "require_authorization, settings_update çağrısından önce çalışıyor.",
+    "id": "KF-C4BCAA828C227419",
+    "class": "missing-authz",
+    "cwe": [
+      "CWE-862"
+    ],
+    "owasp": [
+      "A01:2021"
+    ],
+    "engines": [
+      "hunter",
+      "verifier"
+    ],
+    "audit_answers": {
+      "attacker_control": {
+        "status": "established",
+        "reason": "Rota herkese açık.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 28,
+            "quote": "@app.get(\"/admin\")"
+          }
+        ]
+      },
+      "privilege_boundary": {
+        "status": "established",
+        "reason": "Rota yönetici ayarlarını değiştiriyor.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 31,
+            "quote": "return settings_update(request)"
+          }
+        ]
+      },
+      "unmitigated": {
+        "status": "refuted",
+        "reason": "Yetki kontrolü ayar değişikliğinden önce çalışıyor.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 30,
+            "quote": "require_authorization(request)"
+          }
+        ]
+      }
+    }
+  },
+  {
+    "verdict": "needs_validation",
+    "fingerprint": "path-traversal:app/routes.py:read_file",
+    "title": "Dosya okumada path traversal",
+    "description": "GET /files, name parametresini dosya yoluna ekliyor.",
+    "claimed_root_cause": "read_file, name değerini normalleştirmeden yola ekliyor.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/routes.py",
+        "line": 24,
+        "scope": "read_file",
+        "description": "name değerini query string'den okuyor."
+      },
+      {
+        "kind": "sink",
+        "file": "app/routes.py",
+        "line": 25,
+        "scope": "read_file",
+        "description": "Birleştirilmiş yolu açıyor."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/routes.py",
+        "line": 25,
+        "description": "open çağrısı birleştirilmiş yolu kullanıyor."
+      }
+    ],
+    "blockers": [
+      "Bir reverse proxy ../ dizilerini engelliyor olabilir.",
+      "Uygulama dosya adını hiç normalize etmiyor; tek açık soru, önündeki reverse proxy'nin ../ dizilerini engelleyip engellemediği.",
+      "sandbox_unavailable"
+    ],
+    "validation_plan": {
+      "local": "Uygulamayı çalıştır ve name=../../etc/passwd gönder.",
+      "deployment": "Onaylı test ortamında proxy davranışını kontrol et."
+    },
+    "id": "KF-32409FEA7A491CFA",
+    "class": "path-traversal",
+    "cwe": [
+      "CWE-22"
+    ],
+    "engines": [
+      "hunter",
+      "verifier"
+    ],
+    "review": {
+      "decision": "downgrade",
+      "reason": "Uygulama dosya adını hiç normalize etmiyor; tek açık soru, önündeki reverse proxy'nin ../ dizilerini engelleyip engellemediği."
+    },
+    "poc": {
+      "level": "unit",
+      "status": "not_run",
+      "observed_result": "Çalışmadı: Docker sandbox yok.",
+      "artifacts": []
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "sqli:app/db.py:find_user",
+    "title": "Kullanıcı aramasında SQL injection",
+    "description": "GET /users, id parametresini SQL sorgusuna doğrudan ekliyor.",
+    "root_cause": "find_user, SQL metnini f-string ile kuruyor.",
+    "intended_behavior": "Sorgu, user_id değerini parametre olarak bağlamalı.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/routes.py",
+        "line": 12,
+        "scope": "get_user",
+        "description": "id değerini query string'den okuyor."
+      },
+      {
+        "kind": "sink",
+        "file": "app/db.py",
+        "line": 8,
+        "scope": "find_user",
+        "description": "Biçimlenmiş SQL metnini çalıştırıyor."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/db.py",
+        "line": 8,
+        "description": "f-string, user_id değerini SQL metnine koyuyor."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authentication_level",
+        "description": "Saldırganın normal bir kullanıcı hesabı olmalı."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "Normal hesabı olan, oturum açmış bir kullanıcı.",
+      "payloads": [
+        "1 OR 1=1"
+      ],
+      "instructions": [
+        "Normal kullanıcı olarak oturum aç.",
+        "GET /users?id=1%20OR%201=1 isteğini gönder."
+      ],
+      "observed_result": "Yalnızca statik analiz: payload cur.execute çağrısına değişmeden ulaşıyor."
+    },
+    "remediation": {
+      "strategy": "Bağlanmış parametre kullan.",
+      "code_changes": [
+        {
+          "file_name": "app/db.py",
+          "fixed_code": "cur.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Her kullanıcı isteği gönderebilir."
+      },
+      "impact": {
+        "score": "high",
+        "reason": "Saldırgan bütün kullanıcı satırlarını okur."
+      },
+      "overall_severity": "high"
+    },
+    "confidence": {
+      "score": "medium",
+      "reason": "Akış kaynakta açık. PoC henüz çalışmadı."
+    },
+    "id": "KF-CF0FB1E8E50E80FC",
+    "class": "sqli",
+    "cwe": [
+      "CWE-89"
+    ],
+    "owasp": [
+      "A03:2021"
+    ],
+    "engines": [
+      "hunter",
+      "verifier",
+      "opengrep",
+      "reviewer"
+    ],
+    "candidates": [
+      "CAND-7FB0BF0A3BDA3C13"
+    ],
+    "audit_answers": {
+      "attacker_control": {
+        "status": "established",
+        "reason": "id değeri HTTP isteğinin query string'inden geliyor.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 12,
+            "quote": "user_id = request.args.get(\"id\")"
+          }
+        ]
+      },
+      "privilege_boundary": {
+        "status": "established",
+        "reason": "Oturum açmış her kullanıcı başka kullanıcıların satırlarını okuyabilir.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 10,
+            "quote": "@login_required"
+          }
+        ]
+      },
+      "unmitigated": {
+        "status": "established",
+        "reason": "Değer bağlama veya doğrulama olmadan SQL metnine giriyor.",
+        "evidence": [
+          {
+            "file": "app/db.py",
+            "line": 8,
+            "quote": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")"
+          }
+        ]
+      }
+    },
+    "review": {
+      "decision": "verified",
+      "reason": "Kayıttaki her yol ve satır kaynakla uyuşuyor; f-string, id değerini SQL metnine koyuyor."
+    },
+    "i18n": {
+      "en": {
+        "title": "SQL injection in user lookup",
+        "description": "GET /users puts the id parameter straight into a SQL query.",
+        "remediation_strategy": "Use a bound parameter."
+      }
+    }
+  },
+  {
+    "verdict": "confirmed",
+    "fingerprint": "ssrf:app/routes.py:fetch",
+    "title": "Görsel proxy'sinde SSRF",
+    "description": "GET /fetch, kullanıcının verdiği adrese sunucudan istek atıyor.",
+    "root_cause": "fetch, url değerini doğrulamadan http_get'e veriyor.",
+    "intended_behavior": "Sunucu yalnızca izin listesindeki adreslere istek atmalı.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/routes.py",
+        "line": 18,
+        "scope": "fetch",
+        "description": "url değerini query string'den okuyor."
+      },
+      {
+        "kind": "sink",
+        "file": "app/routes.py",
+        "line": 19,
+        "scope": "fetch",
+        "description": "Sunucu, kullanıcının verdiği adrese istek atıyor."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/routes.py",
+        "line": 19,
+        "description": "http_get, doğrulanmamış url değerini kullanıyor."
+      }
+    ],
+    "conditions": [],
+    "execution": {
+      "attacker_perspective": "Kimliği doğrulanmamış uzak bir saldırgan.",
+      "payloads": [
+        "http://169.254.169.254/latest/meta-data/"
+      ],
+      "instructions": [
+        "GET /fetch?url=http://169.254.169.254/latest/meta-data/ gönder."
+      ],
+      "observed_result": "Harness, 169.254.169.254 adresine giden isteği yakaladı."
+    },
+    "remediation": {
+      "strategy": "Hedef adresi bir allowlist ile sınırla."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Uç nokta kimlik doğrulama istemiyor."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "İç ağdaki servislere istek atılabilir."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "Sandbox içindeki PoC zafiyeti gösterdi."
+    },
+    "id": "KF-760073988BED4CB8",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "owasp": [
+      "A10:2021"
+    ],
+    "engines": [
+      "hunter",
+      "verifier",
+      "poc-builder"
+    ],
+    "audit_answers": {
+      "attacker_control": {
+        "status": "established",
+        "reason": "url değeri query string'den geliyor.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 18,
+            "quote": "url = request.args.get(\"url\")"
+          }
+        ]
+      },
+      "privilege_boundary": {
+        "status": "unknown",
+        "reason": "unverified_evidence",
+        "evidence": []
+      },
+      "unmitigated": {
+        "status": "established",
+        "reason": "Adres doğrulaması yok.",
+        "evidence": [
+          {
+            "file": "app/routes.py",
+            "line": 19,
+            "quote": "return http_get(url)"
+          }
+        ]
+      }
+    },
+    "poc": {
+      "level": "unit",
+      "status": "passed",
+      "observed_result": "Harness, 169.254.169.254 adresine giden isteği yakaladı.",
+      "artifacts": [
+        "poc/KF-760073988BED4CB8/out/stdout.txt"
+      ]
+    }
+  }
+]

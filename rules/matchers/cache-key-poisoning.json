@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "slug": "cache-key-poisoning",
+  "description": "Cache key construction with attacker-controlled values — poisoning risk",
+  "class": "request-smuggling-crlf-cache",
+  "cwe": [
+    "CWE-349"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{lua,go,ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*{_,.}{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "cache.{0,80}key.{0,80}host|cache_key.{0,80}host",
+      "flags": "i",
+      "label": "Cache key includes Host header"
+    },
+    {
+      "regex": "cache.{0,80}key.{0,80}header|cache_key.{0,80}header",
+      "flags": "i",
+      "label": "Cache key includes request header"
+    },
+    {
+      "regex": "cache.{0,80}key.{0,80}query|cache_key.{0,80}query",
+      "flags": "i",
+      "label": "Cache key includes query params"
+    },
+    {
+      "regex": "vary.{0,40}:.{0,80}accept|vary.{0,40}:.{0,80}cookie",
+      "flags": "i",
+      "label": "Vary header includes client-controlled values"
+    },
+    {
+      "regex": "ngx\\.shared\\.\\w+:set\\s*\\([^)]{0,200}ngx\\.var\\.host",
+      "flags": "",
+      "label": "Shared dict keyed by Host header"
+    },
+    {
+      "regex": "ngx\\.shared\\.\\w+:set\\s*\\([^)]{0,200}ngx\\.var\\.request_uri",
+      "flags": "",
+      "label": "Shared dict keyed by request URI"
+    },
+    {
+      "regex": "redis\\.\\w*set\\s*\\([^)]{0,200}req\\.|redis\\.\\w*set\\s*\\([^)]{0,200}host",
+      "flags": "i",
+      "label": "Redis set with request-derived key"
+    },
+    {
+      "regex": "\\.set\\s*\\([^)]{0,200}cache[^)]{0,80}req\\.|\\.set\\s*\\([^)]{0,200}cache[^)]{0,80}host",
+      "flags": "i",
+      "label": "Cache set with request-derived data"
+    }
+  ],
+  "examples": [
+    "const cacheKey = \"u:\" + req.headers.host;",
+    "const cache_key = host + \":\" + path;",
+    "const cacheKey = req.headers[\"x-tenant\"];",
+    "const cache_key = req.header(\"x-trace\");",
+    "const cacheKey = url + req.query.foo;",
+    "const cache_key = JSON.stringify(query);",
+    "Vary: Accept-Language, Accept-Encoding",
+    "Vary: Cookie",
+    "ngx.shared.cache:set(ngx.var.host .. path, val)",
+    "ngx.shared.dict:set(\"k:\" .. ngx.var.request_uri, val)",
+    "redis.set(\"cache:\" + req.body.id, value);",
+    "redis.hset(\"cache:host\", host, value);",
+    "store.set(\"cache:\" + req.body.k, v);",
+    "kv.set(\"cache:\" + host, blob);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/cache-key-poisoning.ts"
+  },
+  "notes": ""
+}

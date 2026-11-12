@@ -1,0 +1,218 @@
+{
+  "schema_version": 1,
+  "run_id": "20261015T120000Z-shop-a1b2",
+  "generated_at": "2026-10-15T12:30:00Z",
+  "kalkan_version": "0.0.0-golden",
+  "lang": "tr",
+  "run_lang": "tr",
+  "target": {
+    "source": "C:/projects/shop",
+    "kind": "path",
+    "git_ref": null
+  },
+  "profile": "standard",
+  "run": {
+    "type": "standard · docker auto",
+    "elapsed_seconds": 9000,
+    "usage": null,
+    "usage_source": "not recorded: an interactive session or a tools-only run"
+  },
+  "phase": "report",
+  "complete": true,
+  "partial": true,
+  "partial_reasons": [
+    {
+      "code": "ledger_open",
+      "n": 1
+    },
+    {
+      "code": "unchecked_manifests",
+      "n": 1
+    }
+  ],
+  "counts": {
+    "findings": 4,
+    "by_verdict": {
+      "confirmed": 2,
+      "needs_validation": 1,
+      "rejected": 1
+    },
+    "by_severity": {
+      "critical": 0,
+      "high": 1,
+      "medium": 1,
+      "low": 0,
+      "info": 0
+    },
+    "template_only": 0,
+    "duplicates_folded": 0,
+    "candidates": 4,
+    "tool_results": 2,
+    "tool_results_by_engine": {
+      "bandit": {
+        "medium": 1
+      },
+      "gitleaks": {
+        "high": 1
+      }
+    },
+    "sca": 5,
+    "sca_by_reachability": {
+      "reachable": 1,
+      "not_reachable": 1,
+      "unknown": 3
+    },
+    "sca_malicious": 1,
+    "hardening": 2,
+    "unvalidated_candidates": 0
+  },
+  "malicious_dependencies": [
+    {
+      "ecosystem": "PyPI",
+      "package": "sample-module",
+      "version": "0.0.1",
+      "vuln_ids": [
+        "MAL-2025-41758",
+        "GHSA-2g5x-c76j-3h73"
+      ],
+      "locations": [
+        "requirements.txt"
+      ]
+    }
+  ],
+  "unvalidated_candidates": [],
+  "engines": [
+    {
+      "engine": "bandit",
+      "group": "scans",
+      "status": "ok",
+      "message": "",
+      "tool_version": "1.9.4",
+      "duration_seconds": 3.0
+    },
+    {
+      "engine": "gitleaks",
+      "group": "scans",
+      "status": "ok",
+      "message": "",
+      "tool_version": "8.30.1",
+      "duration_seconds": 1.2
+    },
+    {
+      "engine": "opengrep",
+      "group": "scans",
+      "status": "ok",
+      "message": "",
+      "tool_version": "1.30.1",
+      "duration_seconds": 12.4
+    },
+    {
+      "engine": "trivy",
+      "group": "scans",
+      "status": "skipped",
+      "message": "tool not installed: trivy",
+      "tool_version": null,
+      "duration_seconds": 0.0
+    },
+    {
+      "engine": "grype",
+      "group": "sca",
+      "status": "skipped",
+      "message": "offline: no vulnerability database",
+      "tool_version": null,
+      "duration_seconds": 0.0
+    },
+    {
+      "engine": "osv-scanner",
+      "group": "sca",
+      "status": "ok",
+      "message": "",
+      "tool_version": "2.6.0",
+      "duration_seconds": 4.5
+    },
+    {
+      "engine": "retirejs",
+      "group": "sca",
+      "status": "ok",
+      "message": "JavaScript files checked: 1; vendored library versions: 1 (files: 1)",
+      "tool_version": "jsrepository-v5 2026-10-15 sha256:c213444cbf88",
+      "duration_seconds": 0.4
+    },
+    {
+      "engine": "syft",
+      "group": "sca",
+      "status": "ok",
+      "message": "",
+      "tool_version": "1.54.0",
+      "duration_seconds": 3.2
+    }
+  ],
+  "coverage": {
+    "units": 5,
+    "open": 1,
+    "by_status": {
+      "candidate": 2,
+      "covered": 1,
+      "deferred": 1,
+      "not_applicable": 1
+    },
+    "closed_by_siblings": 0
+  },
+  "review": {
+    "separate_pass": true,
+    "reviewed": 2,
+    "verified": 1,
+    "downgrade": 1,
+    "reject": 0,
+    "not_reviewed": 1
+  },
+  "coverage_gaps": {
+    "unchecked_manifests": [
+      {
+        "file": "web/package.json",
+        "ecosystem": "npm",
+        "reason": "version ranges without a lockfile",
+        "exact_pins": 1,
+        "ranges": 2
+      }
+    ],
+    "database_gaps": [],
+    "engines": {
+      "opengrep": {
+        "partial_files": 1,
+        "skipped_files": 1,
+        "partial_packages": 0
+      }
+    },
+    "long_paths": 1,
+    "sca_from_manifest_pins": 1,
+    "sca_from_vendored_files": 1
+  },
+  "sbom": {
+    "components": 5,
+    "by_source": {
+      "syft": 3,
+      "manifest-pin": 1,
+      "vendored": 1
+    }
+  },
+  "budget": {
+    "max": 150,
+    "used": 13
+  },
+  "sca_source": "vulns",
+  "missing_inputs": [],
+  "warnings": [
+    "Files with an absolute path of 260 or more characters: 1. Opengrep may skip them without a warning: its core program is not long-path aware, also with LongPathsEnabled=1. Set KALKAN_RUNS_DIR to a short folder (for example C:/kr) and start a new run."
+  ],
+  "paths": {
+    "report_md": "report/REPORT.md",
+    "report_html": "report/REPORT.html",
+    "executive_html": "report/EXECUTIVE.html",
+    "findings_sarif": "report/findings.sarif",
+    "findings_json": "report/findings.json",
+    "sbom_cyclonedx": "report/sbom.cdx.json",
+    "sbom_spdx": "report/sbom.spdx.json",
+    "summary_json": "report/summary.json"
+  }
+}

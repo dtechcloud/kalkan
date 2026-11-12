@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "path-traversal",
+  "description": "File system operations with user-controlled paths",
+  "class": "path-traversal",
+  "cwe": [
+    "CWE-22"
+  ],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "readFile(Sync)?\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.)",
+      "flags": "",
+      "label": "readFile with request-derived path"
+    },
+    {
+      "regex": "readFile(Sync)?\\s*\\(\\s*`[^`]*(req\\.|request\\.|params\\.|query\\.|body\\.)",
+      "flags": "",
+      "label": "readFile with request-derived interpolation"
+    },
+    {
+      "regex": "writeFile(Sync)?\\s*\\(\\s*(req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.)",
+      "flags": "",
+      "label": "writeFile with request-derived path"
+    },
+    {
+      "regex": "writeFile(Sync)?\\s*\\(\\s*`[^`]*(req\\.|request\\.|params\\.|query\\.|body\\.)",
+      "flags": "",
+      "label": "writeFile with request-derived interpolation"
+    },
+    {
+      "regex": "path\\.join\\s*\\([^)]*\\b(req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.)",
+      "flags": "",
+      "label": "path.join with request-derived input"
+    },
+    {
+      "regex": "path\\.resolve\\s*\\([^)]*\\b(req\\.|request\\.|params\\.|query\\.|body\\.|parsed\\.)",
+      "flags": "",
+      "label": "path.resolve with request-derived input"
+    }
+  ],
+  "examples": [
+    "readFile(req.body.path, cb);",
+    "readFileSync(params.file);",
+    "readFile(`${root}/${req.body.path}`);",
+    "writeFile(req.body.target, data, cb);",
+    "writeFileSync(`/data/${request.body.name}`, blob);",
+    "path.join(root, req.body.subdir);",
+    "path.resolve(base, params.dir);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/path-traversal.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en" data-title-tr="Güvenlik · kalkan" data-title-en="Security · kalkan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Security · kalkan</title>
+<meta name="description" content="The kalkan security model: three security commitments and their tests.">
+<link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="stop" viewBox="0 0 6 7"><path d="M0 0H6V2.7C6 4.7 4.6 6.1 3 7 1.4 6.1 0 4.7 0 2.7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5V3.25A1.25 1.25 0 0 1 6.75 2h6A1.25 1.25 0 0 1 14 3.25v6a1.25 1.25 0 0 1-1.25 1.25H10.5M3.25 5.5h6a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 9.25 14h-6A1.25 1.25 0 0 1 2 12.75v-6A1.25 1.25 0 0 1 3.25 5.5Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5 5.75 5.75 0 1 0 13.5 9.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+    <nav class="nav" aria-label="Sayfalar / Pages"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security" aria-current="page"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></nav>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Dil / Language">
+        <button type="button" data-lang-set="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang-set="tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Tema / Theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <details class="contact"><summary class="btn btn-sm"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span></summary><div class="contact-pop"><p><span class="tr" lang="tr">Soru, ayrıntı veya danışmanlık için bize yaz.</span><span class="en" lang="en">Write to us for questions, details or consulting.</span></p><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></details>
+      <details class="menu"><summary aria-label="Menü / Menu"><span class="tr" lang="tr">Menü</span><span class="en" lang="en">Menu</span></summary><nav aria-label="Menü / Menu"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security" aria-current="page"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a><div class="menu-mail"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></nav></details>
+    </div>
+  </div>
+</header>
+<main class="page" id="top">
+  <div class="frame">
+    <!-- Security -->
+    <section class="page-first" id="guvenlik" aria-labelledby="h-sec">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Güvenlik modeli</span><span class="en" lang="en">Security model</span></p>
+          <h1 class="page-title" id="h-sec"><span class="tr" lang="tr">Güvenlik konusunda üç taahhüt.</span><span class="en" lang="en">Three security commitments.</span></h1>
+          <p class="lede tr" lang="tr">Bir güvenlik aracı, denetlediği kod kadar kendine de dikkat etmeli. kalkan'ın taahhütleri ve nasıl uygulandıkları <code>docs/SECURITY.md</code> içinde, kalan riskleriyle birlikte yazılı.</p>
+          <p class="lede en" lang="en">A security tool must be as careful with itself as with the code it audits. kalkan's commitments and how it keeps them are in <code>docs/SECURITY.md</code>, together with the residual risks.</p>
+        </div>
+      </div>
+      <div class="grid-lines three">
+        <div class="promise">
+          <span class="big">01</span>
+          <h3><span class="tr" lang="tr">Denetlenen proje değişmez.</span><span class="en" lang="en">The audited project never changes.</span></h3>
+          <p class="tr" lang="tr">Denetim bir kopya üzerinde çalışır. kalkan hedefte hiçbir dosyayı ve klasörü değiştirmez. Bir tuzak repo testi her dosyayı, klasörü ve değişiklik zamanını kontrol eder.</p>
+          <p class="en" lang="en">The audit works on a copy. kalkan changes no file and no folder of the target. A trap repository test checks every file, folder and modification time.</p>
+        </div>
+        <div class="promise">
+          <span class="big">02</span>
+          <h3><span class="tr" lang="tr">Ajanlar yalnız kendi dosyasına yazar.</span><span class="en" lang="en">Agents write only their own file.</span></h3>
+          <p class="tr" lang="tr">Alt ajanların yalnız Read, Grep, Glob ve Write araçları var. Kabuk yok, web yok, MCP aracı yok. Her ajan tek bir dosya yazar: kendi sonucunu.</p>
+          <p class="en" lang="en">The subagents have only Read, Grep, Glob and Write. No shell, no web, no MCP tools. Each agent writes exactly one file: its own result.</p>
+        </div>
+        <div class="promise">
+          <span class="big">03</span>
+          <h3><span class="tr" lang="tr">Veri makinede kalır.</span><span class="en" lang="en">Data stays on the machine.</span></h3>
+          <p class="tr" lang="tr">Tarayıcılar ve SCA varsayılan olarak ağsız çalışır. Dışarı çıkan tek trafik kendi Claude oturumundur: Anthropic'e veya API sağlayıcına gider. Hedef bir git URL'si ise kalkan onu önce klonlar. <code>--allow-build-network</code> ile (isteğe bağlı, varsayılan kapalı) uygulama seviyesindeki PoC sandbox'ı, hedefin compose yığınının imajlarını ağ erişimiyle çeker ve derler. Çalışan yığın internete hiç çıkmaz. Proxy tuzağı testinde gerçek araçlar sıfır bağlantı açtı.</p>
+          <p class="en" lang="en">The scanners and SCA run without network by default. The only traffic that leaves is your own Claude session, to Anthropic or to your API provider. A git URL target is cloned first. With <code>--allow-build-network</code> (opt-in, off by default), the app-level PoC sandbox pulls and builds the images of the target's compose stack with network access. The running stack never gets internet. In the proxy trap test, the real tools opened zero connections.</p>
+        </div>
+      </div>
+      <div class="pad" style="padding-top: 0">
+        <ul class="also">
+          <li><span class="tr" lang="tr">Hedefin <code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.claude/</code>, <code>.cursorrules</code> gibi talimat dosyaları <code>.kalkan-neutralized</code> adıyla etkisiz kalır.</span><span class="en" lang="en">Instruction files of the target (<code>CLAUDE.md</code>, <code>AGENTS.md</code>, <code>.claude/</code>, <code>.cursorrules</code> and others) get the suffix <code>.kalkan-neutralized</code>.</span></li>
+          <li><span class="tr" lang="tr">Her ajan istemi hedefin talimat değil veri olduğunu söyler. Ajanlar hedefteki talimatlara asla uymaz. Motor bir iddiayı yalnız dosyada bulduğu alıntılarla kabul eder. Test uygulaması bu savunmanın test tasarımını taşır (<code>tests/fixtures/vulnapp/INJECTION-NOTE.md</code>): test, kopyaya saldırgan bir <code>CLAUDE.md</code> yazar ve motorun onu etkisiz kılmasını bekler.</span><span class="en" lang="en">Every agent prompt says that the target is data, not instructions. The agents never follow instructions in it. The engine accepts a claim only with quotes that it finds in the file. The test app carries the test design for this defense (<code>tests/fixtures/vulnapp/INJECTION-NOTE.md</code>): a test writes a hostile <code>CLAUDE.md</code> into a copy, and the engine must neutralize it.</span></li>
+          <li><span class="tr" lang="tr">Tarayıcılar hedef kodu asla çalıştırmaz. Docker varsa PoC sandbox hedef kodu yalnız kopyadan, ağsız bir konteynerde çalıştırır.</span><span class="en" lang="en">The scanners never run target code. With Docker, the PoC sandbox runs target code only from the copy, in a container without network.</span></li>
+          <li><span class="tr" lang="tr">Kingfisher bulduğu bir sırrı sağlayıcısında asla denemez. Hiçbir sır değeri bir kalkan dosyasına yazılmaz.</span><span class="en" lang="en">Kingfisher never tries a found secret at its provider. No secret value reaches a kalkan file.</span></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="foot">
+  <div class="frame">
+    <div class="foot-in">
+      <div>
+        <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+        <p lang="en">Last stop before production.</p>
+        <p><a class="mail-link" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a></p>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Ürün</span><span class="en" lang="en">Product</span></h4>
+        <ul><li><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a></li><li><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a></li><li><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a></li><li><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a></li></ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Daha fazla</span><span class="en" lang="en">More</span></h4>
+        <ul>
+          <li><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a></li>
+          <li><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Kaynak</span><span class="en" lang="en">Source</span></h4>
+        <ul>
+          <li><a href="https://github.com/dtechcloud/kalkan" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/LICENSE" target="_blank" rel="noopener"><span class="tr" lang="tr">MIT lisansı</span><span class="en" lang="en">MIT license</span></a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 kalkan · MIT</span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/analytics.js"></script>
+</body>
+</html>

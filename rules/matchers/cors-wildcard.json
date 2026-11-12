@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "cors-wildcard",
+  "description": "CORS wildcard or dynamic origin reflection without validation",
+  "class": "cors",
+  "cwe": [
+    "CWE-942"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,lua,go,conf}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "Access-Control-Allow-Origin.*\\*",
+      "flags": "",
+      "label": "CORS wildcard origin"
+    },
+    {
+      "regex": "Access-Control-Allow-Origin.*origin",
+      "flags": "",
+      "label": "CORS origin reflection (verify validation)"
+    },
+    {
+      "regex": "Access-Control-Allow-Credentials.*true",
+      "flags": "i",
+      "label": "CORS credentials + origin (dangerous combo)",
+      "near": [
+        {
+          "regex": "Allow-Origin",
+          "flags": "i"
+        }
+      ]
+    },
+    {
+      "regex": "cors\\s*\\(\\s*\\{.*origin:\\s*true",
+      "flags": "",
+      "label": "CORS middleware with origin: true (reflects all)"
+    },
+    {
+      "regex": "add_header\\s+Access-Control-Allow-Origin\\s+\\$http_origin",
+      "flags": "",
+      "label": "Nginx CORS origin reflection"
+    },
+    {
+      "regex": "Allow-Origin.*Allow-Credentials",
+      "flags": "i",
+      "label": "CORS credentials + origin (dangerous combo)",
+      "near": [
+        {
+          "regex": "Allow-Credentials.*true",
+          "flags": "i"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "res.setHeader(\"Access-Control-Allow-Origin\", \"*\");",
+    "headers: { \"Access-Control-Allow-Origin\": \"*\" }",
+    "res.setHeader(\"Access-Control-Allow-Origin\", req.headers.origin);",
+    "headers[\"Access-Control-Allow-Origin\"] = origin;",
+    "headers[\"Access-Control-Allow-Credentials\"] = \"true\"; headers[\"Access-Control-Allow-Origin\"] = origin;",
+    "app.use(cors({ origin: true, credentials: true }));",
+    "add_header Access-Control-Allow-Origin $http_origin;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/cors-wildcard.ts"
+  },
+  "notes": "Two upstream regexes have two wildcards per branch. 'Origin.*req\\.headers\\.origin|Origin.*origin' equals its second branch. 'Credentials.*true.*Allow-Origin|Allow-Origin.*Credentials.*true' becomes two patterns with a same-line condition; the position of the second Allow-Origin is not checked."
+}

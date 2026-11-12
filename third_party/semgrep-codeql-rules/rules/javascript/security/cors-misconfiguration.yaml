@@ -1,0 +1,30 @@
+rules:
+  - id: codeql-js-cors-allow-all
+    message: >-
+      CORS is configured to allow all origins. This may expose the API to
+      unauthorized access from any website.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-346: Origin Validation Error"
+      technology:
+        - express
+        - nodejs
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/346.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-346/CorsMisconfigurationForCredentials.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-346/CorsMisconfigurationForCredentials.ql
+    pattern-either:
+      - pattern: 'cors({origin: "*"})'
+      - pattern: "cors({origin: true})"
+      - pattern: res.setHeader("Access-Control-Allow-Origin", "*")
+      - pattern: res.set("Access-Control-Allow-Origin", "*")
+      - pattern: res.header("Access-Control-Allow-Origin", "*")

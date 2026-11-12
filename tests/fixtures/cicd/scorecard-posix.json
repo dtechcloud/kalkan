@@ -1,0 +1,90 @@
+{
+  "date": "2026-10-25T18:52:58+03:00",
+  "repo": {
+    "name": "file://<target>",
+    "commit": "unknown"
+  },
+  "scorecard": {
+    "version": "devel",
+    "commit": "unknown"
+  },
+  "score": 1.9,
+  "checks": [
+    {
+      "details": null,
+      "score": 10,
+      "reason": "no binaries found in the repo",
+      "name": "Binary-Artifacts",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/main/docs/checks.md#binary-artifacts",
+        "short": "Determines if the project has generated executable (binary) artifacts in the source repository."
+      }
+    },
+    {
+      "details": [
+        "Warn: script injection with untrusted input ' github.event.issue.title ': .github/workflows/issue-triage.yml:18",
+        "Warn: untrusted code checkout '${{ github.event.pull_request.head.sha }}': .github/workflows/pr-preview.yml:16"
+      ],
+      "score": 0,
+      "reason": "dangerous workflow patterns detected",
+      "name": "Dangerous-Workflow",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/main/docs/checks.md#dangerous-workflow",
+        "short": "Determines if the project's GitHub Action workflows avoid dangerous patterns."
+      }
+    },
+    {
+      "details": [
+        "Warn: no dependency update tool configurations found"
+      ],
+      "score": 0,
+      "reason": "no update tool detected",
+      "name": "Dependency-Update-Tool",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/main/docs/checks.md#dependency-update-tool",
+        "short": "Determines if the project uses a dependency update tool."
+      }
+    },
+    {
+      "details": [
+        "Warn: project does not have a license file"
+      ],
+      "score": 0,
+      "reason": "license file not detected",
+      "name": "License",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/main/docs/checks.md#license",
+        "short": "Determines if the project has defined a license."
+      }
+    },
+    {
+      "details": [
+        "Warn: no security policy file detected",
+        "Warn: no security file to analyze",
+        "Warn: no security file to analyze",
+        "Warn: no security file to analyze"
+      ],
+      "score": 0,
+      "reason": "security policy file not detected",
+      "name": "Security-Policy",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/main/docs/checks.md#security-policy",
+        "short": "Determines if the project has published a security policy."
+      }
+    },
+    {
+      "details": [
+        "Info: topLevel 'contents' permission set to 'read': .github/workflows/issue-labels.yml:8",
+        "Warn: topLevel permissions set to 'write-all': .github/workflows/issue-triage.yml:7"
+      ],
+      "score": 0,
+      "reason": "detected GitHub workflow tokens with excessive permissions",
+      "name": "Token-Permissions",
+      "documentation": {
+        "url": "https://github.com/ossf/scorecard/blob/main/docs/checks.md#token-permissions",
+        "short": "Determines if the project's workflows follow the principle of least privilege."
+      }
+    }
+  ],
+  "metadata": null
+}

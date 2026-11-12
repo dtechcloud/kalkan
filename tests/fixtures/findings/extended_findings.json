@@ -1,0 +1,257 @@
+[
+  {
+    "verdict": "confirmed",
+    "fingerprint": "src-handler-missing-check",
+    "title": "Sahiplik kontrolü eksik",
+    "description": "Saldırgan, sahiplik kontrolü olmadan başka bir kullanıcının nesnesini değiştirebilir.",
+    "root_cause": "handle omits the ownership check before changing the object.",
+    "intended_behavior": "Only the object's owner can change it.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "src/handler.c",
+        "line": 10,
+        "scope": "handle",
+        "description": "Attacker data reaches the operation."
+      },
+      {
+        "kind": "sink",
+        "file": "src/store.c",
+        "line": 30,
+        "scope": "store_object",
+        "description": "The object is written without an owner check."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "src/handler.c",
+        "line": 10,
+        "description": "The source performs the operation without the required check."
+      }
+    ],
+    "conditions": [
+      {
+        "kind": "authentication_level",
+        "description": "The attacker needs a normal account."
+      }
+    ],
+    "execution": {
+      "attacker_perspective": "An unprivileged remote user with their own account.",
+      "payloads": ["An object identifier owned by another user."],
+      "instructions": ["Submit the identifier through the public operation."],
+      "observed_result": "The other user's object changes."
+    },
+    "remediation": {
+      "strategy": "Check ownership before the state change.",
+      "code_changes": [
+        {
+          "file_name": "src/store.c",
+          "fixed_code": "if (object->owner != user) return EPERM;"
+        }
+      ]
+    },
+    "severity": {
+      "likelihood": {
+        "score": "medium",
+        "reason": "The operation is directly reachable."
+      },
+      "impact": {
+        "score": "high",
+        "reason": "The attacker changes protected objects of every user."
+      },
+      "overall_severity": "high"
+    },
+    "confidence": {
+      "score": "high",
+      "reason": "The source path and result were reproduced."
+    },
+    "id": "KF-0123456789ABCDEF",
+    "class": "idor",
+    "cwe": ["CWE-639"],
+    "owasp": ["A01:2021"],
+    "engines": ["opengrep", "hunter", "verifier", "poc-builder"],
+    "candidates": ["CAND-00112233445566AA"],
+    "audit_answers": {
+      "attacker_control": {
+        "status": "established",
+        "reason": "The identifier comes from the request path.",
+        "evidence": [
+          {
+            "file": "src/handler.c",
+            "line": 10,
+            "quote": "id = request_param(req, \"id\");"
+          }
+        ]
+      },
+      "privilege_boundary": {
+        "status": "established",
+        "reason": "Each object belongs to one user.",
+        "evidence": [
+          {
+            "file": "src/model.c",
+            "line": 20,
+            "quote": "object = load_object(id);"
+          }
+        ]
+      },
+      "unmitigated": {
+        "status": "established",
+        "reason": "No ownership check runs before the write.",
+        "evidence": [
+          {
+            "file": "src/store.c",
+            "line": 30,
+            "quote": "store_object(object);"
+          }
+        ]
+      }
+    },
+    "poc": {
+      "level": "unit",
+      "status": "passed",
+      "observed_result": "The harness changed the object of user B as user A.",
+      "artifacts": ["agents/poc-builder-1/artifacts/result.txt"]
+    },
+    "i18n": {
+      "en": {
+        "title": "Missing ownership check",
+        "description": "An attacker can change another user's object without an ownership check.",
+        "remediation_strategy": "Check ownership before the state change."
+      }
+    },
+    "cvss": {
+      "vector": "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:N/I:H/A:N",
+      "score": 6.5
+    }
+  },
+  {
+    "verdict": "needs_validation",
+    "fingerprint": "src-parser-size-hypothesis",
+    "title": "Ayrıştırılan boyut kontrol edilmiyor",
+    "description": "Ayrıştırılan bir boyut, sınır olmadan bellek ayırmaya ulaşabilir.",
+    "claimed_root_cause": "parse_size may pass an unbounded value to allocate.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "src/handler.c",
+        "line": 10,
+        "scope": "handle",
+        "description": "Attacker data reaches the operation."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "src/handler.c",
+        "line": 10,
+        "description": "The source performs the operation without the required check."
+      }
+    ],
+    "blockers": ["sandbox_unavailable"],
+    "validation_plan": {
+      "local": "Generate the parser and submit the smallest input that exceeds the documented limit."
+    },
+    "id": "KF-1111111111111111",
+    "class": "memory-safety",
+    "cwe": ["CWE-787"],
+    "engines": ["hunter"],
+    "audit_answers": {
+      "attacker_control": {
+        "status": "established",
+        "reason": "The size field comes from the request body.",
+        "evidence": [
+          {
+            "file": "src/handler.c",
+            "line": 10,
+            "quote": "size = parse_size(body);"
+          }
+        ]
+      },
+      "privilege_boundary": {
+        "status": "unknown",
+        "reason": "unverified_evidence",
+        "evidence": []
+      },
+      "unmitigated": {
+        "status": "unknown",
+        "reason": "The generated parser source is absent.",
+        "evidence": []
+      }
+    },
+    "poc": {
+      "level": "unit",
+      "status": "not_run",
+      "observed_result": "Not run: the Docker sandbox is unavailable.",
+      "artifacts": []
+    },
+    "i18n": {
+      "en": {
+        "title": "Unchecked parsed size",
+        "description": "A parsed size may reach an allocation without a limit."
+      }
+    }
+  },
+  {
+    "verdict": "rejected",
+    "fingerprint": "src-router-auth-bypass",
+    "title": "Yönlendiricide yetkilendirme atlatma",
+    "description": "Aday, bir rotanın yetkilendirmeyi atladığını iddia etti.",
+    "claimed_root_cause": "dispatch was claimed to skip the authorization wrapper.",
+    "trace": [
+      {
+        "kind": "sink",
+        "file": "src/handler.c",
+        "line": 10,
+        "scope": "handle",
+        "description": "Attacker data reaches the operation."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "src/handler.c",
+        "line": 10,
+        "description": "The source performs the operation without the required check."
+      }
+    ],
+    "reason": "All routes pass through the authorization wrapper before dispatch.",
+    "id": "KF-2222222222222222",
+    "class": "missing-authz",
+    "cwe": ["CWE-862"],
+    "owasp": ["A01:2021"],
+    "engines": ["hunter", "critic"],
+    "audit_answers": {
+      "attacker_control": {
+        "status": "established",
+        "reason": "The route is public.",
+        "evidence": [
+          {
+            "file": "src/handler.c",
+            "line": 10,
+            "quote": "router_add(\"/admin\", handle);"
+          }
+        ]
+      },
+      "privilege_boundary": {
+        "status": "established",
+        "reason": "The route changes administrator settings.",
+        "evidence": [
+          {
+            "file": "src/handler.c",
+            "line": 12,
+            "quote": "settings_update(req);"
+          }
+        ]
+      },
+      "unmitigated": {
+        "status": "refuted",
+        "reason": "The wrapper checks authorization before dispatch.",
+        "evidence": [
+          {
+            "file": "src/router.c",
+            "line": 44,
+            "quote": "require_authorization(req);"
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,92 @@
+{
+  "version": 1,
+  "slug": "framework-edge-sandbox",
+  "description": "Edge runtime sandbox + global shims (Buffer/process/fetch leak risk)",
+  "class": "code-injection",
+  "cwe": [
+    "CWE-94"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bnew\\s+Function\\s*\\(",
+      "flags": "",
+      "label": "new Function() in edge/sandbox code"
+    },
+    {
+      "regex": "\\beval\\s*\\(",
+      "flags": "",
+      "label": "eval() in edge/sandbox code"
+    },
+    {
+      "regex": "\\bcontext\\.evaluate\\s*\\(",
+      "flags": "",
+      "label": "context.evaluate() sandbox execution"
+    },
+    {
+      "regex": "\\bvm\\.(?:Script|runInNewContext|runInContext|createContext)\\s*\\(",
+      "flags": "",
+      "label": "vm module execution"
+    },
+    {
+      "regex": "\\b(?:globalThis|self)\\.(?:Buffer|process|require|fetch)\\s*=",
+      "flags": "",
+      "label": "global shim assignment"
+    },
+    {
+      "regex": "\\bedge-?runtime\\b",
+      "flags": "i",
+      "label": "edge-runtime reference"
+    },
+    {
+      "regex": "\\bcreateBindings\\s*\\(|\\bbuildSandboxFunction\\s*\\(",
+      "flags": "",
+      "label": "sandbox bindings setup"
+    },
+    {
+      "regex": "\\bBuffer\\s*as\\s*any\\b",
+      "flags": "",
+      "label": "Buffer as any (shim leak)"
+    }
+  ],
+  "examples": [
+    "const fn = new Function('a', 'return a + 1');",
+    "const result = eval(userCode);",
+    "await context.evaluate(moduleSource);",
+    "const script = new vm.Script(code);",
+    "vm.runInNewContext(code, sandbox);",
+    "vm.runInContext(code, ctx);",
+    "const ctx = vm.createContext({});",
+    "globalThis.Buffer = Buffer;",
+    "self.process = process;",
+    "globalThis.fetch = fetch;",
+    "// edge-runtime polyfill setup",
+    "const bindings = createBindings(env);",
+    "const wrapper = buildSandboxFunction(source);",
+    "const buf = Buffer as any;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-edge-sandbox.ts"
+  },
+  "notes": "deepsec labels with the first 40 characters of the regex; the port uses descriptive labels. The path-only fallback (flag line 1 of server/web/sandbox files without content hits) is dropped. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

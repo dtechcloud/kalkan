@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-ruby-path-traversal
+    message: >-
+      File path built from user input may allow path traversal attacks.
+      Validate and sanitize file paths before use.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-022: Improper Limitation of a Pathname to a Restricted Directory"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-022/PathInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-022/PathInjection.ql
+    pattern-either:
+      - pattern: File.read($BASE + $INPUT)
+      - pattern: File.open($BASE + $INPUT)
+      - pattern: File.read("#{...}")
+      - pattern: File.open("#{...}")
+      - pattern: IO.read($BASE + $INPUT)
+      - pattern: send_file($BASE + $INPUT)

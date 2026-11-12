@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": "20261015T120000Z-shop-a1b2",
+  "tech": [
+    "python",
+    "flask",
+    "docker"
+  ],
+  "long_paths": {
+    "limit": 260,
+    "count": 1,
+    "paths": [
+      "app/templates/a-very-long-folder-name/a-very-long-template-name.html"
+    ],
+    "condition": "absolute Windows path of 260 or more characters; opengrep-core.exe is not long-path aware and skips such files without a warning, also with LongPathsEnabled=1",
+    "root_length": 190,
+    "long_paths_enabled": true
+  }
+}

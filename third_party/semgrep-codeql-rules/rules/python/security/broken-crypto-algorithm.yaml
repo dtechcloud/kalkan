@@ -1,0 +1,220 @@
+rules:
+  - id: codeql-py-weak-crypto-md5
+    message: >-
+      Use of MD5 hashing algorithm. MD5 is cryptographically broken and should
+      not be used for security purposes. Use SHA-256 or stronger algorithms.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: hashlib.md5(...)
+      - pattern: hashlib.new("md5", ...)
+      - pattern: hashlib.new("MD5", ...)
+      - pattern: Crypto.Hash.MD5.new(...)
+      - pattern: Cryptodome.Hash.MD5.new(...)
+
+  - id: codeql-py-weak-crypto-sha1
+    message: >-
+      Use of SHA-1 hashing algorithm. SHA-1 is cryptographically weak and should
+      not be used for security purposes. Use SHA-256 or stronger algorithms.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: hashlib.sha1(...)
+      - pattern: hashlib.new("sha1", ...)
+      - pattern: hashlib.new("SHA1", ...)
+      - pattern: Crypto.Hash.SHA.new(...)
+      - pattern: Cryptodome.Hash.SHA.new(...)
+
+  - id: codeql-py-weak-crypto-des
+    message: >-
+      Use of DES encryption algorithm. DES is cryptographically broken due to
+      its small key size. Use AES-256 or stronger algorithms.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pycryptodome
+        - pycrypto
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Crypto.Cipher.DES.new(...)
+      - pattern: Cryptodome.Cipher.DES.new(...)
+      - pattern: DES.new(...)
+
+  - id: codeql-py-weak-crypto-3des
+    message: >-
+      Use of Triple DES (3DES) encryption algorithm. 3DES is deprecated and
+      provides less than 112 bits of effective security. Use AES-256.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pycryptodome
+        - pycrypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Crypto.Cipher.DES3.new(...)
+      - pattern: Cryptodome.Cipher.DES3.new(...)
+      - pattern: DES3.new(...)
+
+  - id: codeql-py-weak-crypto-blowfish
+    message: >-
+      Use of Blowfish encryption algorithm. Blowfish has a 64-bit block size
+      making it vulnerable to birthday attacks. Use AES instead.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pycryptodome
+        - pycrypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Crypto.Cipher.Blowfish.new(...)
+      - pattern: Cryptodome.Cipher.Blowfish.new(...)
+      - pattern: Blowfish.new(...)
+
+  - id: codeql-py-weak-crypto-rc2
+    message: >-
+      Use of RC2 encryption algorithm. RC2 is a weak cipher with known
+      vulnerabilities. Use AES instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pycryptodome
+        - pycrypto
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Crypto.Cipher.ARC2.new(...)
+      - pattern: Cryptodome.Cipher.ARC2.new(...)
+      - pattern: ARC2.new(...)
+
+  - id: codeql-py-weak-crypto-rc4
+    message: >-
+      Use of RC4 (ARC4) stream cipher. RC4 has multiple vulnerabilities and is
+      prohibited in TLS. Use AES-GCM or ChaCha20-Poly1305 instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pycryptodome
+        - pycrypto
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: Crypto.Cipher.ARC4.new(...)
+      - pattern: Cryptodome.Cipher.ARC4.new(...)
+      - pattern: ARC4.new(...)
+
+  - id: codeql-py-weak-crypto-ecb-mode
+    message: >-
+      Use of ECB (Electronic Codebook) mode. ECB mode is insecure because
+      identical plaintext blocks produce identical ciphertext blocks. Use
+      CBC, GCM, or CTR mode instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      technology:
+        - pycryptodome
+        - pycrypto
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-327/BrokenCryptoAlgorithm.ql
+    pattern-either:
+      - pattern: $CIPHER.new(..., $CIPHER.MODE_ECB, ...)
+      - pattern: $CIPHER.new(..., mode=$CIPHER.MODE_ECB, ...)
+      - pattern: AES.new(..., AES.MODE_ECB, ...)
+      - pattern: AES.new(..., mode=AES.MODE_ECB, ...)

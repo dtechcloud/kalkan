@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-py-nosql-injection-mongodb
+    message: >-
+      MongoDB query built from user input may be vulnerable to NoSQL injection.
+      Use parameterized queries and validate input.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      technology:
+        - pymongo
+        - mongodb
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-943/NoSqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-943/NoSqlInjection.ql
+    pattern-either:
+      - pattern: $COLL.find({...})
+      - pattern: $COLL.find_one({...})
+      - pattern: $DB.command({...})
+      - pattern: $DB.eval($INPUT, ...)

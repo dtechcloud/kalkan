@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: vulnapp partner API
+  version: 1.2.0
+  description: Order intake for partner shops.
+servers:
+  - url: https://partners.vulnapp.internal/v1
+security:
+  - partnerKey: []
+paths:
+  /orders:
+    post:
+      operationId: createPartnerOrder
+      security:
+        - partnerKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderInput"
+      responses:
+        "201":
+          description: Order created.
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/RateLimit"
+        "400":
+          $ref: "#/components/responses/Invalid"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "429":
+          $ref: "#/components/responses/TooMany"
+        "500":
+          $ref: "#/components/responses/Failure"
+components:
+  securitySchemes:
+    partnerKey:
+      type: apiKey
+      in: header
+      name: X-Partner-Key
+  headers:
+    RateLimit:
+      description: Requests allowed in the current window.
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 10000
+    RetryAfter:
+      description: Seconds until the next request is allowed.
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        maximum: 3600
+  responses:
+    Invalid:
+      description: The request is not valid.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/RateLimit"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: The partner key is missing or wrong.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/RateLimit"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    TooMany:
+      description: Too many requests.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/RateLimit"
+        Retry-After:
+          $ref: "#/components/headers/RetryAfter"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Failure:
+      description: Unexpected error.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    Error:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          enum: [invalid, unauthorized, rate_limited, internal]
+    OrderInput:
+      type: object
+      additionalProperties: false
+      required: [sku, quantity]
+      properties:
+        sku:
+          type: string
+          maxLength: 32
+          pattern: "^[A-Z0-9-]+$"
+        quantity:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+        note:
+          type: string
+          maxLength: 200
+          pattern: "^[\\w .,!?-]*$"

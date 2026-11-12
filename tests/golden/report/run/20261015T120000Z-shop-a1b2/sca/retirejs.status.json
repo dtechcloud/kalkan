@@ -1,0 +1,15 @@
+{
+  "engine": "retirejs",
+  "status": "ok",
+  "message": "JavaScript files checked: 1; vendored library versions: 1 (files: 1)",
+  "duration_seconds": 0.4,
+  "exit_code": null,
+  "tool_version": "jsrepository-v5 2026-10-15 sha256:c213444cbf88",
+  "started_at": "2026-10-15T12:00:00Z",
+  "finished_at": "2026-10-15T12:00:00Z",
+  "command": [],
+  "output": "sca/vendored.json",
+  "candidates": null,
+  "files_checked": 1,
+  "libraries": 1
+}

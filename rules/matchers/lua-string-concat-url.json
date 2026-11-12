@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "slug": "lua-string-concat-url",
+  "description": "Lua URL construction via string concatenation — SSRF risk",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.lua"
+  ],
+  "exclude_file_patterns": [
+    "**/*_{test,spec}.lua"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "[\"']https?://.*\\.\\.",
+      "flags": "",
+      "label": "URL string concatenated with .."
+    },
+    {
+      "regex": "\\.\\..*[\"']https?://",
+      "flags": "",
+      "label": "String concatenated into URL"
+    },
+    {
+      "regex": "ngx\\.location\\.capture\\s*\\(.*\\.\\.",
+      "flags": "",
+      "label": "ngx.location.capture with concatenation"
+    },
+    {
+      "regex": "request_uri\\s*=.*\\.\\.",
+      "flags": "",
+      "label": "request_uri built via concatenation"
+    }
+  ],
+  "examples": [
+    "local url = \"https://api.example.com/\" .. user_path",
+    "local target = \"http://internal.svc/v1/\" .. ngx.var.arg_id",
+    "local endpoint = path .. \"https://upstream.local/data\"",
+    "local res = ngx.location.capture(\"/proxy/\" .. backend_id)",
+    "request_uri = \"/api/\" .. tenant_id .. \"/users\"",
+    "local u = base .. \"https://service\" .. suffix"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/lua-string-concat-url.ts"
+  },
+  "notes": ""
+}

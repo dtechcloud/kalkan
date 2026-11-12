@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "slug": "prisma-raw-sql",
+  "description": "Prisma raw SQL ($queryRaw / $executeRaw / *Unsafe) — verify parameterization and source of inputs",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "prisma"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"(?:@prisma/client|prisma)\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\$queryRawUnsafe\\s*\\(",
+      "flags": "",
+      "label": "$queryRawUnsafe — string-built SQL, no parameterization"
+    },
+    {
+      "regex": "\\$executeRawUnsafe\\s*\\(",
+      "flags": "",
+      "label": "$executeRawUnsafe — string-built SQL, no parameterization"
+    },
+    {
+      "regex": "\\$queryRaw\\s*\\(",
+      "flags": "",
+      "label": "$queryRaw called as function (not tagged template) — verify parameterization"
+    },
+    {
+      "regex": "\\$executeRaw\\s*\\(",
+      "flags": "",
+      "label": "$executeRaw called as function (not tagged template) — verify parameterization"
+    },
+    {
+      "regex": "\\$queryRaw\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "$queryRaw template with interpolation — verify Prisma.raw isn't mixed in"
+    },
+    {
+      "regex": "\\$executeRaw\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "$executeRaw template with interpolation — verify Prisma.raw isn't mixed in"
+    },
+    {
+      "regex": "Prisma\\.raw\\s*\\(",
+      "flags": "",
+      "label": "Prisma.raw — bypasses parameterization, must not include user input"
+    }
+  ],
+  "examples": [
+    "await prisma.$queryRawUnsafe(`SELECT * FROM users WHERE name = '${name}'`);",
+    "await prisma.$executeRawUnsafe(\"DELETE FROM users WHERE id = \" + id);",
+    "await prisma.$queryRaw(query);",
+    "await prisma.$executeRaw(query);",
+    "await prisma.$queryRaw`SELECT * FROM users WHERE name = ${name}`;",
+    "await prisma.$executeRaw`UPDATE users SET name = ${name}`;",
+    "await prisma.$queryRaw(Prisma.raw(`SELECT * FROM ${tableName}`));"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/prisma-raw-sql.ts"
+  },
+  "notes": "Gate: deepsec tech [prisma]; kalkan uses tech node (or prisma) and a manifest that names prisma."
+}

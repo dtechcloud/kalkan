@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "slug": "git-provider-url-injection",
+  "description": "Git provider API URLs constructed with interpolated user input — path injection risk",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "api\\.github\\.com[^`'\"]{0,200}\\$\\{",
+      "flags": "",
+      "label": "GitHub API URL with interpolation"
+    },
+    {
+      "regex": "github\\.com/[^`'\"]{0,200}\\$\\{",
+      "flags": "",
+      "label": "GitHub URL with interpolated path"
+    },
+    {
+      "regex": "gitlab\\.com[^`'\"]{0,200}\\$\\{",
+      "flags": "",
+      "label": "GitLab URL with interpolation"
+    },
+    {
+      "regex": "bitbucket\\.org[^`'\"]{0,200}\\$\\{",
+      "flags": "",
+      "label": "Bitbucket URL with interpolation"
+    },
+    {
+      "regex": "`https?://[^`]{0,80}git[^`]{0,80}\\$\\{",
+      "flags": "",
+      "label": "Git provider URL with interpolation"
+    }
+  ],
+  "examples": [
+    "const url = `https://api.github.com/repos/${owner}/${repo}`;",
+    "await fetch(`https://api.github.com/orgs/${org}/members`);",
+    "const link = `https://github.com/${user}/${repo}/commits`;",
+    "const url = `https://gitlab.com/api/v4/projects/${id}`;",
+    "const url = `https://bitbucket.org/api/2.0/repositories/${slug}`;",
+    "const u = `https://git.example.com/repos/${slug}`;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/git-provider-url-injection.ts"
+  },
+  "notes": ""
+}

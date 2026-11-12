@@ -1,0 +1,54 @@
+rules:
+  - id: codeql-go-cookie-without-httponly
+    message: >-
+      Cookie set without HttpOnly flag. The cookie may be accessed by
+      client-side scripts, making it vulnerable to XSS attacks.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1004.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-1004/CookieWithoutHttpOnly.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-1004/CookieWithoutHttpOnly.ql
+    patterns:
+      - pattern: |
+          &http.Cookie{..., HttpOnly: false, ...}
+      - pattern-not: |
+          &http.Cookie{..., HttpOnly: true, ...}
+
+  - id: codeql-go-cookie-without-secure
+    message: >-
+      Cookie set without Secure flag. The cookie may be transmitted over an
+      unencrypted connection.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      technology:
+        - go
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-614/CookieWithoutSecure.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-614/CookieWithoutSecure.ql
+    patterns:
+      - pattern: |
+          &http.Cookie{..., Secure: false, ...}
+      - pattern-not: |
+          &http.Cookie{..., Secure: true, ...}

@@ -1,0 +1,84 @@
+rules:
+  - id: codeql-actions-script-injection-title
+    message: >-
+      GitHub Actions workflow uses github.event.*.title in a run script.
+      This can lead to script injection if the title contains malicious code.
+    severity: ERROR
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - github-actions
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-094/CodeInjectionCritical.ql
+        - https://securitylab.github.com/research/github-actions-untrusted-input/
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-094/CodeInjectionCritical.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    pattern-regex: 'run:.*\$\{\{\s*github\.event\.(issue|pull_request|discussion)\.title'
+
+  - id: codeql-actions-script-injection-body
+    message: >-
+      GitHub Actions workflow uses github.event.*.body in a run script.
+      This can lead to script injection if the body contains malicious code.
+    severity: ERROR
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - github-actions
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-094/CodeInjectionCritical.ql
+        - https://securitylab.github.com/research/github-actions-untrusted-input/
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-094/CodeInjectionCritical.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    pattern-regex: 'run:.*\$\{\{\s*github\.event\.(issue|pull_request|discussion|comment)\.body'
+
+  - id: codeql-actions-script-injection-head-ref
+    message: >-
+      GitHub Actions workflow uses github.head_ref in a run script.
+      This can lead to script injection as branch names are user-controlled.
+    severity: ERROR
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - github-actions
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-094/CodeInjectionCritical.ql
+        - https://securitylab.github.com/research/github-actions-untrusted-input/
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-094/CodeInjectionCritical.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    pattern-regex: 'run:.*\$\{\{\s*github\.head_ref'

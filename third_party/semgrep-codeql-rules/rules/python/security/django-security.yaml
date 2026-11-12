@@ -1,0 +1,117 @@
+rules:
+  - id: codeql-py-django-debug-true
+    message: >-
+      Django DEBUG is set to True. Disable debug mode in production to prevent
+      information disclosure.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-215: Insertion of Sensitive Information Into Debugging Code"
+      technology:
+        - django
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/215.html
+    pattern: DEBUG = True
+
+  - id: codeql-py-django-secret-key-hardcoded
+    message: >-
+      Django SECRET_KEY is hardcoded. Use environment variables for the secret
+      key.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-798: Use of Hard-coded Credentials"
+      technology:
+        - django
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/798.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-287/ConstantSecretKey.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-287/ConstantSecretKey.ql
+    pattern: SECRET_KEY = "..."
+
+  - id: codeql-py-django-csrf-exempt
+    message: >-
+      View decorated with csrf_exempt. This disables CSRF protection and should
+      only be used for specific APIs that require it.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-352: Cross-Site Request Forgery"
+      technology:
+        - django
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/352.html
+    pattern: |
+      @csrf_exempt
+      def $FUNC(...):
+          ...
+
+  - id: codeql-py-django-raw-sql
+    message: >-
+      Raw SQL query in Django. Use parameterized queries to prevent SQL
+      injection.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+    pattern-either:
+      - pattern: $MODEL.objects.raw($QUERY + $INPUT)
+      - pattern: $MODEL.objects.raw(f"...")
+      - pattern: $MODEL.objects.raw("..." % ...)
+      - pattern: $MODEL.objects.raw("...".format(...))
+      - pattern: connection.cursor().execute($QUERY + $INPUT)
+
+  - id: codeql-py-django-mark-safe
+    message: >-
+      Using mark_safe with user input may cause XSS. Ensure content is properly
+      sanitized.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+    pattern-either:
+      - pattern: mark_safe($INPUT)
+      - pattern: format_html_join(..., $INPUT, ...)

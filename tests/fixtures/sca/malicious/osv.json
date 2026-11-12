@@ -1,0 +1,115 @@
+{
+  "results": [
+    {
+      "source": {
+        "path": "@TARGET@/requirements.txt",
+        "type": "lockfile"
+      },
+      "packages": [
+        {
+          "package": {
+            "name": "sample-module",
+            "version": "0.0.1",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "MAL-2025-41758"
+              ],
+              "aliases": [
+                "MAL-2025-41758"
+              ],
+              "max_severity": ""
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "source": "https://github.com/ossf/malicious-packages/blob/main/osv/malicious/pypi/sample-module/MAL-2025-41758.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "sample-module",
+                    "purl": "pkg:pypi/sample-module"
+                  },
+                  "versions": [
+                    "0.0.1"
+                  ]
+                }
+              ],
+              "details": "\n---\n_-= Per source details. Do not edit below this line.=-_\n",
+              "id": "MAL-2025-41758",
+              "modified": "2025-08-28T07:11:51Z",
+              "published": "2025-08-28T07:11:51Z",
+              "schema_version": "1.7.3",
+              "summary": "Malicious code in sample-module (PyPI)"
+            }
+          ]
+        },
+        {
+          "package": {
+            "name": "test-async",
+            "version": "1.0.0",
+            "ecosystem": "PyPI"
+          },
+          "groups": [
+            {
+              "ids": [
+                "MAL-2022-7428"
+              ],
+              "aliases": [
+                "GHSA-cg89-rrrm-gf58",
+                "MAL-2022-7428"
+              ],
+              "max_severity": ""
+            }
+          ],
+          "vulnerabilities": [
+            {
+              "affected": [
+                {
+                  "database_specific": {
+                    "cwes": [
+                      {
+                        "cweId": "CWE-506",
+                        "description": "The product contains code that appears to be malicious in nature.",
+                        "name": "Embedded Malicious Code"
+                      }
+                    ],
+                    "source": "https://github.com/ossf/malicious-packages/blob/main/osv/malicious/pypi/test-async/MAL-2022-7428.json"
+                  },
+                  "package": {
+                    "ecosystem": "PyPI",
+                    "name": "test-async",
+                    "purl": "pkg:pypi/test-async"
+                  },
+                  "ranges": [
+                    {
+                      "events": [
+                        {
+                          "introduced": "0"
+                        }
+                      ],
+                      "type": "ECOSYSTEM"
+                    }
+                  ]
+                }
+              ],
+              "aliases": [
+                "GHSA-cg89-rrrm-gf58"
+              ],
+              "id": "MAL-2022-7428",
+              "modified": "2023-11-08T04:18:27.437155Z",
+              "published": "2022-08-30T19:37:57Z",
+              "schema_version": "1.7.3",
+              "summary": "Malicious code in test-async (PyPI)"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

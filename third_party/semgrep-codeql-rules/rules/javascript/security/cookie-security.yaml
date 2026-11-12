@@ -1,0 +1,49 @@
+rules:
+  - id: codeql-js-cookie-without-httponly
+    message: >-
+      Cookie set without HttpOnly flag may be accessible to client-side scripts.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      technology:
+        - express
+        - nodejs
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1004.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-1004/CookieWithoutHttpOnly.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-1004/CookieWithoutHttpOnly.ql
+    pattern: res.cookie($NAME, $VAL, $OPTS)
+
+  - id: codeql-js-cookie-without-secure
+    message: >-
+      Cookie set without Secure flag may be transmitted over unencrypted
+      connections.
+    severity: WARNING
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      technology:
+        - express
+        - nodejs
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-614/CookieWithoutSecure.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-614/CookieWithoutSecure.ql
+    pattern: res.cookie($NAME, $VAL, $OPTS)

@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-ruby-nosql-injection-mongoid
+    message: >-
+      NoSQL query built from user input may be vulnerable to injection attacks.
+      Validate and sanitize user input before using in queries.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      technology:
+        - mongoid
+        - mongodb
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-943/NoSQLInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-943/NoSQLInjection.ql
+    pattern-either:
+      - pattern: $MODEL.where(params[$KEY])
+      - pattern: $MODEL.where(params[...])
+      - pattern: $MODEL.find_by(params[$KEY])
+      - pattern: $MODEL.find_by(params[...])
+      - pattern: $COLLECTION.find($QUERY => params[$KEY])

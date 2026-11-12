@@ -1,0 +1,119 @@
+{
+  "verdict": "confirmed",
+  "fingerprint": "sqli:app/db.py:find_user",
+  "title": "Kullanıcı aramasında SQL injection",
+  "description": "GET /users, id parametresini SQL sorgusuna doğrudan ekliyor.",
+  "root_cause": "find_user, SQL metnini f-string ile kuruyor.",
+  "intended_behavior": "Sorgu, user_id değerini parametre olarak bağlamalı.",
+  "trace": [
+    {
+      "kind": "entrypoint",
+      "file": "app/routes.py",
+      "line": 12,
+      "scope": "get_user",
+      "description": "id değerini query string'den okuyor."
+    },
+    {
+      "kind": "sink",
+      "file": "app/db.py",
+      "line": 8,
+      "scope": "find_user",
+      "description": "Biçimlenmiş SQL metnini çalıştırıyor."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "app/db.py",
+      "line": 8,
+      "description": "f-string, user_id değerini SQL metnine koyuyor."
+    }
+  ],
+  "conditions": [
+    {
+      "kind": "authentication_level",
+      "description": "Saldırganın normal bir kullanıcı hesabı olmalı."
+    }
+  ],
+  "execution": {
+    "attacker_perspective": "Normal hesabı olan, oturum açmış bir kullanıcı.",
+    "payloads": [
+      "1 OR 1=1"
+    ],
+    "instructions": [
+      "Normal kullanıcı olarak oturum aç.",
+      "GET /users?id=1%20OR%201=1 isteğini gönder."
+    ],
+    "observed_result": "Yalnızca statik analiz: payload cur.execute çağrısına değişmeden ulaşıyor."
+  },
+  "remediation": {
+    "strategy": "Bağlanmış parametre kullan.",
+    "code_changes": [
+      {
+        "file_name": "app/db.py",
+        "fixed_code": "cur.execute(\"SELECT * FROM users WHERE id = ?\", (user_id,))"
+      }
+    ]
+  },
+  "severity": {
+    "likelihood": {
+      "score": "high",
+      "reason": "Her kullanıcı isteği gönderebilir."
+    },
+    "impact": {
+      "score": "high",
+      "reason": "Saldırgan bütün kullanıcı satırlarını okur."
+    },
+    "overall_severity": "high"
+  },
+  "confidence": {
+    "score": "medium",
+    "reason": "Akış kaynakta açık. PoC henüz çalışmadı."
+  },
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "owasp": [
+    "A03:2021"
+  ],
+  "engines": [
+    "hunter",
+    "verifier"
+  ],
+  "audit_answers": {
+    "attacker_control": {
+      "status": "established",
+      "reason": "id değeri HTTP isteğinin query string'inden geliyor.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 12,
+          "quote": "user_id = request.args.get(\"id\")"
+        }
+      ]
+    },
+    "privilege_boundary": {
+      "status": "established",
+      "reason": "Oturum açmış her kullanıcı başka kullanıcıların satırlarını okuyabilir.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 10,
+          "quote": "@login_required"
+        }
+      ]
+    },
+    "unmitigated": {
+      "status": "established",
+      "reason": "Değer bağlama veya doğrulama olmadan SQL metnine giriyor.",
+      "evidence": [
+        {
+          "file": "app/db.py",
+          "line": 8,
+          "quote": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")"
+        }
+      ]
+    }
+  },
+  "id": "KF-CF0FB1E8E50E80FC"
+}

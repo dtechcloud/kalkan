@@ -1,0 +1,104 @@
+{
+  "engine": "hadolint",
+  "target_root": "/home/runner/work/kalkan/runs/20261015T120000Z-ab12/target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/hadolint.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-930284098509CBAF",
+      "engine": "hadolint",
+      "rule_id": "DL3008",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "DL3008",
+      "message": "Pin versions in apt get install. Instead of `apt-get install <package>` use `apt-get install <package>=<version>`",
+      "file": "Dockerfile",
+      "start_line": 4,
+      "end_line": 4,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/hadolint.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-FB36F2AD05DC3207",
+      "engine": "hadolint",
+      "rule_id": "DL3015",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "DL3015",
+      "message": "Avoid additional packages by specifying `--no-install-recommends`",
+      "file": "Dockerfile",
+      "start_line": 4,
+      "end_line": 4,
+      "snippet": "",
+      "severity": "low",
+      "tool_severity": "note",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/hadolint.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-E7125D4AF2709C41",
+      "engine": "hadolint",
+      "rule_id": "DL3042",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "DL3042",
+      "message": "Avoid use of cache directory with pip. Use `pip install --no-cache-dir <package>`",
+      "file": "Dockerfile",
+      "start_line": 5,
+      "end_line": 5,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/hadolint.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    },
+    {
+      "id": "CAND-69CA179DFE292E5B",
+      "engine": "hadolint",
+      "rule_id": "DL3025",
+      "class": "iac-cloud-container",
+      "cwe": [],
+      "title": "DL3025",
+      "message": "Use arguments JSON notation for CMD and ENTRYPOINT arguments",
+      "file": "Dockerfile",
+      "start_line": 8,
+      "end_line": 8,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/hadolint.sarif",
+        "run_index": 0,
+        "result_index": 3
+      }
+    }
+  ]
+}

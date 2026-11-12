@@ -1,0 +1,611 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan verify task result (docs/ENGINE-SPEC.md section 18). The engine computes the verdict.",
+  "required": [
+    "task_id",
+    "subject",
+    "audit_answers",
+    "finding",
+    "duplicate_of"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-verify$"
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "ref"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "hunter",
+            "deterministic"
+          ]
+        },
+        "ref": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "audit_answers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attacker_control",
+        "privilege_boundary",
+        "unmitigated"
+      ],
+      "properties": {
+        "attacker_control": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason",
+            "evidence"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "established",
+                "refuted",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "line",
+                  "quote"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Target-relative POSIX path."
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Exact text from the cited line or the two lines around it."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "privilege_boundary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason",
+            "evidence"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "established",
+                "refuted",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "line",
+                  "quote"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Target-relative POSIX path."
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Exact text from the cited line or the two lines around it."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "unmitigated": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason",
+            "evidence"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "established",
+                "refuted",
+                "unknown"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            },
+            "evidence": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "file",
+                  "line",
+                  "quote"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Target-relative POSIX path."
+                  },
+                  "line": {
+                    "type": "integer",
+                    "minimum": 1
+                  },
+                  "quote": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Exact text from the cited line or the two lines around it."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "description",
+        "class",
+        "cwe",
+        "root_cause",
+        "trace",
+        "evidence",
+        "validation_plan",
+        "reason"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "visibleContent": true
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1,
+          "visibleContent": true
+        },
+        "class": {
+          "type": "string",
+          "enum": [
+            "sqli",
+            "nosqli",
+            "os-command-injection",
+            "code-injection",
+            "ssti",
+            "xss",
+            "ssrf",
+            "path-traversal",
+            "file-upload",
+            "xxe",
+            "deserialization",
+            "authn",
+            "jwt",
+            "oauth-oidc-saml",
+            "missing-authz",
+            "idor",
+            "multi-tenant",
+            "csrf",
+            "open-redirect",
+            "cors",
+            "mass-assignment",
+            "business-logic",
+            "race-condition",
+            "crypto",
+            "hardcoded-secrets",
+            "sensitive-data-exposure",
+            "security-misconfig",
+            "graphql",
+            "prototype-pollution",
+            "dos-redos",
+            "request-smuggling-crlf-cache",
+            "webhook-replay",
+            "rate-limit-bruteforce",
+            "llm-ai",
+            "memory-safety",
+            "smart-contract",
+            "mobile-desktop-ipc",
+            "vulnerable-dependency",
+            "malicious-dependency",
+            "supply-chain-cicd",
+            "iac-cloud-container",
+            "code-quality"
+          ]
+        },
+        "cwe": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^CWE-[0-9]+$"
+          }
+        },
+        "root_cause": {
+          "type": "string",
+          "minLength": 1,
+          "visibleContent": true
+        },
+        "intended_behavior": {
+          "type": "string",
+          "minLength": 1,
+          "visibleContent": true
+        },
+        "trace": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "file",
+              "line",
+              "scope",
+              "description"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "entrypoint",
+                  "propagation",
+                  "sink"
+                ]
+              },
+              "file": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Target-relative POSIX path."
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "scope": {
+                "type": "string",
+                "minLength": 1,
+                "visibleContent": true
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "visibleContent": true
+              }
+            }
+          }
+        },
+        "evidence": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "file",
+              "line",
+              "description"
+            ],
+            "properties": {
+              "file": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Target-relative POSIX path."
+              },
+              "line": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "visibleContent": true
+              }
+            }
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "kind",
+              "description"
+            ],
+            "properties": {
+              "kind": {
+                "type": "string",
+                "enum": [
+                  "authentication_level",
+                  "authorization_role",
+                  "user_interaction",
+                  "system_configuration",
+                  "network_routing",
+                  "environmental_dependency",
+                  "data_state",
+                  "timing_dependency",
+                  "third_party_dependency"
+                ]
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "visibleContent": true
+              }
+            }
+          }
+        },
+        "execution": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "attacker_perspective",
+            "payloads",
+            "instructions",
+            "observed_result"
+          ],
+          "properties": {
+            "attacker_perspective": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            },
+            "payloads": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string"
+              }
+            },
+            "instructions": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "visibleContent": true
+              }
+            },
+            "observed_result": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            }
+          }
+        },
+        "remediation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "strategy"
+          ],
+          "properties": {
+            "strategy": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            },
+            "code_changes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "file_name",
+                  "fixed_code"
+                ],
+                "properties": {
+                  "file_name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Target-relative POSIX path."
+                  },
+                  "fixed_code": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "severity": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "likelihood",
+            "impact",
+            "overall_severity"
+          ],
+          "properties": {
+            "likelihood": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "score",
+                "reason"
+              ],
+              "properties": {
+                "score": {
+                  "type": "string",
+                  "enum": [
+                    "informational",
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                }
+              }
+            },
+            "impact": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "score",
+                "reason"
+              ],
+              "properties": {
+                "score": {
+                  "type": "string",
+                  "enum": [
+                    "informational",
+                    "low",
+                    "medium",
+                    "high",
+                    "critical"
+                  ]
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                }
+              }
+            },
+            "overall_severity": {
+              "type": "string",
+              "enum": [
+                "informational",
+                "low",
+                "medium",
+                "high",
+                "critical"
+              ]
+            }
+          }
+        },
+        "confidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "score",
+            "reason"
+          ],
+          "properties": {
+            "score": {
+              "type": "string",
+              "enum": [
+                "low",
+                "medium",
+                "high"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            }
+          }
+        },
+        "blockers": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          }
+        },
+        "validation_plan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [],
+          "properties": {
+            "local": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            },
+            "deployment": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            }
+          }
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1,
+          "visibleContent": true
+        }
+      }
+    },
+    "duplicate_of": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+}

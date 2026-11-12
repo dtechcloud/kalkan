@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "slug": "page-data-fetch",
+  "description": "Server Component pages reading searchParams/params for data fetching — IDOR/SSRF risk",
+  "class": "idor",
+  "cwe": [
+    "CWE-639"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/app/**/page.{ts,tsx}",
+    "**/pages/**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "searchParams|params\\.\\w+",
+    "fetch\\(|fetchApi|getServerSideProps|getStaticProps"
+  ],
+  "patterns": [
+    {
+      "regex": "searchParams\\.get|searchParams\\[|params\\.\\w+",
+      "flags": "",
+      "label": "Page reads URL params and fetches data — verify auth scoping",
+      "near": [
+        {
+          "regex": "fetch|Api|query",
+          "after": 9
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "export default async function Page({ searchParams }) {\n  const id = searchParams.get('id');\n  const data = await fetch('/api/x?id=' + id);\n  return null\n}",
+    "export default async function Page({ params }) {\n  const r = await fetch('/api/users/' + params.id);\n  return null\n}",
+    "export default async function Page({ searchParams }) {\n  const q = searchParams['q'];\n  const data = await fetchApi('/search?q=' + q);\n  return null\n}",
+    "export async function getServerSideProps(ctx) {\n  const data = await fetch('/api/foo?id=' + ctx.query.id);\n  return { props: { data, query: ctx.params.id } }\n}",
+    "export async function getStaticProps(ctx) {\n  const data = await fetch('/api/items/' + ctx.params.slug);\n  return { props: { data } }\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-page-data-fetch.ts"
+  },
+  "notes": "deepsec reports the first line per file; the port reports every line. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

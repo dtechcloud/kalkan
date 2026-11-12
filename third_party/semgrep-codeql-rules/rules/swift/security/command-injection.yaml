@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-swift-command-injection
+    message: >-
+      Process started with user-controlled input may be vulnerable to command
+      injection. Validate and sanitize input.
+    severity: ERROR
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - swift
+        - ios
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-078/CommandInjection.ql
+    pattern-either:
+      - pattern: "Process.launchedProcess(launchPath: \"/bin/sh\", arguments: [\"-c\", $INPUT])"
+      - pattern: |
+          $PROCESS.arguments = [..., $INPUT, ...]
+          ...
+          $PROCESS.launch()

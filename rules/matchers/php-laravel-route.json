@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "slug": "php-laravel-route",
+  "description": "Laravel route registrations and controller actions (gated on Laravel)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/routes/**/*.php",
+    "**/app/Http/Controllers/**/*.php"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "laravel"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "Route::(get|post|put|patch|delete|any|match)\\s*\\(",
+      "flags": "",
+      "label": "Route::* registration"
+    },
+    {
+      "regex": "Route::resource\\s*\\(",
+      "flags": "",
+      "label": "Route::resource (CRUD)"
+    },
+    {
+      "regex": "Route::group\\s*\\(",
+      "flags": "",
+      "label": "Route::group (middleware scope)"
+    },
+    {
+      "regex": "class\\s+\\w+Controller\\s+extends\\s+\\w*Controller\\b",
+      "flags": "",
+      "label": "Controller class"
+    },
+    {
+      "regex": "->middleware\\s*\\(\\s*['\"]auth",
+      "flags": "",
+      "label": "Auth middleware (verify scope)"
+    },
+    {
+      "regex": "\\$request->all\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "$request->all() — mass-assignment surface"
+    },
+    {
+      "regex": "DB::raw\\s*\\(",
+      "flags": "",
+      "label": "DB::raw (SQL injection if interpolated)"
+    },
+    {
+      "regex": "\\b(?:whereRaw|selectRaw|orderByRaw)\\s*\\(",
+      "flags": "",
+      "label": "*Raw query helper"
+    }
+  ],
+  "examples": [
+    "Route::get('/users', [UsersController::class, 'index']);",
+    "Route::post(\"/login\", [AuthController::class, \"login\"])->middleware('guest');",
+    "Route::match(['get', 'post'], '/x', $handler);",
+    "Route::resource('posts', PostsController::class);",
+    "Route::group(['middleware' => 'auth'], function () { /* ... */ });",
+    "class UsersController extends Controller { public function show($id) {} }",
+    "Route::get('/me', fn () => auth()->user())->middleware('auth:sanctum');",
+    "$data = $request->all();",
+    "DB::raw(\"COUNT(*) as total\")",
+    "User::whereRaw('LOWER(email) = ?', [$email])->orderByRaw('created_at DESC')->selectRaw('id, name');"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-laravel-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. The deepsec sentinel files (composer.json, artisan) and their content check are covered by the kalkan tech tag."
+}

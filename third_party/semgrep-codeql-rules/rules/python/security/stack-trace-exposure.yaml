@@ -1,0 +1,31 @@
+rules:
+  - id: codeql-py-stack-trace-exposure
+    message: >-
+      Stack trace or exception details exposed to user may leak sensitive
+      information. Log errors internally and show generic messages to users.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-209: Generation of Error Message Containing Sensitive Information"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/209.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-209/StackTraceExposure.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-209/StackTraceExposure.ql
+    pattern-either:
+      - pattern: return traceback.format_exc()
+      - pattern: return traceback.format_exception(...)
+      - pattern: flask.jsonify(..., error=traceback.format_exc(), ...)
+      - pattern: flask.jsonify(..., traceback=traceback.format_exc(), ...)
+      - pattern: jsonify(..., error=traceback.format_exc(), ...)
+      - pattern: jsonify(..., traceback=traceback.format_exc(), ...)
+      - pattern: HttpResponse(traceback.format_exc())
+      - pattern: Response(traceback.format_exc())

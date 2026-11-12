@@ -1,0 +1,73 @@
+rules:
+  - id: codeql-go-database-in-loop
+    message: >-
+      Database query inside a loop may cause N+1 query problem. Consider
+      batching queries or using eager loading.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-400: Uncontrolled Resource Consumption"
+      technology:
+        - go
+        - gorm
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/400.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/experimental/CWE-400/DatabaseCallInLoop.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/experimental/CWE-400/DatabaseCallInLoop.ql
+    pattern-either:
+      - pattern: |
+          for ... {
+              ...
+              $DB.Find(...)
+              ...
+          }
+      - pattern: |
+          for ... {
+              ...
+              $DB.First(...)
+              ...
+          }
+      - pattern: |
+          for ... {
+              ...
+              $DB.Where(...).Find(...)
+              ...
+          }
+      - pattern: |
+          for ... {
+              ...
+              $DB.Query(...)
+              ...
+          }
+
+  - id: codeql-go-gorm-error-ignored
+    message: >-
+      GORM database operation error not checked. Always check errors from
+      database operations.
+    severity: WARNING
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-754: Improper Check for Unusual or Exceptional Conditions"
+      technology:
+        - go
+        - gorm
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/754.html
+    patterns:
+      - pattern: $DB.Create($MODEL)
+      - pattern-not: $RESULT := $DB.Create($MODEL)
+      - pattern-not: $DB.Create($MODEL).Error

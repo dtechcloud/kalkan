@@ -1,0 +1,55 @@
+rules:
+  - id: codeql-swift-cleartext-storage-userdefaults
+    message: >-
+      Sensitive data stored in UserDefaults is not encrypted. Use the Keychain
+      for sensitive data.
+    severity: WARNING
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-312: Cleartext Storage of Sensitive Information"
+      technology:
+        - swift
+        - ios
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/312.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-312/CleartextStoragePreferences.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-312/CleartextStoragePreferences.ql
+    pattern-either:
+      - pattern: "UserDefaults.standard.set($VALUE, forKey: \"password\")"
+      - pattern: "UserDefaults.standard.set($VALUE, forKey: \"token\")"
+      - pattern: "UserDefaults.standard.set($VALUE, forKey: \"secret\")"
+      - pattern: "UserDefaults.standard.set($VALUE, forKey: \"apiKey\")"
+
+  - id: codeql-swift-cleartext-logging
+    message: >-
+      Sensitive data logged in cleartext. Avoid logging passwords, tokens,
+      or other sensitive information.
+    severity: WARNING
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-312: Cleartext Storage of Sensitive Information"
+      technology:
+        - swift
+        - ios
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/312.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-312/CleartextLogging.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-312/CleartextLogging.ql
+    pattern-either:
+      - pattern: print($PASSWORD)
+      - pattern: NSLog(..., $PASSWORD, ...)
+      - pattern: os_log(..., $PASSWORD, ...)

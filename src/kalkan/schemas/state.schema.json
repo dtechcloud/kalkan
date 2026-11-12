@@ -1,0 +1,241 @@
+{
+  "$comment": "kalkan run state runs/<run-id>/state.json (docs/ENGINE-SPEC.md section 11). The dynamic maps phases and tasks are checked in code by kalkan.run.state.check_state.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run_id",
+    "created_at",
+    "updated_at",
+    "target",
+    "options",
+    "budget",
+    "phase",
+    "phases",
+    "tasks",
+    "next_task_seq",
+    "incomplete_reason"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[0-9]{8}T[0-9]{6}Z-[a-z0-9](?:[a-z0-9-]{0,22}[a-z0-9])?-[0-9a-f]{4}$"
+    },
+    "created_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+    },
+    "updated_at": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,6})?Z$"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "source",
+        "kind",
+        "git_ref",
+        "copy"
+      ],
+      "properties": {
+        "source": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Absolute POSIX path of the local folder, or the git URL without credentials."
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "path",
+            "git"
+          ]
+        },
+        "git_ref": {
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "copy": {
+          "type": "string",
+          "const": "target"
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile",
+        "lang",
+        "max_parallel",
+        "allow_build_network",
+        "docker"
+      ],
+      "properties": {
+        "profile": {
+          "type": "string",
+          "enum": [
+            "fast",
+            "standard",
+            "deep",
+            "quick"
+          ]
+        },
+        "lang": {
+          "type": "string",
+          "enum": [
+            "tr",
+            "en"
+          ]
+        },
+        "max_parallel": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "At most 32; checked in code."
+        },
+        "allow_build_network": {
+          "type": "boolean"
+        },
+        "docker": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "on",
+            "off"
+          ]
+        },
+        "lease_ttl_seconds": {
+          "type": "integer",
+          "minimum": 60,
+          "description": "Optional lease TTL for task claim; the default is 2700 (45 minutes)."
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "agents",
+            "tools-only"
+          ],
+          "description": "Optional run mode; a state without it is an agents run. tools-only skips the agent phases (kalkan audit --tools-only, docs/PHASES.md section 3)."
+        },
+        "live_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Optional: the target-relative folders or files of the deployment that runs in production (run init --live, run set --live). The report marks findings only in other deployment files as template only."
+        },
+        "not_live_paths": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": "Optional: the target-relative folders or files of code that production does not load (run init --not-live, run set --not-live). The report marks a finding whose sinks are all there as template only."
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "max_agent_tasks",
+        "used_agent_tasks",
+        "reserve_critic",
+        "reserve_validation_ratio"
+      ],
+      "properties": {
+        "max_agent_tasks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "used_agent_tasks": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reserve_critic": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "reserve_validation_ratio": {
+          "type": "number",
+          "minimum": 0,
+          "description": "At most 1; checked in code."
+        },
+        "reserve_poc": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Optional: tasks kept for poc_build when the PoC sandbox will run (one tenth of the budget, at least 2); part of the validation reserve, free after the poc phase."
+        }
+      }
+    },
+    "phase": {
+      "type": "string",
+      "enum": [
+        "prep",
+        "deterministic",
+        "sca",
+        "recon",
+        "plan",
+        "hunt",
+        "validate",
+        "poc",
+        "merge",
+        "report",
+        "done"
+      ]
+    },
+    "phases": {
+      "type": "object",
+      "description": "Every phase name to {status, started_at, finished_at, steps}; checked in code."
+    },
+    "tasks": {
+      "type": "object",
+      "description": "Task ID to task record; checked in code."
+    },
+    "next_task_seq": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "incomplete_reason": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "answers": {
+      "type": "object",
+      "description": "Optional. User answers that run answer records (phase 3 part 2)."
+    },
+    "incomplete_pending": {
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Optional. A reason that makes the run incomplete once the report is written (docs/PHASES.md section 7)."
+    }
+  }
+}

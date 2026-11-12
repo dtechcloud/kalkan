@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "slug": "go-embed-asset",
+  "description": "Go //go:embed directive (binary assets bundled into the program)",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go",
+    "**/gen/**"
+  ],
+  "requires": {
+    "tech": [
+      "go"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*//go:embed\\s+(.+?)\\s*$",
+      "flags": "",
+      "label": "//go:embed directive"
+    }
+  ],
+  "examples": [
+    "//go:embed kernel.bin\nvar kernelImage []byte",
+    "//go:embed rootfs.tar.gz\nvar rootfs []byte",
+    "//go:embed assets/*\nvar assets embed.FS",
+    "//go:embed templates/index.html\nvar indexHTML []byte",
+    "//go:embed config.yaml\nvar configBytes []byte"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-embed-asset.ts"
+  },
+  "notes": "The deepsec label lists the embedded paths; the port uses a fixed label."
+}

@@ -1,0 +1,95 @@
+{
+  "engine": "gosec",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/gosec.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-80ED47D1E521B6CE",
+      "engine": "gosec",
+      "rule_id": "G304",
+      "class": "path-traversal",
+      "cwe": [
+        "CWE-22"
+      ],
+      "title": "Potential file inclusion via variable",
+      "message": "Potential file inclusion via variable",
+      "file": "internal/files/files.go",
+      "start_line": 21,
+      "end_line": 21,
+      "snippet": "data, err := os.ReadFile(filepath.Join(baseDir, name))",
+      "severity": "medium",
+      "tool_severity": "MEDIUM",
+      "confidence": "high",
+      "tags": [
+        "security",
+        "MEDIUM"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gosec.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-E406A6234B703922",
+      "engine": "gosec",
+      "rule_id": "G402",
+      "class": "crypto",
+      "cwe": [
+        "CWE-295"
+      ],
+      "title": "TLS InsecureSkipVerify set true.",
+      "message": "TLS InsecureSkipVerify set true.",
+      "file": "cmd/server/main.go",
+      "start_line": 34,
+      "end_line": 34,
+      "snippet": "TLSClientConfig: &tls.Config{InsecureSkipVerify: true},",
+      "severity": "high",
+      "tool_severity": "HIGH",
+      "confidence": "high",
+      "tags": [
+        "security",
+        "HIGH"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gosec.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-654A1EC84E9C8482",
+      "engine": "gosec",
+      "rule_id": "G104",
+      "class": null,
+      "cwe": [
+        "CWE-703"
+      ],
+      "title": "Errors unhandled",
+      "message": "Errors unhandled",
+      "file": "cmd/server/main.go",
+      "start_line": 52,
+      "end_line": 52,
+      "snippet": "srv.ListenAndServe()",
+      "severity": "low",
+      "tool_severity": "LOW",
+      "confidence": "high",
+      "tags": [
+        "security",
+        "LOW"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/gosec.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "gitleaks",
+          "semanticVersion": "v8.30.1",
+          "informationUri": "https://github.com/gitleaks/gitleaks",
+          "rules": [
+            {
+              "id": "1password-secret-key",
+              "shortDescription": {
+                "text": "Uncovered a possible 1Password secret key, potentially compromising access to secrets in vaults."
+              }
+            },
+            {
+              "id": "aws-access-token",
+              "shortDescription": {
+                "text": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms."
+              }
+            },
+            {
+              "id": "generic-api-key",
+              "shortDescription": {
+                "text": "Detected a Generic API Key, potentially exposing access to various services and sensitive operations."
+              }
+            },
+            {
+              "id": "github-pat",
+              "shortDescription": {
+                "text": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure."
+              }
+            },
+            {
+              "id": "private-key",
+              "shortDescription": {
+                "text": "Identified a Private Key, which may compromise cryptographic security and sensitive data encryption."
+              }
+            }
+          ]
+        }
+      },
+      "results": [
+        {
+          "message": {
+            "text": "aws-access-token has detected secret for file config/settings.py at commit 4f1c2d3e9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d."
+          },
+          "ruleId": "aws-access-token",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/settings.py"
+                },
+                "region": {
+                  "startLine": 12,
+                  "startColumn": 21,
+                  "endLine": 12,
+                  "endColumn": 40,
+                  "snippet": {
+                    "text": "REDACTED"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "commitSha": "4f1c2d3e9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d",
+            "email": "deniz@example.com",
+            "author": "Deniz Yılmaz",
+            "date": "2026-09-28T09:14:51Z",
+            "commitMessage": "add settings"
+          },
+          "properties": {
+            "tags": []
+          }
+        },
+        {
+          "message": {
+            "text": "private-key has detected secret for file deploy/id_rsa at commit 9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c."
+          },
+          "ruleId": "private-key",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "deploy/id_rsa"
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "endLine": 27,
+                  "endColumn": 31,
+                  "snippet": {
+                    "text": "REDACTED"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "commitSha": "9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c",
+            "email": "deniz@example.com",
+            "author": "Deniz Yılmaz",
+            "date": "2026-09-29T16:02:10Z",
+            "commitMessage": "deploy key for staging"
+          },
+          "properties": {
+            "tags": []
+          }
+        },
+        {
+          "message": {
+            "text": "generic-api-key has detected secret for file app/notify.py at commit 9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c."
+          },
+          "ruleId": "generic-api-key",
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "app/notify.py"
+                },
+                "region": {
+                  "startLine": 8,
+                  "startColumn": 1,
+                  "endLine": 8,
+                  "endColumn": 52,
+                  "snippet": {
+                    "text": "REDACTED"
+                  }
+                }
+              }
+            }
+          ],
+          "partialFingerprints": {
+            "commitSha": "9b2e7d41c0a35f86e1d2c3b4a5968778695a4b3c",
+            "email": "deniz@example.com",
+            "author": "Deniz Yılmaz",
+            "date": "2026-09-29T16:02:10Z",
+            "commitMessage": "deploy key for staging"
+          },
+          "properties": {
+            "tags": []
+          }
+        }
+      ]
+    }
+  ]
+}

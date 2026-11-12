@@ -1,0 +1,71 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:5f0e9c36-7c83-4a5c-9d39-0d2b3d8e1a01",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-15T12:00:00Z",
+    "tools": {
+      "components": [
+        {"type": "application", "author": "anchore", "name": "syft", "version": "1.54.0"}
+      ]
+    },
+    "component": {
+      "bom-ref": "af63bd4c8601b7f1",
+      "type": "file",
+      "name": "C:/Users/someone/kalkan/runs/20261015T120000Z-shop-a1b2/target"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:pypi/flask@3.0.0?package-id=0b1c",
+      "type": "library",
+      "name": "flask",
+      "version": "3.0.0",
+      "cpe": "cpe:2.3:a:palletsprojects:flask:3.0.0:*:*:*:*:python:*:*",
+      "purl": "pkg:pypi/flask@3.0.0",
+      "properties": [
+        {"name": "syft:package:foundBy", "value": "python-package-cataloger"},
+        {"name": "syft:package:language", "value": "python"},
+        {"name": "syft:package:type", "value": "python"},
+        {"name": "syft:location:0:path", "value": "/requirements.txt"}
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/pyyaml@5.3?package-id=2d3e",
+      "type": "library",
+      "name": "pyyaml",
+      "version": "5.3",
+      "licenses": [{"license": {"id": "MIT"}}],
+      "purl": "pkg:pypi/pyyaml@5.3?repository_url=https%3A%2F%2Fbuild%3As3cr3t%40pypi.example.internal%2Fsimple",
+      "externalReferences": [
+        {"url": "https://build:s3cr3t@pypi.example.internal/simple/pyyaml", "type": "distribution"}
+      ],
+      "properties": [
+        {"name": "syft:location:0:path", "value": "/requirements.txt"},
+        {"name": "syft:metadata:source", "value": "C:/Users/someone/secret/path"}
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/requests@2.19.0?package-id=4f50",
+      "type": "library",
+      "name": "requests",
+      "version": "2.19.0",
+      "licenses": [{"expression": "Apache-2.0"}],
+      "hashes": [
+        {"alg": "SHA-256", "content": "5d1f7e0a6c3b4f6e9f21ad0b5c7d8e9fa1b2c3d4e5f60718293a4b5c6d7e8f90"}
+      ],
+      "purl": "pkg:pypi/requests@2.19.0",
+      "properties": [
+        {"name": "syft:location:0:path", "value": "/requirements.txt"},
+        {"name": "syft:location:1:path", "value": "/../outside/requirements.txt"}
+      ]
+    },
+    {
+      "bom-ref": "file-7a1",
+      "type": "file",
+      "name": "/requirements.txt"
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "slug": "dart-shelf-handler",
+  "description": "Dart Shelf handlers and Router routes (gated on dart)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.dart"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/pubspec.yaml"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bRouter\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "shelf_router Router() factory"
+    },
+    {
+      "regex": "\\.(?:get|post|put|patch|delete|head|options|all)\\s*\\(\\s*'[^']+'\\s*,",
+      "flags": "",
+      "label": "router.<verb>('/path', handler)"
+    },
+    {
+      "regex": "\\bRequest\\s+\\w+\\s*\\)",
+      "flags": "",
+      "label": "Handler signature taking shelf Request"
+    },
+    {
+      "regex": "\\bPipeline\\s*\\(\\s*\\)\\.addMiddleware\\b",
+      "flags": "",
+      "label": "Pipeline().addMiddleware"
+    }
+  ],
+  "examples": [
+    "final router = Router();",
+    "var app = Router()..get('/', (req) => Response.ok('hi'));",
+    "router.get('/users', listUsers);",
+    "router.post('/users', (Request req) async => Response.ok(''));",
+    "router.put('/users/<id>', updateUser);",
+    "router.patch('/users/<id>', patchUser);",
+    "router.delete('/users/<id>', deleteUser);",
+    "router.head('/health', healthCheck);",
+    "router.options('/cors', corsHandler);",
+    "router.all('/<ignored|.*>', notFound);",
+    "Response handler(Request request) { return Response.ok(''); }",
+    "Future<Response> _users(Request req) async { return Response.ok(''); }",
+    "final pipeline = Pipeline().addMiddleware(logRequests()).addHandler(router);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dart-shelf-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [dart]; kalkan uses a pubspec.yaml."
+}

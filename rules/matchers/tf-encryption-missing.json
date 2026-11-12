@@ -1,0 +1,124 @@
+{
+  "version": 1,
+  "slug": "tf-encryption-missing",
+  "description": "Terraform storage resource (S3/RDS/EBS/DynamoDB/SNS/SQS) without encryption-at-rest config",
+  "class": "iac-cloud-container",
+  "cwe": [
+    "CWE-311"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.tf",
+    "**/*.tf.json"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "terraform"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*resource\\s+\"aws_s3_bucket\"\\s+",
+      "flags": "i",
+      "label": "S3 bucket without encryption",
+      "not_near": [
+        {
+          "regex": "aws_s3_bucket_server_side_encryption_configuration|server_side_encryption_configuration\\s*\\{",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*resource\\s+\"aws_(?:rds_cluster|db_instance|db_cluster)\"\\s+",
+      "flags": "i",
+      "label": "RDS/Aurora without encryption",
+      "not_near": [
+        {
+          "regex": "\\bstorage_encrypted\\s*=\\s*true\\b",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*resource\\s+\"aws_ebs_volume\"\\s+",
+      "flags": "i",
+      "label": "EBS volume without encryption",
+      "not_near": [
+        {
+          "regex": "\\bencrypted\\s*=\\s*true\\b",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*resource\\s+\"aws_dynamodb_table\"\\s+",
+      "flags": "i",
+      "label": "DynamoDB without encryption",
+      "not_near": [
+        {
+          "regex": "\\bserver_side_encryption\\s*\\{",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*resource\\s+\"aws_sns_topic\"\\s+",
+      "flags": "i",
+      "label": "SNS topic without encryption",
+      "not_near": [
+        {
+          "regex": "\\bkms_master_key_id\\s*=",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*resource\\s+\"aws_sqs_queue\"\\s+",
+      "flags": "i",
+      "label": "SQS queue without encryption",
+      "not_near": [
+        {
+          "regex": "\\bkms_master_key_id\\s*=|\\bsqs_managed_sse_enabled\\s*=\\s*true",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "^\\s*resource\\s+\"aws_elasticache_replication_group\"\\s+",
+      "flags": "i",
+      "label": "ElastiCache without encryption",
+      "not_near": [
+        {
+          "regex": "\\bat_rest_encryption_enabled\\s*=\\s*true",
+          "flags": "i",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "resource \"aws_s3_bucket\" \"logs\" {\n  bucket = \"my-logs\"\n}",
+    "resource \"aws_db_instance\" \"db\" {\n  engine = \"postgres\"\n}",
+    "resource \"aws_rds_cluster\" \"main\" {\n  engine = \"aurora-postgresql\"\n}",
+    "resource \"aws_ebs_volume\" \"data\" {\n  size = 100\n}",
+    "resource \"aws_dynamodb_table\" \"users\" {\n  name = \"users\"\n  hash_key = \"id\"\n}",
+    "resource \"aws_sns_topic\" \"alerts\" {\n  name = \"alerts\"\n}",
+    "resource \"aws_sqs_queue\" \"jobs\" {\n  name = \"jobs\"\n}",
+    "resource \"aws_elasticache_replication_group\" \"cache\" {\n  replication_group_id = \"cache\"\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/tf-encryption-missing.ts"
+  },
+  "notes": "The DynamoDB check 'server_side_encryption { ... enabled = true }' spans lines; the port accepts any server_side_encryption block in the file."
+}

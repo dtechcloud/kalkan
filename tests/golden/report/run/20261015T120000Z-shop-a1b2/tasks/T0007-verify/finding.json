@@ -1,0 +1,46 @@
+{
+  "verdict": "needs_validation",
+  "fingerprint": "xss:app/routes.py:fetch",
+  "title": "Bu bulgu raporda görünmemeli",
+  "description": "GET /files, name parametresini dosya yoluna ekliyor.",
+  "claimed_root_cause": "read_file, name değerini normalleştirmeden yola ekliyor.",
+  "trace": [
+    {
+      "kind": "entrypoint",
+      "file": "app/routes.py",
+      "line": 24,
+      "scope": "read_file",
+      "description": "name değerini query string'den okuyor."
+    },
+    {
+      "kind": "sink",
+      "file": "app/routes.py",
+      "line": 25,
+      "scope": "read_file",
+      "description": "Birleştirilmiş yolu açıyor."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "app/routes.py",
+      "line": 25,
+      "description": "open çağrısı birleştirilmiş yolu kullanıyor."
+    }
+  ],
+  "blockers": [
+    "Bir reverse proxy ../ dizilerini engelliyor olabilir."
+  ],
+  "validation_plan": {
+    "local": "Uygulamayı çalıştır ve name=../../etc/passwd gönder.",
+    "deployment": "Onaylı test ortamında proxy davranışını kontrol et."
+  },
+  "class": "xss",
+  "cwe": [
+    "CWE-79"
+  ],
+  "engines": [
+    "hunter",
+    "verifier"
+  ],
+  "id": "KF-97013E3E0F84DA0D"
+}

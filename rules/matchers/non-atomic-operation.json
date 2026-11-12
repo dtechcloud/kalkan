@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "non-atomic-operation",
+  "description": "Read-then-write without transaction/lock — TOCTOU race condition risk",
+  "class": "race-condition",
+  "cwe": [
+    "CWE-367"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "findById|getById|findOne|findUnique|findFirst",
+    "update|delete|remove|modify|save|create"
+  ],
+  "file_excludes": [
+    "transaction\\s*\\(|\\.transact\\(|BEGIN|COMMIT|withLock|mutex|atomicUpdate"
+  ],
+  "patterns": [
+    {
+      "regex": "await.*find(ById|One|Unique|First)\\s*\\(",
+      "flags": "",
+      "label": "Read-then-write without transaction — verify atomicity",
+      "near": [
+        {
+          "regex": "await.*(update|delete|remove|modify|save)\\s*\\(",
+          "after": 14
+        }
+      ]
+    },
+    {
+      "regex": "await.*get\\w+By(Id|Uid)\\s*\\(",
+      "flags": "",
+      "label": "Read-then-write without transaction — verify atomicity",
+      "near": [
+        {
+          "regex": "await.*(update|delete|remove|modify|save)\\s*\\(",
+          "after": 14
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "async function transfer(id) {\n  const account = await db.account.findById(id);\n  if (account.balance < 100) return;\n  await db.account.update({ id, balance: account.balance - 100 });\n}",
+    "const user = await prisma.user.findUnique({ where: { id } });\nif (!user) throw new Error(\"missing\");\nawait prisma.user.delete({ where: { id } });",
+    "const item = await repo.findOne({ id });\nawait repo.save({ ...item, count: item.count + 1 });",
+    "const row = await store.findFirst({ where: { key } });\nconst next = row.value + 1;\nawait store.update({ where: { key }, data: { value: next } });",
+    "const order = await orders.findUnique({ where: { id } });\nawait orders.modify({ id: order.id });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/non-atomic-operation.ts"
+  },
+  "notes": ""
+}

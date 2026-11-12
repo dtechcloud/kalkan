@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "resolved_at": "2026-10-16",
+  "resolved_with": "git ls-remote",
+  "targets": [
+    {
+      "name": "juice-shop",
+      "kind": "git",
+      "url": "https://github.com/juice-shop/juice-shop.git",
+      "ref": "refs/tags/v20.3.0",
+      "tag": "v20.3.0",
+      "tag_object": "aa81d67fdeb83d497d29912f5f632da0c392dc44",
+      "commit": "f189f521266f42c6bd05884468292000cee852ed",
+      "description": "OWASP Juice Shop, latest release tag on the resolve date (annotated tag; commit is the peeled tag)"
+    },
+    {
+      "name": "dvwa",
+      "kind": "git",
+      "url": "https://github.com/digininja/DVWA.git",
+      "ref": "refs/heads/master",
+      "tag": null,
+      "commit": "068d974487a297c155c48722f9fcf7180a83adc4",
+      "description": "Damn Vulnerable Web Application, master head on the resolve date (latest tag 2.5 is older)"
+    },
+    {
+      "name": "vulnapp",
+      "kind": "fixture",
+      "path": "tests/fixtures/vulnapp",
+      "exclude": ["README.md", "EXPECTED.json", "INJECTION-NOTE.md"],
+      "expected": "tests/fixtures/vulnapp/EXPECTED.json",
+      "description": "kalkan fixture with planted vulnerabilities and secure twins; copied without the answer files"
+    }
+  ]
+}

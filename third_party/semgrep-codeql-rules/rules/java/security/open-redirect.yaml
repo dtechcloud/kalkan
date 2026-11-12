@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-java-open-redirect
+    message: >-
+      URL redirect destination from user input may allow open redirect attacks.
+      Validate redirect URLs against a whitelist.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - java
+        - servlet
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-601/UrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-601/UrlRedirect.ql
+    pattern-either:
+      - pattern: $RESPONSE.sendRedirect($REQUEST.getParameter(...))
+      - pattern: $RESPONSE.sendRedirect($URL + $INPUT)

@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-ruby-unsafe-deserialization
+    message: >-
+      Deserializing untrusted data may allow attackers to execute arbitrary
+      code. Avoid using Marshal.load or YAML.load with untrusted data.
+    severity: ERROR
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-502/UnsafeDeserialization.ql
+    pattern-either:
+      - pattern: Marshal.load(...)
+      - pattern: Marshal.restore(...)
+      - pattern: YAML.load(...)
+      - pattern: Psych.load(...)

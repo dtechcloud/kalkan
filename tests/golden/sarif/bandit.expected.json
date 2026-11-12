@@ -1,0 +1,95 @@
+{
+  "engine": "bandit",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/bandit.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-7EAEFE9C85D204DA",
+      "engine": "bandit",
+      "rule_id": "B608",
+      "class": "sqli",
+      "cwe": [
+        "CWE-89"
+      ],
+      "title": "hardcoded_sql_expressions",
+      "message": "Possible SQL injection vector through string-based query construction.",
+      "file": "app/db.py",
+      "start_line": 14,
+      "end_line": 14,
+      "snippet": "    cursor.execute(\"SELECT * FROM users WHERE id = '\" + user_id + \"'\")\n",
+      "severity": "medium",
+      "tool_severity": "MEDIUM",
+      "confidence": "low",
+      "tags": [
+        "security",
+        "external/cwe/cwe-89"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/bandit.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-3EE8F05738B042ED",
+      "engine": "bandit",
+      "rule_id": "B602",
+      "class": "os-command-injection",
+      "cwe": [
+        "CWE-78"
+      ],
+      "title": "subprocess_popen_with_shell_equals_true",
+      "message": "subprocess call with shell=True identified, security issue.",
+      "file": "app/utils.py",
+      "start_line": 9,
+      "end_line": 9,
+      "snippet": "    output = subprocess.check_output(\"ping -c 1 \" + host, shell=True)\n",
+      "severity": "high",
+      "tool_severity": "HIGH",
+      "confidence": "high",
+      "tags": [
+        "security",
+        "external/cwe/cwe-78"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/bandit.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-9689FEC51579AFA0",
+      "engine": "bandit",
+      "rule_id": "B105",
+      "class": "hardcoded-secrets",
+      "cwe": [
+        "CWE-259"
+      ],
+      "title": "hardcoded_password_string",
+      "message": "Possible hardcoded password: 'admin123'",
+      "file": "config/settings.py",
+      "start_line": 5,
+      "end_line": 5,
+      "snippet": "DB_PASSWORD = \"admin123\"\n",
+      "severity": "low",
+      "tool_severity": "LOW",
+      "confidence": "medium",
+      "tags": [
+        "security",
+        "external/cwe/cwe-259"
+      ],
+      "fingerprints": {},
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/bandit.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    }
+  ]
+}

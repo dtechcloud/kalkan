@@ -1,0 +1,77 @@
+{
+  "verdict": "needs_validation",
+  "fingerprint": "ssrf:app/routes.py:fetch",
+  "title": "Görsel proxy'sinde SSRF",
+  "description": "GET /fetch, kullanıcının verdiği adrese sunucudan istek atıyor.",
+  "claimed_root_cause": "fetch, url değerini doğrulamadan http_get çağrısına veriyor.",
+  "trace": [
+    {
+      "kind": "entrypoint",
+      "file": "app/routes.py",
+      "line": 18,
+      "scope": "fetch",
+      "description": "url değerini query string'den okuyor."
+    },
+    {
+      "kind": "sink",
+      "file": "app/routes.py",
+      "line": 19,
+      "scope": "fetch",
+      "description": "Sunucu, kullanıcının verdiği adrese istek atıyor."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "app/routes.py",
+      "line": 19,
+      "description": "http_get, doğrulanmamış url değerini kullanıyor."
+    }
+  ],
+  "blockers": [
+    "unverified_evidence"
+  ],
+  "validation_plan": {
+    "local": "Uygulamayı yerelde çalıştır ve iç bir adrese istek gönder."
+  },
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "owasp": [
+    "A10:2021"
+  ],
+  "engines": [
+    "hunter",
+    "verifier"
+  ],
+  "audit_answers": {
+    "attacker_control": {
+      "status": "established",
+      "reason": "url değeri query string'den geliyor.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 18,
+          "quote": "url = request.args.get(\"url\")"
+        }
+      ]
+    },
+    "privilege_boundary": {
+      "status": "unknown",
+      "reason": "unverified_evidence",
+      "evidence": []
+    },
+    "unmitigated": {
+      "status": "established",
+      "reason": "Adres doğrulaması yok.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 19,
+          "quote": "return http_get(url)"
+        }
+      ]
+    }
+  },
+  "id": "KF-760073988BED4CB8"
+}

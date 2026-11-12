@@ -1,0 +1,78 @@
+rules:
+  - id: codeql-py-ssti-jinja2
+    message: >-
+      Template string built from user input may be vulnerable to server-side
+      template injection (SSTI). Use render_template with a file instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-074: Improper Neutralization of Special Elements in Output Used by a Downstream Component"
+      technology:
+        - jinja2
+        - flask
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/74.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-074/TemplateInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-074/TemplateInjection.ql
+    pattern-either:
+      - pattern: jinja2.Template($INPUT).render(...)
+      - pattern: Template($INPUT).render(...)
+      - pattern: jinja2.from_string($INPUT)
+      - pattern: $ENV.from_string($INPUT)
+
+  - id: codeql-py-ssti-mako
+    message: >-
+      Mako template built from user input may be vulnerable to server-side
+      template injection (SSTI).
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-074: Improper Neutralization of Special Elements in Output Used by a Downstream Component"
+      technology:
+        - mako
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/74.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-074/TemplateInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-074/TemplateInjection.ql
+    pattern-either:
+      - pattern: mako.template.Template($INPUT).render(...)
+      - pattern: Template($INPUT).render(...)
+
+  - id: codeql-py-ssti-django
+    message: >-
+      Django template built from user input may be vulnerable to server-side
+      template injection (SSTI).
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-074: Improper Neutralization of Special Elements in Output Used by a Downstream Component"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/74.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-074/TemplateInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-074/TemplateInjection.ql
+    pattern-either:
+      - pattern: django.template.Template($INPUT).render(...)
+      - pattern: Template($INPUT).render(...)

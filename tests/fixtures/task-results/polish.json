@@ -1,0 +1,13 @@
+{
+  "task_id": "T0061-polish",
+  "records": [
+    {
+      "id": "KF-2CC44B27C1508C41",
+      "fields": [
+        {"path": "/title", "text": "Düşük yetkili kullanıcı, başka hesabın kayıtlarına erişir"},
+        {"path": "/severity/impact/reason", "text": "Saldırgan X-Forwarded-For başlığını değiştirir ve `IsEmailVerified` kontrolünü atlar. Rate limit sayacı sıfırlanır."}
+      ]
+    }
+  ],
+  "notes": "KF-2CC44B27C1508C41 /description: metin İngilizce, geri konacak Türkçe harf yok."
+}

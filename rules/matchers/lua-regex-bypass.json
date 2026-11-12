@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "lua-regex-bypass",
+  "description": "Lua regex patterns validating URLs/hosts — potential bypass via greedy wildcards",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-185"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.lua"
+  ],
+  "exclude_file_patterns": [
+    "**/*_{test,spec}.lua"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "ngx\\.re\\.match\\s*\\(",
+      "flags": "",
+      "label": "URL/host validation regex (verify not bypassable)",
+      "near": [
+        {
+          "regex": "https?|host|domain|\\.com|\\.sh"
+        }
+      ]
+    },
+    {
+      "regex": "string\\.(match|find)\\s*\\(",
+      "flags": "",
+      "label": "URL/host validation regex (verify not bypassable)",
+      "near": [
+        {
+          "regex": "https?|host|domain"
+        }
+      ]
+    },
+    {
+      "regex": "\\.\\+|\\.\\*|%.+",
+      "flags": "",
+      "label": "Greedy pattern in URL/host context",
+      "near": [
+        {
+          "regex": "url|host|domain|redirect",
+          "flags": "i"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "local m = ngx.re.match(host, \"^https://api\\\\.example\\\\.com\")",
+    "if string.match(target, \"^https://trusted\") then end",
+    "local ok = string.find(host, \"internal.host\")",
+    "local valid_url = host:match(\".+%.example%.com$\")",
+    "if redirect_target:match(\".*allowed.com.*\") then end",
+    "local ok = ngx.re.match(host, \"https?://[^/]+\\\\.com$\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/lua-regex-bypass.ts"
+  },
+  "notes": ""
+}

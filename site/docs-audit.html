@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en" data-title-tr="Denetim · Dokümantasyon · kalkan" data-title-en="Audit · Docs · kalkan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Audit · Docs · kalkan</title>
+<meta name="description" content="kalkan docs: the audit steps, the tools, agent verification, the PoC sandbox, SCA, reports and CI/CD.">
+<link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="stop" viewBox="0 0 6 7"><path d="M0 0H6V2.7C6 4.7 4.6 6.1 3 7 1.4 6.1 0 4.7 0 2.7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5V3.25A1.25 1.25 0 0 1 6.75 2h6A1.25 1.25 0 0 1 14 3.25v6a1.25 1.25 0 0 1-1.25 1.25H10.5M3.25 5.5h6a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 9.25 14h-6A1.25 1.25 0 0 1 2 12.75v-6A1.25 1.25 0 0 1 3.25 5.5Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5 5.75 5.75 0 1 0 13.5 9.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+    <nav class="nav" aria-label="Sayfalar / Pages"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs" aria-current="page"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></nav>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Dil / Language">
+        <button type="button" data-lang-set="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang-set="tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Tema / Theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <details class="contact"><summary class="btn btn-sm"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span></summary><div class="contact-pop"><p><span class="tr" lang="tr">Soru, ayrıntı veya danışmanlık için bize yaz.</span><span class="en" lang="en">Write to us for questions, details or consulting.</span></p><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></details>
+      <details class="menu"><summary aria-label="Menü / Menu"><span class="tr" lang="tr">Menü</span><span class="en" lang="en">Menu</span></summary><nav aria-label="Menü / Menu"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs" aria-current="page"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a><div class="menu-mail"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></nav></details>
+    </div>
+  </div>
+</header>
+<main class="page" id="top">
+  <div class="frame">
+    <!-- Docs: title -->
+    <section class="page-first" aria-labelledby="h-docs-audit">
+      <div class="pad docs-head">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></p>
+          <h1 class="page-title" id="h-docs-audit"><span class="tr" lang="tr">Denetim, adım adım.</span><span class="en" lang="en">The audit, step by step.</span></h1>
+          <p class="lede tr" lang="tr">Bu sayfa bir denetimin adımlarını anlatır: araçlar, ajan doğrulaması, PoC sandbox, SCA, raporlar ve CI/CD.</p>
+          <p class="lede en" lang="en">This page shows the steps of an audit: the scanners, the agent verification, the PoC sandbox, SCA, the reports and CI/CD.</p>
+          <p class="meta"><span class="tr" lang="tr">Bu sayfada <code>kalkan</code>, motorun tam yoludur: bkz. <a href="docs#kullanim">Komutlar ve yollar</a>.</span><span class="en" lang="en">On this page, <code>kalkan</code> is the full path of the engine: see <a href="docs#kullanim">Commands and paths</a>.</span></p>
+        </div>
+        <details class="toc-m">
+          <summary><span class="tr" lang="tr">İçindekiler</span><span class="en" lang="en">Contents</span></summary>
+          <!-- Docs nav (phones): the same list on the four docs pages -->
+          <nav aria-label="Dokümantasyon / Docs">
+            <p class="kicker"><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></p>
+            <ol class="toc-list">
+              <li><a href="docs#baslangic"><span class="n">01</span><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></a></li>
+              <li><a href="docs#gereksinimler"><span class="n">02</span><span class="tr" lang="tr">Gereksinimler</span><span class="en" lang="en">Requirements</span></a></li>
+              <li><a href="docs#kurulum"><span class="n">03</span><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Installation</span></a></li>
+              <li><a href="docs#ilk-denetim"><span class="n">04</span><span class="tr" lang="tr">İlk denetim</span><span class="en" lang="en">First audit</span></a></li>
+              <li><a href="docs#profiller"><span class="n">05</span><span class="tr" lang="tr">Denetim profilleri</span><span class="en" lang="en">Audit profiles</span></a></li>
+              <li><a href="docs#kullanim"><span class="n">06</span><span class="tr" lang="tr">Komutlar ve yollar</span><span class="en" lang="en">Commands and paths</span></a></li>
+            </ol>
+            <p class="kicker"><span class="tr" lang="tr">Denetim</span><span class="en" lang="en">Audit</span></p>
+            <ol class="toc-list">
+              <li><a href="#nasil-calisir"><span class="n">07</span><span class="tr" lang="tr">kalkan nasıl çalışır</span><span class="en" lang="en">How kalkan works</span></a></li>
+              <li><a href="#araclar"><span class="n">08</span><span class="tr" lang="tr">Araçlar ve tarayıcılar</span><span class="en" lang="en">Tools and scanners</span></a></li>
+              <li><a href="#ai-dogrulama"><span class="n">09</span><span class="tr" lang="tr">Ajan doğrulaması</span><span class="en" lang="en">AI verification</span></a></li>
+              <li><a href="#sandbox"><span class="n">10</span><span>PoC sandbox</span></a></li>
+              <li><a href="#sca"><span class="n">11</span><span class="tr" lang="tr">SCA ve veritabanları</span><span class="en" lang="en">SCA and databases</span></a></li>
+              <li><a href="#raporlar"><span class="n">12</span><span class="tr" lang="tr">Raporlar</span><span class="en" lang="en">Reports</span></a></li>
+              <li><a href="#ci-cd"><span class="n">13</span><span>CI/CD</span></a></li>
+            </ol>
+            <p class="kicker"><span class="tr" lang="tr">Makinende</span><span class="en" lang="en">On your machine</span></p>
+            <ol class="toc-list">
+              <li><a href="docs-machine#ne-kurulur"><span class="n">14</span><span class="tr" lang="tr">Bilgisayarıma ne kurar?</span><span class="en" lang="en">What does it install?</span></a></li>
+              <li><a href="docs-machine#nereye"><span class="n">15</span><span class="tr" lang="tr">Nereye kurar?</span><span class="en" lang="en">Where does it install it?</span></a></li>
+              <li><a href="docs-machine#degisiklikler"><span class="n">16</span><span class="tr" lang="tr">Makinede neyi değiştirir?</span><span class="en" lang="en">What it changes</span></a></li>
+              <li><a href="docs-machine#disk"><span class="n">17</span><span class="tr" lang="tr">Disk kullanımı</span><span class="en" lang="en">Disk usage</span></a></li>
+              <li><a href="docs-machine#gizlilik"><span class="n">18</span><span class="tr" lang="tr">Gizlilik</span><span class="en" lang="en">Privacy</span></a></li>
+              <li><a href="docs-machine#ag"><span class="n">19</span><span class="tr" lang="tr">Ağ davranışı</span><span class="en" lang="en">Network behavior</span></a></li>
+              <li><a href="docs-machine#guvenlik-modeli"><span class="n">20</span><span class="tr" lang="tr">Güvenlik modeli</span><span class="en" lang="en">Security model</span></a></li>
+              <li><a href="docs-machine#docker"><span class="n">21</span><span class="tr" lang="tr">Neden her şey Docker'da değil?</span><span class="en" lang="en">Why not everything in Docker?</span></a></li>
+            </ol>
+            <p class="kicker"><span class="tr" lang="tr">Bakım</span><span class="en" lang="en">Maintenance</span></p>
+            <ol class="toc-list">
+              <li><a href="docs-maintenance#guncelleme"><span class="n">22</span><span class="tr" lang="tr">Güncelleme</span><span class="en" lang="en">Updating</span></a></li>
+              <li><a href="docs-maintenance#sorun-giderme"><span class="n">23</span><span class="tr" lang="tr">Sorun giderme</span><span class="en" lang="en">Troubleshooting</span></a></li>
+              <li><a href="docs-maintenance#kaldirma"><span class="n">24</span><span class="tr" lang="tr">Kaldırma</span><span class="en" lang="en">Uninstall</span></a></li>
+              <li><a href="docs-maintenance#tam-temizlik"><span class="n">25</span><span class="tr" lang="tr">Tam temizlik</span><span class="en" lang="en">Full cleanup</span></a></li>
+            </ol>
+          </nav>
+          <!-- /Docs nav -->
+        </details>
+      </div>
+    </section>
+    <!-- Docs: side table of contents and sections -->
+    <div class="rule docs">
+      <div class="toc-side">
+        <!-- Docs nav (wide screens): the same list on the four docs pages -->
+        <nav class="toc-nav" aria-label="Dokümantasyon / Docs">
+          <p class="kicker"><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></p>
+          <ol class="toc-list">
+            <li><a href="docs#baslangic"><span class="n">01</span><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></a></li>
+            <li><a href="docs#gereksinimler"><span class="n">02</span><span class="tr" lang="tr">Gereksinimler</span><span class="en" lang="en">Requirements</span></a></li>
+            <li><a href="docs#kurulum"><span class="n">03</span><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Installation</span></a></li>
+            <li><a href="docs#ilk-denetim"><span class="n">04</span><span class="tr" lang="tr">İlk denetim</span><span class="en" lang="en">First audit</span></a></li>
+            <li><a href="docs#profiller"><span class="n">05</span><span class="tr" lang="tr">Denetim profilleri</span><span class="en" lang="en">Audit profiles</span></a></li>
+            <li><a href="docs#kullanim"><span class="n">06</span><span class="tr" lang="tr">Komutlar ve yollar</span><span class="en" lang="en">Commands and paths</span></a></li>
+          </ol>
+          <p class="kicker"><span class="tr" lang="tr">Denetim</span><span class="en" lang="en">Audit</span></p>
+          <ol class="toc-list">
+            <li><a href="#nasil-calisir"><span class="n">07</span><span class="tr" lang="tr">kalkan nasıl çalışır</span><span class="en" lang="en">How kalkan works</span></a></li>
+            <li><a href="#araclar"><span class="n">08</span><span class="tr" lang="tr">Araçlar ve tarayıcılar</span><span class="en" lang="en">Tools and scanners</span></a></li>
+            <li><a href="#ai-dogrulama"><span class="n">09</span><span class="tr" lang="tr">Ajan doğrulaması</span><span class="en" lang="en">AI verification</span></a></li>
+            <li><a href="#sandbox"><span class="n">10</span><span>PoC sandbox</span></a></li>
+            <li><a href="#sca"><span class="n">11</span><span class="tr" lang="tr">SCA ve veritabanları</span><span class="en" lang="en">SCA and databases</span></a></li>
+            <li><a href="#raporlar"><span class="n">12</span><span class="tr" lang="tr">Raporlar</span><span class="en" lang="en">Reports</span></a></li>
+            <li><a href="#ci-cd"><span class="n">13</span><span>CI/CD</span></a></li>
+          </ol>
+          <p class="kicker"><span class="tr" lang="tr">Makinende</span><span class="en" lang="en">On your machine</span></p>
+          <ol class="toc-list">
+            <li><a href="docs-machine#ne-kurulur"><span class="n">14</span><span class="tr" lang="tr">Bilgisayarıma ne kurar?</span><span class="en" lang="en">What does it install?</span></a></li>
+            <li><a href="docs-machine#nereye"><span class="n">15</span><span class="tr" lang="tr">Nereye kurar?</span><span class="en" lang="en">Where does it install it?</span></a></li>
+            <li><a href="docs-machine#degisiklikler"><span class="n">16</span><span class="tr" lang="tr">Makinede neyi değiştirir?</span><span class="en" lang="en">What it changes</span></a></li>
+            <li><a href="docs-machine#disk"><span class="n">17</span><span class="tr" lang="tr">Disk kullanımı</span><span class="en" lang="en">Disk usage</span></a></li>
+            <li><a href="docs-machine#gizlilik"><span class="n">18</span><span class="tr" lang="tr">Gizlilik</span><span class="en" lang="en">Privacy</span></a></li>
+            <li><a href="docs-machine#ag"><span class="n">19</span><span class="tr" lang="tr">Ağ davranışı</span><span class="en" lang="en">Network behavior</span></a></li>
+            <li><a href="docs-machine#guvenlik-modeli"><span class="n">20</span><span class="tr" lang="tr">Güvenlik modeli</span><span class="en" lang="en">Security model</span></a></li>
+            <li><a href="docs-machine#docker"><span class="n">21</span><span class="tr" lang="tr">Neden her şey Docker'da değil?</span><span class="en" lang="en">Why not everything in Docker?</span></a></li>
+          </ol>
+          <p class="kicker"><span class="tr" lang="tr">Bakım</span><span class="en" lang="en">Maintenance</span></p>
+          <ol class="toc-list">
+            <li><a href="docs-maintenance#guncelleme"><span class="n">22</span><span class="tr" lang="tr">Güncelleme</span><span class="en" lang="en">Updating</span></a></li>
+            <li><a href="docs-maintenance#sorun-giderme"><span class="n">23</span><span class="tr" lang="tr">Sorun giderme</span><span class="en" lang="en">Troubleshooting</span></a></li>
+            <li><a href="docs-maintenance#kaldirma"><span class="n">24</span><span class="tr" lang="tr">Kaldırma</span><span class="en" lang="en">Uninstall</span></a></li>
+            <li><a href="docs-maintenance#tam-temizlik"><span class="n">25</span><span class="tr" lang="tr">Tam temizlik</span><span class="en" lang="en">Full cleanup</span></a></li>
+          </ol>
+        </nav>
+        <!-- /Docs nav -->
+      </div>
+      <div class="doc">
+
+        <!-- How kalkan works -->
+        <section class="doc-sec" id="nasil-calisir" aria-labelledby="h-how">
+          <p class="kicker">07</p>
+          <h2 id="h-how"><span class="tr" lang="tr">kalkan nasıl çalışır</span><span class="en" lang="en">How kalkan works</span></h2>
+          <p class="tr" lang="tr">kalkan iki parçadan oluşur. Motor deterministik bir Python aracıdır ve bir karar vermek için hiçbir dil modelini çağırmaz. Ajanlar, Claude Code içinde çalışan alt ajanlardır. Her ajan kaynağı okur ve tek bir sonuç dosyası yazar (kabuk yok, web yok, düzenleme yok). <code>kalkan audit</code> ve <code>kalkan unattended</code>, ajan işi için Claude Code (veya Codex) turları başlatır.</p>
+          <p class="en" lang="en">kalkan has two parts. The engine is a deterministic Python tool, and it makes no model call to decide a verdict. The agents are subagents in Claude Code. Each agent reads the source and writes one result file (no shell, no web, no edits). <code>kalkan audit</code> and <code>kalkan unattended</code> start Claude Code (or Codex) rounds for the agent work.</p>
+          <p class="tr" lang="tr">Motor bütün durumu diskte tutar ve her sonraki adımı seçer. Her ajan sonucunu şemaya ve alıntılara karşı kontrol eder. Kararları kendisi hesaplar. Bu yüzden bir denetim, kullanım limitinden sonra kaldığı yerden devam eder.</p>
+          <p class="en" lang="en">The engine keeps all state on disk and chooses every next step. It checks every agent result against its schema and its quotes. It computes the verdicts itself. Thus an audit continues where it stopped after a usage limit.</p>
+          <h3><span class="tr" lang="tr">Aşamalar</span><span class="en" lang="en">Phases</span></h3>
+          <ol class="rules">
+            <li><span aria-hidden="true">01</span><span class="tr" lang="tr"><b>Hazırlık.</b> Motor hedefi kopyalar. Hedefin ajan talimat dosyalarını (<code>CLAUDE.md</code>, <code>AGENTS.md</code> ve diğerleri) etkisiz kılar.</span><span class="en" lang="en"><b>Prep.</b> The engine copies the target. It neutralizes the agent instruction files of the target (<code>CLAUDE.md</code>, <code>AGENTS.md</code> and others).</span></li>
+            <li><span aria-hidden="true">02</span><span class="tr" lang="tr"><b>Tarayıcılar.</b> 22 sabit sürümlü araç (Go dahil) kopyayı sırayla ve ağsız tarar.</span><span class="en" lang="en"><b>Scanners.</b> 22 pinned tools (Go included) scan the copy one after another, without network.</span></li>
+            <li><span aria-hidden="true">03</span><span class="tr" lang="tr"><b>SCA.</b> Motor bağımlılıkları yerel zafiyet veritabanlarıyla eşleştirir.</span><span class="en" lang="en"><b>SCA.</b> The engine matches the dependencies with local vulnerability databases.</span></li>
+            <li><span aria-hidden="true">04</span><span class="tr" lang="tr"><b>Keşif (ajan).</b> Dört ajan ürünü, rolleri, saldırı yüzeylerini ve çalışma ortamını haritalar.</span><span class="en" lang="en"><b>Recon (agents).</b> Four agents map the product, the principals, the attack surfaces and the execution.</span></li>
+            <li><span aria-hidden="true">05</span><span class="tr" lang="tr"><b>Plan.</b> Motor kapsam defterini yazar. Her yüzey ve zafiyet sınıfı bir birimdir.</span><span class="en" lang="en"><b>Plan.</b> The engine writes the coverage ledger. Each surface and vulnerability class is one unit.</span></li>
+            <li><span aria-hidden="true">06</span><span class="tr" lang="tr"><b>Av ve eleştirmen (ajan).</b> Avcılar birimleri arar. Eleştirmen boşlukları bulur. Profile göre 1 ile 3 dalga çalışır.</span><span class="en" lang="en"><b>Hunt and critic (agents).</b> Hunters search the units. A critic finds the gaps. 1 to 3 waves run, by profile.</span></li>
+            <li><span aria-hidden="true">07</span><span class="tr" lang="tr"><b>Doğrulama (ajan).</b> Doğrulayıcılar şüphelileri çürütmeye çalışır. Son inceleme ve birleştirme de bu aşamada çalışır.</span><span class="en" lang="en"><b>Validate (agents).</b> Verifiers try to refute the candidates. The final review and the consolidation also run in this phase.</span></li>
+            <li><span aria-hidden="true">08</span><span class="tr" lang="tr"><b>PoC.</b> Docker varsa <a href="#sandbox">sandbox</a> kod bulgularını kilitli bir konteynerde dener.</span><span class="en" lang="en"><b>PoC.</b> With Docker, the <a href="#sandbox">sandbox</a> tries the code findings in a locked container.</span></li>
+            <li><span aria-hidden="true">09</span><span class="tr" lang="tr"><b>Birleştirme ve rapor.</b> Motor bütün sonuçları birleştirir ve <a href="#raporlar">raporu</a> yazar.</span><span class="en" lang="en"><b>Merge and report.</b> The engine merges all results and writes the <a href="#raporlar">report</a>.</span></li>
+          </ol>
+          <p class="tr" lang="tr"><code>--tools-only</code> 4. ile 8. adımları atlar. Ayrıntılar ve örnek bir doğrulama: <a href="how-it-works">Nasıl çalışır</a>.</p>
+          <p class="en" lang="en"><code>--tools-only</code> skips steps 4 to 8. Details and a sample verification: <a href="how-it-works">How it works</a>.</p>
+        </section>
+
+        <!-- Tools and scanners -->
+        <section class="doc-sec" id="araclar" aria-labelledby="h-tools">
+          <p class="kicker">08</p>
+          <h2 id="h-tools"><span class="tr" lang="tr">Araçlar ve tarayıcılar</span><span class="en" lang="en">Tools and scanners</span></h2>
+          <p class="tr" lang="tr">kalkan 22 aracı sabit sürümle kurar: 21 tarayıcı ve Go araç zinciri. Kurulum, indirilen 15 programı ve Go araç zincirini sabit bir SHA-256 değeriyle kontrol eder. pip, 4 Python aracını (checkov, bandit, flawfinder, gixy) tam sürümüyle kurar, hash kontrolü yapmaz. Go checksum veritabanı, <code>go install</code> ile derlenen 2 aracı (govulncheck, poutine) kontrol eder. Senin Go kurman gerekmez.</p>
+          <p class="en" lang="en">kalkan installs 22 tools at pinned versions: 21 scanners and the Go toolchain. Setup checks the 15 downloaded programs and the Go toolchain against a pinned SHA-256. pip installs the 4 Python tools (checkov, bandit, flawfinder, gixy) by exact version, without a hash check. The Go checksum database checks the 2 tools that <code>go install</code> builds (govulncheck, poutine). You do not need to install Go.</p>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th><span class="tr" lang="tr">Alan</span><span class="en" lang="en">Area</span></th><th><span class="tr" lang="tr">Tarayıcılar</span><span class="en" lang="en">Scanners</span></th></tr></thead>
+              <tbody>
+                <tr><td><span class="tr" lang="tr">Kod kalıpları</span><span class="en" lang="en">Code patterns</span></td><td>Opengrep, Bandit, gosec, ShellCheck, flawfinder</td></tr>
+                <tr><td>SCA</td><td>Syft, OSV-Scanner, Grype, govulncheck</td></tr>
+                <tr><td><span class="tr" lang="tr">IaC ve konteyner</span><span class="en" lang="en">IaC and containers</span></td><td>Trivy, Checkov, helm, Hadolint, gixy</td></tr>
+                <tr><td><span class="tr" lang="tr">CI/CD ve tedarik zinciri</span><span class="en" lang="en">CI/CD and supply chain</span></td><td>zizmor, actionlint, poutine, OpenSSF Scorecard</td></tr>
+                <tr><td><span class="tr" lang="tr">Gizli bilgiler ve API</span><span class="en" lang="en">Secrets and APIs</span></td><td>Gitleaks, Kingfisher, vacuum</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="tr" lang="tr">Sürümler ve görevler: <a href="tools">Araçlar</a>. Tarayıcılar varsayılan olarak hedefin kendi bastırma işaretlerini (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> ve diğerleri) yok sayar. <code>kalkan scan --honor-suppressions</code> bu işaretleri dikkate alır.</p>
+          <p class="en" lang="en">Versions and roles: <a href="tools">Tools</a>. By default, the scanners ignore the suppression markers of the target (<code># nosec</code>, <code>gitleaks:allow</code>, <code>checkov:skip</code> and others). <code>kalkan scan --honor-suppressions</code> keeps them.</p>
+          <h3><span class="tr" lang="tr">Kurulum yeri</span><span class="en" lang="en">Install location</span></h3>
+          <p class="tr" lang="tr">Araçlar veri klasörünün <code>.tools/</code> klasöründe durur: bkz. <a href="docs-machine#nereye">Nereye kurar?</a></p>
+          <p class="en" lang="en">The tools are in the <code>.tools/</code> folder of the data folder: see <a href="docs-machine#nereye">Where does it install it?</a></p>
+          <ul class="files">
+            <li><code>&lt;tool&gt;/&lt;version&gt;/bin/</code><span class="tr" lang="tr">17 araç. 15 araç hazır program olarak gelir. kalkan govulncheck ve poutine araçlarını Go ile kaynaktan derler.</span><span class="en" lang="en">17 tools. 15 tools come as ready-made programs. kalkan builds govulncheck and poutine from source with Go.</span></li>
+            <li><code>pyenv/</code><span class="tr" lang="tr">4 pip aracı ayrı bir venv'de: Checkov, Bandit, flawfinder, gixy.</span><span class="en" lang="en">4 pip tools in their own venv: Checkov, Bandit, flawfinder, gixy.</span></li>
+            <li><code>go/</code><span class="tr" lang="tr">Go 1.26.9 araç zinciri. gosec ve govulncheck onunla çalışır.</span><span class="en" lang="en">The Go 1.26.9 toolchain. gosec and govulncheck run with it.</span></li>
+            <li><code>installed.json</code><span class="tr" lang="tr">kalkan'ın kurduğu her aracın sürümü, yolu ve SHA-256 değeri.</span><span class="en" lang="en">The version, the path and the SHA-256 of each tool that kalkan installed.</span></li>
+            <li><code>cache/opengrep/</code><span class="tr" lang="tr">opengrep çalışma ortamı. kalkan onu ilk kullanımda açar (289,8 MB, bir Windows 11 makinesinde bir kez ölçüldü).</span><span class="en" lang="en">The opengrep runtime. kalkan unpacks it on first use (289.8 MB, measured once on one Windows 11 machine).</span></li>
+          </ul>
+          <h3><span class="tr" lang="tr">Araçları kontrol et</span><span class="en" lang="en">Check the tools</span></h3>
+          <div class="code"><pre><code>kalkan doctor
+kalkan tools list
+kalkan tools verify --quick</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr"><code>kalkan doctor</code> her aracı, veritabanlarını, git'i ve Claude Code oturumunu kontrol eder. Sorunlu her satır kendi düzeltme komutunu yazar, örneğin <code>kalkan tools install --force gosec</code>. <code>kalkan tools verify</code> kurulu her dosyanın SHA-256 değerini yeniden hesaplar. Go'nun 15.045 dosyası için bu iş 8 dakika sürdü (virüs tarayıcılı bir Windows 11 makinesinde bir kez ölçüldü). <code>--quick</code> hızlı kontroldür.</p>
+          <p class="en" lang="en"><code>kalkan doctor</code> checks every tool, the databases, git and the Claude Code login. Each failed row names its own fix, for example <code>kalkan tools install --force gosec</code>. <code>kalkan tools verify</code> hashes every installed file again. For the 15,045 files of Go, this took 8 minutes (measured once on one Windows 11 machine with a virus scanner). <code>--quick</code> is the fast check.</p>
+          <p class="note"><span class="tr" lang="tr">Windows on ARM (<code>windows-arm64</code>) için Trivy, Opengrep, Hadolint ve Grype derlemesi yok. kalkan bu tarayıcıları atlar ve nedenini yazar.</span><span class="en" lang="en">Trivy, Opengrep, Hadolint and Grype have no build for Windows on ARM (<code>windows-arm64</code>). kalkan skips these scanners and records the reason.</span></p>
+        </section>
+
+        <!-- AI verification -->
+        <section class="doc-sec" id="ai-dogrulama" aria-labelledby="h-verify">
+          <p class="kicker">09</p>
+          <h2 id="h-verify"><span class="tr" lang="tr">Ajan doğrulaması</span><span class="en" lang="en">AI verification</span></h2>
+          <p class="tr" lang="tr">Tarayıcılar çok sayıda şüpheli üretir. Bir araç sonucu, bir ajan onu kaynak kodda doğrulayana kadar <b>doğrulanmamış araç sonucu</b> olarak kalır. Rapor bu sonuçları ayrı bir listede gösterir.</p>
+          <p class="en" lang="en">The scanners produce many candidates. A tool result stays an <b>unverified tool result</b> until an agent verifies it in the source code. The report shows these results in a separate list.</p>
+          <h3><span class="tr" lang="tr">Ajanlar</span><span class="en" lang="en">The agents</span></h3>
+          <p class="tr" lang="tr">kalkan'ın 10 ajan rolü var. Her ajan kaynağı okur ve tek bir sonuç dosyası yazar: kendi sonucunu. Kabuk yok, web yok, düzenleme yok.</p>
+          <p class="en" lang="en">kalkan has 10 agent roles. Each agent reads the source and writes one result file: its own result. No shell, no web, no edits.</p>
+          <ul class="files">
+            <li><code>recon</code><span class="tr" lang="tr">Ürünü, rolleri, saldırı yüzeylerini ve çalışma ortamını alıntılarla haritalar.</span><span class="en" lang="en">Maps the product, the principals, the attack surfaces and the execution, with quotes.</span></li>
+            <li><code>hunter</code><span class="tr" lang="tr">Kapsam birimlerini toplu olarak arar. Kaynağa dayanan iddialar yazar.</span><span class="en" lang="en">Searches batches of coverage units. Writes candidates that rest on the source.</span></li>
+            <li><code>critic</code><span class="tr" lang="tr">Bir av dalgasının kapsamını değerlendirir ve eksik birimleri önerir.</span><span class="en" lang="en">Judges the coverage of a hunt wave and proposes the missing units.</span></li>
+            <li><code>verifier</code><span class="tr" lang="tr">Bir iddiayı çürütmeye çalışır. Üç kanıt sorusunu alıntılarla yanıtlar.</span><span class="en" lang="en">Tries to refute one claim. Answers three evidence questions with quotes.</span></li>
+            <li><code>reviewer</code><span class="tr" lang="tr">Son kaydı taze gözle okur. Kararı <code>verified</code>, <code>downgrade</code> veya <code>reject</code> olur.</span><span class="en" lang="en">Reads a final record with fresh eyes. Its decision is <code>verified</code>, <code>downgrade</code> or <code>reject</code>.</span></li>
+            <li><code>consolidator</code><span class="tr" lang="tr">Aynı kök nedeni ve aynı düzeltmeyi paylaşan kayıtları gruplar.</span><span class="en" lang="en">Groups the records that share one root cause and one fix.</span></li>
+            <li><code>sca-reach</code><span class="tr" lang="tr">Kodun bir bağımlılığın zafiyetli kısmına ulaşıp ulaşmadığına alıntılarla karar verir.</span><span class="en" lang="en">Decides with quotes whether the code reaches the vulnerable part of a dependency.</span></li>
+            <li><code>poc-builder</code><span class="tr" lang="tr">Bir bulgu için küçük, güvenli bir doğrulama programı yazar. Motor onu <a href="#sandbox">sandbox</a> içinde çalıştırır.</span><span class="en" lang="en">Writes a small, safe verification program for one finding. The engine runs it in the <a href="#sandbox">sandbox</a>.</span></li>
+            <li><code>polisher</code><span class="tr" lang="tr">Türkçe bulgu metinlerinde eksik Türkçe harfleri geri koyar.</span><span class="en" lang="en">Restores missing Turkish letters in the Turkish finding texts.</span></li>
+            <li><code>translator</code><span class="tr" lang="tr">Bulgu metinlerini İngilizce rapor için çevirir.</span><span class="en" lang="en">Translates the finding texts for the English report.</span></li>
+          </ul>
+          <h3><span class="tr" lang="tr">Kararlar</span><span class="en" lang="en">Verdicts</span></h3>
+          <p class="tr" lang="tr">Doğrulayıcı her şüpheli için üç soruyu yanıtlar. Saldırgan girdiyi kontrol ediyor mu? Bir yetki sınırı aşılıyor mu? Bir önlem eksik mi? Her yanıt kaynak koddan bir alıntı taşır. Motor her alıntıyı dosyada arar (±2 satır). Dosyada olmayan bir alıntı kanıt sayılmaz.</p>
+          <p class="en" lang="en">The verifier answers three questions about each candidate. Does an attacker control the input? Does it cross a privilege boundary? Is a mitigation missing? Each answer quotes the source code. The engine looks up every quote in the file (±2 lines). A quote that is not in the file counts as no evidence.</p>
+          <ul class="files">
+            <li><code>confirmed</code><span class="tr" lang="tr">Doğrulanan bulgu: üç yanıtın üçü de kanıtlı.</span><span class="en" lang="en">Confirmed finding: all three answers are established.</span></li>
+            <li><code>needs_validation</code><span class="tr" lang="tr">Doğrulama bekleyen bulgu: kanıt ne onaya ne ret kararına yeter.</span><span class="en" lang="en">Finding that needs validation: the evidence is not enough to confirm or to reject.</span></li>
+            <li><code>rejected</code><span class="tr" lang="tr">Reddedilen şüpheli: doğrulanmış tek bir çürütme yeter.</span><span class="en" lang="en">Rejected candidate: one verified refutation is enough.</span></li>
+          </ul>
+          <h3><span class="tr" lang="tr">Hangi araç sonuçları doğrulanır?</span><span class="en" lang="en">Which tool results get verified?</span></h3>
+          <p class="tr" lang="tr">Avcılar araç sonuçlarını ipucu olarak görür. Av aşaması bitince motor, kritik ve yüksek ciddiyetli kod sonuçları için doğrulama görevleri açar. Bu görevler bütçenin sınırlı bir payını kullanır. Doğrulama görevi almayan bir sonuç, raporda doğrulanmamış araç sonucu olarak kalır.</p>
+          <p class="en" lang="en">The hunters see the tool results as hints. After the hunt, the engine creates verify tasks for code results with critical or high severity. These tasks use a limited share of the budget. A result without a verify task stays in the report as an unverified tool result.</p>
+          <h3><span class="tr" lang="tr">Son inceleme</span><span class="en" lang="en">Final review</span></h3>
+          <p class="tr" lang="tr"><code>standard</code> ve <code>deep</code> profillerinde taze bir gözden geçirici her doğrulanan ve doğrulama bekleyen kaydı yeniden okur. Doğrulayıcının gerekçesini görmez. Motor bir kararı yalnız korur veya zayıflatır, hiçbir zaman güçlendirmez. <code>fast</code> profilinde ayrı bir son inceleme yoktur.</p>
+          <p class="en" lang="en">In the <code>standard</code> and <code>deep</code> profiles, a fresh reviewer reads each confirmed record and each record that needs validation again. The reviewer does not see the reasoning of the verifier. The engine keeps or weakens a verdict, and it never makes a verdict stronger. The <code>fast</code> profile has no separate final review.</p>
+          <h3><span class="tr" lang="tr">Yalnızca araç modu</span><span class="en" lang="en">Tools-only mode</span></h3>
+          <p class="tr" lang="tr"><code>--tools-only</code> hiçbir ajan çalıştırmaz. Motor keşif, plan, av, doğrulama ve PoC aşamalarını atlar. Rapor her sonucu doğrulanmamış araç sonucu olarak gösterir ve genel riski bilinmiyor olarak yazar. Bu mod Claude Code istemez.</p>
+          <p class="en" lang="en"><code>--tools-only</code> runs no agent. The engine skips the recon, plan, hunt, validate and PoC phases. The report shows every result as an unverified tool result and gives the overall risk as unknown. This mode needs no Claude Code.</p>
+        </section>
+
+        <!-- PoC sandbox -->
+        <section class="doc-sec" id="sandbox" aria-labelledby="h-sandbox">
+          <p class="kicker">10</p>
+          <h2 id="h-sandbox">PoC sandbox</h2>
+          <p class="lede tr" lang="tr">Statik kanıt bir bulgunun kodda var olduğunu gösterir. Sandbox bir adım daha atar: bulguyu izole bir konteynerde çalıştırıp etkinin gerçekten oluştuğunu gösterir.</p>
+          <p class="lede en" lang="en">Static evidence shows that a finding exists in the code. The sandbox goes one step further: it runs the finding in an isolated container and shows that the effect really happens.</p>
+          <p class="tr" lang="tr">Bir bulgu doğrulandıktan sonra ajan küçük bir doğrulama programı yazar. Motor bu programı kilitli bir konteynerde çalıştırır ve çıktısına bakar. Program beklenen etkiyi gösterirse bulgu <b>confirmed</b> olur ve güven düzeyi <b>high</b>'a çıkar. Göstermezse bulgu kararını korur. Sandbox hiçbir zaman bir bulgunun derecesini düşürmez, yalnızca yükseltir.</p>
+          <p class="en" lang="en">After a finding is verified, the agent writes a small verification program. The engine runs it in a locked container and reads its output. If the program shows the expected effect, the finding becomes <b>confirmed</b> and its confidence rises to <b>high</b>. If it does not, the finding keeps its verdict. The sandbox never lowers a finding, it only raises one.</p>
+
+          <h3><span class="tr" lang="tr">Konteyner neyle kilitlenir</span><span class="en" lang="en">How the container is locked</span></h3>
+          <ul class="files">
+            <li><b class="tr" lang="tr">Ağ yok</b><b class="en" lang="en">No network</b><span class="tr" lang="tr"><code>--network none</code>. Konteynerin hiçbir ağ arayüzü yoktur. Dışarıya tek bir paket gidemez.</span><span class="en" lang="en"><code>--network none</code>. The container has no network interface. Not one packet can leave it.</span></li>
+            <li><b class="tr" lang="tr">Salt-okunur hedef</b><b class="en" lang="en">Read-only target</b><span class="tr" lang="tr">Kodun kopyası <code>/target</code> altına salt-okunur bağlanır. Program koda yazamaz.</span><span class="en" lang="en">The copy of the code is mounted read-only at <code>/target</code>. The program cannot write to the code.</span></li>
+            <li><b class="tr" lang="tr">Root değil</b><b class="en" lang="en">Not root</b><span class="tr" lang="tr">Kullanıcı <code>65534</code> (nobody), bütün Linux yetenekleri düşürülür, <code>no-new-privileges</code> açıktır.</span><span class="en" lang="en">User <code>65534</code> (nobody), every Linux capability is dropped, and <code>no-new-privileges</code> is on.</span></li>
+            <li><b class="tr" lang="tr">Yazılabilir tek yer</b><b class="en" lang="en">One writable place</b><span class="tr" lang="tr">Kök dosya sistemi salt-okunurdur. Yalnızca <code>/out</code> ve <code>/tmp</code> yazılabilir.</span><span class="en" lang="en">The root filesystem is read-only. Only <code>/out</code> and <code>/tmp</code> are writable.</span></li>
+            <li><b class="tr" lang="tr">Sınırlar</b><b class="en" lang="en">Limits</b><span class="tr" lang="tr">1 CPU, 512 MB bellek, 256 işlem, 180 saniye. Süre dolarsa konteyner zorla kapatılır.</span><span class="en" lang="en">1 CPU, 512 MB memory, 256 processes, 180 seconds. If the time runs out, the container is forced down.</span></li>
+            <li><b class="tr" lang="tr">Sahte veri</b><b class="en" lang="en">Dummy data</b><span class="tr" lang="tr">Program yalnızca sahte veri kullanır, en küçük gözlemlenebilir etkide durur ve hiçbir gerçek sisteme dokunmaz.</span><span class="en" lang="en">The program uses dummy data only, stops at the smallest observable effect and never touches a real system.</span></li>
+            <li><b class="tr" lang="tr">Disk ve bellek</b><b class="en" lang="en">Disk and memory</b><span class="tr" lang="tr">Motor her çıktı akışından en çok 256 KB tutar. <code>/out</code> 64 MB'ı veya 1.000 dosyayı geçerse motor konteyneri durdurur ve klasörü siler.</span><span class="en" lang="en">The engine keeps at most 256 KB of each output stream. If <code>/out</code> passes 64 MB or 1,000 files, the engine stops the container and deletes the folder.</span></li>
+            <li><b class="tr" lang="tr">Sır gizleme</b><b class="en" lang="en">Redaction</b><span class="tr" lang="tr">Motor çıktıyı ve kanıt dosyalarını yazmadan önce anahtar, token ve şifre gibi değerleri <code>[REDACTED]</code> yapar.</span><span class="en" lang="en">Before it writes the output and the evidence files, the engine replaces values such as keys, tokens and passwords with <code>[REDACTED]</code>.</span></li>
+          </ul>
+
+          <h3><span class="tr" lang="tr">Açmak için</span><span class="en" lang="en">Turning it on</span></h3>
+          <p class="tr" lang="tr">Sandbox için Docker gerekir. <code>--allow-build-network</code> olmadan kalkan denetim sırasında <b>hiçbir imaj çekmez ve derlemez</b>. Temel imajları önceden sen indirirsin. Her dil için ayrı bir imaj vardır. Yalnızca ihtiyacın olanı indirebilirsin.</p>
+          <p class="en" lang="en">The sandbox needs Docker. Without <code>--allow-build-network</code>, kalkan <b>pulls and builds no image</b> during an audit. You download the base images beforehand. There is one image per language, and you can pull only the one you need.</p>
+          <div class="code"><pre><code><span class="m"># Status: is Docker running, which images exist</span>
+kalkan sandbox status
+
+<span class="m"># Only for Python projects</span>
+kalkan sandbox pull python:3.12-slim
+
+<span class="m"># All of them (Python, Node, Go, Java, PHP, Ruby, .NET)</span>
+kalkan sandbox pull</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">İmajlar Docker'ın kendi alanında durur, kalkan klasöründe değil. <code>kalkan</code> yazan yerde motorun tam yolunu kullan: bkz. <a href="docs#kullanim">Komutlar ve yollar</a>.</p>
+          <p class="en" lang="en">The images live in Docker's own storage, not in the kalkan folder. Where it says <code>kalkan</code>, use the full engine path: see <a href="docs#kullanim">Commands and paths</a>.</p>
+
+          <h3><span class="tr" lang="tr">Raporda ne görürsün</span><span class="en" lang="en">What the report shows</span></h3>
+          <ul class="files">
+            <li><code>passed</code><span class="tr" lang="tr">Etki gözlendi. Bulgu <b>confirmed</b>, güven <b>high</b>. Konteynerin çıktısı ve yazdığı dosyalar <code>evidence/&lt;bulgu-id&gt;/</code> altına kopyalanır.</span><span class="en" lang="en">The effect was observed. The finding is <b>confirmed</b> with <b>high</b> confidence. The container output and the files it wrote are copied into <code>evidence/&lt;finding-id&gt;/</code>.</span></li>
+            <li><code>failed</code><span class="tr" lang="tr">Program beklenen etkiyi göstermedi. Bulgu kararını korur, PoC sonucu rapora yazılır.</span><span class="en" lang="en">The program did not show the expected effect. The finding keeps its verdict, and the PoC result goes into the report.</span></li>
+            <li><code>blocked</code><span class="tr" lang="tr">PoC çalışmadı. Neden rapora yazılır: süre doldu, <code>/out</code> sınırı aşıldı, temel imaj yok, Docker erişilemedi ya da ajan güvenli bir program yazamadı.</span><span class="en" lang="en">The PoC did not run. The report names the reason: the time ran out, <code>/out</code> passed its limit, the base image is missing, Docker was not available, or the agent could not write a safe program.</span></li>
+          </ul>
+          <p class="tr" lang="tr">Raporda her bulgu bir <b>çalışma zamanı doğrulaması</b> satırı taşır: <b>tekrarlandı</b> (PoC etkiyi gösterdi), <b>sonuçsuz</b> (PoC çalıştı ama etkiyi göstermedi) veya <b>yapılmadı</b> (nedeniyle birlikte). Böylece statik kanıtı çalıştırılmış kanıttan ayırırsın.</p>
+          <p class="en" lang="en">In the report, each finding has a <b>runtime validation</b> line: <b>reproduced</b> (the PoC showed the effect), <b>inconclusive</b> (the PoC ran but did not show the effect) or <b>not performed</b> (with the reason). Thus you can tell static evidence from evidence that ran.</p>
+          <div class="behind">
+            <p class="tr" lang="tr"><b>Docker yoksa denetim yine çalışır.</b> <code>poc</code> aşaması atlanır ve rapor bunu söyler. Bulgular motorun kaynak kodda doğruladığı alıntılara dayanır. <code>standard</code> ve <code>deep</code> profillerinde son inceleme de vardır. Tek fark, kod bulgularının güven düzeyinin en fazla <b>medium</b> olmasıdır.</p>
+            <p class="en" lang="en"><b>Without Docker the audit still runs.</b> The <code>poc</code> phase is skipped and the report says so. The findings rest on the quotes that the engine verified in the source. The <code>standard</code> and <code>deep</code> profiles also have the final review. The only difference is that a code finding reaches at most <b>medium</b> confidence.</p>
+          </div>
+          <p class="tr" lang="tr">Birim düzeyi yetmezse ajan uygulama düzeyi PoC seçebilir. Motor projenin compose yığınını yalnız iç ağda, internetsiz ve dışarı port açmadan başlatır, istekleri ayrı bir istemci konteynerinden gönderir. Privileged servis, host ağı, Docker soketi veya hedef dışına bağlama isteyen bir yığın hiç başlatılmaz. İmaj derlemek veya indirmek senin onayını ister: <code>--allow-build-network</code> (isteğe bağlı, varsayılan kapalı). Bu bayrakla PoC sandbox'ı, hedefin compose yığınının imajlarını ağ erişimiyle çeker ve derler. Çalışan yığın internete hiç çıkmaz.</p>
+          <p class="en" lang="en">When the unit level is not enough, the agent can choose an app-level PoC. The engine starts the compose stack of the project only on an internal network, without internet and without published ports, and sends the requests from a separate client container. A stack that asks for a privileged service, the host network, the Docker socket or a mount outside the target never starts. Building or pulling images needs your consent: <code>--allow-build-network</code> (opt-in, off by default). With it, the PoC sandbox pulls and builds the images of the target's compose stack with network access. The running stack never gets internet.</p>
+        </section>
+
+        <!-- SCA and vulnerability databases -->
+        <section class="doc-sec" id="sca" aria-labelledby="h-sca">
+          <p class="kicker">11</p>
+          <h2 id="h-sca"><span class="tr" lang="tr">SCA ve zafiyet veritabanları</span><span class="en" lang="en">SCA and vulnerability databases</span></h2>
+          <p class="tr" lang="tr">SCA (yazılım bileşen analizi), projenin bağımlılıklarını bilinen zafiyetlerle karşılaştırır. kalkan bunu yalnız yerel veritabanlarıyla yapar. Paket adların ve sürümlerin makineden çıkmaz.</p>
+          <p class="en" lang="en">SCA (software composition analysis) compares the dependencies of the project with known vulnerabilities. kalkan does this with local databases only. Your package names and versions do not leave the machine.</p>
+          <ol class="rules">
+            <li><span aria-hidden="true">01</span><span class="tr" lang="tr">Syft bir SBOM (bileşen listesi) çıkarır. Rapor onu CycloneDX ve SPDX biçiminde yazar.</span><span class="en" lang="en">Syft builds an SBOM (a list of components). The report writes it in the CycloneDX and SPDX formats.</span></li>
+            <li><span aria-hidden="true">02</span><span class="tr" lang="tr">OSV-Scanner ve Grype bileşenleri yerel veritabanlarıyla ağsız eşleştirir.</span><span class="en" lang="en">OSV-Scanner and Grype match the components with the local databases, without network.</span></li>
+            <li><span aria-hidden="true">03</span><span class="tr" lang="tr">RetireJS verisi projeye kopyalanmış JavaScript kütüphanelerini bulur. <code>malicious-dependency</code> kuralı bilinen zararlı paket sürümlerini bulur.</span><span class="en" lang="en">The RetireJS data finds JavaScript libraries that the project copied into its files. The <code>malicious-dependency</code> rule finds known malicious package versions.</span></li>
+            <li><span aria-hidden="true">04</span><span class="tr" lang="tr">govulncheck, Go kodunun zafiyetli koda ulaşıp ulaşmadığını kontrol eder. Diğer dillerde <code>sca-reach</code> ajanı kritik ve yüksek kayıtları alıntılarla kontrol eder.</span><span class="en" lang="en">govulncheck checks whether the Go code reaches the vulnerable code. For other languages, the <code>sca-reach</code> agent checks the critical and high records with quotes.</span></li>
+          </ol>
+          <h3><span class="tr" lang="tr">Veritabanları</span><span class="en" lang="en">The databases</span></h3>
+          <p class="tr" lang="tr">Veritabanları veri klasörünün <code>.tools/vulndb/</code> klasöründe durur. 29 Ekim 2026'da toplam 3,67 GB tuttular (bir Windows 11 makinesinde bir kez ölçüldü).</p>
+          <p class="en" lang="en">The databases are in the <code>.tools/vulndb/</code> folder of the data folder. On 29 October 2026, they used 3.67 GB in total (measured once on one Windows 11 machine).</p>
+          <ul class="files">
+            <li><b>Grype</b><span class="tr" lang="tr">3,36 GB. Grype'ın zafiyet veritabanı.</span><span class="en" lang="en">3.36 GB. The vulnerability database of Grype.</span></li>
+            <li><b>OSV</b><span class="tr" lang="tr">0,30 GB. 13 ekosistem: npm, PyPI, Go, Maven, RubyGems, Packagist, crates.io, NuGet, Pub, Hex, CRAN, SwiftURL, GitHub Actions.</span><span class="en" lang="en">0.30 GB. 13 ecosystems: npm, PyPI, Go, Maven, RubyGems, Packagist, crates.io, NuGet, Pub, Hex, CRAN, SwiftURL, GitHub Actions.</span></li>
+            <li><b>Go</b><span class="tr" lang="tr">7 MB. govulncheck için <code>vuln.go.dev</code> arşivi.</span><span class="en" lang="en">7 MB. The <code>vuln.go.dev</code> archive for govulncheck.</span></li>
+            <li><b>RetireJS</b><span class="tr" lang="tr">0,6 MB. JavaScript kütüphane deposu.</span><span class="en" lang="en">0.6 MB. The JavaScript library repository.</span></li>
+          </ul>
+          <p class="tr" lang="tr">Eksik bir veritabanı çevrimiçi bir sorguya dönüşmez. <code>sca match</code> bir veritabanı boşluğu kaydeder ve rapor bu boşluğu gösterir. <code>--online</code> seçeneği isteğe bağlıdır ve paket adlarını çevrimiçi servislere gönderir.</p>
+          <p class="en" lang="en">A missing database never becomes an online query. <code>sca match</code> records a database gap, and the report shows the gap. The <code>--online</code> flag is opt-in, and it sends the package names to online services.</p>
+          <p class="tr" lang="tr">Kilit dosyası (lockfile) olmayan bir projede kalkan tam sürümleri kontrol eder. Sürüm aralıklarını raporda tarama boşluğu olarak listeler.</p>
+          <p class="en" lang="en">For a project without a lockfile, kalkan checks the exact versions. The report lists the version ranges as a scan gap.</p>
+          <h3><span class="tr" lang="tr">Güncel tut</span><span class="en" lang="en">Keep them current</span></h3>
+          <p class="tr" lang="tr">Yerel eşleştirme yalnız son indirmedeki zafiyetleri bilir. <code>kalkan doctor</code>, bir veritabanı eksikse veya 7 günden eskiyse uyarır. Veritabanlarını bu komut indirir. Komut 24 saatten genç ve sağlam bir veritabanını tutar:</p>
+          <p class="en" lang="en">Local matching knows only the vulnerabilities of the last download. <code>kalkan doctor</code> warns when a database is missing or older than 7 days. This command downloads the databases. It keeps a sound database that is younger than 24 hours:</p>
+          <div class="code"><pre><code>kalkan sca update-db</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">İndirme yalnız ekosistem adlarını ve arşiv isteklerini gönderir. Projenin hiçbir paketini göndermez. Ayrıntılar: <a href="docs-maintenance#guncelleme">Güncelleme</a>.</p>
+          <p class="en" lang="en">The download sends only ecosystem names and archive requests. It never sends a package of the project. Details: <a href="docs-maintenance#guncelleme">Updating</a>.</p>
+        </section>
+
+        <!-- Reports -->
+        <section class="doc-sec" id="raporlar" aria-labelledby="h-reports">
+          <p class="kicker">12</p>
+          <h2 id="h-reports"><span class="tr" lang="tr">Raporlar</span><span class="en" lang="en">Reports</span></h2>
+          <p class="tr" lang="tr">kalkan her denetim için <code>~/kalkan-runs/&lt;run-id&gt;/</code> klasörünü oluşturur. Rapor dosyaları bu klasörün <code>report/</code> klasöründedir. Önce <code>EXECUTIVE.html</code> dosyasını aç.</p>
+          <p class="en" lang="en">kalkan creates the folder <code>~/kalkan-runs/&lt;run-id&gt;/</code> for each audit. The report files are in its <code>report/</code> folder. Open <code>EXECUTIVE.html</code> first.</p>
+          <ul class="files">
+            <li><code>EXECUTIVE.html</code><span class="tr" lang="tr">Tek sayfalık yönetici özeti: genel risk, en önemli 10 bulgu ve öncelikli eylemler. Bulgu bağlantıları <code>REPORT.html</code> dosyasını açar.</span><span class="en" lang="en">The executive summary on one page: the overall risk, the top 10 findings and the priority actions. Its finding links open <code>REPORT.html</code>.</span></li>
+            <li><span><code>REPORT.html</code>, <code>REPORT.md</code></span><span class="tr" lang="tr">Tam rapor: bütün bulgular, kanıtları ve düzeltme önerileri, kapsam, tarama boşlukları ve doğrulanmamış araç sonuçları.</span><span class="en" lang="en">The full report: all findings with their evidence and remediation, the coverage, the scan gaps and the unverified tool results.</span></li>
+            <li><code>findings.json</code><span class="tr" lang="tr">Birleştirilmiş bulgular, makine okunur biçimde.</span><span class="en" lang="en">The merged findings in a machine-readable form.</span></li>
+            <li><code>findings.sarif</code><span class="tr" lang="tr">SARIF 2.1.0: bulgular ve SCA kayıtları. GitHub code scanning ve IDE'ler bu dosyayı okur. Doğrulanmamış araç sonuçları bu dosyaya yalnız <code>--include-candidates</code> ile girer: bkz. <a href="#ci-cd">CI/CD</a>.</span><span class="en" lang="en">SARIF 2.1.0: the findings and the SCA records. GitHub code scanning and IDEs read this file. The unverified tool results go into this file only with <code>--include-candidates</code>: see <a href="#ci-cd">CI/CD</a>.</span></li>
+            <li><code>summary.json</code><span class="tr" lang="tr">Sayılar, motorlar, kapsam, bütçe, boşluklar, rapor dosyalarının yolları ve run bilgisi: tip, süre ve <code>kalkan-audit</code> ile çalıştıysa maliyet (USD, API eşdeğeri) ve tokenlar.</span><span class="en" lang="en">The counts, the engines, the coverage, the budget, the gaps, the paths of the report files and the run facts: type, time and, for a <code>kalkan-audit</code> run, the cost (USD, API-equivalent) and the tokens.</span></li>
+            <li><span><code>sbom.cdx.json</code>, <code>sbom.spdx.json</code></span><span class="tr" lang="tr">Bileşen listesi (SBOM): CycloneDX 1.6 ve SPDX 2.3. kalkan bu dosyaları yalnız projede bileşen bulursa yazar.</span><span class="en" lang="en">The component list (SBOM): CycloneDX 1.6 and SPDX 2.3. kalkan writes these files only when it finds components in the project.</span></li>
+            <li><span><code>*.en.md</code>, <code>*.en.html</code></span><span class="tr" lang="tr">Türkçe bir denetimin İngilizce sürümü: <code>REPORT.en.md</code>, <code>REPORT.en.html</code> ve <code>EXECUTIVE.en.html</code>.</span><span class="en" lang="en">The English version of a Turkish run: <code>REPORT.en.md</code>, <code>REPORT.en.html</code> and <code>EXECUTIVE.en.html</code>.</span></li>
+          </ul>
+          <h3><span class="tr" lang="tr">Dil</span><span class="en" lang="en">Language</span></h3>
+          <p class="tr" lang="tr">Rapor varsayılan olarak İngilizce. Türkçe rapor için başlatma komutuna <code>--lang tr</code> ekle. Türkçe rapor yerleşik İngilizce teknik terimleri korur. Claude Code oturumunda kalkan, Türkçe bir denetimin sonunda İngilizce sürümü de sorar. <code>kalkan-audit</code> bu soruya hayır cevabı verir. Türkçe bir denetimin İngilizce raporunu sonradan istemek için şu iki komutu çalıştır:</p>
+          <p class="en" lang="en">The report is English by default. For a Turkish report, add <code>--lang tr</code> to the start command. A Turkish report keeps the established English technical terms. In a Claude Code session, kalkan offers the English version at the end of a Turkish run. <code>kalkan-audit</code> answers no to this question. To ask for the English report of a Turkish run later, run these two commands:</p>
+          <div class="code"><pre><code>kalkan run answer english_report yes --run &lt;run-id&gt;
+<span class="m"># Claude Code</span>
+/kalkan devam &lt;run-id&gt;</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">Çevirmen ajanlar bulgu metinlerini çevirir. Sonra motor İngilizce dosyaları yazar.</p>
+          <p class="en" lang="en">The translator agents translate the finding texts. Then the engine writes the English files.</p>
+          <h3><span class="tr" lang="tr">Denetim klasörü</span><span class="en" lang="en">The run folder</span></h3>
+          <p class="tr" lang="tr">Rapor dışındaki klasörler denetimin iş dosyalarını tutar.</p>
+          <p class="en" lang="en">The other folders hold the work files of the audit.</p>
+          <ul class="files">
+            <li><code>target/</code><span class="tr" lang="tr">Denetlenen kodun kopyası. Ajan talimat dosyaları <code>.kalkan-neutralized</code> ekini alır.</span><span class="en" lang="en">A copy of the audited code. The agent instruction files get the suffix <code>.kalkan-neutralized</code>.</span></li>
+            <li><code>source/</code><span class="tr" lang="tr">Git geçmişinin özel kopyası: git URL'sinin klonu veya yerel reponun geçmişi. Gitleaks ve Kingfisher geçmişi burada tarar.</span><span class="en" lang="en">A private copy of the git history: the clone of a git URL, or the history of a local repository. Gitleaks and Kingfisher scan the history here.</span></li>
+            <li><code>scans/</code><span class="tr" lang="tr">Tarayıcıların ham çıktıları ve durum dosyaları.</span><span class="en" lang="en">The raw output and the status files of the scanners.</span></li>
+            <li><code>sca/</code><span class="tr" lang="tr">SBOM ve bağımlılık zafiyeti kayıtları.</span><span class="en" lang="en">The SBOM and the dependency vulnerability records.</span></li>
+            <li><code>tasks/</code><span class="tr" lang="tr">Ajan görevleri: her görevin istemi, girdisi ve sonucu.</span><span class="en" lang="en">The agent tasks: the prompt, the input and the result of each task.</span></li>
+            <li><code>state.json</code><span class="tr" lang="tr">Denetimin durumu. <code>devam</code> kaldığı yeri buradan okur.</span><span class="en" lang="en">The state of the audit. <code>devam</code> reads the resume point from it.</span></li>
+            <li><b class="tr" lang="tr">Diğerleri</b><b class="en" lang="en">Other</b><span class="tr" lang="tr">Şüpheli listesi, kapsam defteri, bulgular, olay günlüğü ve benzeri iş dosyaları.</span><span class="en" lang="en">The candidate list, the coverage ledger, the findings, the event log and similar work files.</span></li>
+          </ul>
+          <div class="behind">
+            <p class="tr" lang="tr"><b>Denetim klasörü, kodun kendisi kadar hassastır.</b> <code>target/</code> kodun bir kopyasını tutar. <code>source/</code> bütün git geçmişini tutar. Geçmişte silinmiş sırlar varsa onlar da oradadır. Müşteri kodu denetlediysen bu klasörü kodun kendisi gibi koru.</p>
+            <p class="en" lang="en"><b>A run folder is as sensitive as the code itself.</b> <code>target/</code> holds a copy of the code. <code>source/</code> holds the full git history. If a commit deleted a secret, the secret is still there. If you audit customer code, protect this folder like the code itself.</p>
+          </div>
+          <p class="tr" lang="tr">Bitmiş bir denetimde raporu tutup kod kopyasını, geçmiş kopyasını ve iş klasörlerini silmek için <code>kalkan run clean &lt;run-id&gt;</code> çalıştır. Ayrıntılar: <a href="docs-machine#disk">Disk kullanımı</a>.</p>
+          <p class="en" lang="en">To keep the report of a finished audit and delete the code copy, the history copy and the work folders, run <code>kalkan run clean &lt;run-id&gt;</code>. Details: <a href="docs-machine#disk">Disk usage</a>.</p>
+        </section>
+
+        <!-- CI/CD -->
+        <section class="doc-sec" id="ci-cd" aria-labelledby="h-ci">
+          <p class="kicker">13</p>
+          <h2 id="h-ci">CI/CD</h2>
+          <p class="tr" lang="tr">Bir CI hattında (sürekli entegrasyon) yalnızca araç modunu kullan. <code>--tools-only</code> Claude Code istemez ve hiçbir ajan çalıştırmaz. Tarayıcılar, SCA ve rapor çalışır. Sonuçlar doğrulanmamış araç sonuçlarıdır.</p>
+          <p class="en" lang="en">In a CI pipeline (continuous integration), use the tools-only mode. <code>--tools-only</code> needs no Claude Code and runs no agent. The scanners, SCA and the report run. The results are unverified tool results.</p>
+          <p class="tr" lang="tr">CI makinesinde plugin yerine bir kalkan checkout'u kullan. Aşağıdaki adımlar Linux ve macOS içindir.</p>
+          <p class="en" lang="en">On the CI machine, use a kalkan checkout in place of the plugin. The steps below are for Linux and macOS.</p>
+          <ol class="rules">
+            <li><span aria-hidden="true">01</span><div class="step">
+              <p class="tr" lang="tr">kalkan'ı klonla ve kur. Bootstrap betiği motoru, tarayıcıları ve veritabanlarını checkout'un içine kurar.</p>
+              <p class="en" lang="en">Clone and set up kalkan. The bootstrap script installs the engine, the scanners and the databases in the checkout.</p>
+              <div class="code"><pre><code>git clone https://github.com/dtechcloud/kalkan.git "$HOME/kalkan"
+sh "$HOME/kalkan/scripts/bootstrap.sh"</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">02</span><div class="step">
+              <p class="tr" lang="tr">Proje klasöründe yalnızca araç modunda denetle.</p>
+              <p class="en" lang="en">In the project folder, run a tools-only audit.</p>
+              <div class="code"><pre><code>"$HOME/kalkan/.venv/bin/kalkan" audit . --tools-only</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">03</span><div class="step">
+              <p class="tr" lang="tr">Doğrulanmamış araç sonuçlarını da SARIF dosyasına yaz.</p>
+              <p class="en" lang="en">Write the unverified tool results into the SARIF file too.</p>
+              <div class="code"><pre><code>"$HOME/kalkan/.venv/bin/kalkan" report --formats sarif --include-candidates</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">04</span><span class="tr" lang="tr"><code>$HOME/kalkan/runs/&lt;run-id&gt;/report/findings.sarif</code> dosyasını yükle, örneğin GitHub code scanning'e. <code>runs/LATEST</code> dosyası çalıştırma kimliğini tutar.</span><span class="en" lang="en">Upload <code>$HOME/kalkan/runs/&lt;run-id&gt;/report/findings.sarif</code>, for example to GitHub code scanning. The file <code>runs/LATEST</code> holds the run ID.</span></li>
+          </ol>
+          <p class="tr" lang="tr">3. adım olmadan SARIF dosyası yalnız SCA kayıtlarını taşır, çünkü yalnızca araç modunda hiçbir bulgu doğrulanmaz. 3. adımın eklediği sonuçlar SARIF'te <code>kind: candidate</code> özelliğini taşır.</p>
+          <p class="en" lang="en">Without step 3, the SARIF file holds only the SCA records, because no finding gets verified in tools-only mode. The results that step 3 adds carry the property <code>kind: candidate</code> in SARIF.</p>
+          <p class="tr" lang="tr">Denetimler klasörü projenin dışında olmalı. Checkout'ta bu klasör <code>&lt;checkout&gt;/runs</code> klasörüdür. <code>KALKAN_RUNS_DIR</code> yerini değiştirir. Windows'ta motor <code>.venv\Scripts\kalkan.exe</code> olur ve kurulum <code>powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1</code> ile yapılır.</p>
+          <p class="en" lang="en">The runs folder must be outside the project. In a checkout, this folder is <code>&lt;checkout&gt;/runs</code>. <code>KALKAN_RUNS_DIR</code> moves it. On Windows, the engine is <code>.venv\Scripts\kalkan.exe</code>, and the setup command is <code>powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1</code>.</p>
+          <h3><span class="tr" lang="tr">Çıkış kodları</span><span class="en" lang="en">Exit codes</span></h3>
+          <ul class="files">
+            <li><code>0</code><span class="tr" lang="tr">Denetim bitti. Bulgu veya araç sonucu olsa da kod 0'dır.</span><span class="en" lang="en">The audit is done. The code is 0 also when there are findings or tool results.</span></li>
+            <li><code>1</code><span class="tr" lang="tr">Denetim eksik kaldı (kısmi rapor var), durdu veya başarısız oldu.</span><span class="en" lang="en">The audit is incomplete (a partial report exists), stopped or failed.</span></li>
+            <li><code>2</code><span class="tr" lang="tr">Kullanım hatası, örneğin bilinmeyen bir seçenek.</span><span class="en" lang="en">A usage error, for example an unknown option.</span></li>
+            <li><code>5</code><span class="tr" lang="tr">Kurulum gerekli: bir araç veya veritabanı eksik. CI'da <code>--yes</code> ekleme. O zaman iş, indirme yapmak yerine bu kodla durur.</span><span class="en" lang="en">Setup needed: a tool or a database is missing. Do not add <code>--yes</code> in CI. Then the job stops with this code in place of a download.</span></li>
+          </ul>
+          <p class="tr" lang="tr">Bir işi sonuçlara göre durdurmak için <code>summary.json</code> dosyasını oku. Örneğin <code>counts.sca_malicious</code> bilinen zararlı paketleri sayar. <code>counts.tool_results_by_engine</code> araç sonuçlarını motora ve ciddiyete göre sayar.</p>
+          <p class="en" lang="en">To stop a job on the results, read <code>summary.json</code>. For example, <code>counts.sca_malicious</code> counts the known malicious packages. <code>counts.tool_results_by_engine</code> counts the tool results by engine and severity.</p>
+          <h3><span class="tr" lang="tr">Kurulumu her işte tekrarlama</span><span class="en" lang="en">Do not repeat the setup in every job</span></h3>
+          <p class="tr" lang="tr">Bootstrap araçları ve zafiyet veritabanlarını indirir. Bu indirme dakikalar sürer ve süresi ağa bağlıdır. Bootstrap 7 günden genç bir veritabanını yeniden indirmez. Kurulu bir checkout'u sonraki işlere taşı veya kalıcı bir CI makinesi kullan. Veritabanlarını <code>kalkan sca update-db</code> ile güncel tut. <code>kalkan doctor</code> 7 günden eski bir veritabanı için uyarır.</p>
+          <p class="en" lang="en">The bootstrap script downloads the tools and the vulnerability databases. This download takes minutes, and its time depends on the network. The bootstrap script does not download a database again when it is younger than 7 days. Carry an installed checkout to the next jobs, or use a persistent CI machine. Keep the databases current with <code>kalkan sca update-db</code>. <code>kalkan doctor</code> warns about a database older than 7 days.</p>
+          <p class="note"><span class="tr" lang="tr">Repodaki <code>docker/</code> klasörü CI için bir imaj tarifi tutar. Bu imaj desteklenen bir kurulum yolu değil: bkz. <a href="docs-machine#docker">Neden her şey Docker'da değil?</a></span><span class="en" lang="en">The <code>docker/</code> folder of the repository holds an image recipe for CI. This image is not a supported install path: see <a href="docs-machine#docker">Why not everything in Docker?</a></span></p>
+          <a class="btn" href="docs-machine"><span class="tr" lang="tr">Sonraki: Makinende →</span><span class="en" lang="en">Next: On your machine →</span></a>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="foot">
+  <div class="frame">
+    <div class="foot-in">
+      <div>
+        <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+        <p lang="en">Last stop before production.</p>
+        <p><a class="mail-link" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a></p>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Ürün</span><span class="en" lang="en">Product</span></h4>
+        <ul><li><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a></li><li><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a></li><li><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a></li><li><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a></li></ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Daha fazla</span><span class="en" lang="en">More</span></h4>
+        <ul>
+          <li><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a></li>
+          <li><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Kaynak</span><span class="en" lang="en">Source</span></h4>
+        <ul>
+          <li><a href="https://github.com/dtechcloud/kalkan" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/LICENSE" target="_blank" rel="noopener"><span class="tr" lang="tr">MIT lisansı</span><span class="en" lang="en">MIT license</span></a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 kalkan · MIT</span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/analytics.js"></script>
+</body>
+</html>

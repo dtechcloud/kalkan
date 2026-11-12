@@ -1,0 +1,139 @@
+{
+  "version": 1,
+  "slug": "catch-all-route-auth",
+  "description": "Catch-all routes and Payload CMS endpoints — verify auth covers all sub-paths",
+  "class": "missing-authz",
+  "cwe": [
+    "CWE-862"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/[[][[]...rest[]][]]/**/*.{ts,tsx}",
+    "**/[[]...slug[]]/**/*.{ts,tsx}",
+    "**/[[]...path[]]/**/*.{ts,tsx}",
+    "**/(payload)/**/*.{ts,tsx}",
+    "**/graphql/route.{ts,tsx}",
+    "**/app/api/**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=",
+      "flags": "",
+      "label": "Catch-all route handler — NO auth on catch-all",
+      "not_near": [
+        {
+          "regex": "withAuthentication\\s*\\(|withSchema\\s*\\(|getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|verifyToken",
+          "scope": "file"
+        }
+      ],
+      "paths": [
+        "**/*[[]...[a-zA-Z]*/**",
+        "**/*[[]...[a-zA-Z]*"
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=",
+      "flags": "",
+      "label": "Catch-all route handler (has auth)",
+      "near": [
+        {
+          "regex": "withAuthentication\\s*\\(|withSchema\\s*\\(|getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|verifyToken",
+          "scope": "file"
+        }
+      ],
+      "paths": [
+        "**/*[[]...[a-zA-Z]*/**",
+        "**/*[[]...[a-zA-Z]*"
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=",
+      "flags": "",
+      "label": "Payload/GraphQL endpoint — NO auth",
+      "near": [
+        {
+          "regex": "\\(payload\\)|payload.*graphql|GRAPHQL_POST|GRAPHQL_GET",
+          "scope": "file"
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "withAuthentication\\s*\\(|withSchema\\s*\\(|getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|verifyToken",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=",
+      "flags": "",
+      "label": "Payload/GraphQL endpoint (has auth)",
+      "near": [
+        {
+          "regex": "\\(payload\\)|payload.*graphql|GRAPHQL_POST|GRAPHQL_GET",
+          "scope": "file"
+        },
+        {
+          "regex": "withAuthentication\\s*\\(|withSchema\\s*\\(|getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|verifyToken",
+          "scope": "file"
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=",
+      "flags": "",
+      "label": "Payload/GraphQL endpoint — NO auth",
+      "not_near": [
+        {
+          "regex": "withAuthentication\\s*\\(|withSchema\\s*\\(|getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|verifyToken",
+          "scope": "file"
+        }
+      ],
+      "paths": [
+        "**/(payload)/**",
+        "**/*{graphql,GraphQL,Graphql,GRAPHQL}*/**",
+        "**/*{graphql,GraphQL,Graphql,GRAPHQL}*"
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|DELETE|PATCH)|export\\s+(const\\s+)?(GET|POST|PUT|DELETE|PATCH)\\s*=",
+      "flags": "",
+      "label": "Payload/GraphQL endpoint (has auth)",
+      "near": [
+        {
+          "regex": "withAuthentication\\s*\\(|withSchema\\s*\\(|getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|verifyToken",
+          "scope": "file"
+        }
+      ],
+      "paths": [
+        "**/(payload)/**",
+        "**/*{graphql,GraphQL,Graphql,GRAPHQL}*/**",
+        "**/*{graphql,GraphQL,Graphql,GRAPHQL}*"
+      ]
+    }
+  ],
+  "examples": [
+    "export async function GET(request) { return Response.json({}) }",
+    "export async function POST(request: Request) { const body = await request.json(); return Response.json(body) }",
+    "export const PUT = async (req) => Response.json({})",
+    "export const PATCH = async (req: Request) => Response.json({})",
+    "export function DELETE(request) { return new Response(null, { status: 204 }) }",
+    "export async function GET() { await requireAuth(); return Response.json({}) }"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-catch-all-route-auth.ts"
+  },
+  "notes": "deepsec globs such as '**/[[...rest]]/**' are minimatch character classes that never match the Next.js folder name; the port matches the folders literally with [[] and []]. The catch-all, Payload and GraphQL conditions (path or content) become pattern variants. deepsec flags the first handler with one label; the port flags every handler line and can give a line two labels. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

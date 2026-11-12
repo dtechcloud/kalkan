@@ -1,0 +1,109 @@
+{
+  "engine": "opengrep",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/opengrep.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-976C0FAEA5E1BF9D",
+      "engine": "opengrep",
+      "rule_id": "python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+      "class": "sqli",
+      "cwe": [
+        "CWE-89"
+      ],
+      "title": "Opengrep Finding: python.lang.security.audit.formatted-sql-query.formatted-sql-query",
+      "message": "Detected possible formatted SQL query. Use parameterized queries instead.",
+      "file": "app/db.py",
+      "start_line": 14,
+      "end_line": 14,
+      "snippet": "    cursor.execute(\"SELECT * FROM users WHERE id = '\" + user_id + \"'\")",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": "low",
+      "tags": [
+        "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')",
+        "LOW CONFIDENCE",
+        "OWASP-A01:2017 - Injection",
+        "OWASP-A03:2021 - Injection",
+        "security"
+      ],
+      "fingerprints": {
+        "matchBasedId/v1": "23e1a6ff8292dac11036943f8d84fab529091292926e46f177cc3cc5bda59b0d4f4722dce60e255a5a378498345ba40792e8a727c3a002d79be73252b45ee030"
+      },
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/opengrep.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-9A73CA1C5608A420",
+      "engine": "opengrep",
+      "rule_id": "kalkan.python.ssrf.requests-user-url",
+      "class": "ssrf",
+      "cwe": [
+        "CWE-918"
+      ],
+      "title": "Opengrep Finding: kalkan.python.ssrf.requests-user-url",
+      "message": "A URL from the request reaches requests.get without a host allow-list. Check the host against an allow-list after DNS resolution.",
+      "file": "app/avatar.py",
+      "start_line": 31,
+      "end_line": 31,
+      "snippet": "    response = requests.get(avatar_url, timeout=5)",
+      "severity": "high",
+      "tool_severity": "error",
+      "confidence": "high",
+      "tags": [
+        "CWE-918: Server-Side Request Forgery (SSRF)",
+        "HIGH CONFIDENCE",
+        "OWASP-A10:2021 - Server-Side Request Forgery (SSRF)",
+        "security"
+      ],
+      "fingerprints": {
+        "matchBasedId/v1": "a7d34b8ede16ee48c052137a36f585032bef683d932eae6e34dd4b451309ff71b4387d70b931c7d053792817e1915353f093a2256347243e1121a776013689d1"
+      },
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/opengrep.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-0B414B1BEF30D3F1",
+      "engine": "opengrep",
+      "rule_id": "javascript.express.security.audit.xss.direct-response-write.direct-response-write",
+      "class": "xss",
+      "cwe": [
+        "CWE-79"
+      ],
+      "title": "Opengrep Finding: javascript.express.security.audit.xss.direct-response-write.direct-response-write",
+      "message": "Detected directly writing to a Response object from user-defined input. This bypasses any HTML escaping and may expose your application to a Cross-Site-scripting (XSS) vulnerability. Instead, use 'resp.render()' to render safely escaped HTML.",
+      "file": "web/server.js",
+      "start_line": 18,
+      "end_line": 18,
+      "snippet": "  res.send(\"<h1>Hello \" + req.query.name + \"</h1>\");",
+      "severity": "medium",
+      "tool_severity": "warning",
+      "confidence": "medium",
+      "tags": [
+        "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')",
+        "MEDIUM CONFIDENCE",
+        "OWASP-A03:2021 - Injection",
+        "OWASP-A07:2017 - Cross-Site Scripting (XSS)",
+        "security"
+      ],
+      "fingerprints": {
+        "matchBasedId/v1": "66826751b0e72d9c8ca0341d622642d7c53a4396dd1b1aeb1f1c7309fa000802363921bf660e41e729da77e0f38859c0d62a54bd9ce4cb21eab2ccff55dc4fe5"
+      },
+      "sca": null,
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/opengrep.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    }
+  ]
+}

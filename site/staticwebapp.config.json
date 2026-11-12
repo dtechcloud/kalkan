@@ -1,0 +1,96 @@
+{
+  "globalHeaders": {
+    "Content-Security-Policy": "default-src 'none'; script-src 'self' https://js.monitor.azure.com; style-src 'self'; style-src-attr 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://js.monitor.azure.com https://*.in.applicationinsights.azure.com; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; upgrade-insecure-requests",
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()",
+    "Cross-Origin-Opener-Policy": "same-origin"
+  },
+  "routes": [
+    {
+      "route": "/index.html",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/compare",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/compare.html",
+      "redirect": "/",
+      "statusCode": 301
+    },
+    {
+      "route": "/how-it-works.html",
+      "redirect": "/how-it-works",
+      "statusCode": 301
+    },
+    {
+      "route": "/tools.html",
+      "redirect": "/tools",
+      "statusCode": 301
+    },
+    {
+      "route": "/usage.html",
+      "redirect": "/usage",
+      "statusCode": 301
+    },
+    {
+      "route": "/security.html",
+      "redirect": "/security",
+      "statusCode": 301
+    },
+    {
+      "route": "/faq.html",
+      "redirect": "/faq",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs.html",
+      "redirect": "/docs",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs-audit.html",
+      "redirect": "/docs-audit",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs-machine.html",
+      "redirect": "/docs-machine",
+      "statusCode": 301
+    },
+    {
+      "route": "/docs-maintenance.html",
+      "redirect": "/docs-maintenance",
+      "statusCode": 301
+    },
+    {
+      "route": "/assets/*",
+      "headers": {
+        "Cache-Control": "public, max-age=3600"
+      }
+    },
+    {
+      "route": "/*.html",
+      "headers": {
+        "Cache-Control": "public, max-age=300"
+      }
+    }
+  ],
+  "responseOverrides": {
+    "404": {
+      "rewrite": "/404.html",
+      "statusCode": 404
+    }
+  },
+  "mimeTypes": {
+    "svg": "image/svg+xml",
+    "woff2": "font/woff2"
+  },
+  "trailingSlash": "never"
+}

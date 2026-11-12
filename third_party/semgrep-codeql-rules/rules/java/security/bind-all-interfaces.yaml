@@ -1,0 +1,24 @@
+rules:
+  - id: codeql-java-bind-all-interfaces
+    message: >-
+      Server binding to all network interfaces (0.0.0.0) may expose the service
+      to unintended networks. Consider binding to a specific interface.
+    severity: WARNING
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+    pattern-either:
+      - pattern: new ServerSocket($PORT);
+      - pattern: new ServerSocket($PORT, $BACKLOG);
+      - pattern: InetAddress.getByName("0.0.0.0");

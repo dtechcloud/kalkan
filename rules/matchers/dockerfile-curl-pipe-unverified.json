@@ -1,0 +1,51 @@
+{
+  "version": 1,
+  "slug": "dockerfile-curl-pipe-unverified",
+  "description": "RUN curl|wget piped to shell/tar without checksum verification",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-494"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/Dockerfile",
+    "**/Dockerfile.*",
+    "**/*.Dockerfile"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "docker"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(curl|wget)\\b[^|\\n]*\\|\\s*(?:sh|bash|zsh|tar\\b|gunzip\\b|unzip\\b)",
+      "flags": "i",
+      "label": "curl|wget | sh/tar with no checksum check",
+      "not_near": [
+        {
+          "regex": "(sha256sum|sha1sum|shasum|gpg\\s+--?verify|cosign\\s+verify|minisign|openssl\\s+dgst)",
+          "flags": "i",
+          "before": 5,
+          "after": 5
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "RUN curl -fsSL https://example.com/install.sh | sh",
+    "RUN curl -L https://get.docker.com/ | bash",
+    "RUN wget -qO- https://example.com/install | sh",
+    "RUN curl -L https://example.com/release.tar.gz | tar -xz",
+    "RUN wget -O- https://example.com/file.zip | unzip -"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dockerfile-curl-pipe-unverified.ts"
+  },
+  "notes": "RUN continuation lines are not joined. The checksum check looks 5 lines before and after the pipe line, and the candidate line is the pipe line (deepsec: the RUN line of the joined statement)."
+}

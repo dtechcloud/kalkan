@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "slug": "js-deno-route",
+  "description": "Deno HTTP server / Oak router handlers (gated on deno)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/deno.json",
+      "**/deno.jsonc",
+      "**/deno.lock"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bDeno\\.serve\\s*\\(",
+      "flags": "",
+      "label": "Deno.serve() entry point"
+    },
+    {
+      "regex": "\\brouter\\.(?:get|post|put|patch|delete|all|use)\\s*\\(",
+      "flags": "",
+      "label": "Oak router method"
+    },
+    {
+      "regex": "import\\s*\\{[^}]*\\bApplication\\b[^}]*\\}\\s*from\\s*['\"]https?://deno\\.land/x/oak",
+      "flags": "",
+      "label": "Oak Application import"
+    },
+    {
+      "regex": "\\bctx\\.request\\.(?:url|body|headers)\\b",
+      "flags": "",
+      "label": "Oak ctx.request accessor"
+    }
+  ],
+  "examples": [
+    "Deno.serve((req) => new Response(\"hi\"))",
+    "Deno.serve({ port: 8000 }, handler)",
+    "router.get(\"/users\", (ctx) => {})",
+    "router.post('/api/users', createUser)",
+    "router.use(authMiddleware)",
+    "router.delete(\"/u/:id\", removeUser)",
+    "import { Application, Router } from \"https://deno.land/x/oak/mod.ts\";",
+    "const url = ctx.request.url;",
+    "const body = await ctx.request.body().value",
+    "const auth = ctx.request.headers.get(\"Authorization\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-deno-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [deno]; kalkan uses a Deno config or lockfile."
+}

@@ -1,0 +1,9 @@
+{
+  "finding_id": "KF-760073988BED4CB8",
+  "level": "unit",
+  "status": "passed",
+  "observed_result": "Harness, 169.254.169.254 adresine giden isteği yakaladı.",
+  "artifacts": [
+    "poc/KF-760073988BED4CB8/out/stdout.txt"
+  ]
+}

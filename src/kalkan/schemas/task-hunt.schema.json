@@ -1,0 +1,426 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "$comment": "kalkan hunt task result (docs/ENGINE-SPEC.md section 18).",
+  "required": [
+    "task_id",
+    "units",
+    "candidates",
+    "hardening",
+    "uncovered"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "pattern": "^T[0-9]{4,}-hunt$"
+    },
+    "units": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "coverage_id",
+          "status",
+          "checks",
+          "notes",
+          "unresolved"
+        ],
+        "properties": {
+          "coverage_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "covered",
+              "candidate",
+              "blocked"
+            ]
+          },
+          "checks": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "reviewed_paths",
+                "invariant",
+                "result"
+              ],
+              "properties": {
+                "reviewed_paths": {
+                  "type": "array",
+                  "minItems": 1,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "description": "Target-relative POSIX path."
+                  }
+                },
+                "invariant": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                },
+                "result": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                }
+              }
+            }
+          },
+          "notes": {
+            "type": "string"
+          },
+          "unresolved": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "visibleContent": true
+            }
+          }
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "coverage_id",
+          "title",
+          "class",
+          "cwe",
+          "description",
+          "claimed_root_cause",
+          "trace",
+          "evidence",
+          "suggested_severity",
+          "dynamic_test",
+          "related_candidates"
+        ],
+        "properties": {
+          "coverage_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "class": {
+            "type": "string",
+            "enum": [
+              "sqli",
+              "nosqli",
+              "os-command-injection",
+              "code-injection",
+              "ssti",
+              "xss",
+              "ssrf",
+              "path-traversal",
+              "file-upload",
+              "xxe",
+              "deserialization",
+              "authn",
+              "jwt",
+              "oauth-oidc-saml",
+              "missing-authz",
+              "idor",
+              "multi-tenant",
+              "csrf",
+              "open-redirect",
+              "cors",
+              "mass-assignment",
+              "business-logic",
+              "race-condition",
+              "crypto",
+              "hardcoded-secrets",
+              "sensitive-data-exposure",
+              "security-misconfig",
+              "graphql",
+              "prototype-pollution",
+              "dos-redos",
+              "request-smuggling-crlf-cache",
+              "webhook-replay",
+              "rate-limit-bruteforce",
+              "llm-ai",
+              "memory-safety",
+              "smart-contract",
+              "mobile-desktop-ipc",
+              "vulnerable-dependency",
+              "malicious-dependency",
+              "supply-chain-cicd",
+              "iac-cloud-container",
+              "code-quality"
+            ]
+          },
+          "cwe": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "pattern": "^CWE-[0-9]+$"
+            }
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "claimed_root_cause": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "trace": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "kind",
+                "file",
+                "line",
+                "scope",
+                "description"
+              ],
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "entrypoint",
+                    "propagation",
+                    "sink"
+                  ]
+                },
+                "file": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Target-relative POSIX path."
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "scope": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                },
+                "description": {
+                  "type": "string",
+                  "minLength": 1,
+                  "visibleContent": true
+                }
+              }
+            }
+          },
+          "evidence": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "file",
+                "line",
+                "quote"
+              ],
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Target-relative POSIX path."
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "quote": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "Exact text from the cited line or the two lines around it."
+                }
+              }
+            }
+          },
+          "suggested_severity": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "likelihood",
+              "impact"
+            ],
+            "properties": {
+              "likelihood": {
+                "type": "string",
+                "enum": [
+                  "informational",
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              "impact": {
+                "type": "string",
+                "enum": [
+                  "informational",
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              }
+            }
+          },
+          "dynamic_test": {
+            "type": "string"
+          },
+          "related_candidates": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    },
+    "hardening": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "title",
+          "file",
+          "line",
+          "note"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "file": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Target-relative POSIX path."
+          },
+          "line": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "minimum": 1
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          }
+        }
+      }
+    },
+    "uncovered": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "surface_id",
+          "class",
+          "reason",
+          "starting_paths"
+        ],
+        "properties": {
+          "surface_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "A recon surface ID, or a short name for a surface that recon missed."
+          },
+          "class": {
+            "type": "string",
+            "enum": [
+              "sqli",
+              "nosqli",
+              "os-command-injection",
+              "code-injection",
+              "ssti",
+              "xss",
+              "ssrf",
+              "path-traversal",
+              "file-upload",
+              "xxe",
+              "deserialization",
+              "authn",
+              "jwt",
+              "oauth-oidc-saml",
+              "missing-authz",
+              "idor",
+              "multi-tenant",
+              "csrf",
+              "open-redirect",
+              "cors",
+              "mass-assignment",
+              "business-logic",
+              "race-condition",
+              "crypto",
+              "hardcoded-secrets",
+              "sensitive-data-exposure",
+              "security-misconfig",
+              "graphql",
+              "prototype-pollution",
+              "dos-redos",
+              "request-smuggling-crlf-cache",
+              "webhook-replay",
+              "rate-limit-bruteforce",
+              "llm-ai",
+              "memory-safety",
+              "smart-contract",
+              "mobile-desktop-ipc",
+              "vulnerable-dependency",
+              "malicious-dependency",
+              "supply-chain-cicd",
+              "iac-cloud-container",
+              "code-quality"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "visibleContent": true
+          },
+          "starting_paths": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Target-relative POSIX path."
+            }
+          }
+        }
+      }
+    }
+  }
+}

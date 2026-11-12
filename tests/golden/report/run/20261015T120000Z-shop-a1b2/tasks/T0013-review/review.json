@@ -1,0 +1,49 @@
+{
+  "task_id": "T0013-review",
+  "finding_id": "KF-32409FEA7A491CFA",
+  "fingerprint": "path-traversal:app/routes.py:read_file",
+  "verify_tasks": [
+    "T0008-verify"
+  ],
+  "verdict_before": "needs_validation",
+  "requested": "downgrade",
+  "decision": "downgrade",
+  "reason": "Uygulama dosya adını hiç normalize etmiyor; tek açık soru, önündeki reverse proxy'nin ../ dizilerini engelleyip engellemediği.",
+  "severity": null,
+  "remediation": null,
+  "blockers": [
+    "Uygulama dosya adını hiç normalize etmiyor; tek açık soru, önündeki reverse proxy'nin ../ dizilerini engelleyip engellemediği."
+  ],
+  "validation_plan": null,
+  "verdict_after": "needs_validation",
+  "checks": [
+    {
+      "item": "source_path",
+      "ok": true,
+      "note": "app/routes.py:24-25 kayıttaki yolu izliyor."
+    },
+    {
+      "item": "blockers",
+      "ok": false,
+      "note": "Proxy engeli kaynakta yok; karar verdirici değil, deployment sorusu."
+    },
+    {
+      "item": "boundary_and_result",
+      "ok": true,
+      "note": "İnternet ile dosya sistemi sınırı ve /etc/passwd okuma sonucu adlı."
+    },
+    {
+      "item": "validation_plan",
+      "ok": true,
+      "note": "Yerel plan sınırlı bir fixture kullanıyor."
+    },
+    {
+      "item": "fingerprint",
+      "ok": true,
+      "note": "Fingerprint sınıfı ve sink kapsamını adlandırıyor."
+    }
+  ],
+  "evidence": [],
+  "verified_quotes": 0,
+  "normalized": []
+}

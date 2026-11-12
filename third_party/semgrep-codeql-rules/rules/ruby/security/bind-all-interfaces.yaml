@@ -1,0 +1,24 @@
+rules:
+  - id: codeql-ruby-bind-all-interfaces
+    message: >-
+      Server binding to all network interfaces (0.0.0.0) may expose the service
+      to unintended networks. Consider binding to a specific interface.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-200: Exposure of Sensitive Information to an Unauthorized Actor"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/200.html
+    pattern-either:
+      - pattern: TCPServer.new("0.0.0.0", ...)
+      - pattern: TCPServer.open("0.0.0.0", ...)
+      - pattern: Puma::Server.new(..., "0.0.0.0", ...)

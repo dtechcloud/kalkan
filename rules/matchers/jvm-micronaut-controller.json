@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "slug": "jvm-micronaut-controller",
+  "description": "Micronaut controllers and route methods (gated on Micronaut)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{java,kt}"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "java",
+      "micronaut"
+    ],
+    "sentinel_files": [
+      "**/pom.xml",
+      "**/build.gradle",
+      "**/build.gradle.kts"
+    ],
+    "sentinel_contains": [
+      "(?i:micronaut)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "@Controller\\s*\\(",
+      "flags": "",
+      "label": "@Controller(...) declaration"
+    },
+    {
+      "regex": "@(?:Get|Post|Put|Patch|Delete|Head|Options)\\s*\\(",
+      "flags": "",
+      "label": "Micronaut HTTP method annotation"
+    },
+    {
+      "regex": "@Secured\\s*\\(",
+      "flags": "",
+      "label": "@Secured(...) auth annotation"
+    },
+    {
+      "regex": "@PermitAll\\b",
+      "flags": "",
+      "label": "@PermitAll — public access"
+    },
+    {
+      "regex": "\\bAuthentication\\s+\\w+",
+      "flags": "",
+      "label": "Authentication arg in handler"
+    }
+  ],
+  "examples": [
+    "@Controller(\"/users\")",
+    "@Controller ( \"/api/v1\" )",
+    "@Get(\"/{id}\")",
+    "@Post(\"/\")",
+    "@Put(\"/{id}\")",
+    "@Patch(\"/{id}\")",
+    "@Delete(\"/{id}\")",
+    "@Head(\"/health\")",
+    "@Options(\"/items\")",
+    "@Secured(\"ROLE_ADMIN\")",
+    "@PermitAll",
+    "public User getUser(Authentication authentication) {",
+    "fun me(Authentication auth): UserDto {"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/jvm-micronaut-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [micronaut]; kalkan uses tech java (or micronaut) and a manifest that names micronaut."
+}

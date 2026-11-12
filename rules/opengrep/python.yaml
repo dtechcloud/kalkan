@@ -1,0 +1,782 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for Python (Flask, Django, FastAPI and the standard library).
+# Original rules written for kalkan. Rule ID form: kalkan.python.<class>.<name>.
+rules:
+  - id: kalkan.python.sqli.tainted-sql-string
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches the text of a SQL statement. An attacker can change
+      the query. Keep the SQL text constant and pass the value as a bound parameter, for example
+      cursor.execute("... WHERE name = ?", (name,)).
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html
+      category: security
+      technology: [python, flask, django, sqlalchemy]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: int(...)
+          - pattern: float(...)
+          - pattern: bool(...)
+          - pattern: uuid.UUID(...)
+          - pattern: sqlalchemy.select(...)
+          - pattern: sqlalchemy.insert(...)
+          - pattern: sqlalchemy.update(...)
+          - pattern: sqlalchemy.delete(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $CURSOR.execute($QUERY, ...)
+              - pattern: $CURSOR.executemany($QUERY, ...)
+              - pattern: $CURSOR.executescript($QUERY, ...)
+              - pattern: $MODEL.objects.raw($QUERY, ...)
+              - pattern: sqlalchemy.text($QUERY, ...)
+              - pattern: pandas.read_sql($QUERY, ...)
+              - pattern: pandas.read_sql_query($QUERY, ...)
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.python.os-command-injection.tainted-shell-command
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a shell command. An attacker can run other commands on
+      the server. Pass a list of arguments without shell=True, check the value against an
+      allowlist, or quote it with shlex.quote().
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html
+      category: security
+      technology: [python, flask, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: shlex.quote(...)
+          - pattern: pipes.quote(...)
+          - pattern: int(...)
+          - pattern: float(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: os.system($CMD)
+              - pattern: os.popen($CMD, ...)
+              - pattern: subprocess.getoutput($CMD, ...)
+              - pattern: subprocess.getstatusoutput($CMD, ...)
+              - pattern: asyncio.create_subprocess_shell($CMD, ...)
+              - patterns:
+                  - pattern-either:
+                      - pattern: subprocess.$FUNC($CMD, ..., shell=True, ...)
+                      - pattern: subprocess.$FUNC([$SHELL, "-c", $CMD, ...], ...)
+                  - metavariable-regex:
+                      metavariable: $FUNC
+                      regex: ^(run|call|check_call|check_output|Popen)$
+          - focus-metavariable: $CMD
+      - patterns:
+          - pattern: subprocess.$FUNC([$PROGRAM, ...], ...)
+          - metavariable-regex:
+              metavariable: $FUNC
+              regex: ^(run|call|check_call|check_output|Popen)$
+          - focus-metavariable: $PROGRAM
+
+  - id: kalkan.python.code-injection.tainted-eval
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches eval(), exec() or compile(). An attacker can run Python
+      code in the server process. Parse the input with a strict parser, for example
+      ast.literal_eval() or json.loads().
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+        - "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://docs.python.org/3/library/ast.html#ast.literal_eval
+      category: security
+      technology: [python, flask, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: eval($CODE, ...)
+              - pattern: exec($CODE, ...)
+              - pattern: compile($CODE, ...)
+          - focus-metavariable: $CODE
+
+  - id: kalkan.python.ssti.tainted-template-source
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request becomes part of a template source. An attacker can inject
+      template expressions and run code on the server. Keep the template text constant and
+      pass the value as a template variable, for example
+      render_template_string("Hello {{ name }}", name=name).
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://portswigger.net/web-security/server-side-template-injection
+      category: security
+      technology: [python, flask, jinja2, mako, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: flask.render_template_string($SOURCE, ...)
+              - pattern: jinja2.Template($SOURCE, ...)
+              - pattern: $ENV.from_string($SOURCE, ...)
+              - pattern: mako.template.Template($SOURCE, ...)
+              - pattern: django.template.Template($SOURCE, ...)
+              - pattern: django.template.engines[$ENGINE].from_string($SOURCE)
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.python.xss.tainted-html-response
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is written into an HTML response without escaping. An
+      attacker can run script in the browser of another user. Render the value through an
+      auto-escaping template or escape it with markupsafe.escape() or html.escape().
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [python, flask, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: markupsafe.escape(...)
+          - pattern: flask.escape(...)
+          - pattern: html.escape(...)
+          - pattern: bleach.clean(...)
+          - pattern: django.utils.html.escape(...)
+          - pattern: django.utils.html.format_html(...)
+          - pattern: flask.jsonify(...)
+          - pattern: json.dumps(...)
+          - pattern: int(...)
+          - pattern: float(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: flask.make_response($BODY, ...)
+              - pattern: flask.Response($BODY, ...)
+              - pattern: markupsafe.Markup($BODY)
+              - pattern: flask.Markup($BODY)
+              - pattern: django.utils.safestring.mark_safe($BODY)
+              - pattern: django.http.HttpResponse($BODY, ...)
+          - pattern-not: flask.Response($BODY, ..., mimetype="application/json", ...)
+          - pattern-not: flask.Response($BODY, ..., mimetype="text/plain", ...)
+          - pattern-not: django.http.HttpResponse($BODY, ..., content_type="application/json", ...)
+          - pattern-not: django.http.HttpResponse($BODY, ..., content_type="text/plain", ...)
+          - focus-metavariable: $BODY
+
+  - id: kalkan.python.ssrf.tainted-request-url
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound HTTP request. An attacker can
+      reach internal services or cloud metadata endpoints. Map the input to a fixed allowlist of
+      URLs, or check the scheme and host against an allowlist before the request.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [python, requests, httpx, urllib]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.get(...)
+              - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+      - by-side-effect: true
+        patterns:
+          - pattern: $CHECK($URL, ...)
+          - metavariable-regex:
+              metavariable: $CHECK
+              regex: (?i)^(is_)?(allowed|safe|trusted|valid|validate|check)_?(url|uri|host|domain|target|destination)$
+          - focus-metavariable: $URL
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - patterns:
+                  - pattern: requests.$METHOD($URL, ...)
+                  - metavariable-regex:
+                      metavariable: $METHOD
+                      regex: ^(get|post|put|patch|delete|head|options)$
+              - pattern: requests.request($VERB, $URL, ...)
+              - patterns:
+                  - pattern: httpx.$METHOD($URL, ...)
+                  - metavariable-regex:
+                      metavariable: $METHOD
+                      regex: ^(get|post|put|patch|delete|head|options|stream)$
+              - pattern: urllib.request.urlopen($URL, ...)
+              - pattern: urllib.request.Request($URL, ...)
+              - pattern: urllib3.PoolManager(...).request($VERB, $URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.python.path-traversal.tainted-file-path
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. An attacker can use "../" or an
+      absolute path to read or change files outside the intended folder. Reduce the name with
+      werkzeug.utils.secure_filename() or os.path.basename(), or build the path with
+      werkzeug.security.safe_join() and reject a None result.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://owasp.org/www-community/attacks/Path_Traversal
+      category: security
+      technology: [python, flask, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: werkzeug.utils.secure_filename(...)
+          - pattern: werkzeug.security.safe_join(...)
+          - pattern: flask.safe_join(...)
+          - pattern: os.path.basename(...)
+          - pattern: int(...)
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.get(...)
+              - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: open($PATH, ...)
+              - pattern: io.open($PATH, ...)
+              - pattern: codecs.open($PATH, ...)
+              - pattern: flask.send_file($PATH, ...)
+              - pattern: os.remove($PATH, ...)
+              - pattern: os.unlink($PATH, ...)
+              - pattern: shutil.rmtree($PATH, ...)
+              - pattern: shutil.copyfile($PATH, ...)
+              - pattern: pathlib.Path($PATH).$ACCESS(...)
+          - focus-metavariable: $PATH
+
+  - id: kalkan.python.deserialization.tainted-pickle
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a pickle-based deserializer. Unpickling attacker data
+      runs arbitrary code. Use a data-only format such as JSON, or sign the payload with an HMAC
+      and check the signature before you load it.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://docs.python.org/3/library/pickle.html
+      category: security
+      technology: [python, pickle]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.body
+          - pattern: $REQ.query_params
+          - patterns:
+              - pattern-inside: |
+                  @$ROUTER.$ROUTE(...)
+                  def $HANDLER(..., $PARAM, ...):
+                      ...
+              - metavariable-regex:
+                  metavariable: $ROUTE
+                  regex: ^(route|get|post|put|patch|delete)$
+              - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: pickle.loads($DATA, ...)
+              - pattern: pickle.load($DATA, ...)
+              - pattern: _pickle.loads($DATA, ...)
+              - pattern: cPickle.loads($DATA, ...)
+              - pattern: dill.loads($DATA, ...)
+              - pattern: dill.load($DATA, ...)
+              - pattern: marshal.loads($DATA, ...)
+              - pattern: jsonpickle.decode($DATA, ...)
+              - pattern: pandas.read_pickle($DATA, ...)
+          - focus-metavariable: $DATA
+
+  - id: kalkan.python.deserialization.unsafe-yaml-load
+    languages: [python]
+    severity: ERROR
+    message: >-
+      PyYAML loads this document with a loader that can build arbitrary Python objects. A
+      crafted document runs code during the load. Use yaml.safe_load() or pass
+      Loader=yaml.SafeLoader.
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://pyyaml.org/wiki/PyYAMLDocumentation
+      category: security
+      technology: [python, pyyaml]
+    pattern-either:
+      - pattern: yaml.unsafe_load(...)
+      - pattern: yaml.unsafe_load_all(...)
+      - pattern: yaml.load($DATA)
+      - pattern: yaml.load_all($DATA)
+      - patterns:
+          - pattern-either:
+              - pattern: yaml.load(..., Loader=$LOADER, ...)
+              - pattern: yaml.load_all(..., Loader=$LOADER, ...)
+              - pattern: yaml.load($DATA, $LOADER)
+              - pattern: yaml.load_all($DATA, $LOADER)
+          - metavariable-pattern:
+              metavariable: $LOADER
+              pattern-either:
+                - pattern: yaml.Loader
+                - pattern: yaml.UnsafeLoader
+                - pattern: yaml.FullLoader
+                - pattern: yaml.CLoader
+                - pattern: yaml.CUnsafeLoader
+                - pattern: yaml.CFullLoader
+
+  - id: kalkan.python.xxe.lxml-entity-resolution
+    languages: [python]
+    severity: ERROR
+    message: >-
+      This XML parser resolves entities or loads external resources. A crafted document can
+      read local files or reach internal hosts (XXE). Create the parser with
+      resolve_entities=False and no_network=True, or parse with defusedxml.
+    metadata:
+      cwe:
+        - "CWE-611: Improper Restriction of XML External Entity Reference"
+      kalkan_class: xxe
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [python, lxml]
+    pattern-either:
+      - pattern: lxml.etree.XMLParser(..., resolve_entities=True, ...)
+      - pattern: lxml.etree.XMLParser(..., no_network=False, ...)
+      - pattern: $PARSER.setFeature(xml.sax.handler.feature_external_ges, True)
+      - pattern: $PARSER.setFeature(xml.sax.handler.feature_external_pes, True)
+
+  - id: kalkan.python.open-redirect.tainted-redirect-target
+    mode: taint
+    languages: [python]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Redirect to an internal route (url_for() or
+      reverse()), or accept only relative paths from an allowlist.
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+      category: security
+      technology: [python, flask, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request
+          - pattern: $REQ.GET
+          - pattern: $REQ.POST
+          - pattern: $REQ.COOKIES
+          - pattern: $REQ.query_params
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: flask.url_for(...)
+          - pattern: django.urls.reverse(...)
+          - pattern: django.shortcuts.resolve_url(...)
+      - by-side-effect: true
+        patterns:
+          - pattern-either:
+              - pattern: django.utils.http.url_has_allowed_host_and_scheme($URL, ...)
+              - pattern: django.utils.http.is_safe_url($URL, ...)
+          - focus-metavariable: $URL
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: flask.redirect($URL, ...)
+              - pattern: django.shortcuts.redirect($URL, ...)
+              - pattern: django.http.HttpResponseRedirect($URL, ...)
+              - pattern: django.http.HttpResponsePermanentRedirect($URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.python.nosqli.tainted-mongo-filter
+    mode: taint
+    languages: [python]
+    severity: ERROR
+    message: >-
+      A JSON request body is used as a MongoDB query filter. An attacker can send query
+      operators such as {"$ne": null} or {"$where": ...} and read or change other records.
+      Build the filter from single fields and convert each value with str() or int().
+    metadata:
+      cwe:
+        - "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      kalkan_class: nosqli
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05.6-Testing_for_NoSQL_Injection
+      category: security
+      technology: [python, pymongo, flask, django]
+    pattern-sources:
+      - pattern-either:
+          - pattern: flask.request.get_json(...)
+          - pattern: flask.request.json
+          - pattern: json.loads($REQ.body)
+          - pattern: $REQ.data
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: str(...)
+          - pattern: int(...)
+          - pattern: float(...)
+          - pattern: bool(...)
+          - pattern: bson.objectid.ObjectId(...)
+          - pattern: bson.ObjectId(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: $COLLECTION.$OPERATION($FILTER, ...)
+          - metavariable-regex:
+              metavariable: $OPERATION
+              regex: ^(find|find_one|find_one_and_delete|find_one_and_replace|find_one_and_update|delete_one|delete_many|update_one|update_many|replace_one|count_documents|aggregate)$
+          - focus-metavariable: $FILTER
+
+  - id: kalkan.python.jwt.signature-not-verified
+    languages: [python]
+    severity: ERROR
+    message: >-
+      This JWT is decoded without a signature check, or with the "none" algorithm. An attacker
+      can forge any claim, for example another user ID. Verify the token with the expected key
+      and a fixed algorithms list, for example jwt.decode(token, key, algorithms=["HS256"]).
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://pyjwt.readthedocs.io/en/stable/api.html
+      category: security
+      technology: [python, pyjwt, python-jose]
+    pattern-either:
+      - pattern: 'jwt.decode(..., options={..., "verify_signature": False, ...}, ...)'
+      - pattern: jwt.decode(..., verify=False, ...)
+      - pattern: jwt.decode(..., algorithms=[..., "none", ...], ...)
+      - pattern: jwt.encode(..., algorithm="none", ...)
+      - pattern: 'jose.jwt.decode(..., options={..., "verify_signature": False, ...}, ...)'
+
+  - id: kalkan.python.crypto.weak-hash-algorithm
+    languages: [python]
+    severity: WARNING
+    message: >-
+      MD5 and SHA-1 are broken for security use. Do not use them for passwords, signatures or
+      integrity checks. Hash passwords with a slow, salted function (hashlib.scrypt,
+      hashlib.pbkdf2_hmac, argon2 or bcrypt). For other uses choose SHA-256 or better. Pass
+      usedforsecurity=False when the hash has no security role.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-328: Use of Weak Hash"
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+      category: security
+      technology: [python, hashlib, cryptography, pycryptodome]
+    patterns:
+      - pattern-either:
+          - pattern: hashlib.md5(...)
+          - pattern: hashlib.sha1(...)
+          - pattern: hashlib.new("md5", ...)
+          - pattern: hashlib.new("MD5", ...)
+          - pattern: hashlib.new("sha1", ...)
+          - pattern: hashlib.new("SHA1", ...)
+          - pattern: Crypto.Hash.MD5.new(...)
+          - pattern: Crypto.Hash.SHA1.new(...)
+          - pattern: cryptography.hazmat.primitives.hashes.MD5()
+          - pattern: cryptography.hazmat.primitives.hashes.SHA1()
+      - pattern-not: hashlib.$ALGO(..., usedforsecurity=False, ...)
+      - pattern-not: hashlib.new(..., usedforsecurity=False, ...)
+
+  - id: kalkan.python.crypto.weak-cipher
+    languages: [python]
+    severity: WARNING
+    message: >-
+      This code encrypts with a broken cipher (DES, 3DES, RC4, Blowfish) or with ECB mode. ECB
+      leaks patterns of the plaintext, and the old ciphers have small keys or blocks. Use an
+      authenticated mode such as AES-GCM or ChaCha20-Poly1305 with a fresh nonce.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      kalkan_class: crypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://cryptography.io/en/latest/hazmat/primitives/symmetric-encryption/
+      category: security
+      technology: [python, cryptography, pycryptodome]
+    pattern-either:
+      - pattern: cryptography.hazmat.primitives.ciphers.modes.ECB(...)
+      - pattern: cryptography.hazmat.primitives.ciphers.algorithms.TripleDES(...)
+      - pattern: cryptography.hazmat.primitives.ciphers.algorithms.Blowfish(...)
+      - pattern: cryptography.hazmat.primitives.ciphers.algorithms.ARC4(...)
+      - pattern: Crypto.Cipher.DES.new(...)
+      - pattern: Crypto.Cipher.DES3.new(...)
+      - pattern: Crypto.Cipher.ARC4.new(...)
+      - pattern: Crypto.Cipher.Blowfish.new(...)
+      - pattern: Crypto.Cipher.AES.new($KEY, Crypto.Cipher.AES.MODE_ECB, ...)
+      - pattern: Crypto.Cipher.AES.new($KEY, mode=Crypto.Cipher.AES.MODE_ECB, ...)
+
+  - id: kalkan.python.cors.wildcard-origin-with-credentials
+    languages: [python]
+    severity: WARNING
+    message: >-
+      flask-cors allows every origin and also allows credentials. flask-cors then reflects the
+      Origin header, so any web site can send authenticated requests and read the answers. List
+      the trusted origins explicitly when supports_credentials=True.
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://flask-cors.readthedocs.io/en/latest/api.html
+      category: security
+      technology: [python, flask, flask-cors]
+    patterns:
+      - pattern-either:
+          - pattern: flask_cors.CORS(..., supports_credentials=True, ...)
+          - pattern: flask_cors.cross_origin(..., supports_credentials=True, ...)
+      - pattern-either:
+          - pattern: $CALL(..., origins="*", ...)
+          - pattern: $CALL(..., origins=[..., "*", ...], ...)
+          - pattern: $CALL(..., origins=".*", ...)
+          - patterns:
+              - pattern-not: $CALL(..., origins=$ORIGINS, ...)
+              - pattern-not: $CALL(..., resources=$RESOURCES, ...)
+              - pattern: $CALL(...)

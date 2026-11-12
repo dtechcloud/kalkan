@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-go-jwt-missing-signature-check
+    message: >-
+      JWT parsed without signature verification. This allows attackers to forge
+      tokens. Always verify JWT signatures.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-347: Improper Verification of Cryptographic Signature"
+      technology:
+        - go
+        - jwt
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-347/MissingJwtSignatureCheck.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-347/MissingJwtSignatureCheck.ql
+    pattern-either:
+      - pattern: jwt.Parse($TOKEN, nil)
+      - pattern: jwt.ParseWithClaims($TOKEN, $CLAIMS, nil)

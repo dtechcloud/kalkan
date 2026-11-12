@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "slug": "lua-shared-dict-poisoning",
+  "description": "Writes to ngx.shared dictionaries — cross-worker cache poisoning risk",
+  "class": "request-smuggling-crlf-cache",
+  "cwe": [
+    "CWE-349"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.lua"
+  ],
+  "exclude_file_patterns": [
+    "**/*_{test,spec}.lua"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "ngx\\.shared\\.\\w+:set\\s*\\(",
+      "flags": "",
+      "label": "ngx.shared dict :set() (verify key not request-derived)"
+    },
+    {
+      "regex": "ngx\\.shared\\.\\w+:add\\s*\\(",
+      "flags": "",
+      "label": "ngx.shared dict :add()"
+    },
+    {
+      "regex": "ngx\\.shared\\.\\w+:replace\\s*\\(",
+      "flags": "",
+      "label": "ngx.shared dict :replace()"
+    },
+    {
+      "regex": "ngx\\.shared\\.\\w+:incr\\s*\\(",
+      "flags": "",
+      "label": "ngx.shared dict :incr()"
+    }
+  ],
+  "examples": [
+    "ngx.shared.cache:set(key, value)",
+    "ngx.shared.ratelimit:add(client_ip, 1, 60)",
+    "ngx.shared.tokens:replace(\"token_\" .. user_id, payload)",
+    "ngx.shared.counters:incr(metric, 1)",
+    "local ok, err = ngx.shared.sessions:set(sid, data, 3600)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/lua-shared-dict-poisoning.ts"
+  },
+  "notes": ""
+}

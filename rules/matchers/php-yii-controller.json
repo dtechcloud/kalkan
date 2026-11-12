@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "php-yii-controller",
+  "description": "Yii2 controller classes and actionXxx methods (gated on Yii)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/controllers/**/*.php",
+    "**/src/controllers/**/*.php"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "php",
+      "yii"
+    ],
+    "sentinel_files": [
+      "**/composer.json"
+    ],
+    "sentinel_contains": [
+      "\"yiisoft/yii2?\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "class\\s+\\w+Controller\\s+extends\\s+(?:Controller|ActiveController|RestController)\\b",
+      "flags": "",
+      "label": "Yii Controller class"
+    },
+    {
+      "regex": "public\\s+function\\s+action[A-Z]\\w*\\s*\\(",
+      "flags": "",
+      "label": "actionXxx() — Yii public action"
+    },
+    {
+      "regex": "\\bbehaviors\\s*\\(\\s*\\)\\s*[:{]",
+      "flags": "",
+      "label": "behaviors() — verify auth filter"
+    },
+    {
+      "regex": "AccessControl::class|ContentNegotiator::class",
+      "flags": "",
+      "label": "auth/behavior class wired up"
+    }
+  ],
+  "examples": [
+    "class SiteController extends Controller { }",
+    "class UsersController extends ActiveController\n{\n    public $modelClass = 'app\\models\\User';\n}",
+    "class ApiController extends RestController { }",
+    "public function actionIndex() { return $this->render('index'); }",
+    "public function actionCreate ($id) { /* ... */ }",
+    "public function actionViewProfile() { }",
+    "public function behaviors() {\n    return [\n        'access' => ['class' => AccessControl::class],\n    ];\n}",
+    "'authenticator' => ['class' => HttpBearerAuth::class, 'except' => ContentNegotiator::class],",
+    "return ['access' => ['class' => AccessControl::class, 'rules' => []]];"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-yii-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [yii]; kalkan uses tech php (or yii) and a manifest that names yii."
+}

@@ -1,0 +1,40 @@
+rules:
+  - id: codeql-js-ssrf
+    message: >-
+      URL built from user input may be vulnerable to Server-Side Request Forgery
+      (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-918/RequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-918/RequestForgery.ql
+    pattern-either:
+      - pattern: fetch($URL + $INPUT, ...)
+      - pattern: fetch(`...${$INPUT}...`, ...)
+      - pattern: axios.get($URL + $INPUT, ...)
+      - pattern: axios.get(`...${$INPUT}...`, ...)
+      - pattern: axios.post($URL + $INPUT, ...)
+      - pattern: axios.post(`...${$INPUT}...`, ...)
+      - pattern: axios($URL + $INPUT, ...)
+      - pattern: axios(`...${$INPUT}...`, ...)
+      - pattern: request($URL + $INPUT, ...)
+      - pattern: request(`...${$INPUT}...`, ...)
+      - pattern: got($URL + $INPUT, ...)
+      - pattern: got(`...${$INPUT}...`, ...)
+      - pattern: http.get($URL + $INPUT, ...)
+      - pattern: http.get(`...${$INPUT}...`, ...)
+      - pattern: https.get($URL + $INPUT, ...)
+      - pattern: https.get(`...${$INPUT}...`, ...)

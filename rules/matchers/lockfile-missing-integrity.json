@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "slug": "lockfile-missing-integrity",
+  "description": "Lockfile entry downloads a package without an integrity hash",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829",
+    "CWE-494"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/package-lock.json",
+    "**/npm-shrinkwrap.json",
+    "**/yarn.lock",
+    "**/pnpm-lock.yaml"
+  ],
+  "exclude_file_patterns": [
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\"resolved\"\\s*:\\s*\"https?://",
+      "flags": "i",
+      "label": "npm entry without integrity",
+      "paths": [
+        "**/package-lock.json",
+        "**/npm-shrinkwrap.json"
+      ],
+      "not_near": [
+        {
+          "regex": "\"integrity\"\\s*:\\s*\"\\S",
+          "before": 2,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "^\\s+resolved\\s+\"?https?://",
+      "flags": "i",
+      "label": "yarn entry without integrity",
+      "paths": [
+        "**/yarn.lock"
+      ],
+      "not_near": [
+        {
+          "regex": "^\\s+integrity\\s+\\S",
+          "before": 2,
+          "after": 2
+        }
+      ]
+    },
+    {
+      "regex": "\\bresolution:\\s*\\{(?![^}]*\\b(?:integrity|commit|directory):)[^}]*\\}",
+      "flags": "",
+      "label": "pnpm resolution without integrity",
+      "paths": [
+        "**/pnpm-lock.yaml"
+      ]
+    }
+  ],
+  "examples": [
+    "      \"resolved\": \"https://registry.npmjs.org/node-serialize/-/node-serialize-0.0.4.tgz\"",
+    "  resolved \"https://registry.yarnpkg.com/left-pad/-/left-pad-1.3.0.tgz\"",
+    "    resolution: {tarball: https://example.internal/a/-/a-1.0.0.tgz}"
+  ],
+  "source": null,
+  "notes": "kalkan rule (ADR-0005, K.12; the validate-integrity check of lockfile-lint). npm and yarn write the integrity line next to the resolved line, so the rule looks two lines before and after it. git dependencies (pinned by commit) and local folders have no integrity and are left out; lockfile-unexpected-registry reports the git sources. Old yarn lockfiles (before yarn 1.10) have no integrity lines at all."
+}

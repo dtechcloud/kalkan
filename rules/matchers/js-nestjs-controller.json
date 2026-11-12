@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "js-nestjs-controller",
+  "description": "NestJS controllers and route methods — entry-point surface (gated on @nestjs/*)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,js}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "nestjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "@Controller\\s*\\(",
+      "flags": "",
+      "label": "@Controller decorator"
+    },
+    {
+      "regex": "@(?:Get|Post|Put|Patch|Delete|Options|Head|All)\\s*\\(",
+      "flags": "",
+      "label": "HTTP method decorator"
+    },
+    {
+      "regex": "@UseGuards\\s*\\(",
+      "flags": "",
+      "label": "@UseGuards (auth gate)"
+    },
+    {
+      "regex": "@Public\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "@Public() decorator (skips global auth)"
+    },
+    {
+      "regex": "@Body\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "@Body() (request body sink)"
+    }
+  ],
+  "examples": [
+    "@Controller(\"users\")\nexport class UsersController {}",
+    "@Controller('/api')",
+    "@Get(\":id\")\nfindOne() {}",
+    "@Post('login')\nlogin() {}",
+    "@Put(\"/x\")\nupdate() {}",
+    "@Patch(':id') patch() {}",
+    "@Delete(\"/y\")\nremove() {}",
+    "@All(\"*\")\ncatchAll() {}",
+    "@UseGuards(JwtGuard)",
+    "@Public()\nopen() {}",
+    "findOne(@Body() body: any) {}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nestjs-controller.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-swift-insecure-tls
+    message: >-
+      Insecure TLS version configured. Use TLS 1.2 or higher.
+    severity: ERROR
+    languages:
+      - swift
+    metadata:
+      category: security
+      cwe: "CWE-757: Selection of Less-Secure Algorithm During Negotiation"
+      technology:
+        - swift
+        - ios
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/757.html
+        - https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-757/InsecureTLS.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/swift/ql/src/queries/Security/CWE-757/InsecureTLS.ql
+    pattern-either:
+      - pattern: $CONFIG.tlsMinimumSupportedProtocol = .sslProtocol2
+      - pattern: $CONFIG.tlsMinimumSupportedProtocol = .sslProtocol3
+      - pattern: $CONFIG.tlsMinimumSupportedProtocol = .tlsProtocol1
+      - pattern: $CONFIG.tlsMinimumSupportedProtocol = .tlsProtocol11
+      - pattern: $CONFIG.tlsMinimumSupportedProtocolVersion = .TLSv10
+      - pattern: $CONFIG.tlsMinimumSupportedProtocolVersion = .TLSv11

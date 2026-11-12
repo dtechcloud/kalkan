@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "proto-rpc-surface",
+  "description": "Protobuf service or message file (RPC entry point / wire-format definition)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.proto"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/go.mod",
+      "**/package.json",
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Cargo.toml",
+      "**/pom.xml",
+      "**/build.gradle",
+      "**/build.gradle.kts",
+      "**/*.csproj",
+      "**/buf.gen.yaml"
+    ],
+    "sentinel_contains": [
+      "(?i:grpc|connectrpc|bufbuild|\\btonic\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*service\\s+\\w+\\s*\\{",
+      "flags": "",
+      "label": "service block"
+    },
+    {
+      "regex": "^\\s*rpc\\s+\\w+\\s*\\(",
+      "flags": "",
+      "label": "rpc method"
+    },
+    {
+      "regex": "\\b(?:source|destination|path|target_path|source_url|url|digest|command|arguments|args|env|environment|mode|owner|group|uid|gid|key_id|kernel_args|rootfs|cmdline)\\s*=\\s*\\d+\\s*;",
+      "flags": "",
+      "label": "sensitive field"
+    },
+    {
+      "regex": "^\\s*(?:message|enum)\\s+\\w+",
+      "flags": "",
+      "label": "proto message/enum (no service block)",
+      "not_near": [
+        {
+          "regex": "^\\s*service\\s+\\w+\\s*\\{|^\\s*rpc\\s+\\w+\\s*\\(|\\b(?:source|destination|path|target_path|source_url|url|digest|command|arguments|args|env|environment|mode|owner|group|uid|gid|key_id|kernel_args|rootfs|cmdline)\\s*=\\s*\\d+\\s*;",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "service ControllerService {\n  rpc ExecCommand(ExecRequest) returns (ExecResponse);\n}",
+    "service Sandbox {\n  rpc Run(RunRequest) returns (RunResponse);\n  rpc Stream(StreamRequest) returns (stream Event);\n}",
+    "message ExecRequest {\n  string command = 1;\n  repeated string args = 2;\n  string path = 3;\n}",
+    "message FileOp {\n  string source = 1;\n  string destination = 2;\n  uint32 mode = 3;\n}",
+    "message Image {\n  string url = 1;\n  string digest = 2;\n}",
+    "enum Mode {\n  MODE_UNSPECIFIED = 0;\n  MODE_RW = 1;\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/proto-rpc-surface.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. deepsec gates on the grpc or connectrpc tag; kalkan reads the manifests for grpc/connect dependencies. The fallback flags every message/enum line of a proto file without service, rpc or sensitive-field lines (deepsec flags the first one)."
+}

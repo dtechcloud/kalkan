@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "slug": "go-echo-route",
+  "description": "Echo (labstack) route registrations (gated on Echo)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go",
+      "echo"
+    ],
+    "sentinel_files": [
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "github\\.com/labstack/echo"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:e|app|server|g)\\.(?:GET|POST|PUT|PATCH|DELETE|Any|Match)\\s*\\(",
+      "flags": "",
+      "label": "Echo method registration"
+    },
+    {
+      "regex": "\\b(?:e|app|server)\\.Group\\s*\\(",
+      "flags": "",
+      "label": "Echo .Group (auth scope)"
+    },
+    {
+      "regex": "\\becho\\.New\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "echo.New() init"
+    },
+    {
+      "regex": "\\bc\\.(?:Param|QueryParam|FormValue|Bind|Request)\\b",
+      "flags": "",
+      "label": "Request accessor (untrusted input)"
+    }
+  ],
+  "examples": [
+    "e := echo.New()",
+    "e.GET(\"/users\", listUsers)",
+    "app.POST(\"/login\", login)",
+    "server.PUT(\"/items/:id\", update)",
+    "g.PATCH(\"/profile\", patch)",
+    "e.DELETE(\"/items/:id\", delete)",
+    "e.Any(\"/proxy\", proxy)",
+    "e.Match([]string{\"GET\", \"POST\"}, \"/legacy\", legacy)",
+    "api := e.Group(\"/api\")",
+    "id := c.Param(\"id\")",
+    "q := c.QueryParam(\"q\")",
+    "name := c.FormValue(\"name\")",
+    "if err := c.Bind(&u); err != nil {}",
+    "req := c.Request()"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-echo-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [echo]; kalkan uses tech go (or echo) and a manifest that names echo."
+}

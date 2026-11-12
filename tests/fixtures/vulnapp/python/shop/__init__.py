@@ -1,0 +1,1 @@
+"""vulnapp shop service."""

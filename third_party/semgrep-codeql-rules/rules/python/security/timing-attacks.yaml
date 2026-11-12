@@ -1,0 +1,57 @@
+rules:
+  - id: codeql-py-timing-attack-comparison
+    message: >-
+      String comparison using == is vulnerable to timing attacks. Use
+      hmac.compare_digest() or secrets.compare_digest() for security-sensitive
+      comparisons.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-208: Observable Timing Discrepancy"
+      technology:
+        - python
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/208.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-208/TimingAttackAgainstHash.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/experimental/Security/CWE-208/TimingAttackAgainstHash.ql
+    patterns:
+      - pattern-either:
+          - pattern: $HASH == $INPUT
+          - pattern: $INPUT == $HASH
+          - pattern: $TOKEN == $INPUT
+          - pattern: $INPUT == $TOKEN
+          - pattern: $SECRET == $INPUT
+          - pattern: $INPUT == $SECRET
+      - metavariable-regex:
+          metavariable: $HASH
+          regex: '.*(hash|digest|token|secret|password|key|signature|mac|hmac).*'
+
+  - id: codeql-py-use-constant-time-compare
+    message: >-
+      Use hmac.compare_digest() for constant-time string comparison to prevent
+      timing attacks.
+    severity: INFO
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-208: Observable Timing Discrepancy"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: LOW
+      impact: MEDIUM
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/208.html
+    pattern-either:
+      - pattern: hashlib.$ALGO(...).hexdigest() == $OTHER
+      - pattern: hashlib.$ALGO(...).digest() == $OTHER

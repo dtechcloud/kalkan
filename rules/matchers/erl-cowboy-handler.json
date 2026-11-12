@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "slug": "erl-cowboy-handler",
+  "description": "Erlang Cowboy HTTP handlers (gated on Erlang)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.erl"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/rebar.config",
+      "**/*.app.src",
+      "**/erlang.mk"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\binit\\s*\\(\\s*Req\\s*,\\s*State\\s*\\)\\s*->",
+      "flags": "",
+      "label": "init(Req, State) — cowboy handler entry"
+    },
+    {
+      "regex": "\\bcowboy_router:compile\\b",
+      "flags": "",
+      "label": "cowboy_router:compile([...])"
+    },
+    {
+      "regex": "\\bcowboy_req:(?:binding|qs|read_body|header)\\b",
+      "flags": "",
+      "label": "cowboy_req accessor"
+    }
+  ],
+  "examples": [
+    "init(Req, State) ->\n    {ok, Req, State}.",
+    "init(Req, State) -> {cowboy_rest, Req, State}.",
+    "Dispatch = cowboy_router:compile([{'_', [{\"/\", hello_handler, []}]}]),",
+    "cowboy_router:compile([{Host, Routes}])",
+    "Id = cowboy_req:binding(id, Req),",
+    "Qs = cowboy_req:qs(Req),",
+    "{ok, Body, Req2} = cowboy_req:read_body(Req),",
+    "Auth = cowboy_req:header(<<\"authorization\">>, Req),"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/erl-cowboy-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [erlang]; kalkan uses an Erlang build file."
+}

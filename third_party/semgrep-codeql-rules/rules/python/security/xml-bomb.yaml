@@ -1,0 +1,31 @@
+rules:
+  - id: codeql-py-xml-bomb
+    message: >-
+      XML parser configuration may be vulnerable to XML bombs (billion laughs
+      attack). Use defusedxml or disable entity expansion.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-776: Improper Restriction of Recursive Entity References in DTDs"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/776.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-776/XmlBomb.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-776/XmlBomb.ql
+    pattern-either:
+      - pattern: xml.etree.ElementTree.parse(...)
+      - pattern: xml.etree.ElementTree.fromstring(...)
+      - pattern: ET.parse(...)
+      - pattern: ET.fromstring(...)
+      - pattern: xml.dom.minidom.parse(...)
+      - pattern: xml.dom.minidom.parseString(...)
+      - pattern: xml.sax.parse(...)
+      - pattern: xml.sax.parseString(...)

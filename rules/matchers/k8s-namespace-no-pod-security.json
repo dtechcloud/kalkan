@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "k8s-namespace-no-pod-security",
+  "description": "Kubernetes Namespace without an enforced Pod Security Admission level (pod-security.kubernetes.io/enforce label missing or privileged)",
+  "class": "iac-cloud-container",
+  "cwe": [
+    "CWE-16",
+    "CWE-1188"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.yaml",
+    "**/*.yml"
+  ],
+  "exclude_file_patterns": [
+    "**/{node_modules,vendor,.github}/**"
+  ],
+  "requires": {
+    "tech": [
+      "kubernetes"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_excludes": [
+    "\\{\\{"
+  ],
+  "patterns": [
+    {
+      "regex": "^kind\\s*:\\s*[\"']?Namespace[\"']?\\s*(?:#.*)?$",
+      "flags": "",
+      "label": "Namespace without a pod-security.kubernetes.io/enforce label",
+      "not_near": [
+        {
+          "regex": "(?:^\\s+|[{,]\\s*)[\"']?pod-security\\.kubernetes\\.io/enforce[\"']?\\s*:",
+          "scope": "document"
+        },
+        {
+          "regex": "^\\s+name\\s*:\\s*[\"']?kube-(?:system|public|node-lease)[\"']?\\s*(?:#.*)?$",
+          "scope": "document"
+        }
+      ]
+    },
+    {
+      "regex": "(?:^\\s+|[{,]\\s*)[\"']?pod-security\\.kubernetes\\.io/enforce[\"']?\\s*:\\s*[\"']?privileged\\b",
+      "flags": "",
+      "label": "Namespace enforces the privileged Pod Security level",
+      "near": [
+        {
+          "regex": "^kind\\s*:\\s*[\"']?Namespace[\"']?\\s*(?:#.*)?$",
+          "scope": "document"
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "^\\s+name\\s*:\\s*[\"']?kube-(?:system|public|node-lease)[\"']?\\s*(?:#.*)?$",
+          "scope": "document"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "apiVersion: v1\nkind: Namespace\nmetadata:\n  name: shop",
+    "kind: Namespace\nmetadata:\n  name: jobs\n  labels:\n    pod-security.kubernetes.io/enforce: privileged"
+  ],
+  "source": null,
+  "notes": "kalkan rule (ADR-0005, K.4; CIS Kubernetes Benchmark 5.2.x). The YAML document (the lines between --- separators) of a top-level kind: Namespace needs a pod-security.kubernetes.io/enforce label with a level other than privileged. The kube-system, kube-public and kube-node-lease namespaces are left out. A file with {{ (a Helm or Go template) is skipped: the rendered output decides. A cluster-wide default (AdmissionConfiguration defaults) is not visible to this rule."
+}

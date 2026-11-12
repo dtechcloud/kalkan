@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnapp-web
+  namespace: vulnapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vulnapp-web
+  template:
+    metadata:
+      labels:
+        app: vulnapp-web
+    spec:
+      containers:
+        - name: web
+          image: registry.vulnapp.internal/vulnapp/web:1.4.2
+          ports:
+            - containerPort: 8000
+          securityContext:
+            privileged: true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vulnapp-worker
+  namespace: vulnapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: vulnapp-worker
+  template:
+    metadata:
+      labels:
+        app: vulnapp-worker
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: worker
+          image: registry.vulnapp.internal/vulnapp/worker:1.4.2
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            limits:
+              cpu: 500m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000

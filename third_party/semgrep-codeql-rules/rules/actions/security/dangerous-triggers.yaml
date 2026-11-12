@@ -1,0 +1,57 @@
+rules:
+  - id: codeql-actions-pull-request-target
+    message: >-
+      Workflow uses pull_request_target trigger which runs with write
+      permissions. Ensure untrusted code is not checked out or executed.
+    severity: WARNING
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-829: Inclusion of Functionality from Untrusted Control Sphere"
+      technology:
+        - github-actions
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/829.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-829/UntrustedCheckoutCritical.ql
+        - https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-829/UntrustedCheckoutCritical.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    pattern-regex: 'on:\s*(pull_request_target|workflow_run)'
+
+  - id: codeql-actions-checkout-pr-head
+    message: >-
+      Checking out pull request HEAD in pull_request_target workflow is
+      dangerous. Untrusted code from the PR will be executed with write
+      permissions.
+    severity: ERROR
+    languages:
+      - yaml
+    metadata:
+      category: security
+      cwe: "CWE-829: Inclusion of Functionality from Untrusted Control Sphere"
+      technology:
+        - github-actions
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/829.html
+        - https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-829/UntrustedCheckoutCritical.ql
+        - https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+      source-rule-url: https://github.com/github/codeql/blob/main/actions/ql/src/Security/CWE-829/UntrustedCheckoutCritical.ql
+    paths:
+      include:
+        - ".github/workflows/*.yml"
+        - ".github/workflows/*.yaml"
+    pattern-regex: 'ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.(sha|ref)'

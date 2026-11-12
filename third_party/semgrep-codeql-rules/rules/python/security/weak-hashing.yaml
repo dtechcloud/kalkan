@@ -1,0 +1,56 @@
+rules:
+  - id: codeql-py-constant-salt
+    message: >-
+      Hardcoded salt for password hashing. Use a unique random salt per
+      password.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-760: Use of a One-Way Hash with a Predictable Salt"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/760.html
+    pattern-either:
+      - pattern: bcrypt.hashpw($PASSWORD, b"...")
+      - pattern: hashlib.pbkdf2_hmac(..., salt=b"...", ...)
+      - pattern: |
+          $SALT = b"..."
+          ...
+          bcrypt.hashpw($PASSWORD, $SALT)
+      - pattern: |
+          $SALT = "..."
+          ...
+          hashlib.pbkdf2_hmac(..., salt=$SALT.encode(), ...)
+
+  - id: codeql-py-weak-pbkdf2-iterations
+    message: >-
+      PBKDF2 with insufficient iterations. Use at least 100,000 iterations
+      for password hashing.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/916.html
+    patterns:
+      - pattern: hashlib.pbkdf2_hmac(..., iterations=$ITER, ...)
+      - metavariable-comparison:
+          metavariable: $ITER
+          comparison: $ITER < 100000

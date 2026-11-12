@@ -1,0 +1,71 @@
+{
+  "verdict": "rejected",
+  "fingerprint": "missing-authz:app/routes.py:admin",
+  "title": "Router `admin` | <script>alert('x')</script> yetki atlatma",
+  "description": "Aday, /admin rotasının yetkilendirmeyi atladığını iddia etti.",
+  "claimed_root_cause": "admin, yetki kontrolünü atlıyor iddiası.",
+  "trace": [
+    {
+      "kind": "sink",
+      "file": "app/routes.py",
+      "line": 31,
+      "scope": "admin",
+      "description": "Ayarları güncelliyor."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "app/routes.py",
+      "line": 30,
+      "description": "require_authorization ayarlardan önce çalışıyor."
+    }
+  ],
+  "reason": "require_authorization, settings_update çağrısından önce çalışıyor.",
+  "class": "missing-authz",
+  "cwe": [
+    "CWE-862"
+  ],
+  "owasp": [
+    "A01:2021"
+  ],
+  "engines": [
+    "hunter",
+    "verifier"
+  ],
+  "audit_answers": {
+    "attacker_control": {
+      "status": "established",
+      "reason": "Rota herkese açık.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 28,
+          "quote": "@app.get(\"/admin\")"
+        }
+      ]
+    },
+    "privilege_boundary": {
+      "status": "established",
+      "reason": "Rota yönetici ayarlarını değiştiriyor.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 31,
+          "quote": "return settings_update(request)"
+        }
+      ]
+    },
+    "unmitigated": {
+      "status": "refuted",
+      "reason": "Yetki kontrolü ayar değişikliğinden önce çalışıyor.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 30,
+          "quote": "require_authorization(request)"
+        }
+      ]
+    }
+  },
+  "id": "KF-C4BCAA828C227419"
+}

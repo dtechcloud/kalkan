@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "slug": "dotnet-sql-raw",
+  "description": "Raw SQL across .NET DB libraries (ADO.NET SqlCommand, Dapper, EF Core FromSqlRaw) — string concat / interpolation is SQL injection (FromSqlInterpolated parameterizes correctly; only FromSqlRaw with concat or $\"...\" is unsafe)",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.cs"
+  ],
+  "exclude_file_patterns": [
+    "**/{Tests,UnitTests,IntegrationTests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "dotnet"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bnew\\s+SqlCommand\\s*\\(\\s*\"[^\"]{0,400}\"\\s*\\+",
+      "flags": "",
+      "label": "new SqlCommand(\"...\" + concat)"
+    },
+    {
+      "regex": "\\bnew\\s+SqlCommand\\s*\\(\\s*\\$\"[^\"]{0,400}\\{",
+      "flags": "",
+      "label": "new SqlCommand($\"...{interp}...\")"
+    },
+    {
+      "regex": "\\bcommand\\.CommandText\\s*=\\s*\"[^\"]{0,400}\"\\s*\\+",
+      "flags": "",
+      "label": "command.CommandText = \"...\" + concat"
+    },
+    {
+      "regex": "\\bcommand\\.CommandText\\s*=\\s*\\$\"[^\"]{0,400}\\{",
+      "flags": "",
+      "label": "command.CommandText = $\"...{interp}...\""
+    },
+    {
+      "regex": "\\bconnection\\.(?:Query|QueryAsync|QueryFirst|QueryFirstOrDefault|QueryFirstAsync|Execute|ExecuteAsync|ExecuteScalar|ExecuteScalarAsync)\\s*(?:<[^>]+>)?\\s*\\(\\s*\\$\"[^\"]{0,400}\\{",
+      "flags": "",
+      "label": "Dapper connection.Query/Execute with $\"...{interp}...\""
+    },
+    {
+      "regex": "\\bconnection\\.(?:Query|Execute|ExecuteScalar)\\s*(?:<[^>]+>)?\\s*\\(\\s*\"[^\"]{0,400}\"\\s*\\+",
+      "flags": "",
+      "label": "Dapper connection.Query/Execute with string concat"
+    },
+    {
+      "regex": "\\bFromSqlRaw\\s*\\(\\s*\\$\"[^\"]{0,400}\\{",
+      "flags": "",
+      "label": "FromSqlRaw with $\"...\" — unsafe; use FromSqlInterpolated"
+    },
+    {
+      "regex": "\\bFromSqlRaw\\s*\\(\\s*\"[^\"]{0,400}\"\\s*\\+",
+      "flags": "",
+      "label": "FromSqlRaw with string concat"
+    },
+    {
+      "regex": "\\bExecuteSqlRaw\\s*\\(\\s*\\$\"",
+      "flags": "",
+      "label": "ExecuteSqlRaw with $\"...\""
+    },
+    {
+      "regex": "\\bExecuteSqlRaw\\s*\\(\\s*\"[^\"]{0,400}\"\\s*\\+",
+      "flags": "",
+      "label": "ExecuteSqlRaw with string concat"
+    },
+    {
+      "regex": "\\$\"\\s*(?:SELECT|INSERT|UPDATE|DELETE)[^\"]{0,400}\\{",
+      "flags": "",
+      "label": "interpolated SQL string with embedded {expr}"
+    }
+  ],
+  "examples": [
+    "var cmd = new SqlCommand(\"SELECT * FROM users WHERE id = \" + userId, conn);",
+    "var cmd = new SqlCommand($\"SELECT * FROM users WHERE id = {userId}\", conn);",
+    "command.CommandText = \"DELETE FROM users WHERE id = \" + id;",
+    "command.CommandText = $\"UPDATE users SET role = '{role}'\";",
+    "var users = connection.Query<User>($\"SELECT * FROM users WHERE name = '{name}'\");",
+    "connection.Execute(\"DELETE FROM users WHERE id = \" + id);",
+    "var rows = connection.QueryAsync<int>($\"SELECT id FROM users WHERE id = {id}\");",
+    "var blogs = ctx.Blogs.FromSqlRaw($\"SELECT * FROM Blogs WHERE Id = {id}\").ToList();",
+    "ctx.Database.ExecuteSqlRaw(\"DELETE FROM Users WHERE Id = \" + id);",
+    "// SAFE: ctx.Blogs.FromSqlInterpolated($\"SELECT * FROM Blogs WHERE Id = {id}\").ToList();"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dotnet-sql-raw.ts"
+  },
+  "notes": ""
+}

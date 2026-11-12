@@ -1,0 +1,765 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for Java (Servlet API, Spring MVC and the JDK).
+# Original rules written for kalkan. Rule ID form: kalkan.java.<class>.<name>.
+rules:
+  - id: kalkan.java.sqli.tainted-sql-string
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is concatenated into a SQL statement. An attacker can change the
+      query. Use a PreparedStatement with "?" placeholders and bind the values with setString()
+      and the other setter methods.
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [java, jdbc, spring, jpa]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies|getInputStream|getReader|getPart)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestBody|RequestHeader|CookieValue|MatrixVariable|RequestPart)$
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: '(Statement $STMT).executeQuery($QUERY)'
+              - pattern: '(Statement $STMT).execute($QUERY, ...)'
+              - pattern: '(Statement $STMT).executeUpdate($QUERY, ...)'
+              - pattern: '(Statement $STMT).addBatch($QUERY)'
+              - pattern: $CONN.prepareStatement($QUERY, ...)
+              - pattern: $CONN.prepareCall($QUERY, ...)
+              - pattern: $JDBC.queryForObject($QUERY, ...)
+              - pattern: $JDBC.queryForList($QUERY, ...)
+              - pattern: $JDBC.update($QUERY, ...)
+              - pattern: '(EntityManager $EM).createQuery($QUERY, ...)'
+              - pattern: '(EntityManager $EM).createNativeQuery($QUERY, ...)'
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.java.os-command-injection.tainted-process-command
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a shell command line or selects the program to run. An
+      attacker can run other commands on the server. Start a fixed program with ProcessBuilder and
+      pass the value as a separate argument, never through "sh -c".
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/OS_Command_Injection_Defense_Cheat_Sheet.html
+      category: security
+      technology: [java]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies|getInputStream|getReader|getPart)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestBody|RequestHeader|CookieValue|MatrixVariable|RequestPart)$
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Runtime.getRuntime().exec($CMD, ...)
+              - pattern: '(Runtime $RUNTIME).exec($CMD, ...)'
+              - pattern: new ProcessBuilder($SHELL, "-c", $CMD, ...)
+              - pattern: new ProcessBuilder($SHELL, "/c", $CMD, ...)
+              - pattern: new ProcessBuilder($CMD, ...)
+              - pattern: '(ProcessBuilder $BUILDER).command($CMD, ...)'
+          - focus-metavariable: $CMD
+
+  - id: kalkan.java.code-injection.tainted-expression
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is evaluated as an expression or script (SpEL, OGNL, MVEL, Groovy,
+      javax.script). An attacker can call any Java method and run commands. Never evaluate request
+      data. Select a fixed expression by name, or use SimpleEvaluationContext for SpEL.
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+        - "CWE-917: Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/917.html
+        - https://docs.spring.io/spring-framework/reference/core/expressions.html
+      category: security
+      technology: [java, spring, spel, ognl, groovy]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies|getInputStream|getReader|getPart)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestBody|RequestHeader|CookieValue|MatrixVariable|RequestPart)$
+          - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.get(...)
+              - pattern: $ALLOWLIST.getOrDefault(...)
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: '(ExpressionParser $PARSER).parseExpression($CODE, ...)'
+              - pattern: '(SpelExpressionParser $PARSER).parseExpression($CODE, ...)'
+              - pattern: new SpelExpressionParser().parseExpression($CODE, ...)
+              - pattern: '(ScriptEngine $ENGINE).eval($CODE, ...)'
+              - pattern: '(GroovyShell $SHELL).evaluate($CODE, ...)'
+              - pattern: new GroovyShell().evaluate($CODE, ...)
+              - pattern: Ognl.getValue($CODE, ...)
+              - pattern: Ognl.parseExpression($CODE)
+              - pattern: MVEL.eval($CODE, ...)
+              - pattern: MVEL.compileExpression($CODE, ...)
+          - focus-metavariable: $CODE
+
+  - id: kalkan.java.ssti.tainted-template-source
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is compiled as a FreeMarker or Velocity template. Template
+      directives can create objects and run commands on the server. Load templates from fixed
+      files and pass user data only in the data model.
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://freemarker.apache.org/docs/app_faq.html#faq_template_uploading_security
+      category: security
+      technology: [java, freemarker, velocity]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies|getInputStream|getReader|getPart)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestBody|RequestHeader|CookieValue|MatrixVariable|RequestPart)$
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new Template($NAME, new StringReader($SOURCE), ...)
+              - pattern: new Template($NAME, $SOURCE, $CONFIG)
+              - pattern: Velocity.evaluate($CONTEXT, $WRITER, $TAG, $SOURCE)
+              - pattern: '(VelocityEngine $ENGINE).evaluate($CONTEXT, $WRITER, $TAG, $SOURCE)'
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.java.xss.tainted-servlet-response
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is written to the servlet response without HTML escaping. An
+      attacker can run script in the browser of another user. Escape the value for the HTML
+      context (for example with the OWASP Java Encoder) or render it through an auto-escaping
+      template.
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://owasp.org/www-project-java-encoder/
+      category: security
+      technology: [java, servlet]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies)$
+    pattern-sanitizers:
+      - patterns:
+          - pattern: $ENCODER.$METHOD(...)
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: (?i)^(escape|escapeHtml|escapeHtml4|escapeXml|forHtml|forHtmlContent|forHtmlAttribute|htmlEscape|encodeForHTML|sanitize)$
+      - pattern-either:
+          - pattern: Integer.parseInt(...)
+          - pattern: Long.parseLong(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $RESPONSE.getWriter().$WRITE($BODY, ...)
+              - pattern: '(PrintWriter $WRITER).$WRITE($BODY, ...)'
+          - metavariable-regex:
+              metavariable: $WRITE
+              regex: ^(write|print|println|printf|format|append)$
+          - focus-metavariable: $BODY
+
+  - id: kalkan.java.ssrf.tainted-request-url
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound request. An attacker can reach
+      internal services or cloud metadata endpoints. Map the input to a fixed allowlist of URLs, or
+      parse it and check the scheme and host against an allowlist before the request.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [java, spring, jdk-httpclient, okhttp]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies|getInputStream|getReader|getPart)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestBody|RequestHeader|CookieValue|MatrixVariable|RequestPart)$
+          - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.get(...)
+              - pattern: $ALLOWLIST.getOrDefault(...)
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: new URL($URL)
+              - pattern: URI.create($URL)
+              - pattern: new URI($URL)
+              - pattern: HttpRequest.newBuilder($URL)
+              - pattern: '(HttpRequest.Builder $BUILDER).uri($URL)'
+              - pattern: new HttpGet($URL)
+              - pattern: new HttpPost($URL)
+              - pattern: '(RestTemplate $REST).$METHOD($URL, ...)'
+              - pattern: '(Request.Builder $REQUEST).url($URL)'
+              - pattern: Jsoup.connect($URL)
+          - focus-metavariable: $URL
+
+  - id: kalkan.java.path-traversal.tainted-file-path
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. Path.resolve() and new File(dir, name)
+      do not stop "../" sequences or absolute paths, so an attacker can read or change other files.
+      Keep only the file name (Path.getFileName()), or normalize the path and check that it stays
+      inside the base folder.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://owasp.org/www-community/attacks/Path_Traversal
+      category: security
+      technology: [java, servlet, spring]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getHeaders|getQueryString|getPathInfo|getRequestURI|getCookies|getPart)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestHeader|CookieValue|MatrixVariable|RequestPart)$
+          - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: $PATH.getFileName()
+          - pattern: FilenameUtils.getName(...)
+          - pattern: '(File $FILE).getName()'
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.get(...)
+              - pattern: $ALLOWLIST.getOrDefault(...)
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Files.$METHOD($PATH, ...)
+              - pattern: new File($PATH)
+              - pattern: new File($BASE, $PATH)
+              - pattern: new FileInputStream($PATH)
+              - pattern: new FileOutputStream($PATH, ...)
+              - pattern: new FileReader($PATH, ...)
+              - pattern: new FileWriter($PATH, ...)
+              - pattern: new RandomAccessFile($PATH, ...)
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(readAllBytes|readString|readAllLines|lines|newInputStream|newBufferedReader|newOutputStream|newBufferedWriter|write|writeString|delete|deleteIfExists|copy|move|createFile|list|walk)$
+          - focus-metavariable: $PATH
+      - patterns:
+          - pattern-either:
+              - pattern: new File($PATH)
+              - pattern: new File($BASE, $PATH)
+              - pattern: new FileInputStream($PATH)
+              - pattern: new FileOutputStream($PATH, ...)
+              - pattern: new FileReader($PATH, ...)
+              - pattern: new FileWriter($PATH, ...)
+              - pattern: new RandomAccessFile($PATH, ...)
+          - focus-metavariable: $PATH
+
+  - id: kalkan.java.deserialization.unfiltered-object-input-stream
+    languages: [java]
+    severity: ERROR
+    message: >-
+      ObjectInputStream.readObject() runs without an ObjectInputFilter. A crafted byte stream can
+      build gadget-chain objects from the class path and run code. Do not deserialize untrusted
+      data with Java serialization, or set an allowlist filter with setObjectInputFilter() before
+      readObject().
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://docs.oracle.com/en/java/javase/21/core/serialization-filtering1.html
+      category: security
+      technology: [java]
+    pattern-either:
+      - patterns:
+          - pattern: '(ObjectInputStream $STREAM).readObject()'
+          - pattern-not-inside: |
+              $STREAM.setObjectInputFilter(...);
+              ...
+      - patterns:
+          - pattern: '(ObjectInputStream $STREAM).readUnshared()'
+          - pattern-not-inside: |
+              $STREAM.setObjectInputFilter(...);
+              ...
+      - pattern: new ObjectInputStream($INPUT).readObject()
+      - pattern: new XMLDecoder($INPUT, ...).readObject()
+      - pattern: '(XMLDecoder $DECODER).readObject()'
+
+  - id: kalkan.java.xxe.xml-parser-without-hardening
+    languages: [java]
+    severity: ERROR
+    message: >-
+      This XML parser factory is used without disabling DOCTYPE declarations or external
+      entities. A crafted document can read local files or reach internal hosts (XXE). Set
+      "http://apache.org/xml/features/disallow-doctype-decl" to true, or turn off external
+      entities and external DTD access, before you create the parser.
+    metadata:
+      cwe:
+        - "CWE-611: Improper Restriction of XML External Entity Reference"
+      kalkan_class: xxe
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/XML_External_Entity_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [java, jaxp]
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              $FACTORY = DocumentBuilderFactory.newInstance();
+              ...
+          - pattern: $FACTORY.newDocumentBuilder()
+          - pattern-not-inside: |
+              $FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+              ...
+          - pattern-not-inside: |
+              $FACTORY.setFeature("http://xml.org/sax/features/external-general-entities", false);
+              ...
+          - pattern-not-inside: |
+              $FACTORY.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+              ...
+      - patterns:
+          - pattern-inside: |
+              $FACTORY = SAXParserFactory.newInstance();
+              ...
+          - pattern: $FACTORY.newSAXParser()
+          - pattern-not-inside: |
+              $FACTORY.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+              ...
+          - pattern-not-inside: |
+              $FACTORY.setFeature("http://xml.org/sax/features/external-general-entities", false);
+              ...
+      - patterns:
+          - pattern-inside: |
+              $FACTORY = XMLInputFactory.newInstance();
+              ...
+          - pattern: $FACTORY.$CREATE(...)
+          - metavariable-regex:
+              metavariable: $CREATE
+              regex: ^(createXMLStreamReader|createXMLEventReader)$
+          - pattern-not-inside: |
+              $FACTORY.setProperty(XMLInputFactory.SUPPORT_DTD, false);
+              ...
+          - pattern-not-inside: |
+              $FACTORY.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+              ...
+
+  - id: kalkan.java.open-redirect.tainted-redirect-target
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Map the input to a fixed set of internal paths, or
+      accept only relative paths that start with a single "/".
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+      category: security
+      technology: [java, servlet, spring]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getQueryString|getCookies)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestHeader|CookieValue)$
+          - focus-metavariable: $PARAM
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.get(...)
+              - pattern: $ALLOWLIST.getOrDefault(...)
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: '(HttpServletResponse $RESPONSE).sendRedirect($URL)'
+              - pattern: '(HttpServletResponse $RESPONSE).setHeader("Location", $URL)'
+              - pattern: new RedirectView($URL, ...)
+              - pattern: new ModelAndView("redirect:" + $URL, ...)
+          - focus-metavariable: $URL
+      - patterns:
+          - pattern: return "redirect:" + $URL;
+          - focus-metavariable: $URL
+
+  - id: kalkan.java.nosqli.tainted-mongo-query
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [java]
+    severity: ERROR
+    message: >-
+      Request data is parsed into a MongoDB query document or used as server-side JavaScript
+      ($where). An attacker can add query operators and read or change other records. Build the
+      filter with com.mongodb.client.model.Filters and pass user values only as field values.
+    metadata:
+      cwe:
+        - "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      kalkan_class: nosqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://www.mongodb.com/docs/drivers/java/sync/current/fundamentals/builders/filters/
+      category: security
+      technology: [java, mongodb]
+    pattern-sources:
+      - patterns:
+          - pattern: '(HttpServletRequest $REQ).$METHOD(...)'
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(getParameter|getParameterValues|getParameterMap|getHeader|getQueryString|getInputStream|getReader)$
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION(...) $TYPE $PARAM, ...) { ... }
+              - pattern-inside: |
+                  $RET $FUNC(..., @$ANNOTATION $TYPE $PARAM, ...) { ... }
+          - metavariable-regex:
+              metavariable: $ANNOTATION
+              regex: ^(RequestParam|PathVariable|RequestBody|RequestHeader|CookieValue)$
+          - focus-metavariable: $PARAM
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Document.parse($QUERY, ...)
+              - pattern: BasicDBObject.parse($QUERY, ...)
+              - pattern: BsonDocument.parse($QUERY)
+              - pattern: Filters.where($QUERY)
+              - pattern: new Document("$where", $QUERY)
+              - pattern: new BasicDBObject("$where", $QUERY)
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.java.jwt.unverified-token
+    languages: [java]
+    severity: ERROR
+    message: >-
+      The token is decoded without a signature check (JWT.decode() of java-jwt, or parse() of an
+      unsigned jjwt token). An attacker can forge any claim. Verify the token with
+      JWT.require(algorithm).build().verify(token), or with jjwt parseSignedClaims().
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://github.com/auth0/java-jwt#verify-a-jwt
+      category: security
+      technology: [java, java-jwt, jjwt]
+    pattern-either:
+      - pattern: com.auth0.jwt.JWT.decode(...)
+      - pattern: Jwts.parser().parse(...)
+      - pattern: Jwts.parser().setSigningKey(...).parse(...)
+      - pattern: Jwts.parser().parseClaimsJwt(...)
+      - pattern: Jwts.parser().unsecured().build().parse(...)
+
+  - id: kalkan.java.crypto.weak-hash-algorithm
+    languages: [java]
+    severity: WARNING
+    message: >-
+      MD5 and SHA-1 are broken for security use. Do not use them for passwords, signatures or
+      integrity checks. Hash passwords with PBKDF2WithHmacSHA256, scrypt, argon2 or bcrypt, and
+      use SHA-256 or better elsewhere.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-328: Use of Weak Hash"
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+      category: security
+      technology: [java, jca]
+    pattern-either:
+      - pattern: MessageDigest.getInstance("MD5", ...)
+      - pattern: MessageDigest.getInstance("md5", ...)
+      - pattern: MessageDigest.getInstance("MD2", ...)
+      - pattern: MessageDigest.getInstance("MD4", ...)
+      - pattern: MessageDigest.getInstance("SHA-1", ...)
+      - pattern: MessageDigest.getInstance("SHA1", ...)
+      - pattern: MessageDigest.getInstance("SHA", ...)
+      - pattern: DigestUtils.md5Hex(...)
+      - pattern: DigestUtils.sha1Hex(...)
+
+  - id: kalkan.java.crypto.weak-cipher
+    languages: [java]
+    severity: WARNING
+    message: >-
+      This Cipher uses a broken algorithm (DES, 3DES, RC2, RC4, Blowfish) or ECB mode. A bare "AES"
+      also selects ECB. ECB leaks patterns of the plaintext. Use "AES/GCM/NoPadding" with a random
+      12-byte IV.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      kalkan_class: crypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://docs.oracle.com/en/java/javase/21/docs/specs/security/standard-names.html#cipher-algorithms
+      category: security
+      technology: [java, jca]
+    patterns:
+      - pattern: Cipher.getInstance($TRANSFORMATION, ...)
+      - metavariable-regex:
+          metavariable: $TRANSFORMATION
+          regex: (?i)^["']?((des|desede|tripledes|rc2|rc4|arcfour|blowfish)(/.*)?|aes|[^"']*/ecb/[^"']*)["']?$
+
+  - id: kalkan.java.cors.permissive-origin-with-credentials
+    languages: [java]
+    severity: WARNING
+    message: >-
+      CORS allows every origin, or reflects the Origin header, and also allows credentials. Any
+      web site can then send authenticated requests and read the answers. List the trusted
+      origins explicitly when credentials are allowed.
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://docs.spring.io/spring-framework/reference/web/webmvc-cors.html
+      category: security
+      technology: [java, spring, servlet]
+    pattern-either:
+      - pattern: '@CrossOrigin(..., originPatterns = "*", ..., allowCredentials = "true", ...)'
+      - pattern: '@CrossOrigin(..., allowCredentials = "true", ..., originPatterns = "*", ...)'
+      - pattern: '@CrossOrigin(..., origins = "*", ..., allowCredentials = "true", ...)'
+      - pattern: '@CrossOrigin(..., allowCredentials = "true", ..., origins = "*", ...)'
+      - pattern: $REGISTRY.addMapping(...). ... .allowedOriginPatterns("*"). ... .allowCredentials(true)
+      - pattern: '(CorsConfiguration $CONFIG).addAllowedOriginPattern("*")'
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $RESPONSE.setHeader("Access-Control-Allow-Credentials", "true");
+                  ...
+              - pattern-inside: |
+                  $STMT;
+                  ...
+                  $RESPONSE.setHeader("Access-Control-Allow-Credentials", "true");
+          - pattern: '$RESPONSE.setHeader("Access-Control-Allow-Origin", (HttpServletRequest $REQUEST).getHeader("Origin"))'

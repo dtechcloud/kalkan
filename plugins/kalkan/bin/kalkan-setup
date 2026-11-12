@@ -1,0 +1,202 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+#
+# Set up the kalkan engine for the Claude Code plugin (docs/PLUGIN.md).
+#
+# Usage: sh <plugin root>/bin/kalkan-setup <plugin data folder> [--force]
+#
+# The /kalkan skill runs this script with the resolved ${CLAUDE_PLUGIN_DATA}. The script works in
+# sh on Linux and macOS and in Git Bash on Windows. It stops at the first failure:
+#   1. Find Python 3.11 or later (py -3, python3, python).
+#   2. Create the venv <data>/venv when it is missing.
+#   3. Install the engine wheel that the plugin carries (engine/*.whl): no network, no index.
+#   4. Write <venv>/kalkan-home.json: the engine keeps .tools/ in <data> and the runs in
+#      ~/kalkan-runs.
+#   5. Copy the launchers (bin/kalkan-audit, bin/kalkan-unattended and their .cmd files for
+#      Windows) to <data>/bin. That path stays the same after a plugin update.
+#   6. Install the pinned scanners: kalkan tools install --all (binary downloads SHA-256
+#      checked, pip tools by exact version, go install tools by the Go checksum database).
+#   7. Download the local vulnerability databases: kalkan sca update-db --max-age 168 (network;
+#      sends only ecosystem names). A database younger than 168 hours (7 days, the stale limit
+#      of kalkan doctor) is kept, so a plugin update within a week downloads nothing. A failure
+#      only warns: sca match then records a database gap and never queries an online API
+#      (docs/SECURITY.md).
+#   8. Check the environment: kalkan doctor.
+#   9. Record the wheel hash in <data>/engine.sha256.
+# When the recorded hash equals the hash of the bundled wheel, the script only refreshes the
+# launchers and prints the paths. A plugin update brings a new wheel, so the next run installs
+# it. --force repeats all steps. The last line is always "engine: <path>": the skill reads it.
+
+set -eu
+
+say() {
+    printf '==> %s\n' "$*"
+}
+
+fail() {
+    printf 'kalkan-setup: error: %s\n' "$*" >&2
+    exit 1
+}
+
+data=${1:-${CLAUDE_PLUGIN_DATA:-}}
+force=no
+if [ "${2:-}" = "--force" ]; then
+    force=yes
+elif [ -n "${2:-}" ]; then
+    fail "unknown option: $2 (usage: kalkan-setup <plugin data folder> [--force])"
+fi
+[ -n "$data" ] || fail "usage: kalkan-setup <plugin data folder> [--force]"
+
+root=$(dirname -- "$(dirname -- "$0")")
+version_check='import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)'
+
+set -- "$root"/engine/kalkan-*.whl
+[ "$#" -eq 1 ] && [ -f "$1" ] || fail "the plugin carries no single engine wheel in $root/engine"
+wheel=$1
+sums="$root/engine/SHA256SUMS"
+[ -f "$sums" ] || fail "$sums is missing"
+want=$(sed -n '1s/ .*//p' "$sums")
+[ -n "$want" ] || fail "$sums holds no hash"
+
+venv="$data/venv"
+stamp="$data/engine.sha256"
+
+venv_python() {
+    if [ -f "$venv/Scripts/python.exe" ]; then
+        printf '%s\n' "$venv/Scripts/python.exe"
+    elif [ -x "$venv/bin/python" ]; then
+        printf '%s\n' "$venv/bin/python"
+    else
+        return 1
+    fi
+}
+
+engine_path() {
+    if [ -f "$venv/Scripts/kalkan.exe" ]; then
+        printf '%s\n' "$venv/Scripts/kalkan.exe"
+    else
+        printf '%s\n' "$venv/bin/kalkan"
+    fi
+}
+
+# The launchers find the venv in the parent of their own folder, so the copies in <data>/bin
+# work from any terminal (docs/PLUGIN.md, "One-command audit" and "Unattended runs").
+install_launchers() {
+    mkdir -p "$data/bin" || return 1
+    for name in kalkan-audit kalkan-audit.cmd kalkan-unattended kalkan-unattended.cmd; do
+        cmp -s "$root/bin/$name" "$data/bin/$name" && continue
+        cp -- "$root/bin/$name" "$data/bin/$name.$$" &&
+            mv -f -- "$data/bin/$name.$$" "$data/bin/$name" || return 1
+    done
+    chmod +x "$data/bin/kalkan-audit" "$data/bin/kalkan-unattended"
+}
+
+print_launchers() {
+    [ -d "$data/bin" ] || return 0
+    case $data in
+        /* | [A-Za-z]:*) bin=$data/bin ;;
+        *) bin=$(CDPATH='' cd -- "$data/bin" && pwd) || return 0 ;;
+    esac
+    printf 'audit (sh): sh "%s/kalkan-audit" <target>\n' "$bin"
+    printf 'unattended (sh): sh "%s/kalkan-unattended" <target> --profile standard\n' "$bin"
+    if [ -f "$venv/Scripts/python.exe" ]; then
+        if command -v cygpath >/dev/null 2>&1; then
+            bin=$(cygpath -m "$bin")
+        fi
+        printf 'audit (PowerShell): & "%s/kalkan-audit.cmd" <target>\n' "$bin"
+        printf 'unattended (PowerShell): & "%s/kalkan-unattended.cmd" <target> --profile standard\n' "$bin"
+    fi
+}
+
+if [ "$force" = no ] && py=$(venv_python) && [ -f "$stamp" ] &&
+    [ "$(cat "$stamp")" = "$want" ] && [ -e "$(engine_path)" ]; then
+    install_launchers ||
+        printf 'kalkan-setup: warning: cannot copy the launchers to %s\n' "$data/bin" >&2
+    say "The kalkan engine is up to date."
+    print_launchers
+    printf 'engine: %s\n' "$(engine_path)"
+    exit 0
+fi
+
+mkdir -p "$data" || fail "cannot create $data"
+
+# One setup at a time: two sessions that start /kalkan together must not run pip in the same
+# venv. A lock older than two hours belongs to a stopped setup and is removed.
+lock="$data/setup.lock"
+now=$(date +%s)
+if ! mkdir "$lock" 2>/dev/null; then
+    since=$(cat "$lock/started" 2>/dev/null || printf '%s' "$now")
+    case $since in '' | *[!0-9]*) since=$now ;; esac
+    if [ $((now - since)) -lt 7200 ]; then
+        fail "another kalkan-setup is running (lock $lock). Wait for it, or delete the lock folder when no setup runs."
+    fi
+    rm -rf "$lock"
+    mkdir "$lock" || fail "cannot create the lock $lock"
+fi
+printf '%s\n' "$now" >"$lock/started"
+trap 'rm -rf "$lock"' EXIT
+trap 'exit 1' INT TERM HUP
+
+find_python() {
+    if command -v py >/dev/null 2>&1 && py -3 -c "$version_check" >/dev/null 2>&1; then
+        printf '%s\n' "py -3"
+        return 0
+    fi
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1 &&
+            "$candidate" -c "$version_check" >/dev/null 2>&1; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+    return 1
+}
+
+if py=$(venv_python) && "$py" -c "$version_check" >/dev/null 2>&1; then
+    say "Use the existing venv ($venv)"
+else
+    base=$(find_python) ||
+        fail "Python 3.11 or later was not found. Install it (https://www.python.org) and run the setup again."
+    say "Create the venv $venv with $base"
+    # $base is "py -3" or a single command name: word splitting is intended here.
+    # shellcheck disable=SC2086
+    $base -m venv --clear "$venv" ||
+        fail "python -m venv failed. On Debian or Ubuntu, install the python3-venv package."
+    py=$(venv_python) || fail "python -m venv did not create a Python interpreter in $venv"
+fi
+
+say "Install the kalkan engine ($(basename -- "$wheel"))"
+"$py" -m pip install --disable-pip-version-check --no-input --no-index --no-deps \
+    --no-cache-dir --force-reinstall "$wheel" || fail "pip could not install $wheel"
+
+# The runs live in ~/kalkan-runs (KALKAN_RUNS_DIR overrides it): Claude Code never lets a
+# subagent write its result file below a .claude folder, and the plugin data folder is one.
+"$py" -I -X utf8 -c 'import sys
+from pathlib import Path
+from kalkan.resources import PLUGIN_RUNS_DIRNAME, write_home_marker
+runs = Path.home() / PLUGIN_RUNS_DIRNAME
+runs.mkdir(parents=True, exist_ok=True)
+write_home_marker(sys.prefix, sys.argv[1], runs)
+print("==> Runs folder: " + runs.as_posix())' "$data" ||
+    fail "cannot write the kalkan home marker in $venv"
+
+say "Copy the launchers (kalkan-audit, kalkan-unattended) to $data/bin"
+install_launchers || fail "cannot copy the launchers to $data/bin"
+
+engine=$(engine_path)
+[ -e "$engine" ] || fail "the engine $engine is missing after the install"
+
+say "Install the pinned tools (kalkan tools install --all)"
+"$engine" tools install --all || fail "kalkan tools install --all failed. Run the setup again; installed tools are kept."
+
+say "Download the local vulnerability databases (kalkan sca update-db --max-age 168)"
+"$engine" sca update-db --max-age 168 ||
+    printf 'kalkan-setup: warning: %s\n' "kalkan sca update-db failed; sca match records a database gap until it works (run: $engine sca update-db)" >&2
+
+say "Check the environment (kalkan doctor)"
+"$engine" doctor || fail "kalkan doctor reported a failure (see above)."
+
+printf '%s\n' "$want" >"$stamp"
+say "Done."
+print_launchers
+printf 'engine: %s\n' "$engine"

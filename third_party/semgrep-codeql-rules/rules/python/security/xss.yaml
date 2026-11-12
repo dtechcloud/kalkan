@@ -1,0 +1,86 @@
+rules:
+  - id: codeql-py-jinja2-autoescape-disabled
+    message: >-
+      Jinja2 template created with autoescape disabled. This may lead to
+      cross-site scripting (XSS) vulnerabilities. Enable autoescape.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - jinja2
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-079/Jinja2WithoutEscaping.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-079/Jinja2WithoutEscaping.ql
+    pattern-either:
+      - pattern: jinja2.Environment(..., autoescape=False, ...)
+      - pattern: Environment(..., autoescape=False, ...)
+      - patterns:
+          - pattern: jinja2.Environment(...)
+          - pattern-not: jinja2.Environment(..., autoescape=True, ...)
+          - pattern-not: jinja2.Environment(..., autoescape=$FUNC(...), ...)
+      - patterns:
+          - pattern: Environment(...)
+          - pattern-not: Environment(..., autoescape=True, ...)
+          - pattern-not: Environment(..., autoescape=$FUNC(...), ...)
+
+  - id: codeql-py-flask-unsafe-render
+    message: >-
+      Using render_template_string with user input may lead to XSS or server-
+      side template injection. Use render_template with a file instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - flask
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-079/ReflectedXss.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-079/ReflectedXss.ql
+    pattern-either:
+      - pattern: flask.render_template_string(...)
+      - pattern: render_template_string(...)
+
+  - id: codeql-py-django-mark-safe
+    message: >-
+      Using mark_safe() or SafeString() with user input may lead to XSS.
+      Ensure the input is properly sanitized before marking as safe.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - django
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: HIGH
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-079/ReflectedXss.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-079/ReflectedXss.ql
+    pattern-either:
+      - pattern: django.utils.safestring.mark_safe(...)
+      - pattern: mark_safe(...)
+      - pattern: SafeString(...)
+      - pattern: django.utils.html.format_html(...)
+      - pattern: format_html(...)

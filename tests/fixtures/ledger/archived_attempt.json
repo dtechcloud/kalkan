@@ -1,0 +1,25 @@
+{
+  "wave": 1,
+  "status": "blocked",
+  "agent_id": "hunter-1",
+  "reviewed_paths": [
+    "src/router.ts"
+  ],
+  "local_checks": [
+    {
+      "agent_id": "hunter-1",
+      "reviewed_paths": [
+        "src/router.ts"
+      ],
+      "invariant": "The route checks object ownership.",
+      "method": "source",
+      "result": "The owner check applies before the update.",
+      "artifact": null
+    }
+  ],
+  "result_fingerprints": [],
+  "unresolved": [
+    "The deployed policy is unavailable."
+  ],
+  "reassignment_reason": "The critic found an unchecked parallel path."
+}

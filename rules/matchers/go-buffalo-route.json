@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "slug": "go-buffalo-route",
+  "description": "Buffalo app routes and resources (gated on buffalo)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.go"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go"
+  ],
+  "requires": {
+    "tech": [
+      "go",
+      "buffalo"
+    ],
+    "sentinel_files": [
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "github\\.com/gobuffalo/buffalo"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bapp\\.(?:GET|POST|PUT|PATCH|DELETE)\\s*\\(",
+      "flags": "",
+      "label": "Buffalo app.<VERB> registration"
+    },
+    {
+      "regex": "\\bapp\\.Resource\\s*\\(",
+      "flags": "",
+      "label": "app.Resource() (CRUD)"
+    },
+    {
+      "regex": "\\bbuffalo\\.New\\s*\\(",
+      "flags": "",
+      "label": "buffalo.New() init"
+    },
+    {
+      "regex": "\\bc\\.(?:Param|Request|Bind|Value)\\b",
+      "flags": "",
+      "label": "buffalo.Context accessor"
+    }
+  ],
+  "examples": [
+    "app := buffalo.New(buffalo.Options{})",
+    "app.GET(\"/users\", UsersList)",
+    "app.POST(\"/login\", AuthCreate)",
+    "app.PUT(\"/items/{id}\", ItemsUpdate)",
+    "app.PATCH(\"/profile\", ProfilePatch)",
+    "app.DELETE(\"/items/{id}\", ItemsDestroy)",
+    "app.Resource(\"/users\", &UsersResource{})",
+    "id := c.Param(\"id\")",
+    "req := c.Request()",
+    "if err := c.Bind(&u); err != nil {}",
+    "userID := c.Value(\"current_user_id\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/go-buffalo-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [buffalo]; kalkan uses tech go (or buffalo) and a manifest that names buffalo."
+}

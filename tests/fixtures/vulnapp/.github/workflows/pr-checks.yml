@@ -1,0 +1,25 @@
+name: PR checks
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Build the preview
+        run: make preview
+      - name: Comment the preview link
+        uses: shopkit-actions/preview-comment@5e2b9c7a41d06f38c1a9e4b7d2f05c83a6e19b70 # v2.3.1
+        with:
+          token: ${{ github.token }}

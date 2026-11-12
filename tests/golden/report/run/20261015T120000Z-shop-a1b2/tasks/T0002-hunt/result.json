@@ -1,0 +1,20 @@
+{
+  "task_id": "T0002-hunt",
+  "units": [],
+  "candidates": [],
+  "hardening": [
+    {
+      "title": "Konteyner root olarak çalışıyor",
+      "file": "Dockerfile",
+      "line": null,
+      "note": "Dockerfile'a bir USER satırı ekle."
+    },
+    {
+      "title": "Hata ayıklama | <b>modu</b>",
+      "file": "app/routes.py",
+      "line": 6,
+      "note": "`app.debug` üretimde kapalı olmalı."
+    }
+  ],
+  "uncovered": []
+}

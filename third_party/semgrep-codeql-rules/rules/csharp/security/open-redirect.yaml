@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-csharp-open-redirect
+    message: >-
+      Redirect URL from user input may allow open redirect attacks.
+      Validate redirect URLs against a whitelist.
+    severity: WARNING
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-601: URL Redirection to Untrusted Site"
+      technology:
+        - csharp
+        - aspnet
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-601/UrlRedirect.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-601/UrlRedirect.ql
+    pattern-either:
+      - pattern: Response.Redirect($INPUT)
+      - pattern: return Redirect($INPUT)
+      - pattern: return RedirectPermanent($INPUT)

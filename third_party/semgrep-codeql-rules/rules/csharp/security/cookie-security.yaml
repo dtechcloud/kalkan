@@ -1,0 +1,68 @@
+rules:
+  - id: codeql-csharp-cookie-without-secure
+    message: >-
+      Cookie set without Secure flag. Set Secure = true to prevent transmission
+      over unencrypted connections.
+    severity: WARNING
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-614: Sensitive Cookie in HTTPS Session Without 'Secure' Attribute"
+      technology:
+        - csharp
+        - aspnet
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/614.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-614/CookieWithoutSecure.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-614/CookieWithoutSecure.ql
+    patterns:
+      - pattern: |
+          $COOKIE = new HttpCookie(...);
+          ...
+          Response.Cookies.Add($COOKIE);
+      - pattern-not: |
+          $COOKIE = new HttpCookie(...);
+          ...
+          $COOKIE.Secure = true;
+          ...
+          Response.Cookies.Add($COOKIE);
+
+  - id: codeql-csharp-cookie-without-httponly
+    message: >-
+      Cookie set without HttpOnly flag. Set HttpOnly = true to prevent
+      client-side script access.
+    severity: WARNING
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag"
+      technology:
+        - csharp
+        - aspnet
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1004.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-1004/CookieWithoutHttpOnly.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-1004/CookieWithoutHttpOnly.ql
+    patterns:
+      - pattern: |
+          $COOKIE = new HttpCookie(...);
+          ...
+          Response.Cookies.Add($COOKIE);
+      - pattern-not: |
+          $COOKIE = new HttpCookie(...);
+          ...
+          $COOKIE.HttpOnly = true;
+          ...
+          Response.Cookies.Add($COOKIE);

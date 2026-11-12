@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en" data-title-tr="Kullanım · kalkan" data-title-en="Usage · kalkan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Usage · kalkan</title>
+<meta name="description" content="Install and use kalkan: three commands, the profiles and the exit codes.">
+<link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="stop" viewBox="0 0 6 7"><path d="M0 0H6V2.7C6 4.7 4.6 6.1 3 7 1.4 6.1 0 4.7 0 2.7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5V3.25A1.25 1.25 0 0 1 6.75 2h6A1.25 1.25 0 0 1 14 3.25v6a1.25 1.25 0 0 1-1.25 1.25H10.5M3.25 5.5h6a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 9.25 14h-6A1.25 1.25 0 0 1 2 12.75v-6A1.25 1.25 0 0 1 3.25 5.5Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5 5.75 5.75 0 1 0 13.5 9.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+    <nav class="nav" aria-label="Sayfalar / Pages"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage" aria-current="page"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></nav>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Dil / Language">
+        <button type="button" data-lang-set="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang-set="tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Tema / Theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <details class="contact"><summary class="btn btn-sm"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span></summary><div class="contact-pop"><p><span class="tr" lang="tr">Soru, ayrıntı veya danışmanlık için bize yaz.</span><span class="en" lang="en">Write to us for questions, details or consulting.</span></p><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></details>
+      <details class="menu"><summary aria-label="Menü / Menu"><span class="tr" lang="tr">Menü</span><span class="en" lang="en">Menu</span></summary><nav aria-label="Menü / Menu"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage" aria-current="page"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a><div class="menu-mail"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></nav></details>
+    </div>
+  </div>
+</header>
+<main class="page" id="top">
+  <div class="frame">
+    <!-- Usage -->
+    <section class="page-first" id="kullanim" aria-labelledby="h-use">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></p>
+          <h1 class="page-title" id="h-use"><span class="tr" lang="tr">Kur, denetle, devam et. Üç komut.</span><span class="en" lang="en">Install, audit, resume. Three commands.</span></h1>
+          <p class="lede tr" lang="tr">Kurulum araçları, Go'yu ve yerel zafiyet veritabanlarını kendisi indirir, sonra <code>kalkan doctor</code> ile her şeyi kontrol eder. Her hata kendi çözüm komutunu söyler.</p>
+          <p class="lede en" lang="en">The installer downloads the tools, Go and the local vulnerability databases itself, then checks everything with <code>kalkan doctor</code>. Each error names its own fix.</p>
+        </div>
+      </div>
+      <div class="grid-lines usage">
+        <div class="use">
+          <div class="use-h"><span class="n">1</span><h3><span class="tr" lang="tr">Kur</span><span class="en" lang="en">Install</span></h3></div>
+          <div class="tabs" role="tablist" aria-label="Shell">
+            <button type="button" role="tab" aria-selected="true" data-tab="sh">Linux · macOS · Git Bash</button>
+            <button type="button" role="tab" aria-selected="false" data-tab="ps">PowerShell</button>
+          </div>
+          <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">İlk kurulum 5-15 dakika sürer (bir Windows 11 makinesinde bir kez ölçüldü). Aynı satır kalkan'ı günceller. Önce komutları görmek için <code>| sh</code> yerine <code>| sh -s -- --dry-run</code> yaz. PowerShell'de son parantezden sonra <code>-DryRun</code> ekle.</p>
+          <p class="en" lang="en">The first install takes 5 to 15 minutes (measured once on one Windows 11 machine). The same line updates kalkan. To see the commands first, write <code>| sh -s -- --dry-run</code> in place of <code>| sh</code>. In PowerShell, add <code>-DryRun</code> after the last parenthesis.</p>
+        </div>
+        <div class="use">
+          <div class="use-h"><span class="n">2</span><h3><span class="tr" lang="tr">Denetle</span><span class="en" lang="en">Audit</span></h3></div>
+          <div class="code"><pre><code><span class="p">❯</span> kalkan-audit https://github.com/org/shop</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <div class="code"><pre><code><span class="m"># Claude Code</span>
+/kalkan C:/code/shop deep</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">Bir klasör veya git URL'si ver. Terminalde, Claude Code oturumunda veya VS Code eklentisinde aynı denetim çalışır. Raporlar <code>~/kalkan-runs/</code> altına gider.</p>
+          <p class="en" lang="en">Give a folder or a git URL. The same audit runs in a terminal, in a Claude Code session or in the VS Code extension. The reports go to <code>~/kalkan-runs/</code>.</p>
+        </div>
+        <div class="use">
+          <div class="use-h"><span class="n">3</span><h3><span class="tr" lang="tr">Devam et</span><span class="en" lang="en">Resume</span></h3></div>
+          <div class="code"><pre><code><span class="p">❯</span> kalkan-audit devam 20261026T091512Z-shop-3f2a</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <div class="code"><pre><code><span class="m"># Claude Code</span>
+/kalkan devam</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">Durma mesajı çalıştırma kimliğini söyler. <code>devam</code> tek başına en yeni denetimi sürdürür. Terminaldeki denetim limit sıfırlanmasını zaten kendisi bekler.</p>
+          <p class="en" lang="en">The stop message names the run ID. <code>devam</code> alone resumes the newest audit. An audit in the terminal already waits through usage-limit resets by itself.</p>
+        </div>
+      </div>
+      <div class="pad" style="padding-top: 0">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th><span class="tr" lang="tr">Amaç</span><span class="en" lang="en">Goal</span></th><th><span class="tr" lang="tr">Komut</span><span class="en" lang="en">Command</span></th></tr></thead>
+            <tbody>
+              <tr><td><span class="tr" lang="tr">Yerel klasörü denetle (standard profili)</span><span class="en" lang="en">Audit a local folder (standard profile)</span></td><td><code>kalkan-audit C:/code/shop</code></td></tr>
+              <tr><td><span class="tr" lang="tr">İlk bakış veya derin denetim</span><span class="en" lang="en">A first look, or a deep audit</span></td><td><code>--profile fast</code> · <code>--profile deep</code></td></tr>
+              <tr><td><span class="tr" lang="tr">Yalnız tarayıcılar, SCA ve rapor, Claude Code olmadan (CI)</span><span class="en" lang="en">Scanners, SCA and the report only, without Claude Code (CI)</span></td><td><code>--tools-only</code></td></tr>
+              <tr><td><span class="tr" lang="tr">Sonda yönetici özetini aç</span><span class="en" lang="en">Open the executive summary at the end</span></td><td><code>--open</code></td></tr>
+              <tr><td><span class="tr" lang="tr">Eksik araç ve veritabanını sormadan kur</span><span class="en" lang="en">Install missing tools and databases without a question</span></td><td><code>--yes</code></td></tr>
+              <tr><td><span class="tr" lang="tr">İki denetim aynı anda: yan denetim</span><span class="en" lang="en">Two audits at once: the side audit</span></td><td><code>--no-latest</code></td></tr>
+              <tr><td><span class="tr" lang="tr">Kurulumu kontrol et</span><span class="en" lang="en">Check the setup</span></td><td><code>kalkan doctor</code></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="twocol">
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th><span class="tr" lang="tr">Profil</span><span class="en" lang="en">Profile</span></th><th><span class="tr" lang="tr">Ajan görevi</span><span class="en" lang="en">Agent tasks</span></th><th><span class="tr" lang="tr">Eleştirmen dalgası</span><span class="en" lang="en">Critic waves</span></th><th><span class="tr" lang="tr">Ne zaman</span><span class="en" lang="en">When</span></th></tr></thead>
+              <tbody>
+                <tr><td><code>fast</code></td><td>40</td><td>1</td><td><span class="tr" lang="tr">İlk bakış, küçük repolar</span><span class="en" lang="en">A first look, small repositories</span></td></tr>
+                <tr><td><code>standard</code></td><td>150</td><td>2</td><td><span class="tr" lang="tr">Varsayılan</span><span class="en" lang="en">Default</span></td></tr>
+                <tr><td><code>deep</code></td><td>400</td><td>3</td><td><span class="tr" lang="tr">Büyük veya kritik sistemler</span><span class="en" lang="en">Large or critical systems</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="exit">
+            <h3><span class="tr" lang="tr">Çıkış kodları</span><span class="en" lang="en">Exit codes</span></h3>
+            <div><b>0</b><span class="tr" lang="tr">Denetim bitti.</span><span class="en" lang="en">The audit is done.</span></div>
+            <div><b>1</b><span class="tr" lang="tr">Eksik veya durdu. Mesaj devam komutunu verir.</span><span class="en" lang="en">Incomplete or stopped. The message names the resume command.</span></div>
+            <div><b>2</b><span class="tr" lang="tr">Kullanım hatası, örneğin bilinmeyen bir seçenek.</span><span class="en" lang="en">A usage error, for example an unknown option.</span></div>
+            <div><b>5</b><span class="tr" lang="tr">Kurulum gerekli. Mesaj çözümü verir.</span><span class="en" lang="en">Setup needed. The message names the fix.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="foot">
+  <div class="frame">
+    <div class="foot-in">
+      <div>
+        <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+        <p lang="en">Last stop before production.</p>
+        <p><a class="mail-link" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a></p>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Ürün</span><span class="en" lang="en">Product</span></h4>
+        <ul><li><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a></li><li><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a></li><li><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a></li><li><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a></li></ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Daha fazla</span><span class="en" lang="en">More</span></h4>
+        <ul>
+          <li><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a></li>
+          <li><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Kaynak</span><span class="en" lang="en">Source</span></h4>
+        <ul>
+          <li><a href="https://github.com/dtechcloud/kalkan" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/LICENSE" target="_blank" rel="noopener"><span class="tr" lang="tr">MIT lisansı</span><span class="en" lang="en">MIT license</span></a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 kalkan · MIT</span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/analytics.js"></script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "slug": "framework-untrusted-fetch",
+  "description": "Framework code calling fetch with a URL derived from request input",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/packages/{next,next-server,next-mdx,next-codemod,next-bundle-analyzer}/src/**/*.{ts,tsx,js,mjs}",
+    "**/src/server/**/*.{ts,tsx,js,mjs}",
+    "**/src/lib/router-utils/**/*.{ts,tsx,js,mjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:globalThis\\.|window\\.)?fetch\\s*\\(",
+      "flags": "",
+      "label": "fetch in framework code with URL from req/headers/query/body",
+      "near": [
+        {
+          "regex": "\\b(?:req\\.(?:url|query|headers|body)|request\\.(?:url|nextUrl|headers|query|body)|searchParams\\.get\\b|new\\s+URL\\s*\\(\\s*req\\b|nextUrl\\.(?:searchParams|pathname)|getRequestMeta\\b|request\\.cookies)",
+          "before": 8,
+          "after": 5
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "const url = req.url;\nconst res = await fetch(url);",
+    "const target = request.headers.get('x-target');\nconst data = await fetch(target);",
+    "const u = new URL(req.url);\nawait fetch(u.searchParams.get('href'));",
+    "const upstream = req.query.upstream;\nawait globalThis.fetch(upstream);",
+    "const path = request.nextUrl.searchParams.get('path');\nconst r = await fetch(path);",
+    "const meta = getRequestMeta(req, 'origin');\nconst r = await fetch(meta + '/api');",
+    "const cookieVal = request.cookies.get('redirect')?.value;\nconst r = await fetch(cookieVal);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-untrusted-fetch.ts"
+  },
+  "notes": "The framework-path check moves into file_patterns. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

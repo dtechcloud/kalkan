@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en" data-title-tr="Nasıl çalışır · kalkan" data-title-en="How it works · kalkan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How it works · kalkan</title>
+<meta name="description" content="How kalkan works: the 10-step pipeline, quoted verification, reports and benchmarks.">
+<link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="stop" viewBox="0 0 6 7"><path d="M0 0H6V2.7C6 4.7 4.6 6.1 3 7 1.4 6.1 0 4.7 0 2.7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5V3.25A1.25 1.25 0 0 1 6.75 2h6A1.25 1.25 0 0 1 14 3.25v6a1.25 1.25 0 0 1-1.25 1.25H10.5M3.25 5.5h6a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 9.25 14h-6A1.25 1.25 0 0 1 2 12.75v-6A1.25 1.25 0 0 1 3.25 5.5Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5 5.75 5.75 0 1 0 13.5 9.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+    <nav class="nav" aria-label="Sayfalar / Pages"><a href="how-it-works" aria-current="page"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></nav>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Dil / Language">
+        <button type="button" data-lang-set="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang-set="tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Tema / Theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <details class="contact"><summary class="btn btn-sm"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span></summary><div class="contact-pop"><p><span class="tr" lang="tr">Soru, ayrıntı veya danışmanlık için bize yaz.</span><span class="en" lang="en">Write to us for questions, details or consulting.</span></p><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></details>
+      <details class="menu"><summary aria-label="Menü / Menu"><span class="tr" lang="tr">Menü</span><span class="en" lang="en">Menu</span></summary><nav aria-label="Menü / Menu"><a href="how-it-works" aria-current="page"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a><div class="menu-mail"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></nav></details>
+    </div>
+  </div>
+</header>
+<main class="page" id="top">
+  <div class="frame">
+    <!-- How it works -->
+    <section class="page-first" id="nasil" aria-labelledby="h-how">
+      <div class="pad">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></p>
+          <h1 class="page-title" id="h-how"><span class="tr" lang="tr">Motor yönetir. Ajanlar düşünür.</span><span class="en" lang="en">The engine drives. The agents reason.</span></h1>
+          <p class="lede tr" lang="tr">kalkan motoru deterministik bir Python aracı ve bir karar vermek için hiçbir dil modelini çağırmaz. Hedefi kopyalar, tarayıcıları çalıştırır, görevleri dağıtır, her ajan sonucunu şemaya ve alıntılara karşı kontrol eder, kararı kendisi hesaplar. <code>kalkan audit</code> ve <code>kalkan unattended</code>, ajan işi için Claude Code (veya Codex) turları başlatır.</p>
+          <p class="lede en" lang="en">The kalkan engine is a deterministic Python tool, and it makes no model call to decide a verdict. It copies the target, runs the scanners, hands out the tasks, checks every agent result against its schema and its quotes, and computes the verdicts itself. <code>kalkan audit</code> and <code>kalkan unattended</code> start Claude Code (or Codex) rounds for the agent work.</p>
+        </div>
+        <ol class="grid-lines steps">
+          <li><span class="n">01</span><b><span class="tr" lang="tr">Hazırlık</span><span class="en" lang="en">Prep</span></b><span class="tr" lang="tr">kalkan hedefi kopyalar ve ajan talimat dosyalarını etkisiz kılar.</span><span class="en" lang="en">kalkan copies the target and neutralizes its agent instruction files.</span></li>
+          <li><span class="n">02</span><b><span class="tr" lang="tr">Tarayıcılar</span><span class="en" lang="en">Scanners</span></b><span class="tr" lang="tr">22 sabit sürümlü araç, sırayla ve ağ olmadan.</span><span class="en" lang="en">22 pinned tools, one after another, without network.</span></li>
+          <li><span class="n">03</span><b>SCA</b><span class="tr" lang="tr">SBOM, yerel OSV ve Grype veritabanları, bilinen zararlı paketler.</span><span class="en" lang="en">SBOM, local OSV and Grype databases, known malicious packages.</span></li>
+          <li class="ai"><span class="n">04</span><b><span class="tr" lang="tr">Keşif</span><span class="en" lang="en">Recon</span></b><span class="tr" lang="tr">Ürün, roller, saldırı yüzeyleri ve çalışma ortamı.</span><span class="en" lang="en">Product, principals, attack surfaces and execution.</span></li>
+          <li><span class="n">05</span><b>Plan</b><span class="tr" lang="tr">Kapsam defteri: her yüzey bir birim.</span><span class="en" lang="en">Coverage ledger: one unit per surface.</span></li>
+          <li class="ai"><span class="n">06</span><b><span class="tr" lang="tr">Av ⇄ eleştirmen</span><span class="en" lang="en">Hunt ⇄ critic</span></b><span class="tr" lang="tr">Avcılar birimleri tarar, eleştirmen boşlukları bulur. 1 ile 3 dalga.</span><span class="en" lang="en">Hunters search the units, a critic finds the gaps. 1 to 3 waves.</span></li>
+          <li class="ai"><span class="n">07</span><b><span class="tr" lang="tr">Doğrulama</span><span class="en" lang="en">Verify</span></b><span class="tr" lang="tr">Üç soru, her yanıta bir alıntı.</span><span class="en" lang="en">Three questions, one quote per answer.</span></li>
+          <li class="ai"><span class="n">08</span><b><span class="tr" lang="tr">İnceleme ve birleştirme</span><span class="en" lang="en">Review and consolidate</span></b><span class="tr" lang="tr">Taze bir gözden geçirici her kaydı kaynakla yeniden okur. Aynı kök neden tek bulgu olur.</span><span class="en" lang="en">A fresh reviewer reads each record against the source again. One root cause becomes one finding.</span></li>
+          <li class="ai"><span class="n">09</span><b>PoC sandbox</b><span class="tr" lang="tr">Docker varsa küçük bir doğrulama programı ağsız bir konteynerde çalışır.</span><span class="en" lang="en">If Docker answers, a small proof program runs in a container without network.</span></li>
+          <li><span class="n">10</span><b><span class="tr" lang="tr">Rapor</span><span class="en" lang="en">Report</span></b><span class="tr" lang="tr">Varsayılan İngilizce, <code>--lang tr</code> ile Türkçe. 8 çıktı.</span><span class="en" lang="en">English by default, Turkish with <code>--lang tr</code>. 8 deliverables.</span></li>
+        </ol>
+        <div class="split">
+          <figure class="evidence" lang="en">
+            <div class="ev-head"><b><span class="tr" lang="tr">Örnek doğrulama</span><span class="en" lang="en">Sample verification</span></b><code>SQL injection · src/orders/search.py:48</code></div>
+            <div class="ev-rows">
+              <div class="ev-row"><span class="ck" aria-hidden="true">✓</span><span class="qn"><span class="tr" lang="tr">Saldırgan kontrolü</span><span class="en" lang="en">Attacker control</span></span><span class="q"><code>q = request.args.get("q", "")</code><small>search.py:41 · established</small></span></div>
+              <div class="ev-row"><span class="ck" aria-hidden="true">✓</span><span class="qn"><span class="tr" lang="tr">Yetki sınırı</span><span class="en" lang="en">Privilege boundary</span></span><span class="q"><code>@app.route("/orders/search")</code><small>search.py:38 · established</small></span></div>
+              <div class="ev-row"><span class="ck" aria-hidden="true">✓</span><span class="qn"><span class="tr" lang="tr">Eksik önlem</span><span class="en" lang="en">Missing mitigation</span></span><span class="q"><code>cur.execute(f"SELECT * FROM orders WHERE note LIKE '%{q}%'")</code><small>search.py:48 · established</small></span></div>
+            </div>
+            <div class="ev-foot"><span class="tr" lang="tr">Motor: 3 alıntı dosyada bulundu (±2 satır)</span><span class="en" lang="en">Engine: 3 quotes found in the file (±2 lines)</span><span aria-hidden="true">→</span><span class="pill ok"><span class="tr" lang="tr">onaylandı</span><span class="en" lang="en">confirmed</span></span></div>
+          </figure>
+          <ul class="rules">
+            <li><span>01</span><span class="tr" lang="tr">Doğrulayıcı her şüpheli için üç soruyu yanıtlar: saldırgan girdiyi kontrol ediyor mu, bir yetki sınırı aşılıyor mu, önlem eksik mi?</span><span class="en" lang="en">The verifier answers three questions about each candidate: does an attacker control the input, does it cross a privilege boundary, is a mitigation missing?</span></li>
+            <li><span>02</span><span class="tr" lang="tr">Doğrulanmış tek bir çürütme şüpheliyi reddeder. Üç kanıtlı yanıt onaylar. Gerisi “doğrulama bekliyor” olarak raporda kalır.</span><span class="en" lang="en">One verified refutation rejects a candidate. Three established answers confirm it. Anything else stays in the report as “needs validation”.</span></li>
+            <li><span>03</span><span class="tr" lang="tr"><code>standard</code> ve <code>deep</code> profillerinde taze bir gözden geçirici, doğrulayıcının gerekçesini görmeden her kaydı yeniden okur. Motor bir kaydı asla güçlendirmez.</span><span class="en" lang="en">In the standard and deep profiles, a fresh reviewer reads each record again without the verifier's reasoning. The engine never makes a record stronger.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <!-- Reports -->
+    <section class="rule" id="raporlar" aria-labelledby="h-rep">
+      <div class="pad">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Raporlar</span><span class="en" lang="en">Reports</span></p>
+          <h2 id="h-rep"><span class="tr" lang="tr">Yönetici tek sayfa okur. Geliştirici satırı bulur.</span><span class="en" lang="en">Managers read one page. Developers find the line.</span></h2>
+          <p class="lede tr" lang="tr">Rapor varsayılan olarak İngilizce. <code>--lang tr</code> ile rapor Türkçe olur, yerleşik İngilizce teknik terimleri korur ve sonda İngilizce sürüm de sunulur. Her bulgu kanıtını, kod konumunu ve bir düzeltme önerisini taşır.</p>
+          <p class="lede en" lang="en">The report is English by default. With <code>--lang tr</code> it is Turkish, keeps the established English technical terms, and an English version is offered at the end. Every finding carries its evidence, its code location and a remediation.</p>
+        </div>
+        <div class="reports">
+          <ul class="files">
+            <li><code>EXECUTIVE.html</code><span class="tr" lang="tr">Yönetici özeti: genel risk, ilk 10 bulgu, öncelikli eylemler</span><span class="en" lang="en">Executive summary: overall risk, top 10 findings, priority actions</span></li>
+            <li><span><code>REPORT.html</code>, <code>REPORT.md</code></span><span class="tr" lang="tr">Bütün bulgular, kanıtlar, kapsam ve tarama boşlukları</span><span class="en" lang="en">All findings, evidence, coverage and scan gaps</span></li>
+            <li><code>findings.sarif</code><span class="tr" lang="tr">SARIF 2.1.0: GitHub code scanning ve IDE'ler için</span><span class="en" lang="en">SARIF 2.1.0 for GitHub code scanning and IDEs</span></li>
+            <li><span><code>findings.json</code>, <code>summary.json</code></span><span class="tr" lang="tr">Makine okunur kayıtlar ve özet</span><span class="en" lang="en">Machine-readable records and summary</span></li>
+            <li><code>SBOM</code><span class="tr" lang="tr">CycloneDX ve SPDX bileşen listeleri</span><span class="en" lang="en">CycloneDX and SPDX component lists</span></li>
+          </ul>
+          <figure class="exec">
+            <div class="exec-h"><b>EXECUTIVE.html</b><span>shop · 26.10.2026</span></div>
+            <div class="exec-body">
+              <div class="posture"><div><span class="kicker"><span class="tr" lang="tr">Genel risk</span><span class="en" lang="en">Overall risk</span></span><br><b><span class="tr" lang="tr">Orta</span><span class="en" lang="en">Medium</span></b></div><span class="pill mid"><span class="tr" lang="tr">9 doğrulanmış bulgu</span><span class="en" lang="en">9 confirmed findings</span></span></div>
+              <div class="sev">
+                <div><b>0</b><span class="tr" lang="tr">Kritik</span><span class="en" lang="en">Critical</span></div>
+                <div><b>2</b><span class="tr" lang="tr">Yüksek</span><span class="en" lang="en">High</span></div>
+                <div><b>5</b><span class="tr" lang="tr">Orta</span><span class="en" lang="en">Medium</span></div>
+                <div><b>2</b><span class="tr" lang="tr">Düşük</span><span class="en" lang="en">Low</span></div>
+              </div>
+              <ol class="top3">
+                <li><span class="pill high"><span class="tr" lang="tr">Yüksek</span><span class="en" lang="en">High</span></span><span><span class="tr" lang="tr">Sipariş aramasında SQL injection</span><span class="en" lang="en">SQL injection in the order search</span></span><small>src/orders/search.py:48</small></li>
+                <li><span class="pill high"><span class="tr" lang="tr">Yüksek</span><span class="en" lang="en">High</span></span><span><span class="tr" lang="tr">Fatura indirmede sahiplik kontrolü yok</span><span class="en" lang="en">No ownership check on invoice download</span></span><small>src/billing/views.py:112</small></li>
+                <li><span class="pill mid"><span class="tr" lang="tr">Orta</span><span class="en" lang="en">Medium</span></span><span><span class="tr" lang="tr">Oturum çerezinde Secure bayrağı yok</span><span class="en" lang="en">Session cookie without the Secure flag</span></span><small>src/app.py:23</small></li>
+              </ol>
+            </div>
+            <figcaption><span class="tr" lang="tr">Örnek görünüm. Gerçek rapor kalkan'ın kurumsal rapor temasını kullanır.</span><span class="en" lang="en">Sample view. The real report uses kalkan's report theme.</span></figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+    <!-- Benchmarks -->
+    <section class="rule" id="olcumler" aria-labelledby="h-bench">
+      <div class="pad" style="padding-bottom: 0">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Ölçümler</span><span class="en" lang="en">Benchmarks</span></p>
+          <h2 id="h-bench"><span class="tr" lang="tr">İddia değil, ölçüm.</span><span class="en" lang="en">Measured, not claimed.</span></h2>
+          <p class="lede tr" lang="tr">Bu satırdaki her sayı 2026-11-01'de bir ön sürüm derlemesiyle, bir Windows 11 makinesinde (20 CPU) ölçüldü. Ölçüm yalnız deterministik hattı kapsar, ajanları kapsamaz.</p>
+          <p class="lede en" lang="en">Every number on this row was measured on 2026-11-01 with a pre-release build, on one Windows 11 machine (20 CPUs). The runs cover only the deterministic pipeline, not the agents.</p>
+        </div>
+      </div>
+      <div class="grid-lines bench">
+        <div><b>157/157</b><p class="tr" lang="tr">Test uygulamasına yerleştirilmiş zafiyetlerin hepsini deterministik motorlar buldu. 154 güvenli ikizde 1 yanlış pozitif.</p><p class="en" lang="en">The deterministic engines found every planted vulnerability in the test app. 1 false positive on 154 secure twins.</p></div>
+        <div><b class="tr" lang="tr">1.200</b><b class="en" lang="en">1,200</b><p class="tr" lang="tr">OWASP Juice Shop'ta yalnız araçların ürettiği şüpheli. Ajanlar doğrulamadan hiçbiri bulgu sayılmaz.</p><p class="en" lang="en">Candidates from the tools alone on OWASP Juice Shop. None counts as a finding until the agents verify it.</p></div>
+        <div><b class="tr" lang="tr">19,5 dk</b><b class="en" lang="en">19.5 min</b><p class="tr" lang="tr">OWASP Juice Shop v20.3.0, 1.466 dosya: 22 araç, SCA, birleştirme ve rapor. Kural paketleri bunun 16 dakikasını alır.</p><p class="en" lang="en">OWASP Juice Shop v20.3.0, 1,466 files: 22 tools, SCA, merge and report. The rule packs take 16 minutes of it.</p></div>
+        <div><b class="tr" lang="tr">62 sn</b><b class="en" lang="en">62 s</b><p class="tr" lang="tr">DVWA, 252 dosya: aynı deterministik geçiş.</p><p class="en" lang="en">DVWA, 252 files: the same deterministic pass.</p></div>
+      </div>
+    </section>
+  </div>
+</main>
+<footer class="foot">
+  <div class="frame">
+    <div class="foot-in">
+      <div>
+        <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+        <p lang="en">Last stop before production.</p>
+        <p><a class="mail-link" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a></p>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Ürün</span><span class="en" lang="en">Product</span></h4>
+        <ul><li><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a></li><li><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a></li><li><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a></li><li><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a></li></ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Daha fazla</span><span class="en" lang="en">More</span></h4>
+        <ul>
+          <li><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a></li>
+          <li><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Kaynak</span><span class="en" lang="en">Source</span></h4>
+        <ul>
+          <li><a href="https://github.com/dtechcloud/kalkan" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/LICENSE" target="_blank" rel="noopener"><span class="tr" lang="tr">MIT lisansı</span><span class="en" lang="en">MIT license</span></a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 kalkan · MIT</span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/analytics.js"></script>
+</body>
+</html>

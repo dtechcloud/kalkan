@@ -1,0 +1,23 @@
+{
+  "task_id": "T0031-review",
+  "finding_id": "KF-2CC44B27C1508C41",
+  "decision": "downgrade",
+  "reason": "The SQL injection is real, but the connection is read-only and the users table holds only names and e-mail addresses; the record overstates the impact.",
+  "checks": [
+    {"item": "trace_and_evidence", "ok": true, "note": "app/routes.py:12 reads id and app/db.py:8 formats it into the SQL text, as cited."},
+    {"item": "entry_interface", "ok": true, "note": "GET /users?id=<value> behind @login_required; any logged-in user can send it."},
+    {"item": "conditions_and_controls", "ok": true, "note": "No binding, validation or ORM layer on the path; the only condition is a user account."},
+    {"item": "impact", "ok": false, "note": "app/db.py:3 opens app.db read-only; the attacker reads names and e-mails, no secrets and no writes."},
+    {"item": "severity", "ok": false, "note": "The impact is medium (other users' names and e-mails), not high."},
+    {"item": "remediation", "ok": true, "note": "A bound parameter enforces the invariant at the sink."}
+  ],
+  "evidence": [
+    {"file": "app/db.py", "line": 8, "quote": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")"},
+    {"file": "app/db.py", "line": 3, "quote": "sqlite3.connect(\"file:app.db?mode=ro\", uri=True)"}
+  ],
+  "severity": {
+    "likelihood": {"score": "high", "reason": "Any logged-in user can send the request."},
+    "impact": {"score": "medium", "reason": "The attacker reads the names and e-mail addresses of other users."},
+    "overall_severity": "medium"
+  }
+}

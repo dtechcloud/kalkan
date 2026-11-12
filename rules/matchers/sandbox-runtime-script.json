@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "slug": "sandbox-runtime-script",
+  "description": "Shell script that runs inside a sandbox container at runtime (customer-facing surface)",
+  "class": "os-command-injection",
+  "cwe": [
+    "CWE-78"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/containers/**/scripts/**/*.sh",
+    "**/containers/**/bin/**/*.sh",
+    "**/containers/**/*credential*.sh",
+    "**/containers/**/entrypoint*.sh",
+    "**/containers/**/start*.sh"
+  ],
+  "exclude_file_patterns": [
+    "**/scripts/{build,generate-go,generate-ts,test,publish-,publish_}*",
+    "**/scripts/{build,generate-go,generate-ts,test,publish-,publish_}*/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:eval|exec)\\s+[\"'`]?\\$",
+      "flags": "",
+      "label": "eval/exec with env var"
+    },
+    {
+      "regex": "\\bbash\\s+-c\\s+[\"'`].*\\$\\{?[A-Z]",
+      "flags": "",
+      "label": "bash -c with env interpolation"
+    },
+    {
+      "regex": "\\$\\{?[A-Z][A-Z0-9_]+\\}?[^\"'`)]",
+      "flags": "",
+      "label": "unquoted env var expansion"
+    },
+    {
+      "regex": "\\b(?:sudo|su\\s|chmod|chown)\\s",
+      "flags": "",
+      "label": "privilege/permission op"
+    },
+    {
+      "regex": "\\b0\\.0\\.0\\.0\\b",
+      "flags": "",
+      "label": "binds 0.0.0.0"
+    },
+    {
+      "regex": "\\bgit\\s+(?:config|credential|push|fetch|clone)\\b",
+      "flags": "",
+      "label": "git credential / network op"
+    },
+    {
+      "regex": "\\b(?:TARGET|SANDBOX|CONTAINER)_[A-Z0-9_]+\\b",
+      "flags": "",
+      "label": "TARGET_/SANDBOX_/CONTAINER_ env"
+    },
+    {
+      "regex": "\\bcurl\\b[^|]*\\|[\\s]*(?:sh|bash)",
+      "flags": "",
+      "label": "curl | sh pattern"
+    },
+    {
+      "regex": "\\b(?:nohup|&\\s*$|disown)\\b",
+      "flags": "",
+      "label": "background daemon launch"
+    },
+    {
+      "regex": "^#!",
+      "flags": "",
+      "label": "container-runtime script (path-based)",
+      "not_near": [
+        {
+          "regex": "\\b(?:eval|exec)\\s+[\"'`]?\\$|\\bbash\\s+-c\\s+[\"'`].*\\$\\{?[A-Z]",
+          "scope": "file"
+        },
+        {
+          "regex": "\\$\\{?[A-Z][A-Z0-9_]+\\}?[^\"'`)]|\\b(?:sudo|su\\s|chmod|chown)\\s|\\b0\\.0\\.0\\.0\\b",
+          "scope": "file"
+        },
+        {
+          "regex": "\\bgit\\s+(?:config|credential|push|fetch|clone)\\b|\\b(?:TARGET|SANDBOX|CONTAINER)_[A-Z0-9_]+\\b",
+          "scope": "file"
+        },
+        {
+          "regex": "\\bcurl\\b[^|]*\\|[\\s]*(?:sh|bash)|\\b(?:nohup|&\\s*$|disown)\\b",
+          "scope": "file"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "#!/bin/bash\neval \"$USER_INPUT\"",
+    "#!/bin/bash\nbash -c \"echo ${USER_NAME}\"",
+    "#!/bin/bash\necho $TARGET_PORT > /tmp/x",
+    "#!/bin/bash\nsudo chmod 755 /tmp/file",
+    "#!/bin/bash\nexec ttyd --port 7681 --interface 0.0.0.0",
+    "#!/bin/bash\ngit config --global credential.helper store",
+    "#!/bin/bash\necho $SANDBOX_ID\necho $CONTAINER_NAME",
+    "#!/bin/bash\ncurl -fsSL https://example.com/install.sh | bash",
+    "#!/bin/bash\nnohup ./daemon &",
+    "#!/bin/bash\necho hello"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/sandbox-runtime-script.ts"
+  },
+  "notes": "The path-based fallback flags the shebang line of a script without a risky line (deepsec flags the first code line; scripts without a shebang get no fallback)."
+}

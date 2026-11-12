@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "slug": "agentic-untrusted-prompt-input",
+  "description": "Prompts built from external/untrusted variables — indirect prompt-injection sink",
+  "class": "llm-ai",
+  "cwe": [
+    "CWE-1427"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "\\b(?:streamText|generateText|generateObject|streamObject|messages\\s*:\\s*\\[|anthropic\\.|openai\\.|gateway\\(|getGatewayModelString|claude_agent|ClaudeAgent|claude-agent|@ai-sdk/|ai/sdk)\\b"
+  ],
+  "patterns": [
+    {
+      "regex": "\\$\\{[^}]{0,300}\\b(?:notes|description|body|content|text|summary|email|emailBody|transcript|scraped|fetched|webpage|web_research|attachment|document|kb_?[A-Z]?[a-z]+|salesforce[A-Z][a-z]+|sfdc[A-Z][a-z]+|snowflake[A-Z][a-z]+|bigquery[A-Z][a-z]+|leadNotes|accountNotes|opportunityNotes|messageHistory|slackHistory|exaResult|perplexity[A-Z]?|crawlResult|browserbaseResult|crawled|recon[A-Z][a-z]+)\\b",
+      "flags": "",
+      "label": "prompt interpolates an untrusted variable",
+      "near": [
+        {
+          "regex": "\\b(?:system|user|prompt|content|messages|input|instructions)\\s*:\\s*[`'\"[]",
+          "before": 29
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "await streamText({\n  model,\n  prompt: `Summarize: ${notes}`,\n});",
+    "await generateText({\n  system: `You are an assistant.`,\n  prompt: `Read this email: ${emailBody}`,\n});",
+    "await generateObject({\n  messages: [\n    { role: \"user\", content: `${transcript}` },\n  ],\n  schema,\n});",
+    "await openai.chat.completions.create({\n  messages: [{ role: \"system\", content: `Context: ${scraped}` }],\n});",
+    "await anthropic.messages.create({\n  system: `Use this KB:\n${kbDocs}`,\n  messages: [],\n});",
+    "import { streamText } from \"@ai-sdk/openai\";\nawait streamText({\n  prompt: `Notes from CRM: ${leadNotes}`,\n  model,\n});",
+    "await generateText({\n  input: `Web research: ${webpage}`,\n  model,\n});"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/agentic-untrusted-prompt-input.ts"
+  },
+  "notes": "Every interpolation of an untrusted-looking variable within 29 lines after a prompt key is reported (deepsec reports the first per prompt key and reads only the first interpolation of a line). The text before the variable inside ${...} is bounded to 300 characters (quadratic backtracking on long lines). The deepsec label quotes the interpolated text; the port uses one fixed label."
+}

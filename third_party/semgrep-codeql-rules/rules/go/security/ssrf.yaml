@@ -1,0 +1,33 @@
+rules:
+  - id: codeql-go-ssrf
+    message: >-
+      URL built from user input may be vulnerable to Server-Side Request
+      Forgery (SSRF). Validate URLs against a whitelist.
+    severity: ERROR
+    languages:
+      - go
+    metadata:
+      category: security
+      cwe: "CWE-918: Server-Side Request Forgery (SSRF)"
+      technology:
+        - go
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-918/RequestForgery.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/go/ql/src/Security/CWE-918/RequestForgery.ql
+    pattern-either:
+      - pattern: http.Get($URL + $INPUT)
+      - pattern: http.Get(fmt.Sprintf($FMT, ...))
+      - pattern: http.Post($URL + $INPUT, ...)
+      - pattern: http.Post(fmt.Sprintf($FMT, ...), ...)
+      - pattern: http.NewRequest($METHOD, $URL + $INPUT, ...)
+      - pattern: http.NewRequest($METHOD, fmt.Sprintf($FMT, ...), ...)
+      - pattern: $CLIENT.Get($URL + $INPUT)
+      - pattern: $CLIENT.Get(fmt.Sprintf($FMT, ...))
+      - pattern: $CLIENT.Post($URL + $INPUT, ...)
+      - pattern: $CLIENT.Post(fmt.Sprintf($FMT, ...), ...)

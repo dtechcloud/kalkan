@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "py-flask-route",
+  "description": "Flask route registrations — entry points (gated on Flask)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "flask"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*@(?:app|bp|blueprint|api)\\.route\\s*\\(",
+      "flags": "m",
+      "label": "Flask @app.route / blueprint.route"
+    },
+    {
+      "regex": "^\\s*@(?:app|bp)\\.(?:get|post|put|patch|delete)\\s*\\(",
+      "flags": "m",
+      "label": "Flask method-shortcut decorator"
+    },
+    {
+      "regex": "\\bBlueprint\\s*\\(",
+      "flags": "",
+      "label": "Blueprint(...) registration"
+    },
+    {
+      "regex": "\\brender_template_string\\s*\\(",
+      "flags": "",
+      "label": "render_template_string (SSTI sink)"
+    }
+  ],
+  "examples": [
+    "@app.route(\"/\")",
+    "@bp.route(\"/items\", methods=[\"GET\", \"POST\"])",
+    "@blueprint.route(\"/x\")",
+    "@api.route(\"/v1/users\")",
+    "@app.get(\"/health\")",
+    "@app.post(\"/login\")",
+    "@bp.put(\"/items/<int:id>\")",
+    "bp = Blueprint(\"api\", __name__, url_prefix=\"/api\")",
+    "return render_template_string(template, name=name)"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-flask-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

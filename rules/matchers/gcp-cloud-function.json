@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "gcp-cloud-function",
+  "description": "GCP Cloud Functions handlers (gated on gcp-cloud-functions)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs,py,go}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/package.json",
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/go.mod"
+    ],
+    "sentinel_contains": [
+      "functions-framework"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bfunctions\\.http\\s*\\(\\s*['\"][^'\"]+['\"]\\s*,",
+      "flags": "",
+      "label": "functions.http('name', handler) — HTTP function"
+    },
+    {
+      "regex": "\\bfunctions\\.cloudEvent\\s*\\(",
+      "flags": "",
+      "label": "functions.cloudEvent('name', handler) — event function"
+    },
+    {
+      "regex": "^\\s*@functions_framework\\.http\\b",
+      "flags": "m",
+      "label": "@functions_framework.http (Python)"
+    },
+    {
+      "regex": "\\bfunctions\\.HTTP\\s*\\(\\s*\"[^\"]+\"\\s*,",
+      "flags": "",
+      "label": "functions.HTTP() (Go) registration"
+    },
+    {
+      "regex": "\\breq\\.(?:headers\\.authorization|get\\(['\"]Authorization)",
+      "flags": "",
+      "label": "Authorization header use"
+    }
+  ],
+  "examples": [
+    "functions.http('helloHttp', (req, res) => { res.send(\"hi\") })",
+    "functions.http(\"api\", async (req, res) => { res.json({}) })",
+    "functions.cloudEvent('myEvent', (event) => {})",
+    "functions.cloudEvent(\"pubsubHandler\", handler)",
+    "@functions_framework.http\ndef hello_http(request):\n    return \"Hello\"",
+    "functions.HTTP(\"HelloHTTP\", helloHTTP)",
+    "const auth = req.headers.authorization",
+    "const t = req.get('Authorization')",
+    "const t = req.get(\"Authorization\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/gcp-cloud-function.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [gcp-cloud-functions]; kalkan uses a manifest that depends on the Functions Framework."
+}

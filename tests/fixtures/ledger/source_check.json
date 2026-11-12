@@ -1,0 +1,10 @@
+{
+  "agent_id": "hunter-1",
+  "reviewed_paths": [
+    "src/router.ts"
+  ],
+  "invariant": "The route checks object ownership.",
+  "method": "source",
+  "result": "The owner check applies before the update.",
+  "artifact": null
+}

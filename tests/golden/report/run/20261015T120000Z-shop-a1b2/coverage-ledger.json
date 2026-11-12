@@ -1,0 +1,27 @@
+[
+  {
+    "coverage_id": "unit-1",
+    "attack_class": "idor",
+    "status": "covered"
+  },
+  {
+    "coverage_id": "unit-2",
+    "attack_class": "sqli",
+    "status": "candidate"
+  },
+  {
+    "coverage_id": "unit-3",
+    "attack_class": "ssrf",
+    "status": "candidate"
+  },
+  {
+    "coverage_id": "unit-4",
+    "attack_class": "xss",
+    "status": "deferred"
+  },
+  {
+    "coverage_id": "unit-5",
+    "attack_class": "xxe",
+    "status": "not_applicable"
+  }
+]

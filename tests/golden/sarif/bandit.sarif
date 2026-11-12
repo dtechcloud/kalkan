@@ -1,0 +1,190 @@
+{
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "Bandit",
+          "organization": "PyCQA",
+          "rules": [
+            {
+              "id": "B608",
+              "name": "hardcoded_sql_expressions",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-89"
+                ],
+                "precision": "low"
+              },
+              "helpUri": "https://bandit.readthedocs.io/en/1.9.4/plugins/b608_hardcoded_sql_expressions.html"
+            },
+            {
+              "id": "B602",
+              "name": "subprocess_popen_with_shell_equals_true",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-78"
+                ],
+                "precision": "high"
+              },
+              "helpUri": "https://bandit.readthedocs.io/en/1.9.4/plugins/b602_subprocess_popen_with_shell_equals_true.html"
+            },
+            {
+              "id": "B105",
+              "name": "hardcoded_password_string",
+              "properties": {
+                "tags": [
+                  "security",
+                  "external/cwe/cwe-259"
+                ],
+                "precision": "medium"
+              },
+              "helpUri": "https://bandit.readthedocs.io/en/1.9.4/plugins/b105_hardcoded_password_string.html"
+            }
+          ],
+          "semanticVersion": "1.9.4",
+          "version": "1.9.4"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true,
+          "endTimeUtc": "2026-10-15T12:03:41Z"
+        }
+      ],
+      "properties": {
+        "metrics": {
+          "_totals": {
+            "loc": 214,
+            "nosec": 0,
+            "skipped_tests": 0,
+            "SEVERITY.UNDEFINED": 0,
+            "CONFIDENCE.UNDEFINED": 0,
+            "SEVERITY.LOW": 1,
+            "CONFIDENCE.LOW": 1,
+            "SEVERITY.MEDIUM": 1,
+            "CONFIDENCE.MEDIUM": 1,
+            "SEVERITY.HIGH": 1,
+            "CONFIDENCE.HIGH": 1
+          }
+        }
+      },
+      "results": [
+        {
+          "message": {
+            "text": "Possible SQL injection vector through string-based query construction."
+          },
+          "level": "warning",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    cursor.execute(\"SELECT * FROM users WHERE id = '\" + user_id + \"'\")\n"
+                  },
+                  "endColumn": 71,
+                  "endLine": 14,
+                  "startColumn": 20,
+                  "startLine": 14
+                },
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/DevK%C3%BC%C3%A7%C3%BCk/kalkan/runs/20261015T120000Z-ab12/target/app/db.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "    cursor = connection.cursor()\n    cursor.execute(\"SELECT * FROM users WHERE id = '\" + user_id + \"'\")\n    return cursor.fetchone()\n"
+                  },
+                  "endLine": 15,
+                  "startLine": 13
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "LOW",
+            "issue_severity": "MEDIUM"
+          },
+          "ruleId": "B608",
+          "ruleIndex": 0
+        },
+        {
+          "message": {
+            "text": "subprocess call with shell=True identified, security issue."
+          },
+          "level": "error",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "    output = subprocess.check_output(\"ping -c 1 \" + host, shell=True)\n"
+                  },
+                  "endColumn": 70,
+                  "endLine": 9,
+                  "startColumn": 14,
+                  "startLine": 9
+                },
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/DevK%C3%BC%C3%A7%C3%BCk/kalkan/runs/20261015T120000Z-ab12/target/app/utils.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "def ping(host):\n    output = subprocess.check_output(\"ping -c 1 \" + host, shell=True)\n    return output.decode()\n"
+                  },
+                  "endLine": 10,
+                  "startLine": 8
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "HIGH",
+            "issue_severity": "HIGH"
+          },
+          "ruleId": "B602",
+          "ruleIndex": 1
+        },
+        {
+          "message": {
+            "text": "Possible hardcoded password: 'admin123'"
+          },
+          "level": "note",
+          "locations": [
+            {
+              "physicalLocation": {
+                "region": {
+                  "snippet": {
+                    "text": "DB_PASSWORD = \"admin123\"\n"
+                  },
+                  "endColumn": 25,
+                  "endLine": 5,
+                  "startColumn": 15,
+                  "startLine": 5
+                },
+                "artifactLocation": {
+                  "uri": "file:///C:/Users/DevK%C3%BC%C3%A7%C3%BCk/kalkan/runs/20261015T120000Z-ab12/target/config/settings.py"
+                },
+                "contextRegion": {
+                  "snippet": {
+                    "text": "DB_USER = \"app\"\nDB_PASSWORD = \"admin123\"\nDB_NAME = \"shop\"\n"
+                  },
+                  "endLine": 6,
+                  "startLine": 4
+                }
+              }
+            }
+          ],
+          "properties": {
+            "issue_confidence": "MEDIUM",
+            "issue_severity": "LOW"
+          },
+          "ruleId": "B105",
+          "ruleIndex": 2
+        }
+      ]
+    }
+  ],
+  "version": "2.1.0",
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json"
+}

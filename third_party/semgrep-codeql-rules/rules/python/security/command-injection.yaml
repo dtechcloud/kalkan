@@ -1,0 +1,120 @@
+rules:
+  - id: codeql-py-command-injection-os-system
+    message: >-
+      Command built using string formatting passed to os.system(). This may be
+      vulnerable to command injection. Use subprocess with shell=False instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-078/CommandInjection.ql
+    pattern-either:
+      - pattern: os.system("..." % $VAR)
+      - pattern: os.system("...".format(...))
+      - pattern: os.system(f"...")
+      - pattern: os.system($CMD + $VAR)
+
+  - id: codeql-py-command-injection-os-popen
+    message: >-
+      Command built using string formatting passed to os.popen(). This may be
+      vulnerable to command injection. Use subprocess with shell=False instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-078/CommandInjection.ql
+    pattern-either:
+      - pattern: os.popen("..." % $VAR)
+      - pattern: os.popen("...".format(...))
+      - pattern: os.popen(f"...")
+      - pattern: os.popen($CMD + $VAR)
+
+  - id: codeql-py-command-injection-subprocess-shell
+    message: >-
+      Using subprocess with shell=True and string formatting may be vulnerable
+      to command injection. Use shell=False with a list of arguments instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-078: Improper Neutralization of Special Elements used in an OS Command"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-078/CommandInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-078/CommandInjection.ql
+    patterns:
+      - pattern-either:
+          - pattern: subprocess.call("..." % $VAR, ..., shell=True, ...)
+          - pattern: subprocess.call("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.call(f"...", ..., shell=True, ...)
+          - pattern: subprocess.run("..." % $VAR, ..., shell=True, ...)
+          - pattern: subprocess.run("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.run(f"...", ..., shell=True, ...)
+          - pattern: subprocess.Popen("..." % $VAR, ..., shell=True, ...)
+          - pattern: subprocess.Popen("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.Popen(f"...", ..., shell=True, ...)
+          - pattern: subprocess.check_output("..." % $VAR, ..., shell=True, ...)
+          - pattern: subprocess.check_output("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.check_output(f"...", ..., shell=True, ...)
+          - pattern: subprocess.check_call("..." % $VAR, ..., shell=True, ...)
+          - pattern: subprocess.check_call("...".format(...), ..., shell=True, ...)
+          - pattern: subprocess.check_call(f"...", ..., shell=True, ...)
+
+  - id: codeql-py-command-injection-eval
+    message: >-
+      Using eval() or exec() with external input is extremely dangerous and may
+      lead to arbitrary code execution. Avoid using eval/exec with user input.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-094: Improper Control of Generation of Code"
+      technology:
+        - python
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/94.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-094/CodeInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-094/CodeInjection.ql
+    pattern-either:
+      - pattern: eval(...)
+      - pattern: exec(...)
+      - pattern: compile(..., "exec")
+      - pattern: compile(..., "eval")

@@ -1,0 +1,18 @@
+{
+  "name": "kalkan",
+  "version": "1.0.0",
+  "description": "Resumable security audit of a local folder or a git URL: pinned deterministic scanners plus Claude Code subagents, with engine-verified evidence and English or Turkish reports. Run /kalkan:kalkan <target> [fast|standard|deep].",
+  "author": {
+    "name": "The kalkan authors"
+  },
+  "homepage": "https://github.com/dtechcloud/kalkan",
+  "repository": "https://github.com/dtechcloud/kalkan",
+  "license": "MIT",
+  "keywords": [
+    "security",
+    "audit",
+    "sast",
+    "sca",
+    "code-review"
+  ]
+}

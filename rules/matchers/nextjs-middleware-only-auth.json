@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "slug": "nextjs-middleware-only-auth",
+  "description": "Route handlers in protected route groups without their own auth check — relying solely on Next.js middleware",
+  "class": "missing-authz",
+  "cwe": [
+    "CWE-862"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/app/**/(protected)/**/route.{ts,tsx}",
+    "**/app/**/(dashboard)/**/route.{ts,tsx}",
+    "**/app/**/(auth)/**/route.{ts,tsx}",
+    "**/app/api/**/route.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|PATCH|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|PATCH|DELETE)\\s*="
+  ],
+  "file_excludes": [
+    "withSchema\\s*\\(",
+    "withAuthentication\\s*\\(",
+    "getSession\\s*\\(",
+    "auth\\s*\\(\\s*\\)",
+    "requireAuth",
+    "verifyToken",
+    "authMiddleware",
+    "withAuth\\s*\\("
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+(GET|POST|PUT|PATCH|DELETE)|export\\s+(const\\s+)?(GET|POST|PUT|PATCH|DELETE)\\s*=",
+      "flags": "",
+      "label": "Route handler without backend auth check — relies on Next.js middleware"
+    }
+  ],
+  "examples": [
+    "export async function GET(request) { return Response.json({ ok: true }) }",
+    "export async function POST(request: Request) { const body = await request.json(); return Response.json(body) }",
+    "export const PUT = async (req) => Response.json({})",
+    "export const PATCH = async (req: Request) => Response.json({})",
+    "export function DELETE(request) { return new Response(null, { status: 204 }) }",
+    "export const GET = async () => Response.json([])"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-middleware-only-auth.ts"
+  },
+  "notes": "deepsec globs '**/app/**(protected)**/route.*' are minimatch extended globs that match any single folder; the port matches the route groups (protected), (dashboard) and (auth). deepsec words the label by route group and flags the first handler; the port uses one label and flags every handler line. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

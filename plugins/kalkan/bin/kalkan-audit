@@ -1,0 +1,52 @@
+#!/bin/sh
+# SPDX-License-Identifier: MIT
+#
+# Audit a folder or a git URL with one command, with the engine of the Claude Code plugin
+# (docs/PLUGIN.md, "One-command audit").
+#
+# Usage: sh kalkan-audit <target> [--profile fast|standard|deep] [--tools-only] [--open]
+#                        [--yes] [--no-latest] [--max-hours N] [--json]
+#        sh kalkan-audit devam [<run-id>]
+#
+# The script runs `kalkan audit` of the plugin venv with all its arguments and passes the exit
+# code through. kalkan audit checks the setup (it installs missing tools or databases only with
+# --yes or after you answer y), creates the run, runs the scanners and SCA, then starts Claude
+# Code rounds that are bound to the run and wait through usage-limit resets. At the end it prints
+# the deliverables and a short summary. --tools-only needs no Claude Code. Exit codes: 0 done,
+# 1 incomplete, stopped or failed, 2 usage, 5 setup needed (the message names the fix). A
+# relative target path is relative to your current folder. The runs go to ~/kalkan-runs. All
+# options: kalkan-audit --help
+#
+# kalkan-setup copies this script to <plugin data folder>/bin/kalkan-audit. That path stays the
+# same after a plugin update (the plugin folder has the version in its path), so start the copy
+# from a terminal. The script finds the plugin data folder in this order:
+#   1. the parent of its own folder, when that folder holds venv/ (the copy in <data>/bin);
+#   2. CLAUDE_PLUGIN_DATA, when it is set.
+# Works in sh on Linux and macOS and in Git Bash on Windows. PowerShell and cmd on Windows use
+# kalkan-audit.cmd next to this script.
+
+set -eu
+
+fail() {
+    printf 'kalkan-audit: error: %s\n' "$*" >&2
+    exit 1
+}
+
+parent=$(dirname -- "$(dirname -- "$0")")
+if [ -d "$parent/venv" ]; then
+    data=$parent
+elif [ -n "${CLAUDE_PLUGIN_DATA:-}" ]; then
+    data=$CLAUDE_PLUGIN_DATA
+else
+    fail "cannot find the kalkan plugin data folder. Install kalkan first: run scripts/install.sh, or type /kalkan unattended in Claude Code once. Both install the engine and this command. With a marketplace install it is: sh ~/.claude/plugins/data/kalkan-kalkan/bin/kalkan-audit <target>"
+fi
+
+if [ -f "$data/venv/Scripts/kalkan.exe" ]; then
+    engine=$data/venv/Scripts/kalkan.exe
+elif [ -x "$data/venv/bin/kalkan" ]; then
+    engine=$data/venv/bin/kalkan
+else
+    fail "the kalkan engine is missing in $data/venv. Install kalkan first: run scripts/install.sh, or type /kalkan unattended in Claude Code once. Then start this command again."
+fi
+
+exec "$engine" audit "$@"

@@ -1,0 +1,97 @@
+{
+  "version": 1,
+  "slug": "php-sql-raw",
+  "description": "Raw SQL across PHP DB drivers (PDO, mysqli, Doctrine ORM/DBAL) — string concatenation is SQL injection",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.php"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,vendor}/**"
+  ],
+  "requires": {
+    "tech": [
+      "php"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\$\\w+->query\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "PDO->query with string concat (SQL injection)"
+    },
+    {
+      "regex": "\\$\\w+->exec\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "PDO->exec with string concat (SQL injection)"
+    },
+    {
+      "regex": "\\$\\w+->prepare\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "PDO->prepare with concat (defeats parameterization)"
+    },
+    {
+      "regex": "new\\s+PDO\\s*\\(",
+      "flags": "",
+      "label": "PDO connection (informational)"
+    },
+    {
+      "regex": "mysqli_query\\s*\\(\\s*[^,]+,\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "mysqli_query with string concat (SQL injection)"
+    },
+    {
+      "regex": "mysqli_real_escape_string",
+      "flags": "",
+      "label": "mysqli_real_escape_string (informational — manual escaping)"
+    },
+    {
+      "regex": "\\$\\w+->executeQuery\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "Doctrine DBAL executeQuery with concat (SQL injection)"
+    },
+    {
+      "regex": "\\$\\w+->executeStatement\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "Doctrine DBAL executeStatement with concat (SQL injection)"
+    },
+    {
+      "regex": "\\$\\w+->createQuery\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "Doctrine ORM createQuery (DQL) with concat (injection)"
+    },
+    {
+      "regex": "\\$\\w+->createNativeQuery\\s*\\(\\s*(?:\"[^\"]{0,400}\"|'[^']{0,400}')\\s*\\.\\s*\\$",
+      "flags": "",
+      "label": "Doctrine ORM createNativeQuery with concat (SQL injection)"
+    },
+    {
+      "regex": "(?:\"\\s*(?:SELECT|INSERT|UPDATE|DELETE)\\s+[^\"]{0,400}\"|'\\s*(?:SELECT|INSERT|UPDATE|DELETE)\\s+[^']{0,400}')\\s*\\.\\s*\\$\\w+",
+      "flags": "",
+      "label": "Raw SQL string with concat (SQL injection)"
+    }
+  ],
+  "examples": [
+    "<?php\n$result = $pdo->query(\"SELECT * FROM users WHERE id = \" . $id);",
+    "$pdo->exec(\"DELETE FROM users WHERE name = '\" . $name . \"'\");",
+    "$stmt = $pdo->prepare(\"SELECT * FROM t WHERE col = '\" . $col . \"'\");",
+    "mysqli_query($conn, \"SELECT * FROM users WHERE id = \" . $userId);",
+    "$conn->executeQuery(\"UPDATE users SET role = '\" . $role . \"' WHERE id = \" . $id);",
+    "$conn->executeStatement(\"DELETE FROM users WHERE id = \" . $id);",
+    "$em->createQuery(\"SELECT u FROM App\\User u WHERE u.name = '\" . $name . \"'\");",
+    "$em->createNativeQuery(\"SELECT * FROM users WHERE id = \" . $id, $rsm);",
+    "$sql = \"INSERT INTO logs (msg) VALUES ('\" . $msg . \"')\";"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/php-sql-raw.ts"
+  },
+  "notes": ""
+}

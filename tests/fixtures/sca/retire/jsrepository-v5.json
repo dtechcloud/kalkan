@@ -1,0 +1,155 @@
+{
+  "retire-example": {
+    "vulnerabilities": [
+      {
+        "below": "0.0.2",
+        "severity": "low",
+        "cwe": ["CWE-79"],
+        "identifiers": {"summary": "sample entry", "issue": "1"},
+        "info": ["https://example.invalid/retire-example"]
+      }
+    ],
+    "extractors": {
+      "filename": ["retire-example-(§§version§§)(.min)?\\.js"]
+    }
+  },
+  "jquery": {
+    "bowername": ["jQuery"],
+    "npmname": "jquery",
+    "licenses": ["MIT >=0"],
+    "vulnerabilities": [
+      {
+        "atOrAbove": "1.0.3",
+        "below": "3.5.0",
+        "severity": "medium",
+        "cwe": ["CWE-79"],
+        "identifiers": {
+          "summary": "HTML with option elements from untrusted sources can run code in DOM manipulation methods",
+          "CVE": ["CVE-2020-11023"],
+          "issue": "4647",
+          "githubID": "GHSA-jpcq-cgw6-v4j6"
+        },
+        "info": ["https://blog.jquery.com/2020/04/10/jquery-3-5-0-released/"]
+      },
+      {
+        "below": "2.999.999",
+        "excludes": ["1.12.4-aem"],
+        "severity": "low",
+        "cwe": ["CWE-1104"],
+        "identifiers": {"summary": "jQuery 1.x and 2.x are end-of-life", "retid": "73", "issue": "162"},
+        "info": ["https://github.com/jquery/jquery.com/issues/162"]
+      }
+    ],
+    "extractors": {
+      "func": ["(window.jQuery || window.$).fn.jquery"],
+      "uri": ["/(§§version§§)/jquery(\\.min)?\\.js"],
+      "filename": ["jquery-(§§version§§)(\\.min)?\\.js"],
+      "filecontent": [
+        "/\\*!? jQuery v(§§version§§)",
+        "\\* jQuery JavaScript Library v(§§version§§)"
+      ],
+      "ast": ["//AssignmentExpression[/:left/:property/:name == 'fn']"]
+    }
+  },
+  "bootstrap": {
+    "licenses": ["MIT >=0"],
+    "vulnerabilities": [
+      {
+        "atOrAbove": "2.3.0",
+        "below": "3.4.0",
+        "severity": "medium",
+        "cwe": ["CWE-79"],
+        "identifiers": {
+          "summary": "XSS in the collapse data-parent attribute",
+          "issue": "20184",
+          "CVE": ["CVE-2018-14040"],
+          "githubID": "GHSA-3wqf-4x89-9g79"
+        },
+        "info": ["https://github.com/twbs/bootstrap/issues/20184"]
+      },
+      {
+        "atOrAbove": "3.0.0",
+        "below": "3.4.1",
+        "severity": "medium",
+        "cwe": ["CWE-79"],
+        "identifiers": {
+          "summary": "XSS in the data-template, data-content and data-title properties of tooltip and popover",
+          "issue": "28236",
+          "CVE": ["CVE-2019-8331"],
+          "githubID": "GHSA-9v3m-8fp8-mj99"
+        },
+        "info": ["https://github.com/advisories/GHSA-9v3m-8fp8-mj99"]
+      },
+      {
+        "below": "3.999.999",
+        "severity": "low",
+        "cwe": ["CWE-1104"],
+        "identifiers": {"summary": "Bootstrap before 4.0.0 is end-of-life", "retid": "72"},
+        "info": ["https://github.com/twbs/bootstrap/issues/20631"]
+      },
+      {
+        "atOrAbove": "4.0.0",
+        "below": "4.3.1",
+        "severity": "medium",
+        "cwe": ["CWE-79"],
+        "identifiers": {
+          "summary": "XSS in the data-template, data-content and data-title properties of tooltip and popover",
+          "issue": "28236",
+          "CVE": ["CVE-2019-8331"],
+          "githubID": "GHSA-9v3m-8fp8-mj99"
+        },
+        "info": ["https://github.com/advisories/GHSA-9v3m-8fp8-mj99"]
+      }
+    ],
+    "extractors": {
+      "uri": ["/(§§version§§)/bootstrap(\\.min)?\\.js"],
+      "filename": ["bootstrap-(§§version§§)(\\.min)?\\.js"],
+      "filecontent": [
+        "/\\*!? Bootstrap v(§§version§§)",
+        "\\* Bootstrap v(§§version§§)"
+      ]
+    }
+  },
+  "lodash": {
+    "vulnerabilities": [
+      {
+        "below": "4.17.21",
+        "severity": "high",
+        "cwe": ["CWE-94"],
+        "identifiers": {
+          "summary": "Command injection in template",
+          "CVE": ["CVE-2021-23337"],
+          "githubID": "GHSA-35jh-r3h4-6jhm"
+        },
+        "info": ["https://github.com/advisories/GHSA-35jh-r3h4-6jhm"]
+      }
+    ],
+    "extractors": {
+      "filecontent": [
+        "=\"(§§version§§)(?<=[0-9]{1,2}\\.[0-9]{1,2}\\.[0-9]{1,2})\"[\\s\\S]{1,300}__lodash_hash_undefined__"
+      ]
+    }
+  },
+  "dojo": {
+    "vulnerabilities": [
+      {
+        "below": "1.4.2",
+        "severity": "medium",
+        "cwe": ["CWE-79"],
+        "identifiers": {"summary": "XSS in a test file", "CVE": ["CVE-2010-2276"]},
+        "info": ["https://nvd.nist.gov/vuln/detail/CVE-2010-2276"]
+      }
+    ],
+    "extractors": {
+      "filecontentreplace": [
+        "/dojo\\.version=\\{major:([0-9]+),minor:([0-9]+),patch:([0-9]+)/$1.$2.$3/"
+      ],
+      "hashes": {"0e9b8ef495778bd1f1122bd6c5553a73cea67be5": "1.1.0"}
+    }
+  },
+  "dont check": {
+    "extractors": {
+      "uri": ["^http[s]?://(ssl|www).google-analytics.com/ga.js"]
+    }
+  }
+}

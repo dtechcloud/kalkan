@@ -1,0 +1,29 @@
+rules:
+  - id: codeql-java-xss-servlet
+    message: >-
+      Writing user input to servlet response without encoding may lead to XSS.
+      Use proper output encoding.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - java
+        - servlet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-079/XSS.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-079/XSS.ql
+    pattern-either:
+      - pattern: $RESPONSE.getWriter().print($INPUT)
+      - pattern: $RESPONSE.getWriter().println($INPUT)
+      - pattern: $RESPONSE.getWriter().write($INPUT)
+      - pattern: $RESPONSE.getOutputStream().print($INPUT)
+      - pattern: $RESPONSE.getOutputStream().println($INPUT)

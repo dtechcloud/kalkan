@@ -1,0 +1,314 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:00000000-0000-4000-8000-000000000002",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-15T20:19:08+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "manufacturer": {
+            "name": "Aqua Security Software Ltd."
+          },
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "0.75.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "ad357842-bc33-4635-b058-94b5ccaaa3b1",
+      "type": "application",
+      "name": "depapp",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "44c41cd7-ded5-4bf4-9f1d-42630c170227",
+      "type": "application",
+      "name": "go.mod",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "gomod"
+        }
+      ]
+    },
+    {
+      "bom-ref": "901b64a3-1ba5-42fa-8b4c-556d1f6b4bc7",
+      "type": "application",
+      "name": "package-lock.json",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "npm"
+        }
+      ]
+    },
+    {
+      "bom-ref": "cf5a7f8f-98f4-4721-a492-0dec829525b0",
+      "type": "application",
+      "name": "requirements.txt",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Class",
+          "value": "lang-pkgs"
+        },
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "pip"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/example.com/depapp",
+      "type": "library",
+      "name": "example.com/depapp",
+      "purl": "pkg:golang/example.com/depapp",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "example.com/depapp"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gomod"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/dgrijalva/jwt-go@v3.2.0%2Bincompatible",
+      "type": "library",
+      "name": "github.com/dgrijalva/jwt-go",
+      "version": "v3.2.0+incompatible",
+      "purl": "pkg:golang/github.com/dgrijalva/jwt-go@v3.2.0%2Bincompatible",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "github.com/dgrijalva/jwt-go@v3.2.0+incompatible"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gomod"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/text@v0.3.5",
+      "type": "library",
+      "name": "golang.org/x/text",
+      "version": "v0.3.5",
+      "purl": "pkg:golang/golang.org/x/text@v0.3.5",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "golang.org/x/text@v0.3.5"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "gomod"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/lodash@4.17.20",
+      "type": "library",
+      "name": "lodash",
+      "version": "4.17.20",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/lodash@4.17.20",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "lodash@4.17.20"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "npm"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/minimist@1.2.5",
+      "type": "library",
+      "name": "minimist",
+      "version": "1.2.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/minimist@1.2.5",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "minimist@1.2.5"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "npm"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/node-fetch@2.6.0",
+      "type": "library",
+      "name": "node-fetch",
+      "version": "2.6.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:npm/node-fetch@2.6.0",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "node-fetch@2.6.0"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "npm"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/jinja2@2.10.1",
+      "type": "library",
+      "name": "Jinja2",
+      "version": "2.10.1",
+      "purl": "pkg:pypi/jinja2@2.10.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pip"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/pyyaml@5.3",
+      "type": "library",
+      "name": "PyYAML",
+      "version": "5.3",
+      "purl": "pkg:pypi/pyyaml@5.3",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pip"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/requests@2.19.1",
+      "type": "library",
+      "name": "requests",
+      "version": "2.19.1",
+      "purl": "pkg:pypi/requests@2.19.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pip"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "44c41cd7-ded5-4bf4-9f1d-42630c170227",
+      "dependsOn": [
+        "pkg:golang/example.com/depapp"
+      ]
+    },
+    {
+      "ref": "901b64a3-1ba5-42fa-8b4c-556d1f6b4bc7",
+      "dependsOn": [
+        "pkg:npm/lodash@4.17.20",
+        "pkg:npm/minimist@1.2.5",
+        "pkg:npm/node-fetch@2.6.0"
+      ]
+    },
+    {
+      "ref": "ad357842-bc33-4635-b058-94b5ccaaa3b1",
+      "dependsOn": [
+        "44c41cd7-ded5-4bf4-9f1d-42630c170227",
+        "901b64a3-1ba5-42fa-8b4c-556d1f6b4bc7",
+        "cf5a7f8f-98f4-4721-a492-0dec829525b0"
+      ]
+    },
+    {
+      "ref": "cf5a7f8f-98f4-4721-a492-0dec829525b0",
+      "dependsOn": [
+        "pkg:pypi/jinja2@2.10.1",
+        "pkg:pypi/pyyaml@5.3",
+        "pkg:pypi/requests@2.19.1"
+      ]
+    },
+    {
+      "ref": "pkg:golang/example.com/depapp",
+      "dependsOn": [
+        "pkg:golang/github.com/dgrijalva/jwt-go@v3.2.0%2Bincompatible",
+        "pkg:golang/golang.org/x/text@v0.3.5"
+      ]
+    },
+    {
+      "ref": "pkg:golang/github.com/dgrijalva/jwt-go@v3.2.0%2Bincompatible",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:golang/golang.org/x/text@v0.3.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/lodash@4.17.20",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/minimist@1.2.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:npm/node-fetch@2.6.0",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/jinja2@2.10.1",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/pyyaml@5.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "pkg:pypi/requests@2.19.1",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}

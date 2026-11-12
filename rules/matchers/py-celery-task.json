@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "slug": "py-celery-task",
+  "description": "Celery task definitions — background-job auth-gap surface (gated on Celery)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "celery"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\bcelery\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*@(?:app|celery|shared_task)\\.task\\b",
+      "flags": "m",
+      "label": "@app.task / @celery.task"
+    },
+    {
+      "regex": "^\\s*@shared_task\\b",
+      "flags": "m",
+      "label": "@shared_task decorator"
+    },
+    {
+      "regex": "\\.delay\\s*\\(|\\.apply_async\\s*\\(",
+      "flags": "",
+      "label": "task.delay/apply_async dispatch site"
+    },
+    {
+      "regex": "\\bCelery\\s*\\(\\s*['\"]",
+      "flags": "",
+      "label": "Celery('app') init"
+    }
+  ],
+  "examples": [
+    "@app.task",
+    "@celery.task(bind=True, max_retries=3)",
+    "@shared_task.task",
+    "@shared_task",
+    "   @shared_task(name=\"tasks.send_email\")",
+    "send_email.delay(user_id, subject)",
+    "process_job.apply_async(args=[1, 2], countdown=10)",
+    "app = Celery(\"worker\", broker=\"redis://localhost\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-celery-task.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [celery]; kalkan uses tech python (or celery) and a manifest that names celery."
+}

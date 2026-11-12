@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en" data-title-tr="Bakım · Dokümantasyon · kalkan" data-title-en="Maintenance · Docs · kalkan">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maintenance · Docs · kalkan</title>
+<meta name="description" content="kalkan docs: updating, troubleshooting, uninstalling and a full cleanup.">
+<link rel="icon" href="assets/kalkan-icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="stop" viewBox="0 0 6 7"><path d="M0 0H6V2.7C6 4.7 4.6 6.1 3 7 1.4 6.1 0 4.7 0 2.7Z"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 16 16"><path d="M5.5 5.5V3.25A1.25 1.25 0 0 1 6.75 2h6A1.25 1.25 0 0 1 14 3.25v6a1.25 1.25 0 0 1-1.25 1.25H10.5M3.25 5.5h6a1.25 1.25 0 0 1 1.25 1.25v6A1.25 1.25 0 0 1 9.25 14h-6A1.25 1.25 0 0 1 2 12.75v-6A1.25 1.25 0 0 1 3.25 5.5Z" fill="none" stroke="currentColor" stroke-width="1.3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="m3 8.5 3 3 7-7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 16 16"><path d="M13.5 9.6A5.75 5.75 0 0 1 6.4 2.5 5.75 5.75 0 1 0 13.5 9.6Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v1.5M8 13v1.5M1.5 8H3M13 8h1.5M3.4 3.4l1.05 1.05M11.55 11.55l1.05 1.05M3.4 12.6l1.05-1.05M11.55 4.45l1.05-1.05" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></symbol>
+</svg>
+<div class="grain" aria-hidden="true"></div>
+<header class="top">
+  <div class="top-in">
+    <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+    <nav class="nav" aria-label="Sayfalar / Pages"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs" aria-current="page"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></nav>
+    <div class="ctl">
+      <div class="seg" role="group" aria-label="Dil / Language">
+        <button type="button" data-lang-set="en" aria-pressed="true">EN</button>
+        <button type="button" data-lang-set="tr" aria-pressed="false">TR</button>
+      </div>
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="Tema / Theme"><svg aria-hidden="true"><use href="#i-moon"/></svg></button>
+      <details class="contact"><summary class="btn btn-sm"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span></summary><div class="contact-pop"><p><span class="tr" lang="tr">Soru, ayrıntı veya danışmanlık için bize yaz.</span><span class="en" lang="en">Write to us for questions, details or consulting.</span></p><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></details>
+      <details class="menu"><summary aria-label="Menü / Menu"><span class="tr" lang="tr">Menü</span><span class="en" lang="en">Menu</span></summary><nav aria-label="Menü / Menu"><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a><a href="docs" aria-current="page"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a><div class="menu-mail"><span class="tr" lang="tr">İletişim</span><span class="en" lang="en">Contact us</span><div class="contact-row"><a class="big" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a><button class="btn btn-copy" type="button" data-copy-text="kalkan@dtechcloud.com"><span class="tr" lang="tr">Kopyala</span><span class="en" lang="en">Copy</span></button></div></div></nav></details>
+    </div>
+  </div>
+</header>
+<main class="page" id="top">
+  <div class="frame">
+    <!-- Docs: title -->
+    <section class="page-first" aria-labelledby="h-docs-care">
+      <div class="pad docs-head">
+        <div class="head">
+          <p class="kicker"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></p>
+          <h1 class="page-title" id="h-docs-care"><span class="tr" lang="tr">Güncelle, sorun çöz, kaldır.</span><span class="en" lang="en">Update, fix, remove.</span></h1>
+          <p class="lede tr" lang="tr">Bu sayfa kalkan'ı güncel tutmayı, sık sorunların çözümünü ve kalkan'ı tamamen kaldırmayı anlatır.</p>
+          <p class="lede en" lang="en">This page shows how to keep kalkan current, how to fix common problems and how to remove kalkan completely.</p>
+          <p class="meta"><span class="tr" lang="tr">Bu sayfada <code>kalkan</code>, motorun tam yoludur: bkz. <a href="docs#kullanim">Komutlar ve yollar</a>.</span><span class="en" lang="en">On this page, <code>kalkan</code> is the full path of the engine: see <a href="docs#kullanim">Commands and paths</a>.</span></p>
+        </div>
+        <details class="toc-m">
+          <summary><span class="tr" lang="tr">İçindekiler</span><span class="en" lang="en">Contents</span></summary>
+          <!-- Docs nav (phones): the same list on the four docs pages -->
+          <nav aria-label="Dokümantasyon / Docs">
+            <p class="kicker"><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></p>
+            <ol class="toc-list">
+              <li><a href="docs#baslangic"><span class="n">01</span><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></a></li>
+              <li><a href="docs#gereksinimler"><span class="n">02</span><span class="tr" lang="tr">Gereksinimler</span><span class="en" lang="en">Requirements</span></a></li>
+              <li><a href="docs#kurulum"><span class="n">03</span><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Installation</span></a></li>
+              <li><a href="docs#ilk-denetim"><span class="n">04</span><span class="tr" lang="tr">İlk denetim</span><span class="en" lang="en">First audit</span></a></li>
+              <li><a href="docs#profiller"><span class="n">05</span><span class="tr" lang="tr">Denetim profilleri</span><span class="en" lang="en">Audit profiles</span></a></li>
+              <li><a href="docs#kullanim"><span class="n">06</span><span class="tr" lang="tr">Komutlar ve yollar</span><span class="en" lang="en">Commands and paths</span></a></li>
+            </ol>
+            <p class="kicker"><span class="tr" lang="tr">Denetim</span><span class="en" lang="en">Audit</span></p>
+            <ol class="toc-list">
+              <li><a href="docs-audit#nasil-calisir"><span class="n">07</span><span class="tr" lang="tr">kalkan nasıl çalışır</span><span class="en" lang="en">How kalkan works</span></a></li>
+              <li><a href="docs-audit#araclar"><span class="n">08</span><span class="tr" lang="tr">Araçlar ve tarayıcılar</span><span class="en" lang="en">Tools and scanners</span></a></li>
+              <li><a href="docs-audit#ai-dogrulama"><span class="n">09</span><span class="tr" lang="tr">Ajan doğrulaması</span><span class="en" lang="en">AI verification</span></a></li>
+              <li><a href="docs-audit#sandbox"><span class="n">10</span><span>PoC sandbox</span></a></li>
+              <li><a href="docs-audit#sca"><span class="n">11</span><span class="tr" lang="tr">SCA ve veritabanları</span><span class="en" lang="en">SCA and databases</span></a></li>
+              <li><a href="docs-audit#raporlar"><span class="n">12</span><span class="tr" lang="tr">Raporlar</span><span class="en" lang="en">Reports</span></a></li>
+              <li><a href="docs-audit#ci-cd"><span class="n">13</span><span>CI/CD</span></a></li>
+            </ol>
+            <p class="kicker"><span class="tr" lang="tr">Makinende</span><span class="en" lang="en">On your machine</span></p>
+            <ol class="toc-list">
+              <li><a href="docs-machine#ne-kurulur"><span class="n">14</span><span class="tr" lang="tr">Bilgisayarıma ne kurar?</span><span class="en" lang="en">What does it install?</span></a></li>
+              <li><a href="docs-machine#nereye"><span class="n">15</span><span class="tr" lang="tr">Nereye kurar?</span><span class="en" lang="en">Where does it install it?</span></a></li>
+              <li><a href="docs-machine#degisiklikler"><span class="n">16</span><span class="tr" lang="tr">Makinede neyi değiştirir?</span><span class="en" lang="en">What it changes</span></a></li>
+              <li><a href="docs-machine#disk"><span class="n">17</span><span class="tr" lang="tr">Disk kullanımı</span><span class="en" lang="en">Disk usage</span></a></li>
+              <li><a href="docs-machine#gizlilik"><span class="n">18</span><span class="tr" lang="tr">Gizlilik</span><span class="en" lang="en">Privacy</span></a></li>
+              <li><a href="docs-machine#ag"><span class="n">19</span><span class="tr" lang="tr">Ağ davranışı</span><span class="en" lang="en">Network behavior</span></a></li>
+              <li><a href="docs-machine#guvenlik-modeli"><span class="n">20</span><span class="tr" lang="tr">Güvenlik modeli</span><span class="en" lang="en">Security model</span></a></li>
+              <li><a href="docs-machine#docker"><span class="n">21</span><span class="tr" lang="tr">Neden her şey Docker'da değil?</span><span class="en" lang="en">Why not everything in Docker?</span></a></li>
+            </ol>
+            <p class="kicker"><span class="tr" lang="tr">Bakım</span><span class="en" lang="en">Maintenance</span></p>
+            <ol class="toc-list">
+              <li><a href="#guncelleme"><span class="n">22</span><span class="tr" lang="tr">Güncelleme</span><span class="en" lang="en">Updating</span></a></li>
+              <li><a href="#sorun-giderme"><span class="n">23</span><span class="tr" lang="tr">Sorun giderme</span><span class="en" lang="en">Troubleshooting</span></a></li>
+              <li><a href="#kaldirma"><span class="n">24</span><span class="tr" lang="tr">Kaldırma</span><span class="en" lang="en">Uninstall</span></a></li>
+              <li><a href="#tam-temizlik"><span class="n">25</span><span class="tr" lang="tr">Tam temizlik</span><span class="en" lang="en">Full cleanup</span></a></li>
+            </ol>
+          </nav>
+          <!-- /Docs nav -->
+        </details>
+      </div>
+    </section>
+    <!-- Docs: side table of contents and sections -->
+    <div class="rule docs">
+      <div class="toc-side">
+        <!-- Docs nav (wide screens): the same list on the four docs pages -->
+        <nav class="toc-nav" aria-label="Dokümantasyon / Docs">
+          <p class="kicker"><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></p>
+          <ol class="toc-list">
+            <li><a href="docs#baslangic"><span class="n">01</span><span class="tr" lang="tr">Başlangıç</span><span class="en" lang="en">Getting started</span></a></li>
+            <li><a href="docs#gereksinimler"><span class="n">02</span><span class="tr" lang="tr">Gereksinimler</span><span class="en" lang="en">Requirements</span></a></li>
+            <li><a href="docs#kurulum"><span class="n">03</span><span class="tr" lang="tr">Kurulum</span><span class="en" lang="en">Installation</span></a></li>
+            <li><a href="docs#ilk-denetim"><span class="n">04</span><span class="tr" lang="tr">İlk denetim</span><span class="en" lang="en">First audit</span></a></li>
+            <li><a href="docs#profiller"><span class="n">05</span><span class="tr" lang="tr">Denetim profilleri</span><span class="en" lang="en">Audit profiles</span></a></li>
+            <li><a href="docs#kullanim"><span class="n">06</span><span class="tr" lang="tr">Komutlar ve yollar</span><span class="en" lang="en">Commands and paths</span></a></li>
+          </ol>
+          <p class="kicker"><span class="tr" lang="tr">Denetim</span><span class="en" lang="en">Audit</span></p>
+          <ol class="toc-list">
+            <li><a href="docs-audit#nasil-calisir"><span class="n">07</span><span class="tr" lang="tr">kalkan nasıl çalışır</span><span class="en" lang="en">How kalkan works</span></a></li>
+            <li><a href="docs-audit#araclar"><span class="n">08</span><span class="tr" lang="tr">Araçlar ve tarayıcılar</span><span class="en" lang="en">Tools and scanners</span></a></li>
+            <li><a href="docs-audit#ai-dogrulama"><span class="n">09</span><span class="tr" lang="tr">Ajan doğrulaması</span><span class="en" lang="en">AI verification</span></a></li>
+            <li><a href="docs-audit#sandbox"><span class="n">10</span><span>PoC sandbox</span></a></li>
+            <li><a href="docs-audit#sca"><span class="n">11</span><span class="tr" lang="tr">SCA ve veritabanları</span><span class="en" lang="en">SCA and databases</span></a></li>
+            <li><a href="docs-audit#raporlar"><span class="n">12</span><span class="tr" lang="tr">Raporlar</span><span class="en" lang="en">Reports</span></a></li>
+            <li><a href="docs-audit#ci-cd"><span class="n">13</span><span>CI/CD</span></a></li>
+          </ol>
+          <p class="kicker"><span class="tr" lang="tr">Makinende</span><span class="en" lang="en">On your machine</span></p>
+          <ol class="toc-list">
+            <li><a href="docs-machine#ne-kurulur"><span class="n">14</span><span class="tr" lang="tr">Bilgisayarıma ne kurar?</span><span class="en" lang="en">What does it install?</span></a></li>
+            <li><a href="docs-machine#nereye"><span class="n">15</span><span class="tr" lang="tr">Nereye kurar?</span><span class="en" lang="en">Where does it install it?</span></a></li>
+            <li><a href="docs-machine#degisiklikler"><span class="n">16</span><span class="tr" lang="tr">Makinede neyi değiştirir?</span><span class="en" lang="en">What it changes</span></a></li>
+            <li><a href="docs-machine#disk"><span class="n">17</span><span class="tr" lang="tr">Disk kullanımı</span><span class="en" lang="en">Disk usage</span></a></li>
+            <li><a href="docs-machine#gizlilik"><span class="n">18</span><span class="tr" lang="tr">Gizlilik</span><span class="en" lang="en">Privacy</span></a></li>
+            <li><a href="docs-machine#ag"><span class="n">19</span><span class="tr" lang="tr">Ağ davranışı</span><span class="en" lang="en">Network behavior</span></a></li>
+            <li><a href="docs-machine#guvenlik-modeli"><span class="n">20</span><span class="tr" lang="tr">Güvenlik modeli</span><span class="en" lang="en">Security model</span></a></li>
+            <li><a href="docs-machine#docker"><span class="n">21</span><span class="tr" lang="tr">Neden her şey Docker'da değil?</span><span class="en" lang="en">Why not everything in Docker?</span></a></li>
+          </ol>
+          <p class="kicker"><span class="tr" lang="tr">Bakım</span><span class="en" lang="en">Maintenance</span></p>
+          <ol class="toc-list">
+            <li><a href="#guncelleme"><span class="n">22</span><span class="tr" lang="tr">Güncelleme</span><span class="en" lang="en">Updating</span></a></li>
+            <li><a href="#sorun-giderme"><span class="n">23</span><span class="tr" lang="tr">Sorun giderme</span><span class="en" lang="en">Troubleshooting</span></a></li>
+            <li><a href="#kaldirma"><span class="n">24</span><span class="tr" lang="tr">Kaldırma</span><span class="en" lang="en">Uninstall</span></a></li>
+            <li><a href="#tam-temizlik"><span class="n">25</span><span class="tr" lang="tr">Tam temizlik</span><span class="en" lang="en">Full cleanup</span></a></li>
+          </ol>
+        </nav>
+        <!-- /Docs nav -->
+      </div>
+      <div class="doc">
+
+        <!-- Updating -->
+        <section class="doc-sec" id="guncelleme" aria-labelledby="h-update">
+          <p class="kicker">22</p>
+          <h2 id="h-update"><span class="tr" lang="tr">Güncelleme</span><span class="en" lang="en">Updating</span></h2>
+          <p class="tr" lang="tr">kalkan'ı güncellemek için kurulum satırını yeniden çalıştır. Satır her adımda önce mevcut durumu kontrol eder.</p>
+          <p class="en" lang="en">To update kalkan, run the install line again. The line checks the current state first at every step.</p>
+          <div class="tabbed" data-tabs>
+            <div class="tabs" role="tablist" aria-label="Shell">
+              <button type="button" role="tab" aria-selected="true" data-tab="sh">Linux · macOS · Git Bash</button>
+              <button type="button" role="tab" aria-selected="false" data-tab="ps">PowerShell</button>
+            </div>
+            <div class="code" data-pane="sh"><pre><code>curl -fsSL https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.sh | sh</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            <div class="code" data-pane="ps" hidden><pre><code>&amp; ([scriptblock]::Create((irm https://raw.githubusercontent.com/dtechcloud/kalkan/stable/scripts/install.ps1)))</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          </div>
+          <h3><span class="tr" lang="tr">Güncelleme ne yapar?</span><span class="en" lang="en">What the update does</span></h3>
+          <ol class="rules">
+            <li><span aria-hidden="true">01</span><span class="tr" lang="tr">Marketplace'i günceller: <code>claude plugin marketplace update kalkan</code>.</span><span class="en" lang="en">It updates the marketplace: <code>claude plugin marketplace update kalkan</code>.</span></li>
+            <li><span aria-hidden="true">02</span><span class="tr" lang="tr">Plugin'i günceller: <code>claude plugin update kalkan@kalkan</code>. Claude Code veri klasörünü tutar.</span><span class="en" lang="en">It updates the plugin: <code>claude plugin update kalkan@kalkan</code>. Claude Code keeps the data folder.</span></li>
+            <li><span aria-hidden="true">03</span><span class="tr" lang="tr">Yeni motoru kurar. Eksik araçları ve sürümü değişen araçları indirir. Kurulu ve sağlam araçları tutar.</span><span class="en" lang="en">It installs the new engine. It downloads missing tools and tools with a new version. It keeps the installed tools that are intact.</span></li>
+            <li><span aria-hidden="true">04</span><span class="tr" lang="tr">7 günden genç bir zafiyet veritabanını tutar ve yeniden indirmez. Sonra <code>kalkan doctor</code> çalıştırır.</span><span class="en" lang="en">It keeps a vulnerability database that is younger than 7 days and does not download it again. Then it runs <code>kalkan doctor</code>.</span></li>
+          </ol>
+          <p class="tr" lang="tr">Ölçüm: bir günlük veritabanlarıyla bir güncelleme 15 saniye sürdü (bir Windows 11 makinesinde bir kez ölçüldü). Kurulum dört veritabanının dördünü de tuttu.</p>
+          <p class="en" lang="en">Measurement: an update with databases one day old took 15 seconds (measured once on one Windows 11 machine). The setup kept all four databases.</p>
+          <div class="behind">
+            <p class="tr" lang="tr"><b>Bir denetim çalışırken güncelleme yapma.</b> Önce denetimin bitmesini bekle. Eski bir sürümün başlattığı bir denetim, güncellemeden sonra da <code>devam</code> ile sürer.</p>
+            <p class="en" lang="en"><b>Never update while an audit runs.</b> Wait until the audit is done. An audit that an older version started also resumes with <code>devam</code> after the update.</p>
+          </div>
+          <h3><span class="tr" lang="tr">Elle güncelleme</span><span class="en" lang="en">Manual update</span></h3>
+          <div class="code"><pre><code>claude plugin marketplace update kalkan
+claude plugin update kalkan@kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">Sonra Claude Code'u yeniden başlat. Sonraki <code>/kalkan</code> yeni motoru kendisi kurar.</p>
+          <p class="en" lang="en">Then restart Claude Code. The next <code>/kalkan</code> installs the new engine itself.</p>
+          <h3><span class="tr" lang="tr">Yalnız veritabanlarını güncelle</span><span class="en" lang="en">Update only the databases</span></h3>
+          <p class="tr" lang="tr">Yerel eşleştirme yalnız son indirmedeki zafiyetleri bilir. <code>kalkan doctor</code>, bir veritabanı 7 günden eskiyse uyarır. Veritabanlarını bu komutla güncelle:</p>
+          <p class="en" lang="en">Local matching knows only the vulnerabilities of the last download. <code>kalkan doctor</code> warns when a database is older than 7 days. Update the databases with this command:</p>
+          <div class="code"><pre><code>kalkan sca update-db</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr">Komut her veritabanına ayrı bakar: osv, grype, go ve retire. Geçerli, son indirmesi başarılı ve <code>--max-age</code> saatten (varsayılan 24) genç bir veritabanını tutar. Bunu bir satırla yazar, örneğin <code>osv: kept, 2 hours old</code>. <code>--force</code> her veritabanını yaşına bakmadan indirir. Taze veritabanlarıyla komut 0,3 saniye sürdü (bir Windows 11 makinesinde bir kez ölçüldü).</p>
+          <p class="en" lang="en">The command looks at each database on its own: osv, grype, go and retire. It keeps a database that is valid, whose last download ended ok and that is younger than <code>--max-age</code> hours (default 24). It prints this in one line, for example <code>osv: kept, 2 hours old</code>. <code>--force</code> downloads every database, whatever its age. With fresh databases, the command took 0.3 seconds (measured once on one Windows 11 machine).</p>
+          <p class="tr" lang="tr">Kurulum betikleri, bootstrap betikleri ve <code>kalkan-audit</code> kurulum kontrolü <code>--max-age 168</code> (7 gün) kullanır. <code>--no-osv</code>, <code>--no-grype</code>, <code>--no-go</code> ve <code>--no-retire</code> bir veritabanını atlar. <code>--ecosystems</code> OSV ekosistemlerini seçer.</p>
+          <p class="en" lang="en">The installers, the bootstrap scripts and the setup check of <code>kalkan-audit</code> use <code>--max-age 168</code> (7 days). <code>--no-osv</code>, <code>--no-grype</code>, <code>--no-go</code> and <code>--no-retire</code> skip one database. <code>--ecosystems</code> selects the OSV ecosystems.</p>
+          <p class="tr" lang="tr">Komut yalnız ekosistem adlarını ve arşiv isteklerini gönderir. Yavaş bir ağda veritabanlarının bir indirmesi 46 dakika sürdü (bir kez ölçüldü).</p>
+          <p class="en" lang="en">The command sends only ecosystem names and archive requests. On a slow network, one download of the databases took 46 minutes (measured once).</p>
+          <h3><span class="tr" lang="tr">Sürümü gör</span><span class="en" lang="en">See the version</span></h3>
+          <div class="code"><pre><code>claude plugin list
+kalkan --version</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr"><code>claude plugin list</code> kurulu plugin'in sürümünü gösterir. <code>kalkan --version</code> motorun sürümünü yazar.</p>
+          <p class="en" lang="en"><code>claude plugin list</code> shows the version of the installed plugin. <code>kalkan --version</code> prints the version of the engine.</p>
+          <p class="tr" lang="tr">Bir güncellemeden sonra eski plugin sürümünün klasörü <code>.orphaned_at</code> işaretiyle kalır. Claude Code bu klasörü 14 gün sonra arka planda siler, ama yalnız en az bir plugin kuruluyken.</p>
+          <p class="en" lang="en">After an update, the folder of the old plugin version stays with an <code>.orphaned_at</code> marker. Claude Code deletes this folder 14 days later in a background cleanup, but only while at least one plugin is installed.</p>
+        </section>
+
+        <!-- Troubleshooting -->
+        <section class="doc-sec" id="sorun-giderme" aria-labelledby="h-trouble">
+          <p class="kicker">23</p>
+          <h2 id="h-trouble"><span class="tr" lang="tr">Sorun giderme</span><span class="en" lang="en">Troubleshooting</span></h2>
+          <p class="tr" lang="tr">Aşağıda <code>kalkan</code>, motorun tam yoludur: bkz. <a href="docs#kullanim">Kullanım</a>.</p>
+          <p class="en" lang="en">Below, <code>kalkan</code> is the full path of the engine: see <a href="docs#kullanim">Usage</a>.</p>
+          <dl class="faq tr" lang="tr">
+            <div><dt>Bir şey çalışmıyor. Nereden başlamalıyım?</dt><dd><code>kalkan doctor</code> çalıştır. Komut araçları, veritabanlarını, git'i ve Claude Code oturumunu kontrol eder. Sorunlu her satır kendi düzeltme komutunu yazar.</dd></div>
+            <div><dt>Kurulum betiği durdu.</dt><dd>Mesaj düzeltmeyi söyler, örneğin <code>claude auth login</code> veya <code>gh auth setup-git</code>. Düzeltmeyi yap. Sonra aynı satırı yeniden çalıştır.</dd></div>
+            <div><dt>İlk <code>/kalkan</code> kurulumu hata verdi.</dt><dd>Skill hatayı ve kurulum komutunu gösterir. Aynı komutu bir terminalde çalıştırabilirsin: <code>sh ~/.claude/plugins/cache/kalkan/kalkan/&lt;version&gt;/bin/kalkan-setup ~/.claude/plugins/data/kalkan-kalkan</code>. <code>--force</code> her adımı baştan yapar.</dd></div>
+            <div><dt>Kurulum <code>another kalkan-setup is running</code> diyor.</dt><dd>Kurulum aynı anda yalnız bir kez çalışır. Başka bir oturum kurulumu yürütüyorsa onun bitmesini bekle. Hiçbir kurulum çalışmıyorsa mesajdaki kilit klasörünü sil. kalkan 2 saatten eski bir kilidi kendisi siler.</dd></div>
+            <div><dt>Kurulum Python'u bulamıyor.</dt><dd>Kurulum Python 3.11 veya üstünü arar: <code>py -3</code>, <code>python3</code>, <code>python</code>. Python'u kur. Sonra kurulumu yeniden çalıştır. Debian veya Ubuntu'da <code>python -m venv</code> başarısız olursa <code>python3-venv</code> paketini kur.</dd></div>
+            <div><dt>Komut çıkış kodu 5 ile durdu.</dt><dd>Kurulum eksik: bir araç, bir veritabanı veya Claude Code oturumu yok. Mesaj düzeltmeyi verir. <code>--yes</code> eksik araçları ve veritabanlarını sormadan kurar. Claude Code olmadan <code>--tools-only</code> çalışır.</dd></div>
+            <div><dt><code>kalkan doctor</code> veritabanı uyarısı veriyor.</dt><dd>Doctor, bir veritabanı eksikse veya 7 günden eskiyse uyarır. <code>kalkan sca update-db</code> çalıştır. Komut 24 saatten genç ve sağlam bir veritabanını tutar. <code>kalkan sca update-db --force</code> her veritabanını yaşına bakmadan yeniden indirir. Ayrıntılar: <a href="#guncelleme">Güncelleme</a>.</dd></div>
+            <div><dt>Disk doluyor.</dt><dd>Veri klasörü yaklaşık 5,5 GB tutar. Her denetim ayrıca kodun bir kopyasını ve git geçmişini tutar. Eski denetimlerden yer açmak için: <a href="docs-machine#disk">Disk kullanımı</a>.</dd></div>
+            <div><dt>Rapor uzun yol uyarısı veriyor (Windows).</dt><dd>Opengrep, yolu 260 veya daha fazla karakter olan dosyaları atlar. <code>KALKAN_RUNS_DIR</code> değişkenine <code>C:\kr</code> gibi kısa bir klasör ver. Klasör hedefin dışında olmalı. Değişkeni Claude Code'u başlatan ortamda ayarla, örneğin PowerShell'de <code>$env:KALKAN_RUNS_DIR = "C:\kr"</code>. Sonra yeni bir denetim başlat.</dd></div>
+            <div><dt>Denetim yarıda kaldı.</dt><dd>Mola veya kullanım limitinden sonra <code>/kalkan devam &lt;run-id&gt;</code> yaz. Terminalde <code>kalkan-audit devam &lt;run-id&gt;</code> çalıştır. Durma mesajı çalıştırma kimliğini söyler. Hiçbir görev kaybolmaz.</dd></div>
+            <div><dt>İki denetimi aynı anda çalıştırmak istiyorum.</dt><dd>Her denetimi kendi Claude Code oturumunda veya terminalinde başlat. Yan denetime <code>--no-latest</code> ekle. Yan denetimi yalnız çalıştırma kimliğiyle sürdür.</dd></div>
+            <div><dt>Denetim sürerken bir güncelleme çıktı.</dt><dd>Bir denetim çalışırken plugin'i asla güncelleme. Denetim bitince güncelle. Sonraki <code>/kalkan</code> yeni motoru kurar.</dd></div>
+            <div><dt>Windows'ta poutine ve Scorecard iş akışlarını görmüyor.</dt><dd>Bu hata araçların kendisinde (upstream). Windows'ta poutine ve OpenSSF Scorecard, GitHub iş akışı dosyalarını okumaz. Rapor atlanan dosyaları platform boşluğu olarak listeler. Bu dosyaları zizmor ve actionlint yine kontrol eder.</dd></div>
+            <div><dt>Git Bash <code>/kalkan</code> komutunu bozuyor.</dt><dd>Git Bash, <code>claude -p</code> komutundaki <code>/kalkan ...</code> argümanını bir Windows yoluna çevirir. <code>MSYS_NO_PATHCONV=1</code> ayarla veya <code>claude -p</code> komutunu PowerShell'den başlat.</dd></div>
+            <div><dt>gosec veya govulncheck bir Go modülünde başarısız oluyor.</dt><dd>Modülün <code>go.mod</code> dosyası 1.26.9'dan yeni bir Go istiyor olabilir, örneğin <code>go 1.27</code>. kalkan Go'yu <code>GOTOOLCHAIN=local</code> ile çalıştırır ve yeni bir Go indirmez. Durum dosyası nedeni yazar.</dd></div>
+            <div><dt>Rapor "Go paketleri yüklenemedi" boşluğu gösteriyor.</dt><dd>İçe aktarılan bir paketin modülü yerel modül önbelleğinde yok. Yerel mod modül indirmez. Projene bir <code>vendor/</code> klasörü ekle (<code>go mod vendor</code>). Ya da <code>kalkan scan gosec --online</code> ve <code>kalkan sca reach --online</code> çalıştır. Bu iki komut modül yollarını Go proxy'sine gönderir.</dd></div>
+            <div><dt>Rapor bir Helm chart için eksik bağımlılık boşluğu gösteriyor.</dt><dd>Yerel mod chart indirmez. Bağımlılıkları projende chart'ın <code>charts/</code> klasörüne koy (<code>helm dependency build</code>). kalkan <code>helm dependency update</code> çalıştırmaz.</dd></div>
+            <div><dt>vacuum bir OpenAPI belgesini <code>references: ...</code> nedeniyle atladı.</dt><dd>Belgedeki bir <code>$ref</code> hedefin dışına çıkıyor ya da kalkan'ın kontrol edemediği bir biçimde. vacuum o dosyayı makineden okurdu. Bu yüzden kalkan belgeyi vacuum'a vermez.</dd></div>
+          </dl>
+          <dl class="faq en" lang="en">
+            <div><dt>Something does not work. Where do I start?</dt><dd>Run <code>kalkan doctor</code>. The command checks the tools, the databases, git and the Claude Code login. Each failed row names its own fix.</dd></div>
+            <div><dt>The installer stopped.</dt><dd>The message names the fix, for example <code>claude auth login</code> or <code>gh auth setup-git</code>. Do the fix. Then run the same line again.</dd></div>
+            <div><dt>The first <code>/kalkan</code> setup failed.</dt><dd>The skill shows the error and the setup command. You can run the same command in a terminal: <code>sh ~/.claude/plugins/cache/kalkan/kalkan/&lt;version&gt;/bin/kalkan-setup ~/.claude/plugins/data/kalkan-kalkan</code>. <code>--force</code> repeats every step.</dd></div>
+            <div><dt>The setup says <code>another kalkan-setup is running</code>.</dt><dd>Only one setup runs at a time. If another session runs the setup, wait until it is done. If no setup runs, delete the lock folder that the message names. kalkan deletes a lock older than 2 hours itself.</dd></div>
+            <div><dt>The setup does not find Python.</dt><dd>The setup looks for Python 3.11 or later: <code>py -3</code>, <code>python3</code>, <code>python</code>. Install Python. Then run the setup again. On Debian or Ubuntu, if <code>python -m venv</code> fails, install the <code>python3-venv</code> package.</dd></div>
+            <div><dt>The command stopped with exit code 5.</dt><dd>The setup is incomplete: a tool, a database or the Claude Code login is missing. The message names the fix. <code>--yes</code> installs the missing tools and databases without a question. Without Claude Code, <code>--tools-only</code> works.</dd></div>
+            <div><dt><code>kalkan doctor</code> warns about a database.</dt><dd>Doctor warns when a database is missing or older than 7 days. Run <code>kalkan sca update-db</code>. The command keeps a sound database that is younger than 24 hours. <code>kalkan sca update-db --force</code> downloads every database again, whatever its age. Details: <a href="#guncelleme">Updating</a>.</dd></div>
+            <div><dt>The disk fills up.</dt><dd>The data folder uses about 5.5 GB. Each audit also keeps a copy of the code and of the git history. To free the space of old audits: <a href="docs-machine#disk">Disk usage</a>.</dd></div>
+            <div><dt>The report warns about long paths (Windows).</dt><dd>Opengrep skips files with a path of 260 or more characters. Set <code>KALKAN_RUNS_DIR</code> to a short folder such as <code>C:\kr</code>. The folder must be outside the target. Set the variable in the environment that starts Claude Code, for example <code>$env:KALKAN_RUNS_DIR = "C:\kr"</code> in PowerShell. Then start a new audit.</dd></div>
+            <div><dt>The audit stopped halfway.</dt><dd>After a break or a usage limit, type <code>/kalkan devam &lt;run-id&gt;</code>. In a terminal, run <code>kalkan-audit devam &lt;run-id&gt;</code>. The stop message names the run ID. No task is lost.</dd></div>
+            <div><dt>I want to run two audits at once.</dt><dd>Start each audit in its own Claude Code session or terminal. Add <code>--no-latest</code> to the side audit. Resume the side audit only with its run ID.</dd></div>
+            <div><dt>An update came out during an audit.</dt><dd>Never update the plugin while an audit runs. Update when the audit is done. The next <code>/kalkan</code> installs the new engine.</dd></div>
+            <div><dt>On Windows, poutine and Scorecard do not see the workflows.</dt><dd>This is an upstream bug. On Windows, poutine and OpenSSF Scorecard do not read GitHub workflow files. The report lists the skipped files as a platform gap. zizmor and actionlint still check these files.</dd></div>
+            <div><dt>Git Bash breaks the <code>/kalkan</code> command.</dt><dd>Git Bash changes the argument <code>/kalkan ...</code> of <code>claude -p</code> into a Windows path. Set <code>MSYS_NO_PATHCONV=1</code>, or start <code>claude -p</code> from PowerShell.</dd></div>
+            <div><dt>gosec or govulncheck fails on a Go module.</dt><dd>The <code>go.mod</code> file of the module can ask for a Go newer than 1.26.9, for example <code>go 1.27</code>. kalkan runs Go with <code>GOTOOLCHAIN=local</code> and downloads no newer Go. The status file names the reason.</dd></div>
+            <div><dt>The report shows the gap "Go packages that did not load".</dt><dd>The module of an imported package is not in the local module cache. Local mode downloads no module. Add a <code>vendor/</code> folder to your project (<code>go mod vendor</code>). Or run <code>kalkan scan gosec --online</code> and <code>kalkan sca reach --online</code>. These two commands send the module paths to the Go proxy.</dd></div>
+            <div><dt>The report shows a gap for missing Helm chart dependencies.</dt><dd>Local mode downloads no chart. Put the dependencies into the <code>charts/</code> folder of the chart in your project (<code>helm dependency build</code>). kalkan never runs <code>helm dependency update</code>.</dd></div>
+            <div><dt>vacuum skipped an OpenAPI document with the reason <code>references: ...</code>.</dt><dd>A <code>$ref</code> of the document leaves the target, or has a form that kalkan cannot check. vacuum would read that file from your machine. Thus kalkan does not give the document to vacuum.</dd></div>
+          </dl>
+        </section>
+
+        <!-- Uninstall -->
+        <section class="doc-sec" id="kaldirma" aria-labelledby="h-uninstall">
+          <p class="kicker">24</p>
+          <h2 id="h-uninstall"><span class="tr" lang="tr">Kaldırma</span><span class="en" lang="en">Uninstall</span></h2>
+          <p class="tr" lang="tr">İki komut plugin'i kaldırır. Sıra önemli: motoru kullanacaksan kaldırmadan önce kullan, çünkü kaldırma motoru da siler.</p>
+          <p class="en" lang="en">Two commands remove the plugin. The order is important: if you need the engine, use it before the uninstall, because the uninstall also deletes the engine.</p>
+          <ol class="rules">
+            <li><span aria-hidden="true">01</span><div class="step">
+              <p class="tr" lang="tr">Yalnız raporları tutmak istiyorsan her bitmiş denetim için <code>kalkan run clean &lt;run-id&gt;</code> çalıştır. Komut kod kopyasını, geçmiş kopyasını ve iş klasörlerini siler, raporu tutar.</p>
+              <p class="en" lang="en">If you want to keep only the reports, run <code>kalkan run clean &lt;run-id&gt;</code> for each finished audit. The command deletes the code copy, the history copy and the work folders, and keeps the report.</p>
+              <div class="code"><pre><code>kalkan run clean 20261026T091512Z-shop-3f2a</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">02</span><div class="step">
+              <p class="tr" lang="tr">Plugin'i kaldır. Komut veri klasörünü de siler: motor, araçlar, veritabanları ve plugin'in kayıtlı seçenekleri. Araçları ve veritabanlarını tutmak için <code>--keep-data</code> ekle.</p>
+              <p class="en" lang="en">Remove the plugin. The command also deletes the data folder: the engine, the tools, the databases and the stored options of the plugin. To keep the tools and the databases, add <code>--keep-data</code>.</p>
+              <div class="code"><pre><code>claude plugin uninstall kalkan@kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">03</span><div class="step">
+              <p class="tr" lang="tr">Marketplace'i kaldır. Bu komut, bu marketplace'ten kurulan her plugin'i de kaldırır.</p>
+              <p class="en" lang="en">Remove the marketplace. This command also uninstalls every plugin from this marketplace.</p>
+              <div class="code"><pre><code>claude plugin marketplace remove kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+          </ol>
+          <h3><span class="tr" lang="tr">Ne kalır?</span><span class="en" lang="en">What remains?</span></h3>
+          <ul class="files">
+            <li><code>~/kalkan-runs/</code><span class="tr" lang="tr">Denetimler klasörü kalır: raporlar ve denetlenen kodun kopyaları. <code>KALKAN_RUNS_DIR</code> ayarladıysan o klasör kalır.</span><span class="en" lang="en">The runs folder stays: the reports and the copies of the audited code. If you set <code>KALKAN_RUNS_DIR</code>, that folder stays.</span></li>
+            <li><code>~/.claude/plugins/cache/kalkan/</code><span class="tr" lang="tr">Plugin klasörü <code>.orphaned_at</code> işaretiyle kalır. Claude Code onu 14 gün sonra arka planda siler, ama yalnız en az bir plugin kuruluyken.</span><span class="en" lang="en">The plugin folder stays with an <code>.orphaned_at</code> marker. Claude Code deletes it 14 days later in a background cleanup, but only while at least one plugin is installed.</span></li>
+            <li><code>~/.claude/plugins/marketplaces/kalkan/</code><span class="tr" lang="tr">Claude Code belgeleri, marketplace kaldırılınca bu kopyanın silindiğini söylemez.</span><span class="en" lang="en">The Claude Code docs do not say that removing the marketplace deletes this copy.</span></li>
+            <li><b class="tr" lang="tr">Docker imajları</b><b class="en" lang="en">Docker images</b><span class="tr" lang="tr"><code>kalkan sandbox pull</code> ile indirdiğin temel imajlar Docker'da kalır.</span><span class="en" lang="en">The base images that you pulled with <code>kalkan sandbox pull</code> stay in Docker.</span></li>
+          </ul>
+          <p class="tr" lang="tr">Bunları da silmek için: <a href="#tam-temizlik">Tam temizlik</a>. <code>PATH</code>'te ve sistem paketlerinde geri alınacak bir şey yok.</p>
+          <p class="en" lang="en">To delete these too: <a href="#tam-temizlik">Full cleanup</a>. There is nothing to undo in <code>PATH</code> or in the system packages.</p>
+        </section>
+
+        <!-- Full cleanup -->
+        <section class="doc-sec" id="tam-temizlik" aria-labelledby="h-cleanup">
+          <p class="kicker">25</p>
+          <h2 id="h-cleanup"><span class="tr" lang="tr">Tam temizlik: kalkan'ı nasıl tamamen kaldırırım?</span><span class="en" lang="en">Full cleanup: how do I remove kalkan completely?</span></h2>
+          <p class="tr" lang="tr">Bu adımlar kalkan'ın makinedeki bütün klasörlerini siler. Adımları sırayla yap. İkinci adım motoru kullanır, bu yüzden kaldırmadan önce gelir.</p>
+          <p class="en" lang="en">These steps delete every folder of kalkan on the machine. Do the steps in this order. The second step uses the engine, so it comes before the uninstall.</p>
+          <ol class="rules">
+            <li><span aria-hidden="true">01</span><span class="tr" lang="tr">Saklamak istediğin raporları başka bir klasöre kopyala. Raporlar <code>~/kalkan-runs/&lt;run-id&gt;/report/</code> içindedir.</span><span class="en" lang="en">Copy the reports that you want to keep to another folder. The reports are in <code>~/kalkan-runs/&lt;run-id&gt;/report/</code>.</span></li>
+            <li><span aria-hidden="true">02</span><div class="step">
+              <p class="tr" lang="tr">Önce <code>kalkan clean --all --dry-run</code> çalıştır ve silinecek parçaları kontrol et: denetimler, önbellekler, veritabanları ve araçlar. Sonra <code>kalkan clean --all</code> çalıştır ve soruya <code>y</code> yanıtını ver. Komut sonda kalan adımları yazar.</p>
+              <p class="en" lang="en">First run <code>kalkan clean --all --dry-run</code> and check the parts that it would delete: the runs, the caches, the databases and the tools. Then run <code>kalkan clean --all</code> and answer <code>y</code> to the question. At the end, the command prints the steps that remain.</p>
+              <div class="code"><pre><code>kalkan clean --all --dry-run
+kalkan clean --all</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">03</span><div class="step">
+              <p class="tr" lang="tr">Plugin'i kaldır. Komut veri klasörünü siler.</p>
+              <p class="en" lang="en">Remove the plugin. The command deletes the data folder.</p>
+              <div class="code"><pre><code>claude plugin uninstall kalkan@kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">04</span><div class="step">
+              <p class="tr" lang="tr">Marketplace kaydını kaldır.</p>
+              <p class="en" lang="en">Remove the marketplace entry.</p>
+              <div class="code"><pre><code>claude plugin marketplace remove kalkan</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+            </div></li>
+            <li><span aria-hidden="true">05</span><div class="step">
+              <p class="tr" lang="tr"><b>Dikkat:</b> Önce 1. adımı yap. Bu komut bütün raporları da siler.</p>
+              <p class="en" lang="en"><b>Caution:</b> Do step 1 first. This command also deletes all reports.</p>
+              <p class="tr" lang="tr">Denetimler klasörünü sil. 2. adımdan sonra bu klasör boştur. <code>KALKAN_RUNS_DIR</code> ayarladıysan o klasörü sil.</p>
+              <p class="en" lang="en">Delete the runs folder. After step 2, this folder is empty. If you set <code>KALKAN_RUNS_DIR</code>, delete that folder.</p>
+              <div class="tabbed" data-tabs>
+                <div class="tabs" role="tablist" aria-label="Shell">
+                  <button type="button" role="tab" aria-selected="true" data-tab="sh">Linux · macOS · Git Bash</button>
+                  <button type="button" role="tab" aria-selected="false" data-tab="ps">PowerShell</button>
+                </div>
+                <div class="code" data-pane="sh"><pre><code>rm -rf ~/kalkan-runs</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+                <div class="code" data-pane="ps" hidden><pre><code>Remove-Item -Recurse -Force "$HOME\kalkan-runs"</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+              </div>
+            </div></li>
+          </ol>
+          <h3><span class="tr" lang="tr">Son kontrol</span><span class="en" lang="en">Final check</span></h3>
+          <ul class="files">
+            <li><code>~/.claude/plugins/cache/kalkan/</code><span class="tr" lang="tr">Claude Code bu klasörü 14 gün sonra arka planda siler, ama yalnız en az bir plugin kuruluyken. Başka plugin yoksa veya klasörü hemen silmek istersen önce bütün Claude Code oturumlarını kapat. Sonra klasörü sil.</span><span class="en" lang="en">Claude Code deletes this folder 14 days later in a background cleanup, but only while at least one plugin is installed. If no other plugin is installed, or to delete the folder now, close every Claude Code session first. Then delete the folder.</span></li>
+            <li><code>~/.claude/plugins/marketplaces/kalkan/</code><span class="tr" lang="tr">Marketplace kaydını kaldırdıktan sonra bu klasör hâlâ duruyorsa onu sil.</span><span class="en" lang="en">If this folder is still there after you removed the marketplace entry, delete it.</span></li>
+            <li><b class="tr" lang="tr">Docker imajları</b><b class="en" lang="en">Docker images</b><span class="tr" lang="tr"><code>kalkan sandbox pull</code> ile temel imaj indirdiysen onları Docker'dan sil. Yalnız kalkan için indirdiğin imajları sil, çünkü başka projeler de aynı imajları kullanabilir. Önce <code>docker image ls</code> ile listeyi gör.</span><span class="en" lang="en">If you pulled base images with <code>kalkan sandbox pull</code>, delete them from Docker. Delete only the images that you pulled for kalkan, because other projects can use the same images. First, see the list with <code>docker image ls</code>.</span></li>
+          </ul>
+          <div class="code"><pre><code>docker image rm python:3.12-slim node:22-slim golang:1.26 eclipse-temurin:21-jdk php:8.3-cli ruby:3.3-slim mcr.microsoft.com/dotnet/sdk:10.0</code></pre><button class="copy" type="button" aria-label="Kopyala / Copy"><svg aria-hidden="true"><use href="#i-copy"/></svg></button></div>
+          <p class="tr" lang="tr"><code>PATH</code>'te, sistem paketlerinde ve servislerde geri alınacak bir şey yok. Python, git ve Claude Code kalkan'dan önce de vardı. Onları kaldırma kararı senindir.</p>
+          <p class="en" lang="en">There is nothing to undo in <code>PATH</code>, in the system packages or in the services. Python, git and Claude Code were there before kalkan. The decision to remove them is yours.</p>
+          <a class="btn" href="docs"><span class="tr" lang="tr">Başa dön: Başlangıç →</span><span class="en" lang="en">Back to the start: Getting started →</span></a>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</main>
+<footer class="foot">
+  <div class="frame">
+    <div class="foot-in">
+      <div>
+        <a class="logo" href="./" aria-label="kalkan">kalkan<svg viewBox="0 0 6 7" aria-hidden="true"><use href="#stop"/></svg></a>
+        <p lang="en">Last stop before production.</p>
+        <p><a class="mail-link" href="mailto:kalkan@dtechcloud.com">kalkan@dtechcloud.com</a></p>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Ürün</span><span class="en" lang="en">Product</span></h4>
+        <ul><li><a href="how-it-works"><span class="tr" lang="tr">Nasıl çalışır</span><span class="en" lang="en">How it works</span></a></li><li><a href="tools"><span class="tr" lang="tr">Araçlar</span><span class="en" lang="en">Tools</span></a></li><li><a href="usage"><span class="tr" lang="tr">Kullanım</span><span class="en" lang="en">Usage</span></a></li><li><a href="security"><span class="tr" lang="tr">Güvenlik</span><span class="en" lang="en">Security</span></a></li></ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Daha fazla</span><span class="en" lang="en">More</span></h4>
+        <ul>
+          <li><a href="faq"><span class="tr" lang="tr">SSS</span><span class="en" lang="en">FAQ</span></a></li>
+          <li><a href="docs"><span class="tr" lang="tr">Dokümantasyon</span><span class="en" lang="en">Docs</span></a></li>
+        </ul>
+      </div>
+      <div>
+        <h4><span class="tr" lang="tr">Kaynak</span><span class="en" lang="en">Source</span></h4>
+        <ul>
+          <li><a href="https://github.com/dtechcloud/kalkan" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/LICENSE" target="_blank" rel="noopener"><span class="tr" lang="tr">MIT lisansı</span><span class="en" lang="en">MIT license</span></a></li>
+          <li><a href="https://github.com/dtechcloud/kalkan/blob/main/THIRD_PARTY.md" target="_blank" rel="noopener">THIRD_PARTY.md</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 kalkan · MIT</span>
+      <span><span class="tr" lang="tr">Opengrep, Trivy, diğer araçlar ve paketle gelen kural paketleri kendi lisanslarıyla gelir. Ürün adları sahiplerine aittir.</span><span class="en" lang="en">Opengrep, Trivy, the other tools and the bundled rule packs come with their own licenses. Product names belong to their owners.</span></span>
+    </div>
+  </div>
+</footer>
+<script src="assets/site.js"></script>
+<script src="assets/analytics.js"></script>
+</body>
+</html>

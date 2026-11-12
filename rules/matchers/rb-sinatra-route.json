@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "rb-sinatra-route",
+  "description": "Sinatra route blocks (gated on Sinatra)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rb"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,spec,Test,Spec}/**",
+    "**/{test,spec,Test,Spec}.*",
+    "**/*{.,-}{test,spec,Test,Spec}.*",
+    "**/{test,spec}-*/**",
+    "**/*-{test,spec}/**"
+  ],
+  "requires": {
+    "tech": [
+      "ruby",
+      "sinatra"
+    ],
+    "sentinel_files": [
+      "**/Gemfile",
+      "**/Gemfile.lock",
+      "**/*.gemspec"
+    ],
+    "sentinel_contains": [
+      "\\bsinatra\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*(?:get|post|put|patch|delete|options|head)\\s+['\"][^'\"]+['\"]\\s+do\\b",
+      "flags": "m",
+      "label": "Sinatra <verb> '/path' do ... end"
+    },
+    {
+      "regex": "^\\s*before\\s+do\\b",
+      "flags": "m",
+      "label": "before do — auth filter"
+    },
+    {
+      "regex": "^\\s*halt\\s+\\d+",
+      "flags": "m",
+      "label": "halt — auth response"
+    },
+    {
+      "regex": "\\bparams\\[",
+      "flags": "",
+      "label": "params[:x] (untrusted input)"
+    }
+  ],
+  "examples": [
+    "get '/users' do",
+    "post \"/login\" do",
+    "put '/items/:id' do",
+    "patch \"/profile\" do",
+    "delete '/sessions/:id' do",
+    "options \"/api\" do",
+    "head '/healthz' do",
+    "before do",
+    "  halt 401, 'unauthorized'",
+    "name = params[:name]"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rb-sinatra-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [sinatra]; kalkan uses tech ruby (or sinatra) and a manifest that names sinatra."
+}

@@ -1,0 +1,66 @@
+{
+  "version": 1,
+  "slug": "untrusted-redirect-following",
+  "description": "Server-side fetch follows redirects — SSRF bypass risk if URL is caller-influenced",
+  "class": "ssrf",
+  "cwe": [
+    "CWE-918"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**",
+    "**/*.client.{ts,tsx,js,mjs}"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "\\bfetch\\s*\\(|\\baxios\\b|\\bgot\\s*\\(|\\bundici\\b|\\bnode-fetch\\b|\\bphin\\b"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bredirect\\s*:\\s*[\"']follow[\"']",
+      "flags": "",
+      "label": "explicit redirect: 'follow' — verify URL is allowlisted"
+    },
+    {
+      "regex": "\\b(?:fetch|axios\\.\\s*(?:get|post|put|delete|head)|got|got\\.\\s*(?:get|post))\\s*\\(\\s*[^,)]{0,300}\\b(?:url|targetUrl|callbackUrl|redirectUrl|webhookUrl|companyUrl|websiteUrl|domainUrl|imageUrl|fetchUrl|next|return_to|returnTo|destination|location)\\b",
+      "flags": "",
+      "label": "fetch with a caller-style URL — default redirect: follow",
+      "not_near": [
+        {
+          "regex": "\\bredirect\\s*:\\s*[\"'](?:manual|error)[\"']",
+          "after": 4
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "await fetch(targetUrl, { redirect: \"follow\" });",
+    "await fetch(callbackUrl);",
+    "const res = await fetch(redirectUrl);",
+    "const r = await fetch(webhookUrl);",
+    "await axios.get(companyUrl);",
+    "await axios.post(websiteUrl, payload);",
+    "await got(domainUrl);",
+    "await got(imageUrl);\ngot.get(imageUrl);",
+    "await fetch(fetchUrl, { method: \"GET\" });",
+    "await fetch(returnTo, { method: \"GET\" });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/untrusted-redirect-following.ts"
+  },
+  "notes": "The URL-variable check on the first call argument is folded into the regex; the argument text before the variable is bounded to 300 characters (quadratic backtracking on long lines). The deepsec label quotes the argument; the port uses a fixed label."
+}

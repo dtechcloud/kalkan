@@ -1,0 +1,105 @@
+{
+  "version": 1,
+  "slug": "dev-auth-bypass",
+  "description": "Development auth bypasses — dev endpoints, NODE_ENV guards, test tokens in production",
+  "class": "authn",
+  "cwe": [
+    "CWE-288"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "/auth/dev|/api/dev|/dev/login|/test/auth",
+      "flags": "",
+      "label": "Dev/test auth endpoint — may be reachable in production",
+      "not_near": [
+        {
+          "regex": "^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "NODE_ENV.{0,40}(?:development|test).{0,80}(?:skip|bypass|disable|return|mock).{0,40}auth",
+      "flags": "i",
+      "label": "Auth skipped in development/test — check production guard",
+      "not_near": [
+        {
+          "regex": "^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "(?:skip|bypass|disable|mock).{0,40}auth.{0,80}NODE_ENV",
+      "flags": "i",
+      "label": "Auth bypass gated by NODE_ENV — check production guard",
+      "not_near": [
+        {
+          "regex": "^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "if\\s*\\(\\s*(?:!?\\s*)?(?:isDev|isTest|isLocal|IS_DEV|IS_TEST)",
+      "flags": "",
+      "label": "Auth conditional on isDev/isTest flag — fails open risk",
+      "not_near": [
+        {
+          "regex": "^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "test[_-]?(?:token|bearer|api[_-]?key|secret)",
+      "flags": "i",
+      "label": "Test token/secret reference — may be accepted in production",
+      "not_near": [
+        {
+          "regex": "^\\s*(?://|\\*)"
+        }
+      ]
+    },
+    {
+      "regex": "mock[_-]?(?:session|user|auth)|auto[_-]?login|fake[_-]?auth",
+      "flags": "i",
+      "label": "Mock session/auth pattern — check production guard",
+      "not_near": [
+        {
+          "regex": "^\\s*(?://|\\*)"
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "app.post(\"/auth/dev\", (req, res) => {\n  res.json({ token: \"dev-token\" });\n});",
+    "router.get(\"/dev/login\", handler);",
+    "app.post(\"/test/auth/login\", handler);",
+    "if (NODE_ENV === \"development\") return skipAuthMiddleware();",
+    "if (NODE_ENV === \"test\") return mockAuthResponse();",
+    "function shouldBypassAuth() { return skipAuthHandler() && NODE_ENV; }",
+    "if (isDev) {\n  ctx.user = { id: 1, role: \"admin\" };\n}",
+    "if (IS_TEST) return adminUser;",
+    "const token = headers.get(\"test-token\") || \"\";",
+    "if (apiKey === \"test_api_key_12345\") return ok();",
+    "const session = createMockSession({ userId: 1 });",
+    "await autoLogin(req);",
+    "useFakeAuth(req);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/dev-auth-bypass.ts"
+  },
+  "notes": "Comment lines (// or *) are skipped as upstream."
+}

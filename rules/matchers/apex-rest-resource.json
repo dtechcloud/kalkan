@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "slug": "apex-rest-resource",
+  "description": "Salesforce Apex REST resources and class sharing (gated on Apex)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.cls"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests,TEST,TESTS}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/sfdx-project.json",
+      "**/*.cls-meta.xml",
+      "**/*.trigger-meta.xml"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "@RestResource\\s*\\(\\s*urlMapping\\s*=\\s*'[^']+'\\s*\\)",
+      "flags": "",
+      "label": "@RestResource declaration"
+    },
+    {
+      "regex": "@Http(?:Get|Post|Put|Patch|Delete|Head)\\b",
+      "flags": "",
+      "label": "@HttpVerb method"
+    },
+    {
+      "regex": "\\bwithout\\s+sharing\\b",
+      "flags": "",
+      "label": "without sharing — bypasses record-level security (REVIEW)"
+    },
+    {
+      "regex": "\\bwith\\s+sharing\\b",
+      "flags": "",
+      "label": "with sharing — record security applied"
+    },
+    {
+      "regex": "\\bAuraEnabled\\s*\\(",
+      "flags": "",
+      "label": "@AuraEnabled — exposed to Lightning"
+    }
+  ],
+  "examples": [
+    "@RestResource(urlMapping='/Account/*')\nglobal with sharing class AccountResource {}",
+    "@RestResource(urlMapping = '/v1/users/*')\nglobal class UserResource {}",
+    "@HttpGet\nglobal static Account doGet() { return null; }",
+    "@HttpPost\nglobal static String doPost(String name) { return name; }",
+    "@HttpPut\nglobal static void doPut() {}",
+    "@HttpPatch\nglobal static void doPatch() {}",
+    "@HttpDelete\nglobal static void doDelete() {}",
+    "@HttpHead\nglobal static void doHead() {}",
+    "public without sharing class AdminOps {}",
+    "global with sharing class SafeOps {}",
+    "@AuraEnabled(cacheable=true)\npublic static List<Account> getAccounts() { return null; }"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/apex-rest-resource.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [apex]; kalkan uses a Salesforce DX project or Apex metadata file."
+}

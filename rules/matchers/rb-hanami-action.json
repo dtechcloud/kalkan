@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "slug": "rb-hanami-action",
+  "description": "Hanami action classes (gated on Hanami)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/app/actions/**/*.rb",
+    "**/actions/**/*.rb"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,spec,Test,Spec}/**",
+    "**/{test,spec,Test,Spec}.*",
+    "**/*{.,-}{test,spec,Test,Spec}.*",
+    "**/{test,spec}-*/**",
+    "**/*-{test,spec}/**"
+  ],
+  "requires": {
+    "tech": [
+      "ruby",
+      "hanami"
+    ],
+    "sentinel_files": [
+      "**/Gemfile",
+      "**/Gemfile.lock",
+      "**/*.gemspec"
+    ],
+    "sentinel_contains": [
+      "\\bhanami\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^class\\s+\\w+\\s*<\\s*(?:Hanami::Action|App::Action)\\b",
+      "flags": "m",
+      "label": "Hanami action subclass"
+    },
+    {
+      "regex": "^\\s*def\\s+handle\\s*\\(\\s*request\\s*,\\s*response\\s*\\)",
+      "flags": "m",
+      "label": "handle(request, response) entry"
+    },
+    {
+      "regex": "^\\s*include\\s+Deps\\[\\s*['\"][^'\"]+['\"]\\s*\\]",
+      "flags": "m",
+      "label": "Deps[] DI accessor"
+    }
+  ],
+  "examples": [
+    "class Show < Hanami::Action",
+    "class Create < App::Action",
+    "  def handle(request, response)",
+    "  def handle( request , response )",
+    "  include Deps[\"repositories.user_repo\"]",
+    "  include Deps['services.mailer']"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rb-hanami-action.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [hanami]; kalkan uses tech ruby (or hanami) and a manifest that names hanami."
+}

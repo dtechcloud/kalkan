@@ -1,0 +1,114 @@
+{
+  "engine": "osv-scanner",
+  "target_root": "C:\\Users\\DevKüçük\\kalkan\\runs\\20261015T120000Z-ab12\\target",
+  "sarif_file": "runs/20261015T120000Z-ab12/scans/osv-scanner.sarif",
+  "warnings": [],
+  "candidates": [
+    {
+      "id": "CAND-3F5599BBB50FC7BE",
+      "engine": "osv-scanner",
+      "rule_id": "CVE-2020-28500",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "CVE-2020-28500: Regular Expression Denial of Service (ReDoS) in lodash",
+      "message": "Package 'lodash@4.17.20' is vulnerable to 'CVE-2020-28500' (also known as 'GHSA-29mw-wpgm-hmr9').",
+      "file": "package-lock.json",
+      "start_line": null,
+      "end_line": null,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "5.3",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "npm",
+        "package": "lodash",
+        "version": "4.17.20",
+        "vuln_ids": [
+          "CVE-2020-28500",
+          "GHSA-29mw-wpgm-hmr9"
+        ],
+        "fixed_versions": [],
+        "cvss_score": 5.3,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/osv-scanner.sarif",
+        "run_index": 0,
+        "result_index": 0
+      }
+    },
+    {
+      "id": "CAND-4F1BD8C7B1E96519",
+      "engine": "osv-scanner",
+      "rule_id": "CVE-2021-23337",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "CVE-2021-23337: Command Injection in lodash",
+      "message": "Package 'lodash@4.17.20' is vulnerable to 'CVE-2021-23337' (also known as 'GHSA-35jh-r3h4-6jhm').",
+      "file": "package-lock.json",
+      "start_line": null,
+      "end_line": null,
+      "snippet": "",
+      "severity": "high",
+      "tool_severity": "7.2",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "npm",
+        "package": "lodash",
+        "version": "4.17.20",
+        "vuln_ids": [
+          "CVE-2021-23337",
+          "GHSA-35jh-r3h4-6jhm"
+        ],
+        "fixed_versions": [],
+        "cvss_score": 7.2,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/osv-scanner.sarif",
+        "run_index": 0,
+        "result_index": 1
+      }
+    },
+    {
+      "id": "CAND-B58164445C5D62CE",
+      "engine": "osv-scanner",
+      "rule_id": "CVE-2023-32681",
+      "class": "vulnerable-dependency",
+      "cwe": [],
+      "title": "CVE-2023-32681: Unintended leak of Proxy-Authorization header in requests",
+      "message": "Package 'requests@2.25.1' is vulnerable to 'CVE-2023-32681' (also known as 'GHSA-j8r2-6x86-q33q', 'PYSEC-2023-74').",
+      "file": "requirements.txt",
+      "start_line": null,
+      "end_line": null,
+      "snippet": "",
+      "severity": "medium",
+      "tool_severity": "6.1",
+      "confidence": null,
+      "tags": [],
+      "fingerprints": {},
+      "sca": {
+        "ecosystem": "PyPI",
+        "package": "requests",
+        "version": "2.25.1",
+        "vuln_ids": [
+          "CVE-2023-32681",
+          "GHSA-j8r2-6x86-q33q",
+          "PYSEC-2023-74"
+        ],
+        "fixed_versions": [],
+        "cvss_score": 6.1,
+        "cvss_vector": null
+      },
+      "raw": {
+        "sarif_file": "runs/20261015T120000Z-ab12/scans/osv-scanner.sarif",
+        "run_index": 0,
+        "result_index": 2
+      }
+    }
+  ]
+}

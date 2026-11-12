@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "slug": "drizzle-mass-assignment",
+  "description": "Drizzle insert/update spreading request body — column-level mass assignment risk",
+  "class": "mass-assignment",
+  "cwe": [
+    "CWE-915"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "drizzle"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"drizzle-orm\""
+    ]
+  },
+  "file_contains": [
+    "\\bfrom\\s+[\"'](?:drizzle-orm[^\"']*|@repo/db[^\"']*)[\"']"
+  ],
+  "patterns": [
+    {
+      "regex": "\\.values\\s*\\(\\s*(?:req(?:uest)?\\.body|body|payload|input|formData|data|json|args|params)\\s*\\)",
+      "flags": "",
+      "label": ".values(untrusted) — direct mass assignment"
+    },
+    {
+      "regex": "\\.values\\s*\\(\\s*\\{\\s*\\.\\.\\.(?:req(?:uest)?\\.body|body|payload|input|formData|data|json|args|params)\\b",
+      "flags": "",
+      "label": ".values({ ...untrusted }) — spread mass assignment"
+    },
+    {
+      "regex": "\\.set\\s*\\(\\s*(?:req(?:uest)?\\.body|body|payload|input|formData|data|json|args|params)\\s*\\)",
+      "flags": "",
+      "label": ".set(untrusted) — update mass assignment"
+    },
+    {
+      "regex": "\\.set\\s*\\(\\s*\\{\\s*\\.\\.\\.(?:req(?:uest)?\\.body|body|payload|input|formData|data|json|args|params)\\b",
+      "flags": "",
+      "label": ".set({ ...untrusted }) — spread update mass assignment"
+    }
+  ],
+  "examples": [
+    "import { users } from \"drizzle-orm\";\nawait db.insert(users).values(req.body);",
+    "import { users } from \"drizzle-orm\";\nawait db.insert(users).values({ ...req.body });",
+    "import { posts } from \"drizzle-orm\";\nawait db.insert(posts).values(payload);",
+    "import { posts } from \"drizzle-orm\";\nawait db.insert(posts).values({ ...input });",
+    "import { users } from \"drizzle-orm\";\nawait db.update(users).set(body);",
+    "import { users } from \"drizzle-orm\";\nawait db.update(users).set({ ...request.body });",
+    "import { users } from \"@repo/db\";\nawait db.insert(users).values({ ...formData });",
+    "import { users } from \"drizzle-orm\";\nawait db.update(users).set({ ...data });"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/drizzle-mass-assignment.ts"
+  },
+  "notes": "Gate: deepsec tech [drizzle]; kalkan uses tech node (or drizzle) and a manifest that names drizzle."
+}

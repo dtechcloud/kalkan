@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "js-socketio-handler",
+  "description": "Socket.IO event handlers — entry-point surface (gated on socketio)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "socketio"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"socket\\.io\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bio\\.on\\s*\\(\\s*['\"]connection['\"]",
+      "flags": "",
+      "label": "io.on('connection', ...) — connection entry"
+    },
+    {
+      "regex": "\\bsocket\\.on\\s*\\(\\s*['\"][^'\"]+['\"]",
+      "flags": "",
+      "label": "socket.on('event', handler)"
+    },
+    {
+      "regex": "\\bio\\.use\\s*\\(",
+      "flags": "",
+      "label": "io.use(authMiddleware) — auth gate"
+    },
+    {
+      "regex": "\\bsocket\\.handshake\\.(?:auth|headers|query)\\b",
+      "flags": "",
+      "label": "handshake.auth/headers/query (untrusted input)"
+    }
+  ],
+  "examples": [
+    "io.on('connection', (socket) => { console.log('hi') })",
+    "io.on(\"connection\", socket => {})",
+    "socket.on('chat:message', (msg) => broadcast(msg))",
+    "socket.on(\"disconnect\", () => {})",
+    "io.use((socket, next) => next())",
+    "const token = socket.handshake.auth.token",
+    "const ua = socket.handshake.headers[\"user-agent\"]",
+    "const room = socket.handshake.query.room"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-socketio-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [socketio]; kalkan uses tech node (or socketio) and a manifest that names socketio."
+}

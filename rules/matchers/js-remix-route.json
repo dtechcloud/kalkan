@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "js-remix-route",
+  "description": "Remix route loaders and actions (gated on Remix)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/app/routes/**/*.{ts,tsx,js,jsx}",
+    "**/routes/**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "remix"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"@remix-run/[\\w-]+\""
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "export\\s+(?:async\\s+)?(?:const|function)\\s+(?:loader|action)\\b",
+      "flags": "",
+      "label": "Remix loader/action export"
+    },
+    {
+      "regex": "export\\s+default\\s+function\\s+\\w+",
+      "flags": "",
+      "label": "Remix default export route component"
+    },
+    {
+      "regex": "\\bjson\\s*\\(\\s*\\{[^}]*\\}\\s*,\\s*\\{\\s*headers",
+      "flags": "",
+      "label": "json() with custom headers (auth response)"
+    },
+    {
+      "regex": "\\brequireUser(?:Id)?\\s*\\(",
+      "flags": "",
+      "label": "common Remix auth helper"
+    }
+  ],
+  "examples": [
+    "export const loader = async ({ request }) => json({});",
+    "export const action = async ({ request }) => redirect(\"/x\");",
+    "export async function loader({ request }) { return json({}); }",
+    "export async function action({ request }) {}",
+    "export default function Route() { return null; }",
+    "return json({ user }, { headers: { \"Set-Cookie\": session } });",
+    "await requireUserId(request);",
+    "const userId = await requireUser(request);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-remix-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [remix]; kalkan uses tech node (or remix) and a manifest that names remix."
+}

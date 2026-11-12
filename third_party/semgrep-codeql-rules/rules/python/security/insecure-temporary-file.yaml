@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-py-insecure-temporary-file
+    message: >-
+      Call to deprecated function $FUNC may be insecure. These functions create
+      temporary files with predictable names which can lead to race conditions.
+      Use tempfile.mkstemp() or tempfile.TemporaryFile() instead.
+    severity: ERROR
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-377: Insecure Temporary File"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/377.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-377/InsecureTemporaryFile.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-377/InsecureTemporaryFile.ql
+    pattern-either:
+      - pattern: tempfile.mktemp(...)
+      - pattern: os.tmpnam(...)
+      - pattern: os.tempnam(...)

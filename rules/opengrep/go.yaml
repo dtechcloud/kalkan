@@ -1,0 +1,556 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for Go (net/http, gin, echo and the standard library).
+# Original rules written for kalkan. Rule ID form: kalkan.go.<class>.<name>.
+rules:
+  - id: kalkan.go.sqli.tainted-sql-string
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [go]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is formatted into a SQL statement. An attacker can change the
+      query. Keep the SQL text constant and pass the values as arguments, for example
+      db.Query("... WHERE name = ?", name).
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://go.dev/doc/database/sql-injection
+      category: security
+      technology: [go, database-sql, gorm, sqlx]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).Header'
+          - pattern: '($REQ : *http.Request).Body'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - pattern: '($REQ : *http.Request).PathValue(...)'
+          - pattern: '($REQ : *http.Request).Cookie(...)'
+          - pattern: '($REQ : *http.Request).Referer()'
+          - pattern: mux.Vars(...)
+          - patterns:
+              - pattern: '($CTX : *gin.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(Query|DefaultQuery|Param|PostForm|DefaultPostForm|GetHeader|Cookie|GetRawData|QueryArray|PostFormArray|QueryMap)$
+          - patterns:
+              - pattern: '($CTX : echo.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(QueryParam|QueryParams|Param|FormValue|FormParams|Cookie|QueryString)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseUint(...)
+          - pattern: strconv.ParseFloat(...)
+          - pattern: strconv.ParseBool(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.Query($QUERY, ...)
+              - pattern: $DB.QueryRow($QUERY, ...)
+              - pattern: $DB.Exec($QUERY, ...)
+              - pattern: $DB.Prepare($QUERY)
+              - pattern: $DB.QueryContext($CTX, $QUERY, ...)
+              - pattern: $DB.QueryRowContext($CTX, $QUERY, ...)
+              - pattern: $DB.ExecContext($CTX, $QUERY, ...)
+              - pattern: $DB.PrepareContext($CTX, $QUERY)
+              - pattern: $DB.Raw($QUERY, ...)
+              - pattern: $DB.Queryx($QUERY, ...)
+              - pattern: $DB.Select($DEST, $QUERY, ...)
+          - pattern-not: '($CTX : *gin.Context).$METHOD(...)'
+          - pattern-not: '($CTX : echo.Context).$METHOD(...)'
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.go.os-command-injection.tainted-shell-command
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [go]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a shell command line or selects the program to run. An
+      attacker can run other commands on the server. Call exec.Command() with a fixed program and
+      pass the value as a separate argument, never through "sh -c".
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://pkg.go.dev/os/exec
+      category: security
+      technology: [go]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).Header'
+          - pattern: '($REQ : *http.Request).Body'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - pattern: '($REQ : *http.Request).PathValue(...)'
+          - pattern: '($REQ : *http.Request).Cookie(...)'
+          - pattern: mux.Vars(...)
+          - patterns:
+              - pattern: '($CTX : *gin.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(Query|DefaultQuery|Param|PostForm|DefaultPostForm|GetHeader|Cookie|GetRawData|QueryArray|PostFormArray|QueryMap)$
+          - patterns:
+              - pattern: '($CTX : echo.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(QueryParam|QueryParams|Param|FormValue|FormParams|Cookie|QueryString)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseUint(...)
+          - pattern: strconv.ParseFloat(...)
+          - pattern: strconv.ParseBool(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: exec.Command($SHELL, "-c", $CMD, ...)
+              - pattern: exec.CommandContext($CTX, $SHELL, "-c", $CMD, ...)
+              - pattern: exec.Command($SHELL, "/c", $CMD, ...)
+              - pattern: exec.CommandContext($CTX, $SHELL, "/c", $CMD, ...)
+              - pattern: exec.Command($SHELL, "-Command", $CMD, ...)
+              - pattern: exec.Command($CMD, ...)
+              - pattern: exec.CommandContext($CTX, $CMD, ...)
+              - pattern: syscall.Exec($CMD, ...)
+          - focus-metavariable: $CMD
+
+  - id: kalkan.go.ssrf.tainted-request-url
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [go]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound HTTP request. An attacker can
+      reach internal services or cloud metadata endpoints. Look the target up in a fixed map of
+      allowed URLs, or parse it and check the scheme and host against an allowlist.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [go, net-http]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).Header'
+          - pattern: '($REQ : *http.Request).Body'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - pattern: '($REQ : *http.Request).PathValue(...)'
+          - pattern: '($REQ : *http.Request).Cookie(...)'
+          - pattern: mux.Vars(...)
+          - patterns:
+              - pattern: '($CTX : *gin.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(Query|DefaultQuery|Param|PostForm|DefaultPostForm|GetHeader|Cookie|GetRawData|QueryArray|PostFormArray|QueryMap)$
+          - patterns:
+              - pattern: '($CTX : echo.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(QueryParam|QueryParams|Param|FormValue|FormParams|Cookie|QueryString)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseUint(...)
+          - pattern: strconv.ParseFloat(...)
+          - pattern: strconv.ParseBool(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: http.Get($URL)
+              - pattern: http.Head($URL)
+              - pattern: http.Post($URL, ...)
+              - pattern: http.PostForm($URL, ...)
+              - pattern: http.NewRequest($METHOD, $URL, ...)
+              - pattern: http.NewRequestWithContext($CTX, $METHOD, $URL, ...)
+              - pattern: '($CLIENT : *http.Client).Get($URL)'
+              - pattern: '($CLIENT : *http.Client).Head($URL)'
+              - pattern: '($CLIENT : *http.Client).Post($URL, ...)'
+              - pattern: '($CLIENT : *http.Client).PostForm($URL, ...)'
+          - focus-metavariable: $URL
+
+  - id: kalkan.go.path-traversal.tainted-file-path
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [go]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. filepath.Join() does not stop "../"
+      sequences, so an attacker can read or change files outside the intended folder. Reduce the
+      name with filepath.Base(), or open files through os.OpenRoot() or os.DirFS().
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://go.dev/blog/osroot
+      category: security
+      technology: [go, net-http]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).Header'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - pattern: '($REQ : *http.Request).PathValue(...)'
+          - pattern: '($REQ : *http.Request).Cookie(...)'
+          - pattern: mux.Vars(...)
+          - patterns:
+              - pattern: '($CTX : *gin.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(Query|DefaultQuery|Param|PostForm|DefaultPostForm|GetHeader|Cookie|QueryArray|PostFormArray|QueryMap)$
+          - patterns:
+              - pattern: '($CTX : echo.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(QueryParam|QueryParams|Param|FormValue|FormParams|Cookie|QueryString)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseUint(...)
+          - pattern: strconv.ParseFloat(...)
+          - pattern: strconv.ParseBool(...)
+      - pattern-either:
+          - pattern: filepath.Base(...)
+          - pattern: path.Base(...)
+          - pattern: filepath.Clean("/" + $NAME)
+          - pattern: path.Clean("/" + $NAME)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: os.Open($PATH)
+              - pattern: os.OpenFile($PATH, ...)
+              - pattern: os.ReadFile($PATH)
+              - pattern: ioutil.ReadFile($PATH)
+              - pattern: os.Create($PATH)
+              - pattern: os.WriteFile($PATH, ...)
+              - pattern: ioutil.WriteFile($PATH, ...)
+              - pattern: os.Remove($PATH)
+              - pattern: os.RemoveAll($PATH)
+              - pattern: http.ServeFile($W, $R, $PATH)
+              - pattern: '($CTX : *gin.Context).File($PATH)'
+              - pattern: '($CTX : echo.Context).File($PATH)'
+          - focus-metavariable: $PATH
+
+  - id: kalkan.go.xss.tainted-html-response
+    mode: taint
+    options:
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [go]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is written to the response without HTML escaping, or it is
+      converted to template.HTML, which turns off escaping. An attacker can run script in the
+      browser of another user. Render the page with html/template, or escape the value with
+      html.EscapeString().
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://pkg.go.dev/html/template
+      category: security
+      technology: [go, net-http]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).Header'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - pattern: '($REQ : *http.Request).PathValue(...)'
+          - pattern: '($REQ : *http.Request).Cookie(...)'
+          - pattern: mux.Vars(...)
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseUint(...)
+          - pattern: strconv.ParseFloat(...)
+          - pattern: strconv.ParseBool(...)
+      - pattern-either:
+          - pattern: html.EscapeString(...)
+          - pattern: template.HTMLEscapeString(...)
+          - pattern: url.QueryEscape(...)
+          - pattern: url.PathEscape(...)
+          - pattern: strconv.Quote(...)
+          - pattern: json.Marshal(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: 'fmt.Fprintf(($W : http.ResponseWriter), ...)'
+              - pattern: 'fmt.Fprint(($W : http.ResponseWriter), ...)'
+              - pattern: 'fmt.Fprintln(($W : http.ResponseWriter), ...)'
+              - pattern: 'io.WriteString(($W : http.ResponseWriter), ...)'
+              - pattern: '($W : http.ResponseWriter).Write(...)'
+              - pattern: template.HTML(...)
+              - pattern: template.JS(...)
+              - pattern: template.HTMLAttr(...)
+
+  - id: kalkan.go.open-redirect.tainted-redirect-target
+    mode: taint
+    options:
+      taint_assume_safe_indexes: true
+      taint_assume_safe_numbers: true
+      taint_assume_safe_booleans: true
+    languages: [go]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Look the target up in a fixed map of internal paths,
+      or accept only relative paths that start with a single "/".
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Unvalidated_Redirects_and_Forwards_Cheat_Sheet.html
+      category: security
+      technology: [go, net-http, gin, echo]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL.Query()'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - pattern: '($REQ : *http.Request).Referer()'
+          - pattern: '($REQ : *http.Request).Header.Get("Referer")'
+          - patterns:
+              - pattern: '($CTX : *gin.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(Query|DefaultQuery|PostForm|DefaultPostForm|GetHeader)$
+          - patterns:
+              - pattern: '($CTX : echo.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(QueryParam|FormValue)$
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: strconv.Atoi(...)
+          - pattern: strconv.ParseInt(...)
+          - pattern: strconv.ParseUint(...)
+          - pattern: strconv.ParseFloat(...)
+          - pattern: strconv.ParseBool(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: http.Redirect($W, $R, $URL, $CODE)
+              - pattern: '($CTX : *gin.Context).Redirect($CODE, $URL)'
+              - pattern: '($CTX : echo.Context).Redirect($CODE, $URL)'
+              - pattern: $W.Header().Set("Location", $URL)
+          - focus-metavariable: $URL
+
+  - id: kalkan.go.ssti.tainted-template-source
+    mode: taint
+    languages: [go]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is parsed as a Go template. An attacker can call methods of the
+      data object and of the registered functions, and with text/template also inject markup.
+      Keep the template text constant and pass user data only to Execute().
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://pkg.go.dev/text/template
+      category: security
+      technology: [go]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).URL'
+          - pattern: '($REQ : *http.Request).Form'
+          - pattern: '($REQ : *http.Request).PostForm'
+          - pattern: '($REQ : *http.Request).Body'
+          - pattern: '($REQ : *http.Request).FormValue(...)'
+          - pattern: '($REQ : *http.Request).PostFormValue(...)'
+          - patterns:
+              - pattern: '($CTX : *gin.Context).$METHOD(...)'
+              - metavariable-regex:
+                  metavariable: $METHOD
+                  regex: ^(Query|DefaultQuery|PostForm|DefaultPostForm|GetRawData)$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $PKG.New($NAME).Parse($SOURCE)
+              - pattern: $PKG.Must($PKG.New($NAME).Parse($SOURCE))
+              - pattern: '($TPL : *template.Template).Parse($SOURCE)'
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.go.crypto.weak-hash-or-cipher
+    languages: [go]
+    severity: WARNING
+    message: >-
+      This code uses a broken hash (MD5, SHA-1) or cipher (DES, 3DES, RC4). Do not use them for
+      passwords, signatures, integrity checks or encryption. Hash passwords with
+      crypto/pbkdf2, scrypt, argon2 or bcrypt, and encrypt with AES-GCM.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-328: Use of Weak Hash"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://pkg.go.dev/crypto/pbkdf2
+      category: security
+      technology: [go]
+    pattern-either:
+      - pattern: md5.New()
+      - pattern: md5.Sum(...)
+      - pattern: sha1.New()
+      - pattern: sha1.Sum(...)
+      - pattern: des.NewCipher(...)
+      - pattern: des.NewTripleDESCipher(...)
+      - pattern: rc4.NewCipher(...)
+
+  - id: kalkan.go.cors.reflected-origin-with-credentials
+    mode: taint
+    languages: [go]
+    severity: WARNING
+    message: >-
+      The handler copies the Origin request header into Access-Control-Allow-Origin and also
+      allows credentials. Any web site can then send authenticated requests and read the answers.
+      Compare the origin with a fixed allowlist and send only an allowed value.
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://portswigger.net/web-security/cors
+      category: security
+      technology: [go, net-http]
+    pattern-sources:
+      - pattern-either:
+          - pattern: '($REQ : *http.Request).Header.Get("Origin")'
+          - pattern: '($REQ : *http.Request).Header["Origin"]'
+          - pattern: '($CTX : *gin.Context).GetHeader("Origin")'
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $HEADERS.Set("Access-Control-Allow-Credentials", "true")
+                  ...
+              - pattern-inside: |
+                  $FIRST
+                  ...
+                  $HEADERS.Set("Access-Control-Allow-Credentials", "true")
+          - pattern-either:
+              - pattern: $HEADER.Set("Access-Control-Allow-Origin", $ORIGIN)
+              - pattern: $HEADER.Add("Access-Control-Allow-Origin", $ORIGIN)
+          - focus-metavariable: $ORIGIN
+
+  - id: kalkan.go.jwt.unverified-token
+    languages: [go]
+    severity: ERROR
+    message: >-
+      The token is parsed without a signature check (ParseUnverified), or the "none" algorithm is
+      allowed. An attacker can forge any claim. Use jwt.Parse() with a key function and
+      jwt.WithValidMethods() for the expected algorithm.
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://pkg.go.dev/github.com/golang-jwt/jwt/v5
+      category: security
+      technology: [go, golang-jwt]
+    pattern-either:
+      - pattern: $PARSER.ParseUnverified(...)
+      - pattern: jwt.UnsafeAllowNoneSignatureType

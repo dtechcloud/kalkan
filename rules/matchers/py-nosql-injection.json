@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "py-nosql-injection",
+  "description": "PyMongo / Motor NoSQL injection — \\$where with f-strings, raw aggregation pipelines fed user input",
+  "class": "nosqli",
+  "cwe": [
+    "CWE-943"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\$where['\"]\\s*:\\s*f['\"]",
+      "flags": "",
+      "label": "\"$where\" key bound to f-string — server-side JS injection"
+    },
+    {
+      "regex": "'\\$where'\\s*:\\s*f['\"]",
+      "flags": "",
+      "label": "'$where' key bound to f-string — server-side JS injection"
+    },
+    {
+      "regex": "\\.find\\s*\\(\\s*\\{[^}]{0,200}\\$where",
+      "flags": "",
+      "label": ".find() query containing $where — verify operands aren't user-controlled"
+    },
+    {
+      "regex": "\\.aggregate\\s*\\(\\s*\\[?\\s*\\{[^}]{0,400}\\$where",
+      "flags": "",
+      "label": ".aggregate() pipeline containing $where — verify operands aren't user-controlled"
+    },
+    {
+      "regex": "\\bjson\\.loads\\s*\\(\\s*request\\.(?:args|json|data)",
+      "flags": "",
+      "label": "json.loads on request body — operator smuggling into Mongo queries"
+    },
+    {
+      "regex": "\\bre\\.compile\\s*\\(\\s*request\\.",
+      "flags": "",
+      "label": "re.compile on request input — ReDoS / regex injection"
+    },
+    {
+      "regex": "\\$regex['\"]\\s*:\\s*request\\.|'\\$regex'\\s*:\\s*request\\.",
+      "flags": "",
+      "label": "$regex bound to request input — ReDoS / regex injection in MongoDB query"
+    }
+  ],
+  "examples": [
+    "coll.find({\"$where\": f\"this.x == '{name}'\"})",
+    "db.users.find({'$where': f\"this.id == {uid}\"})",
+    "Model.objects(__raw__={\"$where\": f\"this.x == '{q}'\"})",
+    "coll.aggregate([{\"$match\": {\"$where\": f\"this.score > {score}\"}}])",
+    "coll.find({\"name\": {\"$regex\": request.args.get(\"q\")}})",
+    "q = json.loads(request.json[\"filter\"])"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-nosql-injection.ts"
+  },
+  "notes": ""
+}

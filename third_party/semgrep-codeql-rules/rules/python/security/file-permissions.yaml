@@ -1,0 +1,64 @@
+rules:
+  - id: codeql-py-weak-file-permissions
+    message: >-
+      File created with overly permissive permissions. Avoid using permissions
+      like 0o777 that allow world-writable access.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-732: Incorrect Permission Assignment for Critical Resource"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/732.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-732/WeakFilePermissions.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-732/WeakFilePermissions.ql
+    pattern-either:
+      - pattern: os.chmod($PATH, 0o777)
+      - pattern: os.chmod($PATH, 0o776)
+      - pattern: os.chmod($PATH, 0o775)
+      - pattern: os.chmod($PATH, 0o774)
+      - pattern: os.chmod($PATH, 0o773)
+      - pattern: os.chmod($PATH, 0o772)
+      - pattern: os.chmod($PATH, 0o771)
+      - pattern: os.chmod($PATH, 0o770)
+      - pattern: os.chmod($PATH, 0o666)
+      - pattern: os.chmod($PATH, 0o667)
+      - pattern: os.chmod($PATH, 511)
+      - pattern: os.chmod($PATH, 438)
+      - pattern: os.open($PATH, ..., 0o777)
+      - pattern: os.open($PATH, ..., 0o666)
+      - pattern: os.mkdir($PATH, 0o777)
+      - pattern: os.makedirs($PATH, ..., mode=0o777)
+
+  - id: codeql-py-world-writable-umask
+    message: >-
+      Umask set to allow world-writable files. Use a more restrictive umask
+      like 0o022 or 0o077.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-732: Incorrect Permission Assignment for Critical Resource"
+      technology:
+        - python
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/732.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-732/WeakFilePermissions.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-732/WeakFilePermissions.ql
+    pattern-either:
+      - pattern: os.umask(0o000)
+      - pattern: os.umask(0)

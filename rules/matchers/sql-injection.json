@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "slug": "sql-injection",
+  "description": "Raw SQL string concatenation or interpolation",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "`\\s*SELECT\\s+[^`]{0,400}\\$\\{",
+      "flags": "",
+      "label": "template literal SELECT with interpolation"
+    },
+    {
+      "regex": "`\\s*INSERT\\s+[^`]{0,400}\\$\\{",
+      "flags": "",
+      "label": "template literal INSERT with interpolation"
+    },
+    {
+      "regex": "`\\s*UPDATE\\s+[^`]{0,400}\\$\\{",
+      "flags": "",
+      "label": "template literal UPDATE with interpolation"
+    },
+    {
+      "regex": "`\\s*DELETE\\s+[^`]{0,400}\\$\\{",
+      "flags": "",
+      "label": "template literal DELETE with interpolation"
+    },
+    {
+      "regex": "['\"]SELECT\\s+[^'\"]{0,400}['\"]\\s*\\+",
+      "flags": "",
+      "label": "string concat SELECT"
+    },
+    {
+      "regex": "['\"]INSERT\\s+[^'\"]{0,400}['\"]\\s*\\+",
+      "flags": "",
+      "label": "string concat INSERT"
+    },
+    {
+      "regex": "['\"]UPDATE\\s+[^'\"]{0,400}['\"]\\s*\\+",
+      "flags": "",
+      "label": "string concat UPDATE"
+    },
+    {
+      "regex": "['\"]DELETE\\s+[^'\"]{0,400}['\"]\\s*\\+",
+      "flags": "",
+      "label": "string concat DELETE"
+    },
+    {
+      "regex": "query\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "query() with interpolation"
+    },
+    {
+      "regex": "\\.raw\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": ".raw() with interpolation"
+    },
+    {
+      "regex": "LIKE\\s+['\"]?%?\\$\\{",
+      "flags": "",
+      "label": "LIKE with interpolation"
+    },
+    {
+      "regex": "LIKE\\s+['\"]%\\$\\{",
+      "flags": "",
+      "label": "LIKE '%${...}%' pattern"
+    },
+    {
+      "regex": "RLIKE\\s+['\"]?\\$\\{",
+      "flags": "",
+      "label": "RLIKE with interpolation"
+    },
+    {
+      "regex": "executeQuery\\w*\\s*\\(\\s*`[^`]*\\$\\{",
+      "flags": "",
+      "label": "executeQuery with template interpolation"
+    },
+    {
+      "regex": "sql\\.raw\\s*\\(",
+      "flags": "",
+      "label": "sql.raw() — raw SQL (verify parameterized)"
+    },
+    {
+      "regex": "sql`[^`]{0,400}\\$\\{[^}]{0,200}\\}",
+      "flags": "",
+      "label": "sql tagged template with interpolation"
+    }
+  ],
+  "examples": [
+    "const q = `SELECT * FROM users WHERE id = ${id}`;",
+    "const q = `INSERT INTO logs (msg) VALUES (${msg})`;",
+    "const q = `UPDATE users SET name = ${name} WHERE id = 1`;",
+    "const q = `DELETE FROM items WHERE id = ${id}`;",
+    "const q = \"SELECT * FROM t WHERE id =\" + id;",
+    "const q = \"INSERT INTO t VALUES (\" + v + \")\";",
+    "const q = \"UPDATE t SET x = \" + v;",
+    "const q = \"DELETE FROM t WHERE id =\" + id;",
+    "db.query(`SELECT ${col} FROM t`);",
+    "knex.raw(`SELECT ${col} FROM t`);",
+    "const c = `SELECT * FROM t WHERE name LIKE ${pat}`;",
+    "const c = `SELECT * FROM t WHERE name LIKE '%${pat}%'`;",
+    "const c = `SELECT * FROM t WHERE name RLIKE ${pat}`;",
+    "executeQuery(`SELECT * FROM t WHERE id = ${id}`);",
+    "sql.raw(rawString)",
+    "const r = sql`SELECT * FROM t WHERE id = ${id}`;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/sql-injection.ts"
+  },
+  "notes": ""
+}

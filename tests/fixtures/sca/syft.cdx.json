@@ -1,0 +1,472 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:00000000-0000-4000-8000-000000000001",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-15T23:17:21+03:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.54.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "e320885689601d1e",
+      "type": "file",
+      "name": "depapp"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:npm/depapp@1.0.0?package-id=2d1333020cd4e28e",
+      "type": "library",
+      "name": "depapp",
+      "version": "1.0.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:depapp:depapp:1.0.0:*:*:*:*:*:*:*",
+      "purl": "pkg:npm/depapp@1.0.0",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "javascript-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "javascript"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "npm"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "javascript-npm-package-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/package-lock.json"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/github.com/dgrijalva/jwt-go@v3.2.0%2Bincompatible?package-id=263a75b2c2ff4a16",
+      "type": "library",
+      "name": "github.com/dgrijalva/jwt-go",
+      "version": "v3.2.0+incompatible",
+      "cpe": "cpe:2.3:a:dgrijalva:jwt-go:v3.2.0\\+incompatible:*:*:*:*:*:*:*",
+      "purl": "pkg:golang/github.com/dgrijalva/jwt-go@v3.2.0%2Bincompatible",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "go-module-file-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "go"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "go-module"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "go-module-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:dgrijalva:jwt_go:v3.2.0\\+incompatible:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/go.mod"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/text@v0.3.5?package-id=92a865d06c815799",
+      "type": "library",
+      "name": "golang.org/x/text",
+      "version": "v0.3.5",
+      "cpe": "cpe:2.3:a:golang:text:v0.3.5:*:*:*:*:*:*:*",
+      "purl": "pkg:golang/golang.org/x/text@v0.3.5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "go-module-file-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "go"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "go-module"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "go-module-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/go.mod"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/jinja2@2.10.1?package-id=28f498dc1b78cb0d",
+      "type": "library",
+      "name": "jinja2",
+      "version": "2.10.1",
+      "cpe": "cpe:2.3:a:python-jinja2:python-jinja2:2.10.1:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/jinja2@2.10.1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-jinja2:python_jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_jinja2:python-jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_jinja2:python_jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:jinja2:python-jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:jinja2:python_jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-jinja2:jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_jinja2:jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:jinja2:jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:jinja2:2.10.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/lodash@4.17.20?package-id=8c42a92a78250355",
+      "type": "library",
+      "name": "lodash",
+      "version": "4.17.20",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:lodash:lodash:4.17.20:*:*:*:*:node.js:*:*",
+      "purl": "pkg:npm/lodash@4.17.20",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "javascript-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "javascript"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "npm"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "javascript-npm-package-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/package-lock.json"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/minimist@1.2.5?package-id=3338a0ed79172aeb",
+      "type": "library",
+      "name": "minimist",
+      "version": "1.2.5",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:minimist:minimist:1.2.5:*:*:*:*:*:*:*",
+      "purl": "pkg:npm/minimist@1.2.5",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "javascript-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "javascript"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "npm"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "javascript-npm-package-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/package-lock.json"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:npm/node-fetch@2.6.0?package-id=195eb5738b720000",
+      "type": "library",
+      "name": "node-fetch",
+      "version": "2.6.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:node-fetch_project:node-fetch:2.6.0:*:*:*:*:node.js:*:*",
+      "purl": "pkg:npm/node-fetch@2.6.0",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "javascript-lock-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "javascript"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "npm"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "javascript-npm-package-lock-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/package-lock.json"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/pyyaml@5.3?package-id=5f2f2c0069ad6ce5",
+      "type": "library",
+      "name": "pyyaml",
+      "version": "5.3",
+      "cpe": "cpe:2.3:a:python-pyyaml:python-pyyaml:5.3:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/pyyaml@5.3",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-pyyaml:python_pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_pyyaml:python-pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_pyyaml:python_pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-pyyaml:pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_pyyaml:pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pyyaml:python-pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pyyaml:python_pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:pyyaml:pyyaml:5.3:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/requests@2.19.1?package-id=928fc3c958241ddd",
+      "type": "library",
+      "name": "requests",
+      "version": "2.19.1",
+      "cpe": "cpe:2.3:a:python:requests:2.19.1:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/requests@2.19.1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "3fc5a8d3d86e9790",
+      "type": "file",
+      "name": "/work/depapp/go.mod",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "a8f5d5d422cee2e11b4d0abf9b6ce507835bf1f8"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "1c2a3c3edee1024fdfaf6ca6ecb33824b627fd06530b58f9d03ccf31b8c5effc"
+        }
+      ]
+    },
+    {
+      "bom-ref": "fd71c2238fc07657",
+      "type": "file",
+      "name": "/work/depapp/package-lock.json",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "242ba638d69140aa9d235625e21168a4997d6254"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "71fa10d90efdad6efc1c67b43890af177c63638304d5e41d1ef2fd01b0eb21ec"
+        }
+      ]
+    },
+    {
+      "bom-ref": "26ca2b7dc025d550",
+      "type": "file",
+      "name": "/work/depapp/requirements.txt",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "91285a69cbeac2205ca098be35ccba2247efe7ac"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "ad10c14a1b5bc9597a8ac6c56f6ffa119944d28d35b8e292a4751b2a3d32d25a"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:npm/depapp@1.0.0?package-id=2d1333020cd4e28e",
+      "dependsOn": [
+        "pkg:npm/lodash@4.17.20?package-id=8c42a92a78250355",
+        "pkg:npm/minimist@1.2.5?package-id=3338a0ed79172aeb",
+        "pkg:npm/node-fetch@2.6.0?package-id=195eb5738b720000"
+      ]
+    }
+  ]
+}

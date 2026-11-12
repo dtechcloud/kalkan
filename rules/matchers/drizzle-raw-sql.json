@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "slug": "drizzle-raw-sql",
+  "description": "Drizzle `sql.raw()` / `sql.unsafe()` or risky interpolation — SQL injection bypass",
+  "class": "sqli",
+  "cwe": [
+    "CWE-89"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.js",
+    "**/*.mjs"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.d.ts",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "node",
+      "drizzle"
+    ],
+    "sentinel_files": [
+      "**/package.json"
+    ],
+    "sentinel_contains": [
+      "\"drizzle-orm\""
+    ]
+  },
+  "file_contains": [
+    "\\bfrom\\s+[\"'](?:drizzle-orm[^\"']*|@repo/db[^\"']*|drizzle-zod|drizzle-kit)[\"']"
+  ],
+  "patterns": [
+    {
+      "regex": "\\bsql\\.\\s*raw\\s*\\(",
+      "flags": "",
+      "label": "sql.raw() — bypasses parameterization"
+    },
+    {
+      "regex": "\\bsql\\.\\s*unsafe\\s*\\(",
+      "flags": "",
+      "label": "sql.unsafe() — bypasses parameterization"
+    },
+    {
+      "regex": "\\bsql`[^`]*\\$\\{[^}]*\\+[^}]*\\}",
+      "flags": "",
+      "label": "sql`` interpolates concatenated string — verify parameter binding"
+    },
+    {
+      "regex": "\\bsql`[^`]*\\$\\{`[^`]*\\$\\{",
+      "flags": "",
+      "label": "sql`` interpolates concatenated string — verify parameter binding"
+    }
+  ],
+  "examples": [
+    "import { sql } from \"drizzle-orm\";\nawait db.execute(sql.raw(userQuery));",
+    "import { sql } from \"drizzle-orm\";\nawait db.execute(sql.unsafe(userQuery));",
+    "import { eq } from \"drizzle-orm\";\nawait db.execute(sql`SELECT * FROM users WHERE name = ${\"a\" + b}`);",
+    "import { sql } from \"drizzle-orm\";\nconst orderBy = \"name\";\nawait db.execute(sql`SELECT * FROM users ORDER BY ${`${orderBy}`}`);",
+    "import { db } from \"@repo/db\";\ndb.execute(sql.raw(\"SELECT * FROM \" + tableName));",
+    "import { drizzle } from \"drizzle-orm/node-postgres\";\nawait conn.execute(sql.unsafe(`DROP TABLE ${name}`));"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/drizzle-raw-sql.ts"
+  },
+  "notes": "Gate: deepsec tech [drizzle]; kalkan uses tech node (or drizzle) and a manifest that names drizzle."
+}

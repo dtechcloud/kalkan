@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "slug": "android-manifest-export",
+  "description": "Exported Android components (Activity / Service / Receiver / Provider) — IPC entry points (gated on android)",
+  "class": "mobile-desktop-ipc",
+  "cwe": [
+    "CWE-926"
+  ],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/AndroidManifest.xml"
+  ],
+  "exclude_file_patterns": [
+    "**/build/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/AndroidManifest.xml"
+    ],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "<(?:activity|service|receiver|provider)\\b[^>]*android:exported=\"true\"",
+      "flags": "",
+      "label": "exported component — confirm permissions"
+    },
+    {
+      "regex": "<intent-filter\\b",
+      "flags": "",
+      "label": "intent-filter — implicitly exported on pre-31 SDK"
+    },
+    {
+      "regex": "android:permission=\"[^\"]+\"",
+      "flags": "",
+      "label": "android:permission= guard"
+    },
+    {
+      "regex": "<data\\s+android:scheme=",
+      "flags": "",
+      "label": "deeplink scheme — review URL handling for SSRF/XSS"
+    }
+  ],
+  "examples": [
+    "<activity android:name=\".MainActivity\" android:exported=\"true\"/>",
+    "<service android:name=\".SyncService\" android:exported=\"true\"/>",
+    "<receiver android:name=\".BootReceiver\" android:exported=\"true\"/>",
+    "<provider android:name=\".DataProvider\" android:exported=\"true\" android:authorities=\"com.example\"/>",
+    "<intent-filter>\n    <action android:name=\"android.intent.action.VIEW\"/>\n</intent-filter>",
+    "<activity android:name=\".X\" android:permission=\"com.example.PERM\"/>",
+    "<service android:name=\".S\" android:permission=\"android.permission.BIND_JOB_SERVICE\"/>",
+    "<data android:scheme=\"myapp\"/>",
+    "<data android:scheme=\"https\" android:host=\"example.com\"/>"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/android-manifest-export.ts"
+  },
+  "notes": "Gate: deepsec tech [android]; kalkan uses an AndroidManifest.xml."
+}

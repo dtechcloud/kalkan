@@ -1,0 +1,44 @@
+# Build context filter for docker/Dockerfile. The build context is the repository root:
+#   docker build -f docker/Dockerfile -t kalkan:local .
+# Docker reads .dockerignore only from the root of the build context.
+
+# Version control and CI
+.git
+.github
+
+# Local environments, downloaded tools and run data (the image makes its own)
+.venv
+venv
+.tools
+runs
+
+# Caches and build output
+**/__pycache__
+**/*.py[cod]
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+*.egg-info
+build
+dist
+
+# Not needed at run time. tests/fixtures holds intentionally vulnerable code and fake secrets.
+tests
+benchmarks
+
+# Personal Claude Code settings
+.claude/settings.local.json
+
+# The Claude Code plugin bundle (a second copy of the engine as a wheel)
+plugins
+.claude-plugin
+
+# OS and editor files
+**/.DS_Store
+**/Thumbs.db
+.idea
+.vscode
+.bench-runs
+.dev-runs

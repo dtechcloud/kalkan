@@ -1,0 +1,60 @@
+{
+  "task_id": "T0012-review",
+  "finding_id": "KF-CF0FB1E8E50E80FC",
+  "fingerprint": "sqli:app/db.py:find_user",
+  "verify_tasks": [
+    "T0003-verify",
+    "T0005-verify"
+  ],
+  "verdict_before": "confirmed",
+  "requested": "verified",
+  "decision": "verified",
+  "reason": "Kayıttaki her yol ve satır kaynakla uyuşuyor; f-string, id değerini SQL metnine koyuyor.",
+  "severity": null,
+  "remediation": null,
+  "blockers": [],
+  "validation_plan": null,
+  "verdict_after": "confirmed",
+  "checks": [
+    {
+      "item": "trace_and_evidence",
+      "ok": true,
+      "note": "app/routes.py:12 ve app/db.py:8 kayıttaki işlemi yapıyor."
+    },
+    {
+      "item": "entry_interface",
+      "ok": true,
+      "note": "GET /users?id=<değer>; giriş yapmış her kullanıcı gönderebilir."
+    },
+    {
+      "item": "conditions_and_controls",
+      "ok": true,
+      "note": "Yolda parametre bağlama veya doğrulama yok."
+    },
+    {
+      "item": "impact",
+      "ok": true,
+      "note": "Saldırgan diğer kullanıcıların satırlarını okuyor."
+    },
+    {
+      "item": "severity",
+      "ok": true,
+      "note": "Olasılık ve etki ayrı puanlanmış; genel ciddiyet etkiyi aşmıyor."
+    },
+    {
+      "item": "remediation",
+      "ok": true,
+      "note": "Bağlı parametre, sink noktasında değişmezi koruyor."
+    }
+  ],
+  "evidence": [
+    {
+      "file": "app/db.py",
+      "line": 8,
+      "quote": "cur.execute(f\"SELECT * FROM users WHERE id = {user_id}\")",
+      "quote_status": "verified"
+    }
+  ],
+  "verified_quotes": 1,
+  "normalized": []
+}

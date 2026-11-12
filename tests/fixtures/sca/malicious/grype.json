@@ -1,0 +1,79 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "GHSA-2g5x-c76j-3h73",
+        "dataSource": "https://github.com/advisories/GHSA-2g5x-c76j-3h73",
+        "namespace": "github:language:python",
+        "severity": "Critical",
+        "urls": [
+          "https://github.com/ossf/malicious-packages/blob/49d0cfba3689ed9b195d101d3a2a964c6a77f767/osv/malicious/pypi/sample-module/MAL-2025-41758.json"
+        ],
+        "description": "Malicious code in sample-module (PyPI)",
+        "cvss": [],
+        "fix": {
+          "versions": [],
+          "state": "not-fixed"
+        },
+        "advisories": []
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "found": {
+            "versionConstraint": "= 0.0.1 (python)",
+            "vulnerabilityID": "GHSA-2g5x-c76j-3h73"
+          }
+        }
+      ],
+      "artifact": {
+        "name": "sample-module",
+        "version": "0.0.1",
+        "type": "python",
+        "locations": [],
+        "language": "python",
+        "purl": "pkg:pypi/sample-module@0.0.1"
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-cg89-rrrm-gf58",
+        "dataSource": "https://github.com/advisories/GHSA-cg89-rrrm-gf58",
+        "namespace": "github:language:python",
+        "severity": "High",
+        "urls": [
+          "https://pypi.org/project/test-async",
+          "https://research.checkpoint.com/2022/cloudguard-spectral-detects-several-malicious-packages-on-pypi-the-official-software-repository-for-python-developers/"
+        ],
+        "description": "test-async malicious PyPI package",
+        "cvss": [],
+        "fix": {
+          "versions": [],
+          "state": "not-fixed"
+        },
+        "advisories": []
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "python-matcher",
+          "found": {
+            "versionConstraint": ">= 0 (python)",
+            "vulnerabilityID": "GHSA-cg89-rrrm-gf58"
+          }
+        }
+      ],
+      "artifact": {
+        "name": "test-async",
+        "version": "1.0.0",
+        "type": "python",
+        "locations": [],
+        "language": "python",
+        "purl": "pkg:pypi/test-async@1.0.0"
+      }
+    }
+  ]
+}

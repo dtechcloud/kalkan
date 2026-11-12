@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "slug": "py-django-view",
+  "description": "Django views, urlpatterns, and CBVs — entry points (gated on Django)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "django",
+      "djangorestframework"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*path\\s*\\(",
+      "flags": "m",
+      "label": "urlpatterns path()"
+    },
+    {
+      "regex": "^\\s*re_path\\s*\\(",
+      "flags": "m",
+      "label": "urlpatterns re_path()"
+    },
+    {
+      "regex": "^class\\s+\\w+\\s*\\([^)]*\\b(?:View|TemplateView|ListView|DetailView|FormView|APIView|ViewSet|ModelViewSet|GenericAPIView|CreateView|UpdateView|DeleteView)\\b",
+      "flags": "m",
+      "label": "class-based view"
+    },
+    {
+      "regex": "^def\\s+\\w+\\s*\\(\\s*request\\b",
+      "flags": "m",
+      "label": "function-based view (def view(request))"
+    },
+    {
+      "regex": "@csrf_exempt\\b",
+      "flags": "",
+      "label": "@csrf_exempt — confirm alternate auth"
+    },
+    {
+      "regex": "@api_view\\s*\\(",
+      "flags": "",
+      "label": "DRF @api_view decorator"
+    }
+  ],
+  "examples": [
+    "    path(\"users/\", views.user_list, name=\"users\"),",
+    "    re_path(r\"^items/(?P<pk>\\d+)/$\", views.item_detail),",
+    "class UserListView(ListView):",
+    "class ItemDetail(DetailView):",
+    "class ProfileView(APIView):",
+    "class ArticleViewSet(ModelViewSet):",
+    "def index(request):",
+    "def detail_view(request, pk):",
+    "@csrf_exempt",
+    "@api_view([\"GET\", \"POST\"])"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-django-view.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

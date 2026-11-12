@@ -1,0 +1,27 @@
+rules:
+  - id: codeql-ruby-insecure-randomness
+    message: >-
+      Use of insecure random number generator. For security-sensitive operations,
+      use SecureRandom instead of rand or Random.
+    severity: WARNING
+    languages:
+      - ruby
+    metadata:
+      category: security
+      cwe: "CWE-330: Use of Insufficiently Random Values"
+      technology:
+        - ruby
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/330.html
+        - https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-330/InsecureRandomness.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/ruby/ql/src/queries/security/cwe-330/InsecureRandomness.ql
+    pattern-either:
+      - pattern: rand(...)
+      - pattern: Random.new.rand(...)
+      - pattern: Random.rand(...)
+      - pattern: srand(...)

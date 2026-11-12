@@ -1,0 +1,211 @@
+{
+  "version": 1,
+  "slug": "crypto-usage",
+  "description": "Any file that uses cryptographic primitives (sign/verify/encrypt/hash/HMAC/random/key-derivation) — wide net for AI review",
+  "class": "crypto",
+  "cwe": [],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.go",
+    "**/*.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/*_test.go",
+    "**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}",
+    "**/__tests__/**",
+    "**/*.d.ts",
+    "**/gen/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\"crypto/(?:aes|cipher|des|dsa|ecdh|ecdsa|ed25519|elliptic|hmac|md5|rand|rc4|rsa|sha1|sha256|sha512|subtle|x509|tls)\"",
+      "flags": "",
+      "label": "Go crypto/* import"
+    },
+    {
+      "regex": "\"golang\\.org/x/crypto/",
+      "flags": "",
+      "label": "Go golang.org/x/crypto import"
+    },
+    {
+      "regex": "(?:require|from)\\s*\\(?\\s*['\"](?:node:)?crypto['\"]",
+      "flags": "",
+      "label": "Node crypto import"
+    },
+    {
+      "regex": "(?:require|from)\\s*\\(?\\s*['\"](?:crypto-js|tweetnacl|@noble/[\\w-]+|jose|jsonwebtoken|bcrypt|bcryptjs|argon2|scrypt|tweetsodium|libsodium-wrappers|node-forge|elliptic|sjcl)['\"]",
+      "flags": "",
+      "label": "JS crypto library import"
+    },
+    {
+      "regex": "crypto\\.subtle\\.\\w+",
+      "flags": "",
+      "label": "Web Crypto API (crypto.subtle.*)"
+    },
+    {
+      "regex": "^\\s*(?:from|import)\\s+(?:cryptography|hashlib|hmac|secrets|Crypto|nacl|jwt|passlib|bcrypt|argon2|pycryptodome)\\b",
+      "flags": "m",
+      "label": "Python crypto import"
+    },
+    {
+      "regex": "\\bed25519\\.(Sign|Verify|GenerateKey|NewKeyFromSeed)\\s*\\(",
+      "flags": "",
+      "label": "Go ed25519 op"
+    },
+    {
+      "regex": "\\brsa\\.(Encrypt|Decrypt|Sign|Verify)\\w*\\s*\\(",
+      "flags": "",
+      "label": "Go RSA op"
+    },
+    {
+      "regex": "\\becdsa\\.(Sign|Verify|GenerateKey)\\w*\\s*\\(",
+      "flags": "",
+      "label": "Go ECDSA op"
+    },
+    {
+      "regex": "\\bhmac\\.(New|Equal)\\s*\\(",
+      "flags": "",
+      "label": "Go HMAC op"
+    },
+    {
+      "regex": "\\baes\\.NewCipher\\s*\\(",
+      "flags": "",
+      "label": "Go AES init"
+    },
+    {
+      "regex": "\\bcipher\\.New(?:GCM|CBCEncrypter|CBCDecrypter|CFBEncrypter|CFBDecrypter|CTR|OFB)\\s*\\(",
+      "flags": "",
+      "label": "Go cipher mode"
+    },
+    {
+      "regex": "\\bsubtle\\.ConstantTime(?:Compare|Eq|Select|ByteEq|Copy|LessOrEq)\\s*\\(",
+      "flags": "",
+      "label": "Go subtle compare"
+    },
+    {
+      "regex": "\\bx509\\.(Parse|Create|Verify)\\w*\\s*\\(",
+      "flags": "",
+      "label": "Go x509 op"
+    },
+    {
+      "regex": "\\btls\\.(Config|Certificate|Dial|Listen|Server|Client)\\s*[({]",
+      "flags": "",
+      "label": "Go TLS op"
+    },
+    {
+      "regex": "\\b(?:sha256|sha512|sha1|md5)\\.(?:New|Sum\\d*)\\s*\\(",
+      "flags": "",
+      "label": "Go hash op"
+    },
+    {
+      "regex": "\\bcreate(?:Hash|Hmac|Cipher(?:iv)?|Decipher(?:iv)?|Sign|Verify|PrivateKey|PublicKey|SecretKey|DiffieHellman|ECDH)\\s*\\(",
+      "flags": "",
+      "label": "Node crypto.create*"
+    },
+    {
+      "regex": "\\brandomBytes\\s*\\(",
+      "flags": "",
+      "label": "Node randomBytes"
+    },
+    {
+      "regex": "\\brandomUUID\\s*\\(",
+      "flags": "",
+      "label": "Node randomUUID"
+    },
+    {
+      "regex": "\\bpbkdf2(?:Sync)?\\s*\\(",
+      "flags": "",
+      "label": "Node pbkdf2"
+    },
+    {
+      "regex": "\\bscrypt(?:Sync)?\\s*\\(",
+      "flags": "",
+      "label": "Node scrypt"
+    },
+    {
+      "regex": "\\btimingSafeEqual\\s*\\(",
+      "flags": "",
+      "label": "Node timingSafeEqual"
+    },
+    {
+      "regex": "\\bcrypto\\.(?:sign|verify|hkdf|generateKeyPair(?:Sync)?|diffieHellman)\\s*\\(",
+      "flags": "",
+      "label": "Node crypto op"
+    },
+    {
+      "regex": "\\bjwt\\.(sign|verify|decode)\\s*\\(",
+      "flags": "",
+      "label": "JWT sign/verify"
+    },
+    {
+      "regex": "\\bjose\\.(SignJWT|jwtVerify|importJWK|importSPKI|importPKCS8|compactSign|compactVerify|flattenedSign|flattenedVerify|generalSign|generalVerify|EncryptJWT|jwtDecrypt|EncryptSHE|compactDecrypt|flattenedDecrypt|generalDecrypt|CompactEncrypt|FlattenedEncrypt|GeneralEncrypt)\\b",
+      "flags": "",
+      "label": "jose lib"
+    },
+    {
+      "regex": "\\bcrypto\\.subtle\\.(encrypt|decrypt|sign|verify|digest|generateKey|deriveKey|deriveBits|importKey|exportKey|wrapKey|unwrapKey)\\s*\\(",
+      "flags": "",
+      "label": "Web Crypto subtle.*"
+    },
+    {
+      "regex": "\\bhashlib\\.(?:md5|sha1|sha224|sha256|sha384|sha512|blake2\\w*|pbkdf2_hmac)\\s*\\(",
+      "flags": "",
+      "label": "Python hashlib"
+    },
+    {
+      "regex": "\\bhmac\\.(?:new|compare_digest|HMAC)\\s*\\(",
+      "flags": "",
+      "label": "Python hmac"
+    },
+    {
+      "regex": "\\bsecrets\\.(token_bytes|token_hex|token_urlsafe|randbelow|choice|compare_digest|SystemRandom)\\s*\\(",
+      "flags": "",
+      "label": "Python secrets"
+    }
+  ],
+  "examples": [
+    "import \"crypto/aes\"",
+    "import \"crypto/sha256\"",
+    "import \"golang.org/x/crypto/bcrypt\"",
+    "const crypto = require('node:crypto');",
+    "import jwt from \"jsonwebtoken\";",
+    "import { SignJWT } from \"jose\";",
+    "const hash = crypto.subtle.digest(\"SHA-256\", data);",
+    "from cryptography.hazmat.primitives import hashes",
+    "import hashlib",
+    "sig := ed25519.Sign(priv, msg)",
+    "cipher := rsa.EncryptPKCS1v15(rand, pub, msg)",
+    "r, s, err := ecdsa.Sign(rand, key, hash)",
+    "mac := hmac.New(sha256.New, key)",
+    "block, _ := aes.NewCipher(key)",
+    "gcm, _ := cipher.NewGCM(block)",
+    "if subtle.ConstantTimeCompare(a, b) == 1 { }",
+    "cert, _ := x509.ParseCertificate(der)",
+    "tls.Config{ MinVersion: tls.VersionTLS12 }",
+    "h := sha256.New()",
+    "const hash = createHash('sha256');",
+    "const buf = randomBytes(32);",
+    "const id = randomUUID();",
+    "const key = pbkdf2Sync(password, salt, 100000, 64, 'sha512');",
+    "scrypt(password, salt, 64, (err, key) => {});",
+    "if (timingSafeEqual(a, b)) ok();",
+    "const sig = jwt.sign({ id: 1 }, secret);",
+    "const out = await jose.jwtVerify(token, key);",
+    "await crypto.subtle.encrypt({ name: \"AES-GCM\", iv }, key, data);",
+    "import hmac\nmac = hmac.new(key, msg, hashlib.sha256)",
+    "import secrets\ntoken = secrets.token_hex(16)",
+    "import hashlib\nh = hashlib.sha256(b\"abc\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/crypto-usage.ts"
+  },
+  "notes": "Wide-net inventory of cryptographic primitives; deepsec stops at the first label per line, the port can give a line several labels."
+}

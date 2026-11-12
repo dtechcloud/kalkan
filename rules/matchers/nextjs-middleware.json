@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "slug": "nextjs-middleware",
+  "description": "Next.js middleware.ts files — auth, redirects, header rewriting, access control",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/middleware.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "(?i:export\\s+(?:default\\s+|async\\s+)?function\\s+middleware|export\\s+(?:const|let)\\s+middleware)|export\\s+default"
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(default\\s+|async\\s+)?function\\s+middleware|export\\s+(const|let)\\s+middleware",
+      "flags": "i",
+      "label": "Next.js middleware — security-critical request interceptor"
+    },
+    {
+      "regex": "export\\s+default\\s+(async\\s+)?function",
+      "flags": "",
+      "label": "Next.js middleware — security-critical request interceptor"
+    },
+    {
+      "regex": "export\\s+const\\s+config",
+      "flags": "",
+      "label": "Middleware route matcher config — controls scope of protection"
+    }
+  ],
+  "examples": [
+    "export function middleware(request) { return NextResponse.next() }",
+    "export async function middleware(request: NextRequest) { return NextResponse.redirect(new URL('/login', request.url)) }",
+    "export const middleware = (req) => NextResponse.next()",
+    "export let middleware = async (req) => NextResponse.rewrite(new URL('/foo', req.url))",
+    "export default function middleware(request) { return NextResponse.next() }",
+    "export default async function (req) { return NextResponse.next() }",
+    "export function middleware(req) { return NextResponse.next() }\nexport const config = { matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'] }",
+    "export default function middleware(req) { return NextResponse.next() }\nexport const config = { matcher: '/dashboard/:path*' }"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-middleware.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

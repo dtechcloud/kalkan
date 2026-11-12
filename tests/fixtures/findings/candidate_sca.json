@@ -1,0 +1,32 @@
+{
+  "id": "CAND-FEDCBA9876543210",
+  "engine": "osv-scanner",
+  "rule_id": "GHSA-abcd-efgh-ijkl",
+  "class": "vulnerable-dependency",
+  "cwe": ["CWE-1395"],
+  "title": "Prototype pollution in example-lib",
+  "message": "example-lib 1.0.0 is affected by GHSA-abcd-efgh-ijkl.",
+  "file": "package-lock.json",
+  "start_line": null,
+  "end_line": null,
+  "snippet": "",
+  "severity": "medium",
+  "tool_severity": "6.5",
+  "confidence": null,
+  "tags": [],
+  "fingerprints": {},
+  "sca": {
+    "ecosystem": "npm",
+    "package": "example-lib",
+    "version": "1.0.0",
+    "vuln_ids": ["GHSA-abcd-efgh-ijkl", "CVE-2026-1234"],
+    "fixed_versions": ["1.0.1"],
+    "cvss_score": 6.5,
+    "cvss_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:L/A:N"
+  },
+  "raw": {
+    "sarif_file": "scans/osv-scanner.sarif",
+    "run_index": 0,
+    "result_index": 0
+  }
+}

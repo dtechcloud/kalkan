@@ -1,0 +1,85 @@
+{
+  "version": 1,
+  "slug": "sensitive-data-in-traces",
+  "description": "Sensitive data sent to tracing/observability — check for PII, secrets, tokens",
+  "class": "sensitive-data-exposure",
+  "cwe": [
+    "CWE-532"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec,mock,stub}.*",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "(?i:password|secret|token|apiKey|api_key|credential|private.?key|client.?secret|access.?token|payment|billing|invoice|stripe|credit.?card|req\\.body|request\\.body|rawReqData|requestPayload)"
+  ],
+  "patterns": [
+    {
+      "regex": "addTagsToCurrentSpan\\s*\\(",
+      "flags": "",
+      "label": "Datadog span tags in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "tracer\\.trace\\s*\\(",
+      "flags": "",
+      "label": "Datadog tracer in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "span\\.setTag\\s*\\(",
+      "flags": "",
+      "label": "Datadog span tag in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "Sentry\\.captureException\\s*\\(",
+      "flags": "",
+      "label": "Sentry exception capture in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "Sentry\\.setContext\\s*\\(",
+      "flags": "",
+      "label": "Sentry context in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "Sentry\\.setExtra\\s*\\(",
+      "flags": "",
+      "label": "Sentry extra data in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "span\\.setAttribute\\s*\\(",
+      "flags": "",
+      "label": "OTel span attribute in file with sensitive data — check what's being traced"
+    },
+    {
+      "regex": "span\\.addEvent\\s*\\(",
+      "flags": "",
+      "label": "OTel span event in file with sensitive data — check what's being traced"
+    }
+  ],
+  "examples": [
+    "// handles password reset\nconst password = req.body.password;\naddTagsToCurrentSpan({ user: req.body });",
+    "// payment processing\nconst card = req.body.creditCard;\ntracer.trace(\"charge\", () => stripe.charge(card));",
+    "// holds secret token from env\nconst token = req.body.token;\nspan.setTag(\"payload\", req.body);",
+    "// stores apiKey in trace\nconst apiKey = req.headers[\"x-api-key\"];\nSentry.captureException(new Error(\"oops\"));",
+    "// invoice handler\nconst invoice = req.body;\nSentry.setContext(\"billing\", invoice);",
+    "// log credential issues\nconst credential = req.body.credential;\nSentry.setExtra(\"credential\", credential);",
+    "// store secret\nconst secret = process.env.MY_SECRET;\nspan.setAttribute(\"secret\", secret);",
+    "// payment handler tracing\nconst payment = req.body.payment;\nspan.addEvent(\"payment.received\", payment);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/sensitive-data-in-traces.ts"
+  },
+  "notes": ""
+}

@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "slug": "swift-vapor-route",
+  "description": "Swift Vapor route registrations (gated on Vapor)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.swift"
+  ],
+  "exclude_file_patterns": [
+    "**/{Tests,tests}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/Package.swift"
+    ],
+    "sentinel_contains": [
+      "(?i:vapor)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bapp\\.(?:get|post|put|patch|delete|on)\\s*\\(",
+      "flags": "",
+      "label": "app.<verb>('/path') registration"
+    },
+    {
+      "regex": "\\bgrouped\\s*\\(\\s*\\w+\\.[A-Za-z]+\\(\\)\\s*\\)",
+      "flags": "",
+      "label": ".grouped(Middleware()) auth scope"
+    },
+    {
+      "regex": "\\breq\\.(?:parameters|query|content|auth|headers)\\b",
+      "flags": "",
+      "label": "req.* accessor"
+    },
+    {
+      "regex": "\\bclass\\s+\\w+Controller\\s*:\\s*RouteCollection\\b",
+      "flags": "",
+      "label": "RouteCollection conformance"
+    }
+  ],
+  "examples": [
+    "app.get(\"hello\") { req in return \"hi\" }",
+    "app.post(\"users\") { req async throws -> User in }",
+    "app.put(\"users\", \":id\") { req in }",
+    "app.patch(\"users\", \":id\") { req in }",
+    "app.delete(\"users\", \":id\") { req in }",
+    "app.on(.POST, \"upload\", body: .stream) { req in }",
+    "let protected = app.grouped(User.guardMiddleware())",
+    "let secured = routes.grouped(Token.authenticator())",
+    "let id = req.parameters.get(\"id\")",
+    "let q = try req.query.decode(Search.self)",
+    "let body = try req.content.decode(User.self)",
+    "let user = try req.auth.require(User.self)",
+    "let auth = req.headers.bearerAuthorization",
+    "final class UserController: RouteCollection {}",
+    "class AdminController : RouteCollection {"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/swift-vapor-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [vapor]; kalkan uses a Package.swift that names vapor."
+}

@@ -1,0 +1,109 @@
+{
+  "version": 1,
+  "slug": "server-action-no-auth",
+  "description": "Server Action exports without any auth call — every export is a public POST endpoint",
+  "class": "authn",
+  "cwe": [
+    "CWE-306"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.{ts,tsx}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/{content,docs,Content,Docs}/**",
+    "**/*.{md,mdx}"
+  ],
+  "requires": {
+    "tech": [
+      "next",
+      "nextjs"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "file_contains": [
+    "['\"]use server['\"]"
+  ],
+  "patterns": [
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+\\w+",
+      "flags": "",
+      "label": "Server Action WITHOUT any auth call — publicly callable",
+      "near": [
+        {
+          "regex": "^['\"]use server['\"]",
+          "scope": "file"
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|withAuth|verifyToken|authUserAndTeamByAuthAPI|isAuthenticated|assertAuth|checkAuth|parseAuthToken|withOidcTokenAuth",
+          "after": 29
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function\\s+\\w+",
+      "flags": "",
+      "label": "Server Action with auth call (verify correctness)",
+      "near": [
+        {
+          "regex": "^['\"]use server['\"]",
+          "scope": "file"
+        },
+        {
+          "regex": "getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|withAuth|verifyToken|authUserAndTeamByAuthAPI|isAuthenticated|assertAuth|checkAuth|parseAuthToken|withOidcTokenAuth",
+          "after": 29
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function",
+      "flags": "",
+      "label": "Server Action WITHOUT any auth call — publicly callable",
+      "near": [
+        {
+          "regex": "['\"]use server['\"]",
+          "after": 1
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|withAuth|verifyToken|authUserAndTeamByAuthAPI|isAuthenticated|assertAuth|checkAuth|parseAuthToken|withOidcTokenAuth",
+          "after": 29
+        }
+      ]
+    },
+    {
+      "regex": "export\\s+(async\\s+)?function",
+      "flags": "",
+      "label": "Server Action with auth call (verify correctness)",
+      "near": [
+        {
+          "regex": "['\"]use server['\"]",
+          "after": 1
+        },
+        {
+          "regex": "getSession\\s*\\(|auth\\s*\\(\\s*\\)|requireAuth|withAuth|verifyToken|authUserAndTeamByAuthAPI|isAuthenticated|assertAuth|checkAuth|parseAuthToken|withOidcTokenAuth",
+          "after": 29
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "\"use server\";\nexport async function createUser(name: string) { return { name } }",
+    "'use server'\nexport function deleteAccount(id) { return id }",
+    "export async function doThing(x) {\n  \"use server\";\n  return x\n}",
+    "\"use server\";\nexport async function fetchSecret() {\n  return { secret: 'no auth call' }\n}",
+    "\"use server\";\nexport async function getProfile(id) {\n  const session = await getSession();\n  return { id, session }\n}",
+    "\"use server\";\nexport async function adminWipe() {\n  await requireAuth();\n  return { ok: true }\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-nextjs-server-action-no-auth.ts"
+  },
+  "notes": "A file-level directive is approximated by an unindented 'use server' line anywhere in the file (deepsec: the first statement of the file). Gate: deepsec tech [nextjs]; kalkan uses the tech tag next (or nextjs)."
+}

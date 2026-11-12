@@ -1,0 +1,12 @@
+# frozen_string_literal: true
+
+# Ruby part of the kalkan vulnapp fixture. Do not deploy.
+source "https://rubygems.org"
+
+gem "bcrypt", "~> 3.1"
+gem "jwt", "~> 2.10"
+gem "mongo", "~> 2.21"
+gem "nokogiri", "~> 1.18"
+gem "rails", "~> 8.0"
+gem "sinatra", "~> 4.1"
+gem "sqlite3", "~> 2.6"

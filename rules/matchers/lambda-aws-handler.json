@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "slug": "lambda-aws-handler",
+  "description": "AWS Lambda handler signatures across Node/Python/Java (gated on aws-lambda)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs,py,java,kt}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**",
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [
+      "**/package.json",
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/pom.xml",
+      "**/build.gradle",
+      "**/build.gradle.kts",
+      "**/serverless.{yml,yaml}",
+      "**/template.{yaml,yml}",
+      "**/*.tf"
+    ],
+    "sentinel_contains": [
+      "(?i:aws-lambda|aws_lambda|AWS::Serverless|AWS::Lambda|lambda-powertools|aws-cdk|\\bfunctions\\s*:)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "exports\\.handler\\s*=\\s*(?:async\\s*)?\\(\\s*event\\b",
+      "flags": "",
+      "label": "Node.js exports.handler = (event, context) => ..."
+    },
+    {
+      "regex": "^\\s*def\\s+lambda_handler\\s*\\(\\s*event\\s*,\\s*context\\s*\\)",
+      "flags": "m",
+      "label": "Python def lambda_handler(event, context)"
+    },
+    {
+      "regex": "\\bimplements\\s+RequestHandler<[^>]+>",
+      "flags": "",
+      "label": "Java RequestHandler<I,O> impl"
+    },
+    {
+      "regex": "\\bAPIGateway(?:Proxy|V2)Event\\b|\\bAPIGatewayProxyResult\\b",
+      "flags": "",
+      "label": "API Gateway event types"
+    },
+    {
+      "regex": "\\bevent\\.requestContext\\.authorizer\\b",
+      "flags": "",
+      "label": "API Gateway authorizer claim"
+    }
+  ],
+  "examples": [
+    "exports.handler = async (event, context) => { return { statusCode: 200 } }",
+    "exports.handler = (event, context, callback) => callback(null, {})",
+    "def lambda_handler(event, context):\n    return {\"statusCode\": 200}",
+    "public class Handler implements RequestHandler<APIGatewayProxyEvent, APIGatewayProxyResponseEvent> {}",
+    "class MyHandler implements RequestHandler<S3Event, String> { }",
+    "import { APIGatewayProxyEvent, APIGatewayProxyResult } from \"aws-lambda\";",
+    "const evt: APIGatewayV2Event = event;",
+    "const claims = event.requestContext.authorizer.claims;"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/lambda-aws-handler.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [aws-lambda]; kalkan uses a manifest or IaC file that references AWS Lambda."
+}

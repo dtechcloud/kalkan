@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-csharp-xxe
+    message: >-
+      XML parsing with insecure settings may be vulnerable to XXE attacks.
+      Use XmlReaderSettings with DtdProcessing.Prohibit.
+    severity: ERROR
+    languages:
+      - csharp
+    metadata:
+      category: security
+      cwe: "CWE-611: Improper Restriction of XML External Entity Reference"
+      technology:
+        - csharp
+        - dotnet
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-611/UntrustedDataInsecureXml.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/csharp/ql/src/Security%20Features/CWE-611/UntrustedDataInsecureXml.ql
+    pattern-either:
+      - pattern: new XmlDocument().Load($INPUT)
+      - pattern: new XmlDocument().LoadXml($INPUT)
+      - pattern: XDocument.Load($INPUT)
+      - pattern: XDocument.Parse($INPUT)

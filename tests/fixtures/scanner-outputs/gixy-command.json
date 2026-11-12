@@ -1,0 +1,26 @@
+[
+  {
+    "config": "\nserver {\n\tserver_name shop.vulnapp.internal;\n\n\tlocation /static {\n\t\talias /srv/vulnapp/static/;\n\t}\n}",
+    "description": "Using alias in a prefixed location that doesn't end with directory separator could lead to path traversal vulnerability.",
+    "file": "@TARGET@/infra/nginx/shop.conf",
+    "line": 9,
+    "path": "@TARGET@/infra/nginx/shop.conf",
+    "plugin": "alias_traversal",
+    "reason": "",
+    "reference": "https://gixy.getpagespeed.com/checks/alias-traversal/",
+    "severity": "HIGH",
+    "summary": "Path traversal via misconfigured alias."
+  },
+  {
+    "config": "\nserver {\n\tserver_name shop.vulnapp.internal;\n\n\tlocation /preview {\n\t\tproxy_pass http://$arg_host;\n\t}\n}",
+    "description": "The configuration may allow attacker to create a arbitrary requests from the vulnerable server.",
+    "file": "@TARGET@/infra/nginx/shop.conf",
+    "line": 17,
+    "path": "@TARGET@/infra/nginx/shop.conf",
+    "plugin": "ssrf",
+    "reason": "At least variable \"$arg_host\" can contain untrusted user input",
+    "reference": "https://gixy.getpagespeed.com/checks/ssrf/",
+    "severity": "HIGH",
+    "summary": "Possible SSRF (Server Side Request Forgery) vulnerability."
+  }
+]

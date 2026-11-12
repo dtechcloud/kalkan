@@ -1,0 +1,230 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "checkov",
+          "version": "3.3.22",
+          "informationUri": "https://checkov.io",
+          "rules": [
+            {
+              "id": "CKV_AWS_24",
+              "name": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22",
+              "shortDescription": {
+                "text": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+              },
+              "fullDescription": {
+                "text": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+              },
+              "help": {
+                "text": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22\nResource: aws_security_group.web"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/networking-1-port-security"
+            },
+            {
+              "id": "CKV_DOCKER_3",
+              "name": "Ensure that a user for the container has been created",
+              "shortDescription": {
+                "text": "Ensure that a user for the container has been created"
+              },
+              "fullDescription": {
+                "text": "Ensure that a user for the container has been created"
+              },
+              "help": {
+                "text": "Ensure that a user for the container has been created\nResource: Dockerfile."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-a-user-for-the-container-has-been-created"
+            },
+            {
+              "id": "CKV_DOCKER_2",
+              "name": "Ensure that HEALTHCHECK instructions have been added to container images",
+              "shortDescription": {
+                "text": "Ensure that HEALTHCHECK instructions have been added to container images"
+              },
+              "fullDescription": {
+                "text": "Ensure that HEALTHCHECK instructions have been added to container images"
+              },
+              "help": {
+                "text": "Ensure that HEALTHCHECK instructions have been added to container images\nResource: Dockerfile."
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/docker-policies/docker-policy-index/ensure-that-healthcheck-instructions-have-been-added-to-container-images"
+            },
+            {
+              "id": "CKV_GHA_2",
+              "name": "Ensure run commands are not vulnerable to shell injection",
+              "shortDescription": {
+                "text": "Ensure run commands are not vulnerable to shell injection"
+              },
+              "fullDescription": {
+                "text": "Ensure run commands are not vulnerable to shell injection"
+              },
+              "help": {
+                "text": "Ensure run commands are not vulnerable to shell injection\nResource: jobs(greet).steps[1](Greet the author)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/build-integrity-policies/github-actions-policies/ensure-run-commands-are-not-vulnerable-to-shell-injection"
+            },
+            {
+              "id": "CKV_SECRET_2",
+              "name": "AWS Access Key",
+              "shortDescription": {
+                "text": "AWS Access Key"
+              },
+              "fullDescription": {
+                "text": "AWS Access Key"
+              },
+              "help": {
+                "text": "AWS Access Key\nResource: 25910f981e85ca04baf359199dd0bd4a3ae738b6"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "helpUri": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/secrets-policies/secrets-policy-index/git-secrets-2"
+            }
+          ],
+          "organization": "bridgecrew"
+        }
+      },
+      "results": [
+        {
+          "ruleId": "CKV_AWS_24",
+          "ruleIndex": 0,
+          "level": "warning",
+          "attachments": [],
+          "message": {
+            "text": "Ensure no security groups allow ingress from 0.0.0.0:0 to port 22"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "infra/main.tf"
+                },
+                "region": {
+                  "startLine": 9,
+                  "endLine": 19,
+                  "snippet": {
+                    "text": "resource \"aws_security_group\" \"web\" {\n  name        = \"web\"\n  description = \"Web server\"\n\n  ingress {\n    from_port   = 22\n    to_port     = 22\n    protocol    = \"tcp\"\n    cidr_blocks = [\"0.0.0.0/0\"]\n  }\n}\n"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CKV_DOCKER_3",
+          "ruleIndex": 1,
+          "level": "warning",
+          "attachments": [],
+          "message": {
+            "text": "Ensure that a user for the container has been created"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 8,
+                  "snippet": {
+                    "text": "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN apt-get update && apt-get install -y curl\nRUN pip install -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD python -m app\n"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CKV_DOCKER_2",
+          "ruleIndex": 2,
+          "level": "warning",
+          "attachments": [],
+          "message": {
+            "text": "Ensure that HEALTHCHECK instructions have been added to container images"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "Dockerfile"
+                },
+                "region": {
+                  "startLine": 1,
+                  "endLine": 8,
+                  "snippet": {
+                    "text": "FROM python:3.12-slim\nWORKDIR /app\nCOPY requirements.txt .\nRUN apt-get update && apt-get install -y curl\nRUN pip install -r requirements.txt\nCOPY . .\nEXPOSE 8000\nCMD python -m app\n"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CKV_GHA_2",
+          "ruleIndex": 3,
+          "level": "warning",
+          "attachments": [],
+          "message": {
+            "text": "Ensure run commands are not vulnerable to shell injection"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": ".github/workflows/greet.yml"
+                },
+                "region": {
+                  "startLine": 12,
+                  "endLine": 14,
+                  "snippet": {
+                    "text": "      - name: Greet the author\n        run: |\n          echo \"Hello ${{ github.event.issue.title }}\"\n"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "ruleId": "CKV_SECRET_2",
+          "ruleIndex": 4,
+          "level": "warning",
+          "attachments": [],
+          "message": {
+            "text": "AWS Access Key"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "config/settings.py"
+                },
+                "region": {
+                  "startLine": 12,
+                  "endLine": 12,
+                  "snippet": {
+                    "text": "AWS_ACCESS_KEY_ID = \"AKIA****************\"\n"
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

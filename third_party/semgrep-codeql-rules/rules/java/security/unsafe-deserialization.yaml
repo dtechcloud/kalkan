@@ -1,0 +1,26 @@
+rules:
+  - id: codeql-java-unsafe-deserialization
+    message: >-
+      Deserializing untrusted data may allow attackers to execute arbitrary
+      code. Avoid ObjectInputStream with untrusted data.
+    severity: ERROR
+    languages:
+      - java
+    metadata:
+      category: security
+      cwe: "CWE-502: Deserialization of Untrusted Data"
+      technology:
+        - java
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-502/UnsafeDeserialization.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/java/ql/src/Security/CWE/CWE-502/UnsafeDeserialization.ql
+    pattern-either:
+      - pattern: new ObjectInputStream(...).readObject()
+      - pattern: $OIS.readObject()
+      - pattern: XMLDecoder(...).readObject()

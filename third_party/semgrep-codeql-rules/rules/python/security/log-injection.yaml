@@ -1,0 +1,32 @@
+rules:
+  - id: codeql-py-log-injection
+    message: >-
+      User input written to log without sanitization may allow log injection
+      or log forging attacks. Sanitize newlines and control characters.
+    severity: WARNING
+    languages:
+      - python
+    metadata:
+      category: security
+      cwe: "CWE-117: Improper Output Neutralization for Logs"
+      technology:
+        - python
+      confidence: LOW
+      likelihood: MEDIUM
+      impact: LOW
+      subcategory:
+        - audit
+      references:
+        - https://cwe.mitre.org/data/definitions/117.html
+        - https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-117/LogInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/python/ql/src/Security/CWE-117/LogInjection.ql
+    pattern-either:
+      - pattern: logging.info(request.$METHOD.get(...))
+      - pattern: logging.warning(request.$METHOD.get(...))
+      - pattern: logging.error(request.$METHOD.get(...))
+      - pattern: logging.debug(request.$METHOD.get(...))
+      - pattern: logging.critical(request.$METHOD.get(...))
+      - pattern: $LOGGER.info(request.$METHOD.get(...))
+      - pattern: $LOGGER.warning(request.$METHOD.get(...))
+      - pattern: $LOGGER.error(request.$METHOD.get(...))
+      - pattern: $LOGGER.debug(request.$METHOD.get(...))

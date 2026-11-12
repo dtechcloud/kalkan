@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "slug": "tf-public-ingress",
+  "description": "Terraform security-group / NACL / EKS ingress allowing 0.0.0.0/0 on non-HTTPS ports",
+  "class": "iac-cloud-container",
+  "cwe": [
+    "CWE-668"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.tf",
+    "**/*.tf.json",
+    "**/*.hcl"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "terraform"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:cidr_blocks|cidr_block)\\s*=\\s*\\[?\\s*['\"]0\\.0\\.0\\.0/0['\"]|::/0",
+      "flags": "",
+      "label": "0.0.0.0/0 ingress on non-web port",
+      "near": [
+        {
+          "regex": "^\\s*(?:ingress|egress)\\s*\\{|resource\\s+\"aws_(?:security_group_rule|network_acl_rule)\"",
+          "before": 40
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "\\bfrom_port\\s*=\\s*(?:80|443)\\b",
+          "before": 15,
+          "after": 15
+        }
+      ]
+    },
+    {
+      "regex": "\\b(?:cidr_blocks|cidr_block)\\s*=\\s*\\[?\\s*['\"]0\\.0\\.0\\.0/0['\"]|::/0",
+      "flags": "",
+      "label": "0.0.0.0/0 ingress on non-web port",
+      "near": [
+        {
+          "regex": "^\\s*(?:ingress|egress)\\s*\\{|resource\\s+\"aws_(?:security_group_rule|network_acl_rule)\"",
+          "before": 40
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "\\bto_port\\s*=\\s*(?:80|443)\\b",
+          "before": 15,
+          "after": 15
+        }
+      ]
+    },
+    {
+      "regex": "\\b(?:cidr_blocks|cidr_block)\\s*=\\s*\\[?\\s*['\"]0\\.0\\.0\\.0/0['\"]|::/0",
+      "flags": "",
+      "label": "0.0.0.0/0 ingress on non-web port",
+      "near": [
+        {
+          "regex": "^\\s*(?:ingress|egress)\\s*\\{|resource\\s+\"aws_(?:security_group_rule|network_acl_rule)\"",
+          "before": 40
+        },
+        {
+          "regex": "\\b(?:from_port|to_port|port)\\s*=\\s*(?:22|3389|5432|3306|6379|27017|9200|9300|11211|5601|8086|9092|2049|445|1433|5984|9000|8080|3000|5000|8000|9090|9443|6443|10250|2375|2376|2377|7000|7001|9999|11210|13316)\\b",
+          "before": 15,
+          "after": 15
+        }
+      ]
+    },
+    {
+      "regex": "\\bendpoint_public_access\\s*=\\s*true",
+      "flags": "",
+      "label": "EKS public endpoint without CIDR allow-list",
+      "not_near": [
+        {
+          "regex": "\\bendpoint_public_access_cidrs\\b",
+          "before": 8,
+          "after": 8
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "ingress {\n  from_port = 22\n  to_port = 22\n  protocol = \"tcp\"\n  cidr_blocks = [\"0.0.0.0/0\"]\n}",
+    "ingress {\n  from_port = 3306\n  to_port = 3306\n  protocol = \"tcp\"\n  cidr_blocks = [\"0.0.0.0/0\"]\n}",
+    "resource \"aws_security_group_rule\" \"open\" {\n  type = \"ingress\"\n  from_port = 5432\n  to_port = 5432\n  cidr_blocks = [\"0.0.0.0/0\"]\n}",
+    "vpc_config {\n  endpoint_public_access = true\n  subnet_ids = var.subnets\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/tf-public-ingress.ts"
+  },
+  "notes": "Block parsing is approximated: the CIDR line must be within 40 lines after an ingress/egress/rule line, and the port checks look 15 lines around it. The web-port exception (from_port and to_port 80/443, no sensitive port) becomes three pattern variants."
+}

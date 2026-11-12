@@ -1,0 +1,37 @@
+rules:
+  - id: codeql-js-sql-injection
+    message: >-
+      SQL query built from user input may be vulnerable to SQL injection.
+      Use parameterized queries instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-089: Improper Neutralization of Special Elements used in an SQL Command"
+      technology:
+        - javascript
+        - nodejs
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-089/SqlInjection.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-089/SqlInjection.ql
+    pattern-either:
+      - pattern: $DB.query($QUERY + $VAR, ...)
+      - pattern: $DB.query(`...${$VAR}...`, ...)
+      - pattern: $CONN.query($QUERY + $VAR, ...)
+      - pattern: $CONN.query(`...${$VAR}...`, ...)
+      - pattern: $POOL.query($QUERY + $VAR, ...)
+      - pattern: $POOL.query(`...${$VAR}...`, ...)
+      - pattern: $KNEX.raw($QUERY + $VAR, ...)
+      - pattern: $KNEX.raw(`...${$VAR}...`, ...)
+      - pattern: sequelize.query($QUERY + $VAR, ...)
+      - pattern: sequelize.query(`...${$VAR}...`, ...)
+      - pattern: $MODEL.sequelize.query($QUERY + $VAR, ...)
+      - pattern: $MODEL.sequelize.query(`...${$VAR}...`, ...)

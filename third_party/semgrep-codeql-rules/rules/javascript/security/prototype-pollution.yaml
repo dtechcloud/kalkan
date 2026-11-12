@@ -1,0 +1,28 @@
+rules:
+  - id: codeql-js-prototype-pollution
+    message: >-
+      Object property assignment with user-controlled key may allow prototype
+      pollution. Validate property names or use Object.create(null).
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-1321: Improperly Controlled Modification of Object Prototype Attributes"
+      technology:
+        - javascript
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/1321.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-400/PrototypePollution.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-400/PrototypePollution.ql
+    pattern-either:
+      - pattern: $OBJ[$KEY] = $VAL
+      - pattern: $OBJ.__proto__ = ...
+      - pattern: Object.assign($TARGET, $SOURCE)
+      - pattern: "{ ...$SPREAD }"

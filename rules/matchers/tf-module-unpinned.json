@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "slug": "tf-module-unpinned",
+  "description": "Terraform module references a remote git/github source without a commit-SHA pin",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/*.tf"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [
+      "terraform"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\bsource\\s*=\\s*\"(?:git::|github\\.com/|bitbucket\\.org/|https?://|[\\w.-]+@)(?![^\"]*\\?ref=[0-9a-f]{7,40}\\b)(?![^\"]*[?&]tag=[\\w.-]+)[^\"]*\\\"",
+      "flags": "i",
+      "label": "remote unpinned",
+      "near": [
+        {
+          "regex": "^\\s*module\\s+\"[^\"]+\"\\s*\\{",
+          "before": 20
+        }
+      ]
+    },
+    {
+      "regex": "\\bsource\\s*=\\s*\"[a-z0-9-]+/[a-z0-9-]+/[a-z0-9-]+(?://[\\w/-]+)?\"",
+      "flags": "i",
+      "label": "registry no version",
+      "near": [
+        {
+          "regex": "^\\s*module\\s+\"[^\"]+\"\\s*\\{",
+          "before": 20
+        }
+      ],
+      "not_near": [
+        {
+          "regex": "\\bversion\\s*=\\s*\"[^\"]+\"",
+          "before": 20,
+          "after": 20
+        }
+      ]
+    }
+  ],
+  "examples": [
+    "module \"vpc\" {\n  source = \"github.com/terraform-aws-modules/terraform-aws-vpc\"\n}",
+    "module \"k8s\" {\n  source = \"git::https://github.com/some-org/k8s-module.git\"\n}",
+    "module \"iam\" {\n  source = \"git::ssh://git@github.com/org/iam.git?ref=main\"\n}",
+    "module \"registry\" {\n  source = \"terraform-aws-modules/eks/aws\"\n}",
+    "module \"external\" {\n  source = \"https://example.com/modules/foo.tar.gz\"\n}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/tf-module-unpinned.ts"
+  },
+  "notes": "Block parsing is approximated: the source line must be within 20 lines after a module line; a registry source needs a version line within 20 lines."
+}

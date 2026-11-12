@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "slug": "py-airflow-dag",
+  "description": "Airflow DAGs and operators — sensitive prod surface (gated on Airflow)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/dags/**/*.py",
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "airflow"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\bairflow\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bDAG\\s*\\(\\s*['\"]",
+      "flags": "",
+      "label": "DAG('id', ...) declaration"
+    },
+    {
+      "regex": "\\b@dag\\b\\s*\\(",
+      "flags": "",
+      "label": "@dag decorator (TaskFlow API)"
+    },
+    {
+      "regex": "\\b(?:Bash|Python|Docker|Postgres|S3|HTTP)Operator\\s*\\(",
+      "flags": "",
+      "label": "Operator instantiation (review templated args)"
+    },
+    {
+      "regex": "\\{\\{[^}]{1,500}\\}\\}",
+      "flags": "",
+      "label": "Jinja template — review for injection"
+    },
+    {
+      "regex": "\\bbash_command\\s*=\\s*f?['\"][^'\"]*\\{",
+      "flags": "",
+      "label": "bash_command with templating"
+    }
+  ],
+  "examples": [
+    "dag = DAG(\"my_dag_id\", default_args=default_args, schedule=\"@daily\")",
+    "with DAG('etl_pipeline', start_date=datetime(2024, 1, 1)) as dag:",
+    "bash_command = \"echo {{ params.x }}\",",
+    "task = BashOperator(task_id=\"echo\", bash_command=\"echo hi\")",
+    "op = PythonOperator(task_id=\"run\", python_callable=run)",
+    "op = DockerOperator(task_id=\"d\", image=\"python:3.11\")",
+    "op = PostgresOperator(task_id=\"q\", sql=\"SELECT 1\")",
+    "op = S3Operator(task_id=\"upload\")",
+    "op = HTTPOperator(task_id=\"call\")",
+    "query = \"SELECT * FROM t WHERE d='{{ ds }}'\"",
+    "bash_command = f\"echo {payload}\""
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-airflow-dag.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. '\\{\\{\\s*[^}]+\\s*\\}\\}' becomes '\\{\\{[^}]{1,500}\\}\\}': \\s is part of [^}], and the bound stops quadratic backtracking on a crafted long line. Gate: deepsec tech [airflow]; kalkan uses tech python (or airflow) and a manifest that names airflow."
+}

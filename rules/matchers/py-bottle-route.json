@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "slug": "py-bottle-route",
+  "description": "Bottle route decorators (gated on Bottle)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.py"
+  ],
+  "exclude_file_patterns": [
+    "**/{test,tests,Test,Tests}/**",
+    "**/{test,tests,Test,Tests}.*",
+    "**/*{.,-}{test,tests,Test,Tests}.*",
+    "**/{test,tests}-*/**",
+    "**/*-{test,tests}/**",
+    "**/{migrations,Migrations}/**",
+    "**/migrations.*"
+  ],
+  "requires": {
+    "tech": [
+      "python",
+      "bottle"
+    ],
+    "sentinel_files": [
+      "**/requirements*.txt",
+      "**/pyproject.toml",
+      "**/Pipfile",
+      "**/setup.py",
+      "**/setup.cfg"
+    ],
+    "sentinel_contains": [
+      "(?i:\\bbottle\\b)"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*@(?:route|get|post|put|patch|delete)\\s*\\(\\s*['\"][^'\"]+['\"]",
+      "flags": "m",
+      "label": "Bottle @route/@method decorator"
+    },
+    {
+      "regex": "\\bBottle\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "Bottle() instance"
+    },
+    {
+      "regex": "\\brequest\\.(?:query|forms|json|cookies)\\b",
+      "flags": "",
+      "label": "request accessor"
+    }
+  ],
+  "examples": [
+    "@route(\"/\")",
+    "@get(\"/users\")",
+    "@post('/login')",
+    "@put(\"/items/<id>\")",
+    "@delete(\"/items/<id>\")",
+    "@patch(\"/items/<id>\")",
+    "app = Bottle()",
+    "name = request.query.get(\"name\")",
+    "data = request.json",
+    "f = request.forms.get(\"name\")"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/py-bottle-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [bottle]; kalkan uses tech python (or bottle) and a manifest that names bottle."
+}

@@ -1,0 +1,73 @@
+{
+  "version": 1,
+  "slug": "auth-bypass",
+  "description": "Auth checks, middleware guards, session validation that may be bypassable",
+  "class": "authn",
+  "cwe": [
+    "CWE-287"
+  ],
+  "noise_tier": "normal",
+  "file_patterns": [
+    "**/*.{ts,tsx,js,jsx}"
+  ],
+  "exclude_file_patterns": [],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "isAdmin\\s*[=!]==?\\s*(true|false|req\\.)",
+      "flags": "",
+      "label": "admin check comparison"
+    },
+    {
+      "regex": "auth.{0,30}skip|skip.{0,30}auth|bypass.{0,30}auth",
+      "flags": "i",
+      "label": "auth skip/bypass"
+    },
+    {
+      "regex": "if\\s*\\(\\s*!?\\s*session\\s*\\)",
+      "flags": "",
+      "label": "session null check"
+    },
+    {
+      "regex": "verify(Token|JWT|Session|Auth)\\s*\\(",
+      "flags": "",
+      "label": "auth verification call"
+    },
+    {
+      "regex": "middleware.{0,30}auth|auth.{0,30}middleware",
+      "flags": "i",
+      "label": "auth middleware"
+    },
+    {
+      "regex": "req\\.headers\\[['\"]authorization['\"]\\]",
+      "flags": "",
+      "label": "authorization header access"
+    }
+  ],
+  "examples": [
+    "if (isAdmin === true) { grant(); }",
+    "user.isAdmin == req.body.isAdmin",
+    "// skip auth in development",
+    "const bypassAuth = true;",
+    "if (!session) return null;",
+    "if ( session ) { /* ok */ }",
+    "await verifyToken(token);",
+    "const ok = verifyJWT(t);",
+    "verifySession(req);",
+    "verifyAuth(headers);",
+    "app.use(authMiddleware);",
+    "const middlewareAuth = compose(...);",
+    "const t = req.headers[\"authorization\"];",
+    "req.headers['authorization']"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/auth-bypass.ts"
+  },
+  "notes": ""
+}

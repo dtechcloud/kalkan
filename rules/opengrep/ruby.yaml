@@ -1,0 +1,658 @@
+# SPDX-License-Identifier: MIT
+# kalkan Opengrep rules for Ruby (Rails, Sinatra and the standard library).
+# Original rules written for kalkan. Rule ID form: kalkan.ruby.<class>.<name>.
+rules:
+  - id: kalkan.ruby.sqli.tainted-sql-string
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is interpolated into a SQL statement. An attacker can change the
+      query. Use placeholders ("name = ?") with bind values, or the hash form of Active Record
+      conditions.
+    metadata:
+      cwe:
+        - "CWE-89: Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')"
+      kalkan_class: sqli
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/89.html
+        - https://guides.rubyonrails.org/security.html#sql-injection
+      category: security
+      technology: [ruby, rails, activerecord, sqlite3, pg]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.body
+          - pattern: request.raw_post
+          - pattern: request.query_string
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: $VALUE.to_i
+          - pattern: $VALUE.to_f
+          - pattern: Integer(...)
+          - pattern: $CONN.quote(...)
+          - pattern: sanitize_sql(...)
+          - pattern: sanitize_sql_array(...)
+          - pattern: $MODEL.sanitize_sql_array(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $DB.execute($QUERY, ...)
+              - pattern: $DB.query($QUERY, ...)
+              - pattern: $DB.exec($QUERY, ...)
+              - pattern: $DB.exec_query($QUERY, ...)
+              - pattern: $DB.select_all($QUERY, ...)
+              - pattern: $MODEL.find_by_sql($QUERY, ...)
+              - pattern: $MODEL.where($QUERY, ...)
+              - pattern: $MODEL.order($QUERY)
+              - pattern: $MODEL.group($QUERY)
+              - pattern: $MODEL.having($QUERY, ...)
+              - pattern: $MODEL.joins($QUERY)
+              - pattern: $MODEL.pluck($QUERY)
+          - pattern-not: '$MODEL.where({...}, ...)'
+          - focus-metavariable: $QUERY
+
+  - id: kalkan.ruby.os-command-injection.tainted-shell-command
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches a shell command. A single command string runs through
+      the shell, so an attacker can run other commands. Pass the program and each argument
+      separately (system("ping", "-c", "1", host)), or quote the value with Shellwords.escape().
+    metadata:
+      cwe:
+        - "CWE-78: Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')"
+      kalkan_class: os-command-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/78.html
+        - https://docs.ruby-lang.org/en/master/Kernel.html#method-i-system
+      category: security
+      technology: [ruby]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.body
+          - pattern: request.raw_post
+          - pattern: request.query_string
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: Shellwords.escape(...)
+          - pattern: Shellwords.shellescape(...)
+          - pattern: $VALUE.shellescape
+          - pattern: $VALUE.to_i
+          - pattern: Integer(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: system($CMD)
+              - pattern: exec($CMD)
+              - pattern: spawn($CMD)
+              - pattern: Kernel.system($CMD)
+              - pattern: Kernel.exec($CMD)
+              - pattern: Process.spawn($CMD)
+              - pattern: IO.popen($CMD, ...)
+              - pattern: Open3.capture2($CMD, ...)
+              - pattern: Open3.capture2e($CMD, ...)
+              - pattern: Open3.capture3($CMD, ...)
+              - pattern: Open3.popen3($CMD, ...)
+              - pattern: '`...#{$CMD}...`'
+          - focus-metavariable: $CMD
+
+  - id: kalkan.ruby.code-injection.tainted-eval
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is evaluated as Ruby code or selects a method or constant to
+      call (eval, instance_eval, send, constantize). An attacker can run any Ruby code. Select a
+      fixed method or expression from an allowlist.
+    metadata:
+      cwe:
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+        - "CWE-95: Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')"
+      kalkan_class: code-injection
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/95.html
+        - https://guides.rubyonrails.org/security.html#injection
+      category: security
+      technology: [ruby, rails]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.body
+          - pattern: request.raw_post
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.fetch(...)
+              - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: eval($CODE, ...)
+              - pattern: instance_eval($CODE, ...)
+              - pattern: class_eval($CODE, ...)
+              - pattern: module_eval($CODE, ...)
+              - pattern: $OBJECT.instance_eval($CODE, ...)
+              - pattern: $OBJECT.class_eval($CODE, ...)
+              - pattern: $OBJECT.send($CODE, ...)
+              - pattern: $OBJECT.public_send($CODE, ...)
+              - pattern: Object.const_get($CODE, ...)
+              - pattern: $CODE.constantize
+              - pattern: $CODE.safe_constantize
+          - focus-metavariable: $CODE
+
+  - id: kalkan.ruby.ssti.tainted-template-source
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is compiled as an ERB, Haml or Slim template, or rendered with
+      render inline:. Template code is Ruby code, so an attacker can run commands on the server.
+      Keep the template text constant and pass user data only as locals.
+    metadata:
+      cwe:
+        - "CWE-1336: Improper Neutralization of Special Elements Used in a Template Engine"
+        - "CWE-94: Improper Control of Generation of Code ('Code Injection')"
+      kalkan_class: ssti
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/1336.html
+        - https://docs.ruby-lang.org/en/master/ERB.html
+      category: security
+      technology: [ruby, erb, rails, haml, slim]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.body
+          - pattern: request.raw_post
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: ERB.new($SOURCE, ...)
+              - pattern: Erubi::Engine.new($SOURCE, ...)
+              - pattern: Haml::Template.new(...) { $SOURCE }
+              - pattern: Haml::Engine.new($SOURCE, ...)
+              - pattern: 'render(..., inline: $SOURCE, ...)'
+              - pattern: 'render inline: $SOURCE'
+          - focus-metavariable: $SOURCE
+
+  - id: kalkan.ruby.xss.tainted-html-safe
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request is marked as safe HTML (html_safe, raw) without escaping. Rails
+      then skips its own escaping, and an attacker can run script in the browser of another user.
+      Escape the value with ERB::Util.html_escape() first, or let the template escape it.
+    metadata:
+      cwe:
+        - "CWE-79: Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')"
+      kalkan_class: xss
+      confidence: HIGH
+      likelihood: HIGH
+      impact: MEDIUM
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://guides.rubyonrails.org/security.html#cross-site-scripting-xss
+      category: security
+      technology: [ruby, rails]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.query_string
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: ERB::Util.html_escape(...)
+          - pattern: ERB::Util.h(...)
+          - pattern: CGI.escapeHTML(...)
+          - pattern: Rack::Utils.escape_html(...)
+          - pattern: h(...)
+          - pattern: sanitize(...)
+          - pattern: strip_tags(...)
+          - pattern: $VALUE.to_i
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: $HTML.html_safe
+              - pattern: raw($HTML)
+              - pattern: $BUFFER.safe_concat($HTML)
+          - focus-metavariable: $HTML
+
+  - id: kalkan.ruby.ssrf.tainted-request-url
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls the URL of an outbound HTTP request. An attacker can
+      reach internal services or cloud metadata endpoints, and Kernel#open even runs "|command"
+      strings. Look the URL up in a fixed allowlist, or check the scheme and host before the
+      request.
+    metadata:
+      cwe:
+        - "CWE-918: Server-Side Request Forgery (SSRF)"
+      kalkan_class: ssrf
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A10:2021 - Server-Side Request Forgery (SSRF)"
+      references:
+        - https://cwe.mitre.org/data/definitions/918.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html
+      category: security
+      technology: [ruby, net-http, httparty, faraday, rest-client]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.body
+          - pattern: request.raw_post
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.fetch(...)
+              - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Net::HTTP.get($URL, ...)
+              - pattern: Net::HTTP.get_response($URL, ...)
+              - pattern: Net::HTTP.start($URL, ...)
+              - pattern: URI.open($URL, ...)
+              - pattern: open($URL, ...)
+              - pattern: HTTParty.get($URL, ...)
+              - pattern: HTTParty.post($URL, ...)
+              - pattern: Faraday.get($URL, ...)
+              - pattern: Faraday.new($URL, ...)
+              - pattern: RestClient.get($URL, ...)
+              - pattern: RestClient.post($URL, ...)
+              - pattern: Excon.get($URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.ruby.path-traversal.tainted-file-path
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request controls a file system path. File.join() does not stop "../"
+      sequences, so an attacker can read or change other files. Keep only File.basename() of the
+      name, or expand the path and check that it stays inside the base folder.
+    metadata:
+      cwe:
+        - "CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')"
+      kalkan_class: path-traversal
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/22.html
+        - https://guides.rubyonrails.org/security.html#file-downloads
+      category: security
+      technology: [ruby, rails, sinatra]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: File.basename(...)
+          - pattern: $VALUE.to_i
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.fetch(...)
+              - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: File.read($PATH, ...)
+              - pattern: File.binread($PATH, ...)
+              - pattern: File.readlines($PATH, ...)
+              - pattern: File.open($PATH, ...)
+              - pattern: File.new($PATH, ...)
+              - pattern: File.write($PATH, ...)
+              - pattern: File.delete($PATH, ...)
+              - pattern: IO.read($PATH, ...)
+              - pattern: FileUtils.rm($PATH, ...)
+              - pattern: FileUtils.rm_rf($PATH, ...)
+              - pattern: send_file($PATH, ...)
+          - focus-metavariable: $PATH
+
+  - id: kalkan.ruby.deserialization.tainted-unsafe-load
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Data from the HTTP request reaches Marshal.load, YAML.unsafe_load or Oj object mode. These
+      loaders build arbitrary Ruby objects, and known gadget chains run code during the load. Use
+      JSON.parse() or YAML.safe_load().
+    metadata:
+      cwe:
+        - "CWE-502: Deserialization of Untrusted Data"
+      kalkan_class: deserialization
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A08:2021 - Software and Data Integrity Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/502.html
+        - https://docs.ruby-lang.org/en/master/Marshal.html
+      category: security
+      technology: [ruby]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.body
+          - pattern: request.raw_post
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: Marshal.load($DATA, ...)
+              - pattern: Marshal.restore($DATA, ...)
+              - pattern: YAML.unsafe_load($DATA, ...)
+              - pattern: Psych.unsafe_load($DATA, ...)
+              - pattern: Oj.object_load($DATA, ...)
+              - pattern: 'Oj.load($DATA, mode: :object, ...)'
+          - focus-metavariable: $DATA
+
+  - id: kalkan.ruby.xxe.nokogiri-entity-substitution
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Nokogiri parses this document with entity substitution (NOENT) or DTD loading (DTDLOAD). A
+      crafted document can read local files or reach internal hosts (XXE). Keep the default parse
+      options, which do not substitute entities and block network access.
+    metadata:
+      cwe:
+        - "CWE-611: Improper Restriction of XML External Entity Reference"
+      kalkan_class: xxe
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: HIGH
+      owasp:
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/611.html
+        - https://nokogiri.org/rdoc/Nokogiri/XML/ParseOptions.html
+      category: security
+      technology: [ruby, nokogiri]
+    pattern-either:
+      - pattern: Nokogiri::XML::ParseOptions::NOENT
+      - pattern: Nokogiri::XML::ParseOptions::DTDLOAD
+      - patterns:
+          - pattern-inside: Nokogiri::XML(...) { |$CONFIG| ... }
+          - pattern-either:
+              - pattern: $CONFIG.noent
+              - pattern: $CONFIG.dtdload
+
+  - id: kalkan.ruby.open-redirect.tainted-redirect-target
+    mode: taint
+    languages: [ruby]
+    severity: WARNING
+    message: >-
+      Data from the HTTP request decides the target of a redirect. An attacker can send users to
+      a hostile site through a trusted link. Redirect to route helpers or to a fixed set of
+      internal paths, and do not pass allow_other_host: true for user data.
+    metadata:
+      cwe:
+        - "CWE-601: URL Redirection to Untrusted Site ('Open Redirect')"
+      kalkan_class: open-redirect
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: LOW
+      owasp:
+        - "A01:2021 - Broken Access Control"
+      references:
+        - https://cwe.mitre.org/data/definitions/601.html
+        - https://guides.rubyonrails.org/security.html#redirection
+      category: security
+      technology: [ruby, rails, sinatra]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+          - pattern: request.env
+          - pattern: request.headers
+          - pattern: request.referer
+    pattern-sanitizers:
+      - patterns:
+          - pattern-either:
+              - pattern: $ALLOWLIST.fetch(...)
+              - pattern: $ALLOWLIST[...]
+          - metavariable-regex:
+              metavariable: $ALLOWLIST
+              regex: ^[A-Z][A-Z0-9_]*$
+      - pattern: url_for(...)
+    pattern-sinks:
+      - patterns:
+          - pattern-either:
+              - pattern: redirect_to($URL, ...)
+              - pattern: redirect($URL, ...)
+          - focus-metavariable: $URL
+
+  - id: kalkan.ruby.nosqli.tainted-mongo-filter
+    mode: taint
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      Request data is used inside a MongoDB filter without a type check. Rack turns
+      username[$ne]=x into a hash, so an attacker can inject query operators and bypass the
+      filter. Convert each value with to_s or to_i before the query.
+    metadata:
+      cwe:
+        - "CWE-943: Improper Neutralization of Special Elements in Data Query Logic"
+      kalkan_class: nosqli
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A03:2021 - Injection"
+      references:
+        - https://cwe.mitre.org/data/definitions/943.html
+        - https://www.mongodb.com/docs/ruby-driver/current/
+      category: security
+      technology: [ruby, mongodb]
+    pattern-sources:
+      - pattern-either:
+          - pattern: params
+          - pattern: cookies
+    pattern-sanitizers:
+      - pattern-either:
+          - pattern: $VALUE.to_s
+          - pattern: $VALUE.to_i
+          - pattern: $VALUE.to_f
+          - pattern: String(...)
+          - pattern: Integer(...)
+    pattern-sinks:
+      - patterns:
+          - pattern: $CLIENT[$COLLECTION].$OPERATION(...)
+          - metavariable-regex:
+              metavariable: $OPERATION
+              regex: ^(find|find_one_and_update|find_one_and_delete|find_one_and_replace|update_one|update_many|delete_one|delete_many|replace_one|count_documents|aggregate)$
+
+  - id: kalkan.ruby.jwt.signature-not-verified
+    languages: [ruby]
+    severity: ERROR
+    message: >-
+      JWT.decode() runs with verification turned off, or allows the "none" algorithm. An attacker
+      can forge any claim. Pass the key, verify = true and a fixed algorithm, for example
+      JWT.decode(token, key, true, algorithm: "HS256").
+    metadata:
+      cwe:
+        - "CWE-347: Improper Verification of Cryptographic Signature"
+      kalkan_class: jwt
+      confidence: HIGH
+      likelihood: HIGH
+      impact: HIGH
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+        - "A07:2021 - Identification and Authentication Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/347.html
+        - https://github.com/jwt/ruby-jwt
+      category: security
+      technology: [ruby, ruby-jwt]
+    pattern-either:
+      - pattern: JWT.decode($TOKEN, $KEY, false, ...)
+      - pattern: 'JWT.decode(..., algorithm: "none", ...)'
+      - pattern: 'JWT.decode(..., algorithms: [..., "none", ...], ...)'
+      - pattern: JWT.encode($PAYLOAD, $KEY, "none", ...)
+
+  - id: kalkan.ruby.crypto.weak-hash-algorithm
+    languages: [ruby]
+    severity: WARNING
+    message: >-
+      MD5 and SHA-1 are broken for security use. Do not use them for passwords, signatures or
+      integrity checks. Hash passwords with bcrypt or argon2, and use SHA-256 or better elsewhere.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+        - "CWE-328: Use of Weak Hash"
+        - "CWE-916: Use of Password Hash With Insufficient Computational Effort"
+      kalkan_class: crypto
+      confidence: MEDIUM
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html
+      category: security
+      technology: [ruby, openssl]
+    pattern-either:
+      - pattern: Digest::MD5.$METHOD(...)
+      - pattern: Digest::SHA1.$METHOD(...)
+      - pattern: OpenSSL::Digest::MD5.$METHOD(...)
+      - pattern: OpenSSL::Digest::SHA1.$METHOD(...)
+      - pattern: OpenSSL::Digest.new("MD5", ...)
+      - pattern: OpenSSL::Digest.new("SHA1", ...)
+
+  - id: kalkan.ruby.crypto.weak-cipher
+    languages: [ruby]
+    severity: WARNING
+    message: >-
+      OpenSSL::Cipher uses a broken cipher (DES, 3DES, RC2, RC4, Blowfish) or ECB mode. ECB leaks
+      patterns of the plaintext. Use aes-256-gcm with a random IV and check the auth tag.
+    metadata:
+      cwe:
+        - "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"
+      kalkan_class: crypto
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A02:2021 - Cryptographic Failures"
+      references:
+        - https://cwe.mitre.org/data/definitions/327.html
+        - https://docs.ruby-lang.org/en/master/OpenSSL/Cipher.html
+      category: security
+      technology: [ruby, openssl]
+    patterns:
+      - pattern: OpenSSL::Cipher.new($CIPHER, ...)
+      - metavariable-regex:
+          metavariable: $CIPHER
+          regex: (?i)^["']?(des.*|rc2.*|rc4.*|bf.*|blowfish.*|.*-ecb)["']?$
+
+  - id: kalkan.ruby.cors.reflected-origin-with-credentials
+    languages: [ruby]
+    severity: WARNING
+    message: >-
+      The response copies the Origin request header into Access-Control-Allow-Origin and also
+      allows credentials, or rack-cors allows every origin with credentials. Any web site can then
+      send authenticated requests and read the answers. List the trusted origins explicitly.
+    metadata:
+      cwe:
+        - "CWE-942: Permissive Cross-domain Policy with Untrusted Domains"
+      kalkan_class: cors
+      confidence: HIGH
+      likelihood: MEDIUM
+      impact: MEDIUM
+      owasp:
+        - "A01:2021 - Broken Access Control"
+        - "A05:2021 - Security Misconfiguration"
+      references:
+        - https://cwe.mitre.org/data/definitions/942.html
+        - https://github.com/cyu/rack-cors
+      category: security
+      technology: [ruby, rails, sinatra, rack-cors]
+    pattern-either:
+      - patterns:
+          - pattern-either:
+              - pattern-inside: |
+                  $HEADERS["Access-Control-Allow-Credentials"] = "true"
+                  ...
+              - pattern-inside: |
+                  $FIRST
+                  ...
+                  $HEADERS["Access-Control-Allow-Credentials"] = "true"
+          - pattern-either:
+              - pattern: $H["Access-Control-Allow-Origin"] = request.env["HTTP_ORIGIN"]
+              - pattern: $H["Access-Control-Allow-Origin"] = request.headers["Origin"]
+      - patterns:
+          - pattern-inside: |
+              allow do
+                ...
+                resource ..., credentials: true, ...
+                ...
+              end
+          - pattern-either:
+              - pattern: origins "*"
+              - pattern: origins(/.*/)
+              - pattern: 'origins { |$SOURCE, $ENV| true }'

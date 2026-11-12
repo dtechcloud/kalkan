@@ -1,0 +1,11 @@
+{
+  "task_id": "T0031-sca_reach",
+  "vuln_ref": "PyPI/pyyaml@5.3/GHSA-8q59-q68h-6hv4",
+  "reachability": "reachable",
+  "reason": "The config loader calls yaml.load with the default loader on an uploaded file.",
+  "evidence": [
+    {"file": "app/config.py", "line": 3, "quote": "import yaml"},
+    {"file": "app/config.py", "line": 15, "quote": "return yaml.load(stream)"}
+  ],
+  "searched": ["import yaml", "yaml.load(", "yaml.full_load("]
+}

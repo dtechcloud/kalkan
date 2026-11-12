@@ -1,0 +1,8 @@
+--index-url https://pypi.org/simple/
+Django==3.2.0
+Flask==0.12
+PyYAML==5.3
+MarkupSafe==3.0.2
+sample-module==0.0.1
+itsdangerous==2.2.0
+--extra-index-url http://pypi.vulnapp.internal/simple/

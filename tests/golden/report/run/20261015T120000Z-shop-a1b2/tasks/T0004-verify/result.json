@@ -1,0 +1,103 @@
+{
+  "task_id": "T0004-verify",
+  "subject": {
+    "kind": "hunter",
+    "ref": "T0002-hunt#1"
+  },
+  "audit_answers": {
+    "attacker_control": {
+      "status": "established",
+      "reason": "url değeri query string'den geliyor.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 18,
+          "quote": "url = request.args.get(\"url\")"
+        }
+      ]
+    },
+    "privilege_boundary": {
+      "status": "unknown",
+      "reason": "unverified_evidence",
+      "evidence": []
+    },
+    "unmitigated": {
+      "status": "established",
+      "reason": "Adres doğrulaması yok.",
+      "evidence": [
+        {
+          "file": "app/routes.py",
+          "line": 19,
+          "quote": "return http_get(url)"
+        }
+      ]
+    }
+  },
+  "finding": {
+    "title": "Görsel proxy'sinde SSRF",
+    "description": "GET /fetch, kullanıcının verdiği adrese sunucudan istek atıyor.",
+    "class": "ssrf",
+    "cwe": [
+      "CWE-918"
+    ],
+    "root_cause": "fetch, url değerini doğrulamadan http_get'e veriyor.",
+    "trace": [
+      {
+        "kind": "entrypoint",
+        "file": "app/routes.py",
+        "line": 18,
+        "scope": "fetch",
+        "description": "url değerini query string'den okuyor."
+      },
+      {
+        "kind": "sink",
+        "file": "app/routes.py",
+        "line": 19,
+        "scope": "fetch",
+        "description": "Sunucu, kullanıcının verdiği adrese istek atıyor."
+      }
+    ],
+    "evidence": [
+      {
+        "file": "app/routes.py",
+        "line": 19,
+        "description": "http_get, doğrulanmamış url değerini kullanıyor."
+      }
+    ],
+    "validation_plan": {
+      "local": "Uygulamayı yerelde çalıştır ve iç bir adrese istek gönder."
+    },
+    "reason": "Bir alıntı doğrulanamadı.",
+    "intended_behavior": "Sunucu yalnızca izin listesindeki adreslere istek atmalı.",
+    "conditions": [],
+    "execution": {
+      "attacker_perspective": "Kimliği doğrulanmamış uzak bir saldırgan.",
+      "payloads": [
+        "http://169.254.169.254/latest/meta-data/"
+      ],
+      "instructions": [
+        "GET /fetch?url=http://169.254.169.254/latest/meta-data/ gönder."
+      ],
+      "observed_result": "Yalnızca statik analiz."
+    },
+    "remediation": {
+      "strategy": "Hedef adresi bir allowlist ile sınırla."
+    },
+    "severity": {
+      "likelihood": {
+        "score": "high",
+        "reason": "Uç nokta kimlik doğrulama istemiyor."
+      },
+      "impact": {
+        "score": "medium",
+        "reason": "İç ağdaki servislere istek atılabilir."
+      },
+      "overall_severity": "medium"
+    },
+    "confidence": {
+      "score": "medium",
+      "reason": "Alıntılardan biri doğrulanamadı."
+    }
+  },
+  "duplicate_of": null
+}

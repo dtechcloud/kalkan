@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kalkan"
+version = "1.0.0"
+description = "Resumable, AI-assisted security audit toolkit driven by Claude Code."
+readme = "README.md"
+requires-python = ">=3.11"
+# MIT covers kalkan's own code. The wheel also bundles the curated Opengrep rule packs of
+# rules/opengrep-packs/, which keep their own licenses (THIRD_PARTY.md: MIT, LGPL-2.1, LGPL-3.0,
+# GPL-3.0 and AGPL-3.0). Their license texts, and those of the other vendored upstream
+# projects, go into the .dist-info/licenses/ folder of the wheel.
+license = "MIT"
+license-files = [
+    "LICENSE",
+    "NOTICE",
+    "third_party/*/LICENSE",
+    "third_party/*/COPYRIGHT",
+    "third_party/*/NOTICE",
+    "third_party/gitlab-sast-rules/rules/lgpl/LICENSE",
+]
+authors = [{ name = "The kalkan authors", email = "kalkan@dtechcloud.com" }]
+keywords = ["security", "sast", "sca", "audit", "claude-code"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Security",
+]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest==9.2.0", "ruff==0.17.3"]
+
+[project.scripts]
+kalkan = "kalkan.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kalkan"]
+
+# The wheel carries the read-only data, so that an installed kalkan needs no checkout
+# (kalkan.resources, docs/ENGINE-SPEC.md section 24). A checkout reads the folders in place.
+[tool.hatch.build.targets.wheel.force-include]
+"knowledge" = "kalkan/_data/knowledge"
+"rules" = "kalkan/_data/rules"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+extend-exclude = ["third_party", "knowledge"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --import-mode=importlib"
+markers = [
+    "tools: needs an installed external scanner (skipped when the tool is missing)",
+    "docker: needs a running Docker engine (skipped when Docker is unavailable)",
+]

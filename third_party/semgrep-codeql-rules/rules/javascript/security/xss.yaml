@@ -1,0 +1,86 @@
+rules:
+  - id: codeql-js-xss-dom
+    message: >-
+      Setting innerHTML, outerHTML, or document.write with user input may lead
+      to cross-site scripting (XSS). Use textContent or proper sanitization.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - javascript
+        - browser
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-079/XssThroughDom.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-079/XssThroughDom.ql
+    pattern-either:
+      - pattern: $EL.innerHTML = $INPUT
+      - pattern: $EL.outerHTML = $INPUT
+      - pattern: document.write($INPUT)
+      - pattern: document.writeln($INPUT)
+      - pattern: $EL.insertAdjacentHTML(..., $INPUT)
+
+  - id: codeql-js-xss-react-dangerously
+    message: >-
+      Using dangerouslySetInnerHTML with user input may lead to XSS. Ensure
+      the input is properly sanitized.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - react
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-079/UnsafeHtmlConstruction.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-079/UnsafeHtmlConstruction.ql
+    pattern-either:
+      - pattern: dangerouslySetInnerHTML={$OBJ}
+      - pattern: dangerouslySetInnerHTML=...
+
+  - id: codeql-js-xss-jquery
+    message: >-
+      Using jQuery html() with user input may lead to XSS. Use text() or
+      proper sanitization instead.
+    severity: ERROR
+    languages:
+      - javascript
+      - typescript
+    metadata:
+      category: security
+      cwe: "CWE-079: Improper Neutralization of Input During Web Page Generation"
+      technology:
+        - jquery
+      confidence: MEDIUM
+      likelihood: HIGH
+      impact: HIGH
+      subcategory:
+        - vuln
+      references:
+        - https://cwe.mitre.org/data/definitions/79.html
+        - https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-079/XssThroughDom.ql
+      source-rule-url: https://github.com/github/codeql/blob/main/javascript/ql/src/Security/CWE-079/XssThroughDom.ql
+    pattern-either:
+      - pattern: $(...).html($INPUT)
+      - pattern: $(...).append($INPUT)
+      - pattern: $(...).prepend($INPUT)
+      - pattern: $(...).after($INPUT)
+      - pattern: $(...).before($INPUT)
+      - pattern: jQuery(...).html($INPUT)

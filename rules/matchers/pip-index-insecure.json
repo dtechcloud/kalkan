@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "slug": "pip-index-insecure",
+  "description": "pip requirements file uses a package index over plain HTTP (no TLS)",
+  "class": "supply-chain-cicd",
+  "cwe": [
+    "CWE-829",
+    "CWE-319"
+  ],
+  "noise_tier": "precise",
+  "file_patterns": [
+    "**/requirements*.txt",
+    "**/requirements/*.txt",
+    "**/requirements*.in",
+    "**/constraints*.txt"
+  ],
+  "exclude_file_patterns": [
+    "**/{node_modules,.venv,venv,site-packages}/**"
+  ],
+  "requires": {
+    "tech": [],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "^\\s*(?:--index-url|--extra-index-url|--find-links|-i|-f)(?:\\s*=\\s*|\\s+)[\"']?http://",
+      "flags": "",
+      "label": "package index over http"
+    }
+  ],
+  "examples": [
+    "--extra-index-url http://pypi.vulnapp.internal/simple/",
+    "--index-url=http://mirror.example.internal/simple",
+    "-i http://10.0.0.5/simple"
+  ],
+  "source": null,
+  "notes": "kalkan rule (ADR-0005, K.12). pip downloads every package of the file from this index without TLS, so a man in the middle can replace one; --extra-index-url also lets the index win with a higher version. pip.conf and environment variables are not checked."
+}

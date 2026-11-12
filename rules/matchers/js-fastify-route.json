@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "slug": "js-fastify-route",
+  "description": "Fastify route registrations — entry points (weak candidate, gated on Fastify)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.{ts,js,mjs,cjs}"
+  ],
+  "exclude_file_patterns": [
+    "**/*.{test,spec}.*",
+    "**/node_modules/**"
+  ],
+  "requires": {
+    "tech": [
+      "fastify"
+    ],
+    "sentinel_files": [],
+    "sentinel_contains": []
+  },
+  "patterns": [
+    {
+      "regex": "\\b(?:fastify|instance|app|server)\\.(?:get|post|put|patch|delete|head|options|route|register)\\s*\\(",
+      "flags": "",
+      "label": "fastify method/route/register call"
+    },
+    {
+      "regex": "\\.route\\s*\\(\\s*\\{[\\s\\S]*?method\\s*:",
+      "flags": "",
+      "label": "fastify .route({ method, ... }) form"
+    },
+    {
+      "regex": "addHook\\s*\\(\\s*['\"](?:onRequest|preHandler|preValidation)['\"]",
+      "flags": "",
+      "label": "auth-relevant lifecycle hook"
+    }
+  ],
+  "examples": [
+    "fastify.get(\"/\", async () => \"ok\");",
+    "fastify.post('/users', handler)",
+    "app.put(\"/items/:id\", async (req, reply) => {});",
+    "instance.register(authPlugin);",
+    "server.route({ method: \"POST\", url: \"/x\", handler })",
+    "app.route({ method: 'GET', url: '/y', handler });",
+    "fastify.addHook(\"preHandler\", async (request, reply) => {});",
+    "app.addHook('onRequest', authHook)",
+    "instance.addHook(\"preValidation\", validate);"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/js-fastify-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class."
+}

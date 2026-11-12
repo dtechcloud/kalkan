@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "slug": "rs-axum-route",
+  "description": "Axum router declarations (gated on Axum)",
+  "class": null,
+  "cwe": [],
+  "noise_tier": "noisy",
+  "file_patterns": [
+    "**/*.rs"
+  ],
+  "exclude_file_patterns": [
+    "**/{tests,examples}/**"
+  ],
+  "requires": {
+    "tech": [
+      "rust",
+      "axum"
+    ],
+    "sentinel_files": [
+      "**/Cargo.toml"
+    ],
+    "sentinel_contains": [
+      "\\baxum\\b"
+    ]
+  },
+  "patterns": [
+    {
+      "regex": "\\bRouter::new\\s*\\(\\s*\\)",
+      "flags": "",
+      "label": "Router::new() factory"
+    },
+    {
+      "regex": "\\.route\\s*\\(\\s*\"[^\"]+\"\\s*,\\s*(?:get|post|put|patch|delete|any|on)\\s*\\(",
+      "flags": "",
+      "label": ".route('/path', get(handler))"
+    },
+    {
+      "regex": "\\.nest\\s*\\(\\s*\"[^\"]+\"",
+      "flags": "",
+      "label": ".nest() subroute"
+    },
+    {
+      "regex": "\\.merge\\s*\\(",
+      "flags": "",
+      "label": ".merge() router composition"
+    },
+    {
+      "regex": "\\bExtension<[^>]+>|\\bState<[^>]+>",
+      "flags": "",
+      "label": "Extension/State extractor (auth identity)"
+    },
+    {
+      "regex": "Path<[^>]+>|Query<[^>]+>|Json<[^>]+>",
+      "flags": "",
+      "label": "request extractor (untrusted input)"
+    }
+  ],
+  "examples": [
+    "let app = Router::new();",
+    "Router::new().route(\"/users\", get(list_users))",
+    "app.route(\"/login\", post(login_handler))",
+    ".route(\"/items/:id\", patch(update_item))",
+    ".nest(\"/api\", api_router)",
+    ".merge(admin_routes)",
+    "async fn handler(Extension(user): Extension<CurrentUser>) {}",
+    "async fn handler(State(pool): State<PgPool>) {}",
+    "async fn handler(Path(id): Path<u32>) {}",
+    "async fn handler(Query(params): Query<Filter>, Json(body): Json<CreateUserDto>) {}"
+  ],
+  "source": {
+    "repo": "vercel-labs/deepsec",
+    "commit": "4fa6722",
+    "path": "packages/scanner/src/matchers/rs-axum-route.ts"
+  },
+  "notes": "surface: enumerates entry points for review; no vulnerability class. Gate: deepsec tech [axum]; kalkan uses tech rust (or axum) and a manifest that names axum."
+}
