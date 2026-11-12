@@ -228,6 +228,11 @@ def decide(
 # --- report ----------------------------------------------------------------------------------
 
 
+def _count(info: dict) -> str:
+    value = info.get("candidates")
+    return "-" if value is None else str(value)
+
+
 def _recall(fixture_engines: dict, engine: str) -> str:
     item = fixture_engines.get(engine) or {}
     if not item.get("expected"):
@@ -307,16 +312,17 @@ def render(
         info = info or {}
         ref = ref_engines.get(engine) or {}
         lines.append(
-            f"| {engine} | {info.get('status')} | {info.get('candidates')} "
+            f"| {engine} | {info.get('status')} | {_count(info)} "
             f"| {_recall(fixture, engine)} | {_recall(ref_fixture, engine)} "
-            f"| {ref.get('candidates', '-')} |"
+            f"| {_count(ref)} |"
         )
     overall = (bench.get("fixture") or {}).get("overall") or {}
     if overall:
         lines += [
             "",
-            f"Fixture recall (any engine): {overall.get('recall_any_engine')}; "
-            f"missed: {', '.join(overall.get('missed') or []) or 'none'}.",
+            f"Fixture recall: {overall.get('recall_expected_engines')} by the expected engines, "
+            f"{overall.get('recall_any_engine')} by any engine. Missed by the expected engines: "
+            f"{', '.join(overall.get('missed') or []) or 'none'}.",
         ]
     lines += ["", f"Verdict: **{verdict.value}**", ""]
     return "\n".join(lines)

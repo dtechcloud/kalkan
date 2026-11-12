@@ -123,6 +123,7 @@ def test_pass_allows_the_history_skips(tmp_path):
     assert summary.startswith("# Platform check: ")
     assert summary.splitlines()[0].endswith(": PASS")
     assert "| checkov | ok | 33 | 9/9 | 9/9 | 33 |" in summary
+    assert "| gitleaks-history | skipped | - | - | - | - |" in summary
 
 
 @pytest.mark.parametrize(
