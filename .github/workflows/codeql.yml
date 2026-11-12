@@ -6,7 +6,7 @@
 # the default setup, so the existing alerts continue.
 # Every action is pinned by its full commit SHA; the comment names the release.
 
-name: CodeQL
+name: Code scanning (CodeQL, advanced setup)
 
 on:
   push:
