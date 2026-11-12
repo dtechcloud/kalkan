@@ -8,7 +8,10 @@ Command line, checked against ``syft scan --help`` of the pinned version 1.54.0:
 ``SYFT_CHECK_FOR_APP_UPDATE=false`` stops the update check. Syft needs no network for a
 folder scan. Its network features are off by default, and :data:`NETWORK_OFF` sets each one off
 explicitly, so a ``.syft.yaml`` of the user (``enrich: all``) cannot turn one on: environment
-variables win over configuration files (checked against ``syft config`` of 1.54.0). Tested:
+variables win over configuration files (checked against ``syft config`` of 1.54.0). The Go
+package library (``SYFT_GOLANG_USE_PACKAGES_LIB``) is on by default: it runs the Go toolchain of
+PATH and can use the network, so it is off too, and the SBOM no longer depends on a Go on PATH.
+Tested:
 CycloneDX 1.7 output. Difference from section 17: the explicit network settings.
 """
 
@@ -22,6 +25,9 @@ from kalkan.scanners.base import ScanContext, ToolAdapter
 NETWORK_OFF = {
     "SYFT_CHECK_FOR_APP_UPDATE": "false",
     "SYFT_GOLANG_SEARCH_REMOTE_LICENSES": "false",
+    # On by default: Syft then runs the Go toolchain on PATH (go list), which can download
+    # modules. Found on macOS on 2026-11-12: a Go on PATH added a Go component to the SBOM.
+    "SYFT_GOLANG_USE_PACKAGES_LIB": "false",
     "SYFT_JAVA_USE_NETWORK": "false",
     "SYFT_JAVA_RESOLVE_TRANSITIVE_DEPENDENCIES": "false",
     "SYFT_JAVASCRIPT_SEARCH_REMOTE_LICENSES": "false",

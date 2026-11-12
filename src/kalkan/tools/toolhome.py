@@ -33,8 +33,13 @@ hold target data lives in the work folder of the run (removed after a successful
   build unpacks), ``SEMGREP_LOG_FILE`` and ``XDG_CONFIG_HOME`` the work folder.
 - :func:`go_config_env`: the folder that the Go command reads as the user configuration folder
   (``APPDATA`` on Windows, ``XDG_CONFIG_HOME`` on Linux), with :func:`go_telemetry_off` in it.
-  macOS takes it from ``HOME`` (``~/Library/Application Support``); kalkan leaves that alone,
-  so there Go telemetry follows the setting of the user (not measured).
+  macOS takes it from ``HOME`` (``$HOME/Library/Application Support``), so a Go program gets the
+  folder as its ``HOME`` there, and ``GOPATH`` keeps its default in the real home folder (the
+  module cache of the user stays readable, as on Windows and Linux). Measured on macOS 27 arm64
+  on 2026-11-12: without it, the Go command and the compiler of gosec and govulncheck wrote
+  telemetry counters into ``~/Library/Application Support/go/telemetry``. ``GOTELEMETRY=off``
+  does not help: Go shows ``GOTELEMETRY`` in ``go env`` but does not read it from the
+  environment.
 """
 
 from __future__ import annotations
@@ -52,6 +57,8 @@ __all__ = [
     "cache_root",
     "go_config_env",
     "go_telemetry_off",
+    "go_user_config_dir",
+    "user_gopath",
     "opengrep_env",
     "opengrep_home",
     "prepare_home",
@@ -123,25 +130,43 @@ def go_config_env(folder: str | os.PathLike[str], *, platform: str | None = None
     """Return the variable that makes ``folder`` the user configuration folder of Go.
 
     Go reads its telemetry mode and its ``go env -w`` file from there (``os.UserConfigDir``):
-    ``APPDATA`` on Windows, ``XDG_CONFIG_HOME`` on Linux. macOS derives it from ``HOME``; the
-    function returns nothing there (module docstring). ``platform`` replaces ``sys.platform``
-    (tests).
+    ``APPDATA`` on Windows, ``XDG_CONFIG_HOME`` on Linux. macOS derives it from ``HOME``: there
+    the function returns ``HOME`` (the configuration folder is then
+    :func:`go_user_config_dir`). Go then also derives its default ``GOPATH`` from that folder; a
+    scanner run sets :func:`user_gopath` (module docstring). ``platform`` replaces
+    ``sys.platform`` (tests).
     """
     name = platform or sys.platform
     if name == "win32":
         return {"APPDATA": os.fspath(folder)}
     if name == "darwin":
-        return {}
+        return {"HOME": os.fspath(folder)}
     return {"XDG_CONFIG_HOME": os.fspath(folder)}
 
 
-def go_telemetry_off(folder: str | os.PathLike[str]) -> Path:
-    """Write ``<folder>/go/telemetry/mode`` with ``off`` and return the file.
+def user_gopath() -> str:
+    """Return the ``GOPATH`` of the user: the variable, else the Go default ``~/go``."""
+    return os.environ.get("GOPATH") or os.fspath(Path.home() / "go")
+
+
+def go_user_config_dir(folder: str | os.PathLike[str], *, platform: str | None = None) -> Path:
+    """Return the folder that Go reads as ``os.UserConfigDir`` with :func:`go_config_env`.
+
+    That is ``folder`` itself, on macOS ``folder/Library/Application Support``.
+    """
+    if (platform or sys.platform) == "darwin":
+        return Path(folder) / "Library" / "Application Support"
+    return Path(folder)
+
+
+def go_telemetry_off(folder: str | os.PathLike[str], *, platform: str | None = None) -> Path:
+    """Write ``go/telemetry/mode`` with ``off`` into the Go configuration folder of ``folder``
+    (:func:`go_user_config_dir`) and return the file.
 
     With it, the Go command, the compiler and govulncheck write no telemetry counters into
     the folder (module docstring).
     """
-    mode = Path(folder) / "go" / "telemetry" / "mode"
+    mode = go_user_config_dir(folder, platform=platform) / "go" / "telemetry" / "mode"
     mode.parent.mkdir(parents=True, exist_ok=True)
     mode.write_text("off", encoding="utf-8")
     return mode

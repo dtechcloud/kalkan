@@ -153,7 +153,10 @@ def go_env(ctx: ScanContext, work: Path | None = None) -> dict[str, str]:
         env["GOSUMDB"] = "off"
     if work is not None:
         env["GOCACHE"] = str(work / GO_CACHE_DIRNAME)
-        env.update(toolhome.go_config_env(work / toolhome.GO_CONFIG_DIRNAME))
+        config = toolhome.go_config_env(work / toolhome.GO_CONFIG_DIRNAME)
+        env.update(config)
+        if "HOME" in config:  # macOS: keep the module cache of the user readable
+            env.setdefault("GOPATH", toolhome.user_gopath())
         if not ctx.offline:
             gopath = work / GO_PATH_DIRNAME
             env["GOPATH"] = str(gopath)

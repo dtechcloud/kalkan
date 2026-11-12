@@ -160,7 +160,8 @@ def test_build_env_drops_the_go_settings_of_the_caller(tmp_path):
     )
     assert build_dirs(tmp_path) == [build / "gopath", build / "cache", build / "tmp", config]
     prepare_build(tmp_path)
-    assert (config / "go" / "telemetry" / "mode").read_text(encoding="utf-8") == "off"
+    mode = toolhome.go_user_config_dir(config) / "go" / "telemetry" / "mode"
+    assert mode.read_text(encoding="utf-8") == "off"
     assert all(folder.is_dir() for folder in build_dirs(tmp_path))
 
 

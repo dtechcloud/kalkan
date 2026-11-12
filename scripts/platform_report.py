@@ -8,22 +8,25 @@ seconds), ``doctor.json``, ``tools-junit.xml``, optionally ``docker-junit.xml``,
 ``benchmark/vulnapp.json`` and ``reference-vulnapp.json`` (the committed Windows result).
 
 The script first removes personal data from every text file of the folder: the home folder
-becomes ``~`` and the host name becomes ``[host]``. Then it writes ``SUMMARY.md`` and prints
-the verdict on the last line. Exit code 0: PASS; 1: FAIL or INCOMPLETE; 2: bad usage.
+becomes ``~``, the host name ``[host]`` and the user name in a path ``[user]``. Then it writes
+``SUMMARY.md`` and prints the verdict on the last line. Exit code 0: PASS; 1: FAIL or
+INCOMPLETE; 2: bad usage.
 
 Verdict rules:
 - FAIL: a step failed, the doctor reports a fail, a tool test failed, or a vulnapp engine has a
   status other than ``ok`` (the history engines may skip: the fixture copy has no git history).
-- INCOMPLETE: no FAIL, but a tool test was skipped (a missing tool, database or git) or a step
-  did not run.
+- INCOMPLETE: no FAIL, but a tool test was skipped (a missing tool, database or git), a step
+  did not run, the base images of the sandbox could not be pulled, or a Docker test was skipped.
 - PASS: everything else. The Docker tests count only when Docker was available.
 """
 
 from __future__ import annotations
 
+import getpass
 import json
 import os
 import platform
+import re
 import shutil
 import socket
 import subprocess
@@ -43,11 +46,18 @@ MAX_PROBLEM_LINES = 40
 # --- redaction -------------------------------------------------------------------------------
 
 
-def replacements(home: str | None = None, host: str | None = None) -> list[tuple[str, str]]:
-    """Return the (old, new) pairs of :func:`redact`, longest first."""
+Replacement = tuple[str | re.Pattern[str], str]
+
+
+def replacements(
+    home: str | None = None, host: str | None = None, user: str | None = None
+) -> list[Replacement]:
+    """Return the (old, new) pairs of :func:`redact`: the home folder, the host name and the
+    user name as a path part (``/private/var/folders/.../pytest-of-<user>/``), longest first."""
     home = home if home is not None else str(Path.home())
     host = host if host is not None else socket.gethostname()
-    pairs: list[tuple[str, str]] = []
+    user = user if user is not None else _user_name()
+    pairs: list[Replacement] = []
     if len(home) > 1:
         pairs.append((home, "~"))
         real = os.path.realpath(home)
@@ -56,17 +66,30 @@ def replacements(home: str | None = None, host: str | None = None) -> list[tuple
     for name in {host, host.split(".")[0]}:
         if len(name) >= 4:
             pairs.append((name, "[host]"))  # no < or >: the folder holds XML files
-    return sorted(pairs, key=lambda pair: len(pair[0]), reverse=True)
+    pairs.sort(key=lambda pair: len(str(pair[0])), reverse=True)
+    if len(user) >= 2:
+        name = re.escape(user)
+        # A whole path part (/Users/x/, pytest-of-x/), never a part of a longer word.
+        pairs.append((re.compile(rf"(?<=pytest-of-){name}(?![\w.-])"), "[user]"))
+        pairs.append((re.compile(rf"(?<=[/\\]){name}(?=[/\\])"), "[user]"))
+    return pairs
 
 
-def redact(text: str, pairs: list[tuple[str, str]]) -> str:
-    """Replace each personal string of ``pairs`` in ``text``."""
+def _user_name() -> str:
+    try:
+        return getpass.getuser()
+    except (KeyError, OSError):  # no passwd entry
+        return ""
+
+
+def redact(text: str, pairs: list[Replacement]) -> str:
+    """Replace each personal string or pattern of ``pairs`` in ``text``."""
     for old, new in pairs:
-        text = text.replace(old, new)
+        text = old.sub(new, text) if isinstance(old, re.Pattern) else text.replace(old, new)
     return text
 
 
-def redact_folder(folder: Path, pairs: list[tuple[str, str]]) -> int:
+def redact_folder(folder: Path, pairs: list[Replacement]) -> int:
     """Redact every text file under ``folder``; return the count of changed files."""
     changed = 0
     for path in sorted(folder.rglob("*")):
@@ -196,8 +219,11 @@ def decide(
     for name in REQUIRED_STEPS:
         if name not in steps:
             gaps.append(f"step {name} did not run")
-        elif steps[name][0] != 0:
-            fails.append(f"step {name} exited with {steps[name][0]}")
+    for name, (code, _seconds) in steps.items():
+        if code == 0:
+            continue
+        # Docker is optional: a failed image pull leaves the sandbox untested, not broken.
+        (gaps if name == "docker-pull" else fails).append(f"step {name} exited with {code}")
     for check in doctor.get("checks") or []:
         if isinstance(check, dict) and check.get("status") == "fail":
             fails.append(f"doctor: {check.get('name')}: {check.get('detail')}")
@@ -210,6 +236,8 @@ def decide(
         gaps.append("tool tests: no result file")
     if docker.ran and (docker.failures or docker.errors):
         fails.append(f"Docker tests: {docker.failures} failed, {docker.errors} errors")
+    if docker.ran and docker.skipped:
+        gaps.append(f"Docker tests: {docker.skipped} skipped (a base image is missing)")
     engines = bench.get("engines") or {}
     if not engines:
         gaps.append("benchmark: no vulnapp result")

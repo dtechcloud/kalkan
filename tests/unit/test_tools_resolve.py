@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -602,7 +603,8 @@ def test_go_toolchain_version_runs_with_the_probe_environment(tmp_path, monkeypa
     [call] = calls
     assert_probe_env(call["env"])
     assert call["env"]["GOTOOLCHAIN"] == "local"
-    assert call["files"] == ["go"]  # go/telemetry/mode: off (kalkan.tools.toolhome)
+    # go/telemetry/mode: off (kalkan.tools.toolhome; on macOS below Library/Application Support)
+    assert call["files"] == ["Library" if sys.platform == "darwin" else "go"]
 
 
 def test_every_packaged_version_probe_keeps_its_tool_offline():

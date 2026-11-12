@@ -14,13 +14,15 @@
 #   2. doctor         kalkan doctor --json
 #   3. dev-install    pip install -e ".[dev]" (pytest)
 #   4. tool-tests     pytest -m tools: every tool on the planted test fixtures
-#   5. docker-tests   pytest -m docker: the PoC sandbox (only when Docker runs)
+#   5. docker-tests   pull the two sandbox base images (about 1 GB), then pytest -m docker:
+#                     the PoC sandbox (only when Docker runs)
 #   6. benchmark      the deterministic pipeline on the vulnapp fixture (scan, SCA, merge, report)
 #   7. report         scripts/platform_report.py: SUMMARY.md, verdict PASS, INCOMPLETE or FAIL
 #
 # Time: about 1 hour, mostly the downloads of step 1 and the tests of step 4. Disk: about 8 GB.
 # The result folder is platform-check/<os>-<arch>-<date>/ with a .tar.gz next to it. Personal
-# data is removed from it: the home folder becomes ~ and the host name becomes [host].
+# data is removed from it: the home folder becomes ~, the host name [host] and the user name
+# in a path [user].
 #
 # Options:
 #   --pr               open a pull request on dtechcloud/kalkan with the result (needs the
@@ -148,6 +150,8 @@ run_step tool-tests "$py" -m pytest -m tools -p no:cacheprovider -rfEs \
     --junitxml="$out/tools-junit.xml" tests
 
 if [ "$use_docker" -eq 1 ] && command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    # The sandbox tests need their base images; without them every test skips.
+    run_step docker-pull "$py" -m kalkan sandbox pull python:3.12-slim mcr.microsoft.com/dotnet/sdk:10.0
     run_step docker-tests "$py" -m pytest -m docker -p no:cacheprovider -rfEs \
         --junitxml="$out/docker-junit.xml" tests
 else
@@ -200,11 +204,25 @@ if [ "$open_pr" -eq 1 ]; then
             head="$branch"
             ;;
         *)
-            gh repo fork "$UPSTREAM" --remote --remote-name fork >/dev/null 2>&1 ||
-                git remote get-url fork >/dev/null 2>&1 ||
-                stop "cannot fork $UPSTREAM; the result is committed on the local branch $branch"
+            login=$(gh api user --jq .login) || stop "gh api user failed; the result is on the local branch $branch"
+            gh repo fork "$UPSTREAM" --clone=false >/dev/null 2>&1
+            # GitHub makes a fork in the background: wait for it, then name it as remote "fork".
+            fork_repo=""
+            tries=0
+            while [ -z "$fork_repo" ] && [ "$tries" -lt 24 ]; do
+                fork_repo=$(gh api --paginate "repos/$UPSTREAM/forks?per_page=100"                     --jq ".[] | select(.owner.login == \"$login\") | .full_name" 2>/dev/null | head -n 1)
+                [ -n "$fork_repo" ] || { tries=$((tries + 1)); sleep 5; }
+            done
+            [ -n "$fork_repo" ] || stop "no fork of $UPSTREAM for $login; the result is committed on the local branch $branch"
+            if [ "$(gh config get git_protocol 2>/dev/null)" = ssh ]; then
+                fork_url="git@github.com:$fork_repo.git"
+            else
+                fork_url="https://github.com/$fork_repo.git"
+            fi
+            git remote remove fork >/dev/null 2>&1
+            git remote add fork "$fork_url" || stop "cannot add the remote fork ($fork_url)"
             remote=fork
-            head="$(gh api user --jq .login):$branch"
+            head="$login:$branch"
             ;;
     esac
     git push -q -u "$remote" "$branch" || stop "git push to $remote failed; the result is on the local branch $branch"
