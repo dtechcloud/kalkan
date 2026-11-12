@@ -138,6 +138,11 @@ p code, li code, td code, dd code { font-size: 0.86em; color: var(--fg); backgro
 .eyebrow { justify-self: start; display: inline-flex; align-items: center; gap: 0.55rem; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.35rem 0.8rem; background: var(--fill); }
 .eyebrow b { color: var(--fg); font-weight: 500; }
 .eyebrow::before { content: ""; width: 0.45rem; height: 0.45rem; border-radius: 50%; background: var(--accent); }
+.hero-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; }
+.gh-btn { display: inline-flex; align-items: center; gap: 0.55rem; font: 500 0.8125rem/1 var(--mono); color: var(--fg); text-decoration: none; border: 1px solid var(--line-strong); border-radius: 999px; padding: 0.55rem 0.95rem; background: var(--fill); white-space: nowrap; transition: border-color 0.15s, background-color 0.15s; }
+.gh-btn svg { width: 1rem; height: 1rem; fill: currentColor; flex: none; }
+.gh-btn .gh-arrow { color: var(--accent); }
+.gh-btn:hover { background: var(--fill-strong); border-color: var(--accent); }
 .hero h1 { margin: 0; max-width: 14ch; color: var(--fg); font-size: clamp(2.8rem, 8.4vw, 6.4rem); line-height: 0.98; letter-spacing: -0.05em; font-weight: 600; text-wrap: balance; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.25fr); gap: clamp(2rem, 4vw, 3.5rem); align-items: start; }
 @media (max-width: 920px) { .hero-grid { grid-template-columns: minmax(0, 1fr); } }
