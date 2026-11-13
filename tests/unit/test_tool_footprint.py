@@ -100,7 +100,8 @@ def test_the_variables_of_each_platform(tmp_path):
     assert toolhome.temp_env(folder, platform="darwin")["TMPDIR"] == str(folder)
     assert toolhome.go_config_env(folder, platform="win32") == {"APPDATA": str(folder)}
     assert toolhome.go_config_env(folder, platform="linux") == {"XDG_CONFIG_HOME": str(folder)}
-    assert toolhome.go_config_env(folder, platform="darwin") == {}  # not changed, not measured
+    # macOS: os.UserConfigDir is $HOME/Library/Application Support
+    assert toolhome.go_config_env(folder, platform="darwin") == {"HOME": str(folder)}
     env = toolhome.opengrep_env(tmp_path / "home", tmp_path / "work")
     assert env == {
         "USERPROFILE": str(tmp_path / "home"),
@@ -117,9 +118,21 @@ def test_the_kalkan_folders(tmp_path):
     assert home == tmp_path / ".tools" / "cache" / "opengrep"
     assert (home / "AppData" / "Local").is_dir() and (home / "AppData" / "Roaming").is_dir()
     toolhome.prepare_home(home)  # a second call changes nothing
-    mode = toolhome.go_telemetry_off(tmp_path / "cfg")
+    mode = toolhome.go_telemetry_off(tmp_path / "cfg", platform="linux")
     assert mode == tmp_path / "cfg" / "go" / "telemetry" / "mode"
     assert mode.read_text(encoding="utf-8") == "off"
+    mac = toolhome.go_telemetry_off(tmp_path / "mac", platform="darwin")
+    assert mac == tmp_path / "mac" / "Library" / "Application Support" / "go" / "telemetry" / "mode"
+    assert mac.read_text(encoding="utf-8") == "off"
+
+
+def test_the_user_gopath(tmp_path, monkeypatch):
+    for name in ("HOME", "USERPROFILE"):
+        monkeypatch.setenv(name, str(tmp_path / "home"))
+    monkeypatch.delenv("GOPATH", raising=False)
+    assert toolhome.user_gopath() == str(tmp_path / "home" / "go")
+    monkeypatch.setenv("GOPATH", str(tmp_path / "gp"))
+    assert toolhome.user_gopath() == str(tmp_path / "gp")
 
 
 # --- every tool run: the temporary folder ------------------------------------------------------
@@ -232,7 +245,8 @@ def test_go_tools_keep_their_build_cache_and_configuration_in_the_run(
     assert env["GOPATH"] == str(tmp_path / "user-go")  # local mode: Go only reads it
     assert env["GOPROXY"] == "off" and env["GOSUMDB"] == "off"
     adapter.prepare(ctx, work / adapter.output_name)
-    assert (work / "go-config" / "go" / "telemetry" / "mode").read_text(encoding="utf-8") == "off"
+    config = toolhome.go_user_config_dir(work / "go-config")
+    assert (config / "go" / "telemetry" / "mode").read_text(encoding="utf-8") == "off"
     assert (work / "go-cache").is_dir()
     online = adapter.env(make_ctx(tmp_path, tech={"go"}, offline=False))
     assert online["GOPATH"] == str(work / "go-path")  # module downloads stay in the run
@@ -281,7 +295,7 @@ def probe_tools():
 
 def recording(calls: list, text: str = "1.30.1"):
     def run(argv, *, timeout, env=None, cwd=None):
-        mode = Path(cwd) / "go" / "telemetry" / "mode"
+        mode = toolhome.go_user_config_dir(cwd) / "go" / "telemetry" / "mode"
         calls.append(
             {
                 "argv": [str(a) for a in argv],

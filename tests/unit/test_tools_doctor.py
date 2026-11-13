@@ -11,6 +11,7 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -365,7 +366,8 @@ def test_tool_version_probes_never_get_the_user_environment(tmp_path, monkeypatc
         assert not set(secrets) & set(env), name
         assert "GOFLAGS" not in env and env["HTTPS_PROXY"] == "http://127.0.0.1:9", name
         # An empty folder; a Go program finds only kalkan's go/telemetry/mode (off) there.
-        expected = [] if name == "faketool" else ["go"]
+        go_top = "Library" if sys.platform == "darwin" else "go"  # toolhome.go_user_config_dir
+        expected = [] if name == "faketool" else [go_top]
         assert probe["cwd"] is not None and probe["files"] == expected, name
         assert Path(probe["cwd"]).resolve() != Path.cwd().resolve(), name
     assert host.probes["faketool"]["env"]["FAKETOOL_NO_UPDATE_CHECK"] == "1"

@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -551,7 +552,8 @@ def test_version_probes_get_the_minimal_environment_and_an_empty_folder(monkeypa
         assert call["cwd"] is not None and call["cwd"].resolve() != tmp_path.resolve()
         assert not call["cwd"].exists()  # removed after the probe
     # Only kalkan's Go configuration (telemetry off) is in the folder of a Go program.
-    assert pip_call["files"] == [] and go_call["files"] == ["go"]
+    go_top = "Library" if sys.platform == "darwin" else "go"  # toolhome.go_user_config_dir
+    assert pip_call["files"] == [] and go_call["files"] == [go_top]
     assert pip_call["env"]["PYTHONUTF8"] == "1" and pip_call["env"]["PYTHONNOUSERSITE"] == "1"
     # version_env wins over a value of the user: the update check stays off.
     assert pip_call["env"]["CKV_SKIP_PACKAGE_UPDATE_CHECK"] == "true"
@@ -602,7 +604,8 @@ def test_go_toolchain_version_runs_with_the_probe_environment(tmp_path, monkeypa
     [call] = calls
     assert_probe_env(call["env"])
     assert call["env"]["GOTOOLCHAIN"] == "local"
-    assert call["files"] == ["go"]  # go/telemetry/mode: off (kalkan.tools.toolhome)
+    # go/telemetry/mode: off (kalkan.tools.toolhome; on macOS below Library/Application Support)
+    assert call["files"] == ["Library" if sys.platform == "darwin" else "go"]
 
 
 def test_every_packaged_version_probe_keeps_its_tool_offline():

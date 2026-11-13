@@ -54,11 +54,22 @@ def _doctor(*fails: str) -> dict:
     return {"kalkan_version": "1.0.0", "platform": "darwin-arm64", "checks": checks}
 
 
-def _folder(tmp_path: Path, *, steps=STEPS_OK, junit=JUNIT_OK, bench=None, doctor=None) -> Path:
+JUNIT_SKIPPED = """<?xml version="1.0"?>
+<testsuites><testsuite tests="2">
+<testcase classname="d" name="ok"/>
+<testcase classname="d" name="image"><skipped message="base image not pulled"/></testcase>
+</testsuite></testsuites>"""
+
+
+def _folder(
+    tmp_path: Path, *, steps=STEPS_OK, junit=JUNIT_OK, bench=None, doctor=None, docker=None
+) -> Path:
     folder = tmp_path / "macos-arm64-20261112-1000"
     (folder / "benchmark").mkdir(parents=True)
     (folder / "steps.tsv").write_text(steps, encoding="utf-8")
     (folder / "tools-junit.xml").write_text(junit, encoding="utf-8")
+    if docker is not None:
+        (folder / "docker-junit.xml").write_text(docker, encoding="utf-8")
     (folder / "doctor.json").write_text(json.dumps(doctor or _doctor()), encoding="utf-8")
     (folder / "benchmark" / "vulnapp.json").write_text(
         json.dumps(bench if bench is not None else _bench(**{"gitleaks-history": "skipped"})),
@@ -69,20 +80,33 @@ def _folder(tmp_path: Path, *, steps=STEPS_OK, junit=JUNIT_OK, bench=None, docto
 
 
 def test_redaction_replaces_home_and_host():
-    pairs = report.replacements(home="/Users/ayse", host="ayse-mbp.local")
+    pairs = report.replacements(home="/Users/ayse", host="ayse-mbp.local", user="ayse")
     text = "repo /Users/ayse/kalkan on ayse-mbp.local and ayse-mbp"
     assert report.redact(text, pairs) == "repo ~/kalkan on [host] and [host]"
 
 
 def test_redaction_skips_short_host_names():
-    pairs = report.replacements(home="/home/dev", host="mb")
+    pairs = report.replacements(home="/home/dev", host="mb", user="dev")
     assert report.redact("mb at /home/dev/x", pairs) == "mb at ~/x"
+
+
+def test_redaction_masks_the_user_name_in_paths_only():
+    pairs = report.replacements(home="/Users/ayse", host="h", user="ayse")
+    text = (
+        "/private/var/folders/m8/T/pytest-of-ayse/pytest-0 and /opt/ayse/x "
+        "and C:\\ayse\\y and ayse-tools and pytest-of-ayse2"
+    )
+    assert report.redact(text, pairs) == (
+        "/private/var/folders/m8/T/pytest-of-[user]/pytest-0 and /opt/[user]/x "
+        "and C:\\[user]\\y and ayse-tools and pytest-of-ayse2"
+    )
 
 
 def test_redact_folder_changes_text_files_only(tmp_path):
     (tmp_path / "a.log").write_text("/Users/ayse/x", encoding="utf-8")
     (tmp_path / "b.bin").write_bytes(b"/Users/ayse/x")
-    changed = report.redact_folder(tmp_path, report.replacements(home="/Users/ayse", host="h"))
+    pairs = report.replacements(home="/Users/ayse", host="h", user="ayse")
+    changed = report.redact_folder(tmp_path, pairs)
     assert changed == 1
     assert (tmp_path / "a.log").read_text(encoding="utf-8") == "~/x"
     assert (tmp_path / "b.bin").read_bytes() == b"/Users/ayse/x"
@@ -93,7 +117,8 @@ def test_redacted_junit_stays_valid_xml(tmp_path):
     path.write_text(
         JUNIT_OK.replace('tests="2"', 'tests="2" hostname="ayse-mbp"'), encoding="utf-8"
     )
-    report.redact_folder(tmp_path, report.replacements(home="/Users/ayse", host="ayse-mbp"))
+    pairs = report.replacements(home="/Users/ayse", host="ayse-mbp", user="ayse")
+    report.redact_folder(tmp_path, pairs)
     assert 'hostname="[host]"' in path.read_text(encoding="utf-8")
     assert report.read_junit(path).tests == 2
 
@@ -135,6 +160,9 @@ def test_pass_allows_the_history_skips(tmp_path):
         ({"doctor": _doctor("tool:gosec")}, "FAIL", "doctor: tool:gosec: missing"),
         ({"steps": STEPS_OK.replace("bootstrap\t0", "bootstrap\t1")}, "FAIL", "step bootstrap"),
         ({"steps": "bootstrap\t0\t1\n"}, "INCOMPLETE", "step benchmark did not run"),
+        ({"steps": STEPS_OK + "docker-pull\t1\t9\n"}, "INCOMPLETE", "step docker-pull exited"),
+        ({"steps": STEPS_OK + "docker-tests\t1\t9\n"}, "FAIL", "step docker-tests exited"),
+        ({"docker": JUNIT_SKIPPED}, "INCOMPLETE", "Docker tests: 1 skipped"),
     ],
 )
 def test_verdicts(tmp_path, kwargs, verdict, reason):
