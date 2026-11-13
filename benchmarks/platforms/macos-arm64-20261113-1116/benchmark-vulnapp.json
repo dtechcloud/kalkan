@@ -1,0 +1,1245 @@
+{
+  "schema_version": 1,
+  "target": "vulnapp",
+  "started_at": "2026-11-13T11:19:21Z",
+  "finished_at": "2026-11-13T11:20:15Z",
+  "offline": false,
+  "host": {
+    "platform": "macOS-15.7.4-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "python": "3.14.10",
+    "cpu_count": 8
+  },
+  "kalkan": {
+    "version": "1.0.0",
+    "commit": "e8d553e2894e3ef183e969afdcb0b5efa5bd5b2c",
+    "dirty": false
+  },
+  "tools": {
+    "actionlint": "1.7.12",
+    "bandit": "1.9.4",
+    "checkov": "3.3.22",
+    "flawfinder": "2.0.20",
+    "gitleaks": "8.30.1",
+    "gixy": "0.2.55",
+    "go": "1.26.9",
+    "gosec": "2.29.0",
+    "govulncheck": "1.8.0",
+    "grype": "0.119.0",
+    "hadolint": "2.15.1",
+    "helm": "4.3.0",
+    "kingfisher": "2.11.1",
+    "opengrep": "1.30.1",
+    "osv-scanner": "2.6.0",
+    "poutine": "1.1.6",
+    "scorecard": "5.5.0",
+    "shellcheck": "0.11.0",
+    "syft": "1.54.0",
+    "trivy": "0.75.0",
+    "vacuum": "0.33.0",
+    "zizmor": "1.30.1"
+  },
+  "target_ref": {
+    "kind": "fixture",
+    "path": "tests/fixtures/vulnapp",
+    "git_ref": "e8d553e2894e3ef183e969afdcb0b5efa5bd5b2c"
+  },
+  "status": "ok",
+  "failure": null,
+  "prepare": {
+    "action": "copied",
+    "duration_seconds": 0.03,
+    "excluded": [
+      "EXPECTED.json",
+      "INJECTION-NOTE.md",
+      "README.md"
+    ],
+    "neutralized_now": 0,
+    "neutralized": []
+  },
+  "source_dir": ".bench-runs/_src/vulnapp",
+  "run_id": "20261113T111921Z-vulnapp-2039",
+  "steps": [
+    {
+      "step": "init",
+      "command": "kalkan run init .bench-runs/_src/vulnapp --json",
+      "exit_code": 0,
+      "duration_seconds": 0.17,
+      "ok": true
+    },
+    {
+      "step": "scan",
+      "command": "kalkan scan all --run 20261113T111921Z-vulnapp-2039 --json",
+      "exit_code": 0,
+      "duration_seconds": 27.12,
+      "ok": true
+    },
+    {
+      "step": "sbom",
+      "command": "kalkan sca sbom --run 20261113T111921Z-vulnapp-2039 --json",
+      "exit_code": 0,
+      "duration_seconds": 0.91,
+      "ok": true
+    },
+    {
+      "step": "match",
+      "command": "kalkan sca match --run 20261113T111921Z-vulnapp-2039 --json",
+      "exit_code": 0,
+      "duration_seconds": 25.06,
+      "ok": true
+    },
+    {
+      "step": "merge",
+      "command": "kalkan merge --run 20261113T111921Z-vulnapp-2039 --json",
+      "exit_code": 0,
+      "duration_seconds": 0.26,
+      "ok": true
+    },
+    {
+      "step": "report",
+      "command": "kalkan report --run 20261113T111921Z-vulnapp-2039 --json",
+      "exit_code": 0,
+      "duration_seconds": 0.22,
+      "ok": true
+    }
+  ],
+  "pipeline_seconds": 53.74,
+  "run_dir": ".bench-runs/20261113T111921Z-vulnapp-2039",
+  "files": {
+    "copied": 64,
+    "bytes": 100368,
+    "directories": 44,
+    "skipped": 2
+  },
+  "excluded": {
+    "dotnet-build": 2
+  },
+  "neutralized_count": 0,
+  "tech": [
+    "c",
+    "django",
+    "docker",
+    "dotnet",
+    "express",
+    "flask",
+    "github-actions",
+    "go",
+    "helm",
+    "java",
+    "kubernetes",
+    "node",
+    "php",
+    "python",
+    "rails",
+    "ruby",
+    "spring",
+    "terraform"
+  ],
+  "long_paths": {
+    "count": 0,
+    "limit": null,
+    "condition": null,
+    "long_paths_enabled": null,
+    "root_length": null,
+    "samples": []
+  },
+  "engines": {
+    "actionlint": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.153,
+      "exit_code": 1,
+      "tool_version": "1.7.12",
+      "candidates": 1,
+      "message": "1 candidate",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "bandit": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.252,
+      "exit_code": 0,
+      "tool_version": "1.9.4",
+      "candidates": 11,
+      "message": "11 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "checkov": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 2.15,
+      "exit_code": 1,
+      "tool_version": "3.3.22",
+      "candidates": 54,
+      "message": "54 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "flawfinder": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.097,
+      "exit_code": 0,
+      "tool_version": "2.0.20",
+      "candidates": 3,
+      "message": "3 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gitleaks-history": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.0,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "the run has no private history copy (source/): the target folder is not the root of a git work tree (no .git entry)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gitleaks": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.299,
+      "exit_code": 0,
+      "tool_version": "8.30.1",
+      "candidates": 2,
+      "message": "2 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gixy": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.157,
+      "exit_code": 0,
+      "tool_version": "0.2.55",
+      "candidates": 2,
+      "message": "2 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "gosec": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 6.324,
+      "exit_code": 0,
+      "tool_version": "2.29.0",
+      "candidates": 19,
+      "message": "19 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "hadolint": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.089,
+      "exit_code": 0,
+      "tool_version": "2.15.1",
+      "candidates": 8,
+      "message": "8 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "helm-checkov": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 1.646,
+      "exit_code": 1,
+      "tool_version": "4.3.0",
+      "candidates": 30,
+      "message": "30 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "kingfisher-history": {
+      "area": "scans",
+      "status": "skipped",
+      "duration_seconds": 0.0,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": null,
+      "message": "the run has no private history copy (source/): the target folder is not the root of a git work tree (no .git entry)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "kingfisher": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 3.367,
+      "exit_code": 200,
+      "tool_version": "2.11.1",
+      "candidates": 2,
+      "message": "2 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "matcher": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.284,
+      "exit_code": null,
+      "tool_version": null,
+      "candidates": 57,
+      "message": "57 candidates; 111 of 204 matchers applied, 50 files scanned",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "opengrep-packs": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 8.216,
+      "exit_code": 0,
+      "tool_version": "1.30.1",
+      "candidates": 58,
+      "message": "58 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "opengrep": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 2.464,
+      "exit_code": 0,
+      "tool_version": "1.30.1",
+      "candidates": 109,
+      "message": "109 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null,
+      "coverage": {
+        "files_scanned": 64,
+        "partially_scanned_files": 0,
+        "partial_samples": [],
+        "skipped_files": 0,
+        "skipped_reasons": {},
+        "skipped_samples": []
+      }
+    },
+    "poutine": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.194,
+      "exit_code": 0,
+      "tool_version": "1.1.6",
+      "candidates": 5,
+      "message": "5 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "scorecard": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.204,
+      "exit_code": 0,
+      "tool_version": "5.5.0",
+      "candidates": 7,
+      "message": "7 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "shellcheck": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.058,
+      "exit_code": 1,
+      "tool_version": "0.11.0",
+      "candidates": 3,
+      "message": "3 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "trivy": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.579,
+      "exit_code": 0,
+      "tool_version": "0.75.0",
+      "candidates": 38,
+      "message": "38 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "vacuum": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.285,
+      "exit_code": 0,
+      "tool_version": "0.33.0",
+      "candidates": 6,
+      "message": "6 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "zizmor": {
+      "area": "scans",
+      "status": "ok",
+      "duration_seconds": 0.145,
+      "exit_code": 0,
+      "tool_version": "1.30.1",
+      "candidates": 4,
+      "message": "4 candidates",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "grype-pins": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 4.157,
+      "exit_code": 0,
+      "tool_version": "0.119.0",
+      "candidates": null,
+      "message": "output written: sca/grype-pins.json (40366 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "grype": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 4.491,
+      "exit_code": 0,
+      "tool_version": "0.119.0",
+      "candidates": null,
+      "message": "output written: sca/grype.json (288858 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "osv-scanner-pins": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 6.872,
+      "exit_code": 1,
+      "tool_version": "2.6.0",
+      "candidates": null,
+      "message": "output written: sca/osv-pins.json (120084 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "osv-scanner": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 9.189,
+      "exit_code": 1,
+      "tool_version": "2.6.0",
+      "candidates": null,
+      "message": "output written: sca/osv.json (771725 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "retirejs": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 0.149,
+      "exit_code": null,
+      "tool_version": "jsrepository-v5 2026-11-13 sha256:f97d00752635",
+      "candidates": null,
+      "message": "JavaScript files checked: 5; vendored library versions: 2 (files: 2)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    },
+    "syft": {
+      "area": "sca",
+      "status": "ok",
+      "duration_seconds": 0.72,
+      "exit_code": 0,
+      "tool_version": "1.54.0",
+      "candidates": null,
+      "message": "output written: sca/sbom.cdx.json (33263 bytes)",
+      "ingest_warnings": null,
+      "suppressed_results": null
+    }
+  },
+  "candidates": {
+    "present": true,
+    "total": 485,
+    "by_engine": {
+      "actionlint": 1,
+      "bandit": 11,
+      "checkov": 54,
+      "flawfinder": 3,
+      "gitleaks": 2,
+      "gixy": 2,
+      "gosec": 19,
+      "hadolint": 8,
+      "helm-checkov": 30,
+      "kingfisher": 2,
+      "matcher": 57,
+      "opengrep": 109,
+      "opengrep-packs": 58,
+      "osv-scanner": 65,
+      "poutine": 5,
+      "retirejs": 1,
+      "scorecard": 7,
+      "shellcheck": 3,
+      "trivy": 38,
+      "vacuum": 6,
+      "zizmor": 4
+    },
+    "by_class": {
+      "authn": 3,
+      "code-injection": 20,
+      "code-quality": 1,
+      "cors": 11,
+      "crypto": 40,
+      "deserialization": 16,
+      "dos-redos": 1,
+      "hardcoded-secrets": 8,
+      "iac-cloud-container": 131,
+      "jwt": 11,
+      "malicious-dependency": 1,
+      "mass-assignment": 1,
+      "memory-safety": 6,
+      "nosqli": 8,
+      "null": 21,
+      "open-redirect": 14,
+      "os-command-injection": 26,
+      "path-traversal": 13,
+      "prototype-pollution": 4,
+      "request-smuggling-crlf-cache": 1,
+      "security-misconfig": 1,
+      "sensitive-data-exposure": 2,
+      "sqli": 24,
+      "ssrf": 9,
+      "ssti": 7,
+      "supply-chain-cicd": 24,
+      "vulnerable-dependency": 65,
+      "xss": 9,
+      "xxe": 7
+    },
+    "by_severity": {
+      "critical": 14,
+      "high": 261,
+      "medium": 138,
+      "low": 54,
+      "info": 18
+    },
+    "by_engine_severity": {
+      "actionlint": {
+        "critical": 0,
+        "high": 1,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "bandit": {
+        "critical": 0,
+        "high": 2,
+        "medium": 5,
+        "low": 4,
+        "info": 0
+      },
+      "checkov": {
+        "critical": 0,
+        "high": 54,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "flawfinder": {
+        "critical": 0,
+        "high": 3,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "gitleaks": {
+        "critical": 0,
+        "high": 0,
+        "medium": 2,
+        "low": 0,
+        "info": 0
+      },
+      "gixy": {
+        "critical": 0,
+        "high": 2,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "gosec": {
+        "critical": 0,
+        "high": 8,
+        "medium": 7,
+        "low": 4,
+        "info": 0
+      },
+      "hadolint": {
+        "critical": 0,
+        "high": 0,
+        "medium": 5,
+        "low": 3,
+        "info": 0
+      },
+      "helm-checkov": {
+        "critical": 0,
+        "high": 30,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      },
+      "kingfisher": {
+        "critical": 0,
+        "high": 1,
+        "medium": 1,
+        "low": 0,
+        "info": 0
+      },
+      "matcher": {
+        "critical": 0,
+        "high": 0,
+        "medium": 19,
+        "low": 21,
+        "info": 17
+      },
+      "opengrep": {
+        "critical": 0,
+        "high": 76,
+        "medium": 33,
+        "low": 0,
+        "info": 0
+      },
+      "opengrep-packs": {
+        "critical": 0,
+        "high": 33,
+        "medium": 25,
+        "low": 0,
+        "info": 0
+      },
+      "osv-scanner": {
+        "critical": 14,
+        "high": 27,
+        "medium": 24,
+        "low": 0,
+        "info": 0
+      },
+      "poutine": {
+        "critical": 0,
+        "high": 1,
+        "medium": 2,
+        "low": 2,
+        "info": 0
+      },
+      "retirejs": {
+        "critical": 0,
+        "high": 0,
+        "medium": 0,
+        "low": 1,
+        "info": 0
+      },
+      "scorecard": {
+        "critical": 0,
+        "high": 2,
+        "medium": 3,
+        "low": 1,
+        "info": 1
+      },
+      "shellcheck": {
+        "critical": 0,
+        "high": 0,
+        "medium": 2,
+        "low": 1,
+        "info": 0
+      },
+      "trivy": {
+        "critical": 0,
+        "high": 15,
+        "medium": 8,
+        "low": 15,
+        "info": 0
+      },
+      "vacuum": {
+        "critical": 0,
+        "high": 2,
+        "medium": 2,
+        "low": 2,
+        "info": 0
+      },
+      "zizmor": {
+        "critical": 0,
+        "high": 4,
+        "medium": 0,
+        "low": 0,
+        "info": 0
+      }
+    },
+    "suppressed_in_source": 0,
+    "warnings": 3,
+    "warnings_by_source": {
+      "sca": 3
+    },
+    "warning_samples": [
+      "sca: csharp/VulnApp.csproj: NuGet manifest without a lockfile; SCA coverage is partial: no lockfile: the exact pins were checked, transitive dependencies were not (0 version ranges not checked, 6 exact pins checked)",
+      "sca: php/composer.json: Packagist manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (3 version ranges not checked, 0 exact pins checked)",
+      "sca: ruby/Gemfile: RubyGems manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (7 version ranges not checked, 0 exact pins checked)"
+    ]
+  },
+  "sca": {
+    "sbom": {
+      "engine": "syft",
+      "components": 24,
+      "by_ecosystem": {
+        "GitHub Actions": 3,
+        "Go": 3,
+        "Maven": 7,
+        "PyPI": 6,
+        "npm": 5
+      },
+      "warnings": 0
+    },
+    "raw_records": 140,
+    "raw_by_engine": {
+      "osv-scanner": {
+        "status": "ok",
+        "records": 58
+      },
+      "grype": {
+        "status": "ok",
+        "records": 60
+      },
+      "retirejs": {
+        "status": "ok",
+        "records": 8
+      },
+      "osv-scanner-pins": {
+        "status": "ok",
+        "records": 7
+      },
+      "grype-pins": {
+        "status": "ok",
+        "records": 7
+      }
+    },
+    "merged_records": 66,
+    "merged_by_severity": {
+      "critical": 14,
+      "high": 27,
+      "medium": 24,
+      "low": 1,
+      "info": 0
+    },
+    "merged_by_engines": {
+      "grype+osv-scanner": 58,
+      "grype+osv-scanner+retirejs": 7,
+      "retirejs": 1
+    },
+    "merged_by_ecosystem": {
+      "Go": 3,
+      "Maven": 2,
+      "PyPI": 45,
+      "npm": 16
+    },
+    "manifest_pins": 6,
+    "pin_records": 0,
+    "pin_records_by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "pin_records_by_package": {},
+    "candidates": 66,
+    "warnings": 3,
+    "warning_samples": [
+      "csharp/VulnApp.csproj: NuGet manifest without a lockfile; SCA coverage is partial: no lockfile: the exact pins were checked, transitive dependencies were not (0 version ranges not checked, 6 exact pins checked)",
+      "php/composer.json: Packagist manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (3 version ranges not checked, 0 exact pins checked)",
+      "ruby/Gemfile: RubyGems manifest without a lockfile; SCA coverage is partial: version ranges without a lockfile (7 version ranges not checked, 0 exact pins checked)"
+    ]
+  },
+  "merge": {
+    "run_id": "20261113T111921Z-vulnapp-2039",
+    "findings_file": "findings.json",
+    "written": true,
+    "findings": 0,
+    "by_verdict": {
+      "confirmed": 0,
+      "needs_validation": 0,
+      "rejected": 0
+    },
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 0,
+      "info": 0
+    },
+    "duplicates_folded": 0,
+    "merged_duplicates": 0,
+    "candidates": {
+      "available": true,
+      "total": 485,
+      "linked": 0,
+      "unlinked": 485
+    },
+    "poc": {
+      "applied": 0,
+      "promoted": 0,
+      "promotion_refused": 0
+    },
+    "reviews": {
+      "applied": 0,
+      "verified": 0,
+      "downgrade": 0,
+      "reject": 0
+    },
+    "consolidation": {
+      "groups": 0,
+      "duplicates": 0,
+      "skipped": 0
+    },
+    "polish_applied": 0,
+    "translations_applied": 0,
+    "sca_records": 66,
+    "inputs": {
+      "done_tasks": 0,
+      "finding_files": 0,
+      "poc_files": 0,
+      "translation_files": 0,
+      "review_files": 0,
+      "consolidate_files": 0,
+      "polish_files": 0
+    },
+    "warnings": []
+  },
+  "report": {
+    "present": true,
+    "files": {
+      "EXECUTIVE.html": 108088,
+      "REPORT.html": 247169,
+      "REPORT.md": 81843,
+      "findings.json": 3,
+      "findings.sarif": 143641,
+      "sbom.cdx.json": 18869,
+      "sbom.spdx.json": 32105,
+      "summary.json": 10227
+    },
+    "total_bytes": 641945
+  },
+  "dependency_manifests": {
+    "source": "sca/vulns.json",
+    "without_lockfile": [
+      "csharp/VulnApp.csproj",
+      "php/composer.json",
+      "ruby/Gemfile"
+    ],
+    "details": [
+      {
+        "file": "csharp/VulnApp.csproj",
+        "ecosystem": "NuGet",
+        "reason": "no lockfile: the exact pins were checked, transitive dependencies were not",
+        "exact_pins": 6,
+        "ranges": 0
+      },
+      {
+        "file": "php/composer.json",
+        "ecosystem": "Packagist",
+        "reason": "version ranges without a lockfile",
+        "exact_pins": 0,
+        "ranges": 3
+      },
+      {
+        "file": "ruby/Gemfile",
+        "ecosystem": "RubyGems",
+        "reason": "version ranges without a lockfile",
+        "exact_pins": 0,
+        "ranges": 7
+      }
+    ]
+  },
+  "fixture": {
+    "match_rule": "same file and start line within 2 lines of the item line (found_pm2), or the candidate region covers the line (found); dependency items by package via sca/vulns.json",
+    "twin_rule": "twin_fp: any nearby result of kalkan's own rules (opengrep, matcher), else a nearby result with a rule ID of the vulnerable counterpart; dependency twins by package. twin_hits_any_rule: any result within 2 lines",
+    "items": {
+      "vulnerable": 160,
+      "secure_twins": 154,
+      "deterministic": 157,
+      "agent_only": 3
+    },
+    "agent_only_items": [
+      "python-idor-01",
+      "python-missing-authz-01",
+      "shell-code-injection-eval-01"
+    ],
+    "overall": {
+      "found_by_an_expected_engine": 156,
+      "recall_expected_engines": 0.9936,
+      "found_by_any_engine": 157,
+      "recall_any_engine": 1.0,
+      "missed": [
+        "native-committed-binary-01"
+      ],
+      "twins_with_fp": 1,
+      "twins_with_fp_ids": [
+        "go-os-command-injection-01-twin"
+      ]
+    },
+    "engines": {
+      "actionlint": {
+        "engine_status": "ok",
+        "results": 1,
+        "expected": 1,
+        "found": 1,
+        "recall": 1.0,
+        "found_pm2": 1,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 1,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "bandit": {
+        "engine_status": "ok",
+        "results": 11,
+        "expected": 7,
+        "found": 7,
+        "recall": 1.0,
+        "found_pm2": 7,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 7,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 1,
+        "twin_hits_any_rule_ids": [
+          "python-os-command-injection-01-twin"
+        ],
+        "unplanned_results": 2
+      },
+      "checkov": {
+        "engine_status": "ok",
+        "results": 54,
+        "expected": 9,
+        "found": 9,
+        "recall": 1.0,
+        "found_pm2": 5,
+        "recall_pm2": 0.5556,
+        "missed": [],
+        "vulnerable_items_hit": 17,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 15
+      },
+      "flawfinder": {
+        "engine_status": "ok",
+        "results": 3,
+        "expected": 3,
+        "found": 3,
+        "recall": 1.0,
+        "found_pm2": 3,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 3,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "gitleaks": {
+        "engine_status": "ok",
+        "results": 2,
+        "expected": 2,
+        "found": 2,
+        "recall": 1.0,
+        "found_pm2": 2,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 2,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "gixy": {
+        "engine_status": "ok",
+        "results": 2,
+        "expected": 2,
+        "found": 2,
+        "recall": 1.0,
+        "found_pm2": 2,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 2,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "gosec": {
+        "engine_status": "ok",
+        "results": 19,
+        "expected": 8,
+        "found": 8,
+        "recall": 1.0,
+        "found_pm2": 8,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 8,
+        "twin_fp": 1,
+        "twin_fp_ids": [
+          "go-os-command-injection-01-twin"
+        ],
+        "twin_hits_any_rule": 1,
+        "twin_hits_any_rule_ids": [
+          "go-os-command-injection-01-twin"
+        ],
+        "unplanned_results": 7
+      },
+      "grype": {
+        "engine_status": "ok",
+        "results": 65,
+        "expected": 10,
+        "found": 10,
+        "recall": 1.0,
+        "found_pm2": 10,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 10,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "hadolint": {
+        "engine_status": "ok",
+        "results": 8,
+        "expected": 3,
+        "found": 3,
+        "recall": 1.0,
+        "found_pm2": 3,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 5,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "helm-checkov": {
+        "engine_status": "ok",
+        "results": 30,
+        "expected": 2,
+        "found": 2,
+        "recall": 1.0,
+        "found_pm2": 2,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 2,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "kingfisher": {
+        "engine_status": "ok",
+        "results": 2,
+        "expected": 2,
+        "found": 2,
+        "recall": 1.0,
+        "found_pm2": 2,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 2,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "matcher": {
+        "engine_status": "ok",
+        "results": 57,
+        "expected": 7,
+        "found": 6,
+        "recall": 0.8571,
+        "found_pm2": 6,
+        "recall_pm2": 0.8571,
+        "missed": [
+          "native-committed-binary-01"
+        ],
+        "vulnerable_items_hit": 27,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 27
+      },
+      "opengrep": {
+        "engine_status": "ok",
+        "results": 109,
+        "expected": 108,
+        "found": 108,
+        "recall": 1.0,
+        "found_pm2": 108,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 108,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "opengrep-packs": {
+        "engine_status": "ok",
+        "results": 58,
+        "expected": 34,
+        "found": 34,
+        "recall": 1.0,
+        "found_pm2": 34,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 34,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 3
+      },
+      "osv-scanner": {
+        "engine_status": "ok",
+        "results": 65,
+        "expected": 10,
+        "found": 10,
+        "recall": 1.0,
+        "found_pm2": 10,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 10,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "poutine": {
+        "engine_status": "ok",
+        "results": 5,
+        "expected": 1,
+        "found": 1,
+        "recall": 1.0,
+        "found_pm2": 1,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 3,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 1,
+        "twin_hits_any_rule_ids": [
+          "cicd-unpinned-action-01-twin"
+        ],
+        "unplanned_results": 0
+      },
+      "retirejs": {
+        "engine_status": "ok",
+        "results": 1,
+        "expected": 1,
+        "found": 0,
+        "recall": 0.0,
+        "found_pm2": 0,
+        "recall_pm2": 0.0,
+        "missed": [
+          "javascript-vendored-bootstrap-01"
+        ],
+        "vulnerable_items_hit": 0,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 1
+      },
+      "scorecard": {
+        "engine_status": "ok",
+        "results": 7,
+        "expected": 0,
+        "found": 0,
+        "recall": null,
+        "found_pm2": 0,
+        "recall_pm2": null,
+        "missed": [],
+        "vulnerable_items_hit": 3,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 4
+      },
+      "shellcheck": {
+        "engine_status": "ok",
+        "results": 3,
+        "expected": 2,
+        "found": 2,
+        "recall": 1.0,
+        "found_pm2": 2,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 2,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "trivy": {
+        "engine_status": "ok",
+        "results": 38,
+        "expected": 9,
+        "found": 9,
+        "recall": 1.0,
+        "found_pm2": 8,
+        "recall_pm2": 0.8889,
+        "missed": [],
+        "vulnerable_items_hit": 12,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 7
+      },
+      "vacuum": {
+        "engine_status": "ok",
+        "results": 6,
+        "expected": 5,
+        "found": 5,
+        "recall": 1.0,
+        "found_pm2": 5,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 5,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      },
+      "zizmor": {
+        "engine_status": "ok",
+        "results": 4,
+        "expected": 4,
+        "found": 4,
+        "recall": 1.0,
+        "found_pm2": 4,
+        "recall_pm2": 1.0,
+        "missed": [],
+        "vulnerable_items_hit": 4,
+        "twin_fp": 0,
+        "twin_fp_ids": [],
+        "twin_hits_any_rule": 0,
+        "twin_hits_any_rule_ids": [],
+        "unplanned_results": 0
+      }
+    }
+  },
+  "wall_seconds": 53.82
+}
