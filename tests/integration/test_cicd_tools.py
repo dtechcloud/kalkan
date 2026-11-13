@@ -316,7 +316,17 @@ def test_scorecard_local_checks_make_no_connection(tmp_path, monkeypatch, trap_p
             ("Dangerous-Workflow", ".github/workflows/pr-preview.yml", 16),
             ("Token-Permissions", ".github/workflows/issue-triage.yml", 7),
         }
-    # Control: Pinned-Dependencies asks the container registry for image digests.
+    # Control: Pinned-Dependencies asks the container registry for image digests. It gets an
+    # empty Docker configuration: with the "credsStore": "desktop" of Docker Desktop and no
+    # docker-credential-desktop on PATH, Scorecard skips the lookups without a message
+    # (measured on macOS 26.7.1, 2026-11-13), and the control would prove nothing.
+    docker_config = tmp_path / "docker-config"
+    docker_config.mkdir()
     argv = [*tool.argv, "--local", str(run / "target"), "--checks", "Pinned-Dependencies"]
-    connections = _control([*argv, "--format", "json"], run / "scans", trap_proxy)
+    connections = _control(
+        [*argv, "--format", "json"],
+        run / "scans",
+        trap_proxy,
+        {"DOCKER_CONFIG": str(docker_config)},
+    )
     assert connections, "the trap proxy did not see the registry lookups of Pinned-Dependencies"
