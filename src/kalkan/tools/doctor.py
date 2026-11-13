@@ -35,7 +35,9 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import stat
 import sys
+import sysconfig
 import tempfile
 from collections.abc import Callable, Collection, Mapping
 from concurrent.futures import ThreadPoolExecutor
@@ -83,12 +85,20 @@ COMMAND_TIMEOUT_SECONDS = 20.0
 DOCKER_ENGINE_TIMEOUT_SECONDS = 10.0
 TOOL_VERSION_TIMEOUT_SECONDS = 90.0
 CHECK_WORKERS = 8
-#: Check groups that :func:`run_doctor` can leave out: ``docker`` (docker-client and
-#: docker-engine), ``node``, ``claude`` (claude and the unattended checks) and ``tools`` (the
-#: ``tool:<name>`` rows, ``vulndb`` and ``footprint``).
+#: Check groups that :func:`run_doctor` can leave out: ``docker`` (docker-client,
+#: docker-engine and sandbox-images), ``node``, ``claude`` (claude and the unattended checks)
+#: and ``tools`` (the ``tool:<name>`` rows, ``vulndb`` and ``footprint``).
 SKIP_GROUPS = ("docker", "node", "claude", "tools")
 
 DiskUsage = Callable[[str], Any]
+AttributeReader = Callable[[Path], str]
+
+#: The extended attribute that marks the root folder of a File Provider domain on macOS. On a
+#: folder that iCloud Drive syncs (~/Desktop, ~/Documents) its value starts with
+#: :data:`ICLOUD_DOMAIN`; below that root the folders do not carry it.
+FILE_PROVIDER_ATTRIBUTE = "com.apple.file-provider-domain-id"
+ICLOUD_DOMAIN = "com.apple.CloudDocs"
+XATTR = "/usr/bin/xattr"
 
 
 def _kalkan(arguments: str) -> str:
@@ -207,6 +217,7 @@ def run_doctor(
         *([claude.result(), *_unattended_checks(run, find)] if claude is not None else []),
         *(by_name[f"tool:{tool.name}"] for tool in tools),
         _check_paths(),
+        _check_location(root, run),
         *([_check_vulndb(root)] if with_tools else []),
         _check_disk(root, disk_usage or shutil.disk_usage),
         *([footprint.result()] if footprint is not None else []),
@@ -378,6 +389,84 @@ def runs_root(repo_root: str | os.PathLike[str]) -> Path:
 # Host checks
 
 
+def icloud_folder(path: Path, read_attribute: AttributeReader) -> Path | None:
+    """Return ``path`` or the first parent of it that iCloud Drive syncs, else None.
+
+    Only ``path`` and its parents are read: reading another folder such as ~/Documents
+    directly can open a macOS privacy dialog (seen on 2026-11-13).
+    """
+    for folder in (path, *path.parents):
+        if read_attribute(folder).startswith(ICLOUD_DOMAIN):
+            return folder
+    return None
+
+
+def hidden_pth_files(site: Path) -> list[Path]:
+    """Return the ``*kalkan*.pth`` files in ``site`` that carry the macOS hidden flag."""
+    hidden: list[Path] = []
+    for path in sorted(site.glob("*kalkan*.pth")):
+        try:
+            flags = getattr(path.stat(), "st_flags", 0)
+        except OSError:
+            continue
+        if flags & getattr(stat, "UF_HIDDEN", 0x8000):
+            hidden.append(path)
+    return hidden
+
+
+def _xattr_reader(run: Runner) -> AttributeReader:
+    def read(folder: Path) -> str:
+        try:
+            proc = run(
+                [XATTR, "-p", FILE_PROVIDER_ATTRIBUTE, str(folder)],
+                timeout=COMMAND_TIMEOUT_SECONDS,
+            )
+        except Exception:  # no xattr tool, a timeout: the folder counts as not synced
+            return ""
+        return (proc.stdout or "").strip() if proc.returncode == 0 else ""
+
+    return read
+
+
+def _check_location(
+    root: Path,
+    run: Runner,
+    *,
+    platform: str | None = None,
+    read_attribute: AttributeReader | None = None,
+    site: Path | None = None,
+) -> Check:
+    """macOS: kalkan (its home and its Python) must not live in a folder that iCloud syncs.
+
+    iCloud Drive marks the files of the dot folders there (.venv, .git, .tools) hidden a few
+    minutes after they appear. Python 3.13 and later skip a hidden ``.pth`` file, so the
+    editable install of a checkout stops working: "No module named kalkan.cli" (macOS 26.7.1,
+    2026-11-13; the flag came about 4 minutes after ``pip install -e .``).
+    """
+    if (platform or sys.platform) != "darwin":
+        return Check("location", STATUS_OK, "not macOS: no iCloud Drive check")
+    read = read_attribute or _xattr_reader(run)
+    fix = "Clone the repository into a folder outside Desktop and Documents, for example ~/kalkan"
+    for folder in dict.fromkeys((root, Path(sys.prefix).resolve())):
+        synced = icloud_folder(folder, read)
+        if synced is not None:
+            detail = (
+                f"{folder.as_posix()} is in {synced.as_posix()}, a folder that iCloud Drive "
+                "syncs. iCloud marks the files of .venv hidden after a few minutes, and Python "
+                f"then cannot import kalkan. {fix}, and run the bootstrap there."
+            )
+            return Check("location", STATUS_FAIL, detail, {"icloud_folder": synced.as_posix()})
+    hidden = hidden_pth_files(site or Path(sysconfig.get_paths()["purelib"]))
+    if hidden:
+        names = ", ".join(path.name for path in hidden)
+        detail = (
+            f"macOS marks {names} hidden, and Python 3.13 and later skip a hidden .pth file: "
+            f"kalkan can stop importing at any time. {fix}."
+        )
+        return Check("location", STATUS_FAIL, detail, {"hidden": [p.as_posix() for p in hidden]})
+    return Check("location", STATUS_OK, "not in a folder that iCloud Drive syncs")
+
+
 def _check_python(version: tuple[int, int, int] | None) -> Check:
     found = version or tuple(sys.version_info[:3])
     text = ".".join(str(part) for part in found)
@@ -418,6 +507,7 @@ def _check_docker(run: Runner, find: Finder) -> list[Check]:
         return [
             Check("docker-client", STATUS_WARN, detail),
             Check("docker-engine", STATUS_WARN, "skipped: no Docker client"),
+            _check_sandbox_images(run, None, False),
         ]
     data = {"path": docker.as_posix()}
     output = _version_output(run, [docker, "--version"])
@@ -442,7 +532,37 @@ def _check_docker(run: Runner, find: Finder) -> list[Check]:
             reason = _first_line(proc.stderr) or "no server version"
             detail = f"Docker engine is not running ({reason}); PoC validation is unavailable"
             engine = Check("docker-engine", STATUS_WARN, detail)
-    return [client, engine]
+    return [client, engine, _check_sandbox_images(run, docker, engine.status == STATUS_OK)]
+
+
+def _check_sandbox_images(run: Runner, docker: Path | None, engine_up: bool) -> Check:
+    """The base images of the PoC sandbox (``kalkan sandbox pull``). A PoC whose stack image
+    is missing ends as ``sandbox_image_missing``: an audit of 2026-11-13 lost 2 of 4 PoCs."""
+    from kalkan.sandbox.runner import allowed_images
+
+    if docker is None or not engine_up:
+        return Check("sandbox-images", STATUS_INFO, "skipped: the Docker engine is not running")
+    missing: list[str] = []
+    allowed = allowed_images()
+    for name in allowed:
+        try:
+            proc = run(
+                [str(docker), "image", "inspect", "--format", "{{.Id}}", name],
+                timeout=DOCKER_ENGINE_TIMEOUT_SECONDS,
+            )
+        except Exception:  # a timeout or OSError: count the image as missing
+            missing.append(name)
+            continue
+        if proc.returncode != 0:
+            missing.append(name)
+    data = {"images": allowed, "missing": missing}
+    if not missing:
+        return Check("sandbox-images", STATUS_OK, f"all {len(allowed)} base images present", data)
+    detail = (
+        f"{len(missing)} of {len(allowed)} base images missing ({', '.join(missing)}): a PoC "
+        f"of these stacks cannot run. Run: {_kalkan('sandbox pull')} (about 1 GB per image)"
+    )
+    return Check("sandbox-images", STATUS_WARN, detail, data)
 
 
 def _check_node(run: Runner, find: Finder) -> Check:

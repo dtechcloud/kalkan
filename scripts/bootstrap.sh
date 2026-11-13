@@ -55,6 +55,31 @@ venv_python() {
     fi
 }
 
+# macOS: iCloud Drive marks the files of dot folders (.venv, .git, .tools) hidden a few minutes
+# after they appear, and Python 3.13+ then skips the .pth file of the editable install: kalkan
+# stops importing (macOS 26.7.1, 2026-11-13). The root of a synced folder (~/Desktop,
+# ~/Documents) carries the attribute com.apple.file-provider-domain-id; only this folder and
+# its parents are read (reading ~/Documents directly can open a privacy dialog).
+icloud_folder() {
+    [ "$(uname -s)" = Darwin ] || return 1
+    dir=$1
+    while [ -n "$dir" ] && [ "$dir" != / ]; do
+        domain=$(xattr -p com.apple.file-provider-domain-id "$dir" 2>/dev/null) || domain=""
+        case "$domain" in
+        com.apple.CloudDocs*)
+            printf '%s\n' "$dir"
+            return 0
+            ;;
+        esac
+        dir=$(dirname -- "$dir")
+    done
+    return 1
+}
+
+if synced=$(icloud_folder "$repo_root"); then
+    fail "iCloud Drive syncs $synced, and it marks the files of .venv hidden after a few minutes: Python then cannot import kalkan. Clone the repository into a folder outside Desktop and Documents, for example ~/kalkan, and run this script there."
+fi
+
 if py=$(venv_python); then
     say "Use the existing .venv ($py)"
 else

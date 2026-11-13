@@ -95,7 +95,7 @@ You do not need to install Go. kalkan installs Go 1.26.9 into `.tools/go/` (SHA-
 
 ## Audit in a Claude Code session (checkout)
 
-1. Clone the repository and open a terminal in its folder. On macOS, clone it outside Desktop and Documents (for example into `~/kalkan`): on one Mac, the files of `.venv` there were hidden, and Python 3.13 then could not import kalkan.
+1. Clone the repository and open a terminal in its folder. On macOS, clone it outside Desktop and Documents (for example into `~/kalkan`): when iCloud Drive syncs these folders, it marks the files of `.venv` hidden after a few minutes, and Python 3.13 then cannot import kalkan. The bootstrap stops with this message.
 2. Run the bootstrap script. It creates `.venv`, installs kalkan, the pinned scanners and the Go toolchain (SHA-256 checked), downloads the local vulnerability databases and runs `kalkan doctor`. It stops with an error when a tool is missing or broken.
    - Windows: `powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1`
    - Linux, macOS: `sh scripts/bootstrap.sh`
