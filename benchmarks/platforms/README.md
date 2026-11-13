@@ -23,7 +23,7 @@ You need git, curl, Python 3.11 or later and about 8 GB of free disk. Docker is 
 
 The check takes about 1 hour. Most of the time goes to the downloads (the 22 pinned tools and about 3.7 GB of vulnerability databases) and to the tool tests. A second run with `--skip-bootstrap` uses the installed tools.
 
-macOS: clone the repository outside Desktop and Documents, for example into `~/kalkan`. On one Mac, the files of `.venv` below `~/Desktop` were hidden, Python 3.13 skipped the hidden `.pth` file of the install, and kalkan could not be imported. `scripts/bootstrap.sh` now stops with this explanation.
+macOS: clone the repository outside Desktop and Documents, for example into `~/kalkan`. When iCloud Drive syncs these folders, it marks the files of `.venv` hidden a few minutes after the install, Python 3.13 skips the hidden `.pth` file, and kalkan cannot be imported. The check stops before the setup when the clone is in such a folder.
 
 macOS: the first start of a downloaded tool can show a Gatekeeper dialog. If a tool fails with "cannot be opened", write that in the pull request.
 

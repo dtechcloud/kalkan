@@ -95,7 +95,7 @@ Go kurman gerekmez. kalkan, Go 1.26.9'u SHA-256 kontrolüyle `.tools/go/` klasö
 
 ## Claude Code oturumunda denetim (checkout)
 
-1. Repoyu klonla. Repo klasöründe bir terminal aç. macOS'ta repoyu Desktop ve Documents dışına klonla (örneğin `~/kalkan`). Bir Mac'te oradaki `.venv` dosyaları gizli işaretlendi ve Python 3.13 kalkan'ı import edemedi.
+1. Repoyu klonla. Repo klasöründe bir terminal aç. macOS'ta repoyu Desktop ve Documents dışına klonla (örneğin `~/kalkan`). iCloud Drive bu klasörleri eşitliyorsa birkaç dakika sonra `.venv` dosyalarını gizli işaretler. Python 3.13 o zaman kalkan'ı import edemez. Bootstrap bu durumda bu mesajla durur.
 2. Bootstrap betiğini çalıştır. Betik `.venv` klasörünü oluşturur. Ardından kalkan'ı, sabit sürümlü tarayıcıları ve Go araç zincirini SHA-256 kontrolüyle kurar. Sonra yerel güvenlik açığı veritabanlarını indirir. Son olarak `kalkan doctor` çalıştırır. Bir araç eksik veya bozuksa betik hatayla durur.
    - Windows: `powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1`
    - Linux, macOS: `sh scripts/bootstrap.sh`

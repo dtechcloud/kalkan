@@ -240,7 +240,7 @@ elif [ ! -f "$root/bin/kalkan-setup" ] && [ "$dry_run" = no ]; then
 else
     note "this takes 5 to 15 minutes the first time and about 2 seconds later"
     change sh "$root/bin/kalkan-setup" "$data" ||
-        fail "kalkan-setup failed (see above). Run this installer again; installed tools are kept."
+        fail "kalkan-setup failed: the lines above name the cause. Fix it, then run this installer again; installed tools are kept."
 fi
 
 # ---------------------------------------------------------------------------------------------

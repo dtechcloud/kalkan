@@ -17,6 +17,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from kalkan.tools import doctor as doctor_mod
 from kalkan.tools.doctor import (
     MIN_FREE_BYTES,
     STATUS_FAIL,
@@ -43,6 +44,7 @@ CHECK_NAMES = [
     "git",
     "docker-client",
     "docker-engine",
+    "sandbox-images",
     "manifest",
     "node",
     "claude",
@@ -55,6 +57,7 @@ CHECK_NAMES = [
     "tool:gotool",
     "tool:fakego",
     "paths",
+    "location",
     "vulndb",
     "disk",
     "footprint",
@@ -727,3 +730,79 @@ def test_an_api_login_replaces_the_sign_in_check(tmp_path):
     check = doctor(tmp_path, signed_out, environ=foundry).check("claude")
     assert check.status == STATUS_WARN
     assert "set ANTHROPIC_FOUNDRY_RESOURCE or ANTHROPIC_FOUNDRY_BASE_URL" in check.detail
+
+
+# --- location (macOS iCloud Drive) and sandbox images -------------------------------------------
+
+
+def test_icloud_folder_reads_only_the_path_and_its_parents(tmp_path):
+    synced = tmp_path / "Desktop"
+    repo = synced / "kalkantest" / "kalkan"
+    asked: list[Path] = []
+
+    def read(folder: Path) -> str:
+        asked.append(folder)
+        return "com.apple.CloudDocs.iCloudDriveFileProvider/ABC" if folder == synced else ""
+
+    assert doctor_mod.icloud_folder(repo, read) == synced
+    assert asked == [repo, repo.parent, synced]  # it stops at the synced root
+    assert doctor_mod.icloud_folder(tmp_path / "kalkan", lambda folder: "") is None
+    other = "com.getdropbox.dropbox.fileprovider/x"
+    assert doctor_mod.icloud_folder(repo, lambda folder: other) is None
+
+
+def test_location_fails_in_an_icloud_folder_on_macos(tmp_path):
+    repo = tmp_path / "Desktop" / "kalkan"
+    repo.mkdir(parents=True)
+
+    def read(folder: Path) -> str:
+        return "com.apple.CloudDocs.iCloudDriveFileProvider/ABC" if folder.name == "Desktop" else ""
+
+    def location(**kwargs):
+        return doctor_mod._check_location(repo, FakeHost().run, site=tmp_path, **kwargs)
+
+    found = location(platform="darwin", read_attribute=read)
+    assert found.status == doctor_mod.STATUS_FAIL
+    assert "iCloud Drive" in found.detail and "~/kalkan" in found.detail
+    assert found.data["icloud_folder"] == (tmp_path / "Desktop").as_posix()
+    assert location(platform="darwin", read_attribute=lambda folder: "").status == "ok"
+    assert location(platform="linux", read_attribute=read).status == "ok"
+
+
+def test_location_fails_for_a_hidden_pth_file(tmp_path, monkeypatch):
+    (tmp_path / "_editable_impl_kalkan.pth").write_text("/x/src\n", encoding="utf-8")
+    monkeypatch.setattr(doctor_mod, "hidden_pth_files", lambda site: sorted(site.glob("*.pth")))
+    found = doctor_mod._check_location(
+        tmp_path, FakeHost().run, platform="darwin", read_attribute=lambda f: "", site=tmp_path
+    )
+    assert found.status == doctor_mod.STATUS_FAIL
+    assert "_editable_impl_kalkan.pth" in found.detail and "hidden" in found.detail
+
+
+class ImageHost(FakeHost):
+    def __init__(self, missing: tuple[str, ...]) -> None:
+        super().__init__(engine_up=True)
+        self.missing = set(missing)
+
+    def run(self, argv, *, timeout, env=None, cwd=None):
+        argv = [str(a) for a in argv]
+        if argv[1:3] == ["image", "inspect"]:
+            code = 1 if argv[-1] in self.missing else 0
+            return subprocess.CompletedProcess(argv, code, "sha256:x\n" if code == 0 else "", "")
+        return super().run(argv, timeout=timeout, env=env, cwd=cwd)
+
+
+def test_sandbox_images_name_the_missing_ones():
+    from kalkan.sandbox.runner import allowed_images
+
+    images = allowed_images()
+    docker = Path("/fake/bin/docker")
+    host = ImageHost(missing=(images[1], images[2]))
+    found = doctor_mod._check_sandbox_images(host.run, docker, True)
+    assert found.status == doctor_mod.STATUS_WARN
+    assert f"2 of {len(images)} base images missing ({images[1]}, {images[2]})" in found.detail
+    assert "sandbox pull" in found.detail
+    assert found.data["missing"] == [images[1], images[2]]
+    assert doctor_mod._check_sandbox_images(ImageHost(()).run, docker, True).status == "ok"
+    skipped = doctor_mod._check_sandbox_images(host.run, docker, False)
+    assert skipped.status == doctor_mod.STATUS_INFO

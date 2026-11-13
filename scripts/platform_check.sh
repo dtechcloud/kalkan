@@ -68,6 +68,27 @@ stop() {
     exit 2
 }
 
+# macOS: iCloud Drive marks the files of dot folders (.venv, .git, .tools) hidden a few minutes
+# after they appear, and Python 3.13+ then skips the .pth file of the editable install: kalkan
+# stops importing (macOS 26.7.1, 2026-11-13). The root of a synced folder (~/Desktop,
+# ~/Documents) carries the attribute com.apple.file-provider-domain-id; only this folder and
+# its parents are read (reading ~/Documents directly can open a privacy dialog).
+icloud_folder() {
+    [ "$(uname -s)" = Darwin ] || return 1
+    dir=$1
+    while [ -n "$dir" ] && [ "$dir" != / ]; do
+        domain=$(xattr -p com.apple.file-provider-domain-id "$dir" 2>/dev/null) || domain=""
+        case "$domain" in
+        com.apple.CloudDocs*)
+            printf '%s\n' "$dir"
+            return 0
+            ;;
+        esac
+        dir=$(dirname -- "$dir")
+    done
+    return 1
+}
+
 # --- preconditions ----------------------------------------------------------------------------
 
 [ -d .git ] || stop "run this in a git clone of the repository (git clone https://github.com/$UPSTREAM.git), not in a ZIP download."
@@ -83,6 +104,9 @@ for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
 done
 [ -n "$base_python" ] || [ -x .venv/bin/python ] ||
     stop "Python 3.11 or later was not found. On macOS: brew install python@3.13 (or python.org)."
+if synced=$(icloud_folder "$repo_root"); then
+    stop "iCloud Drive syncs $synced, and it marks the files of .venv hidden after a few minutes: Python then cannot import kalkan. Clone the repository into a folder outside Desktop and Documents, for example ~/kalkan, and run this script there."
+fi
 free_kb=$(df -Pk . | awk 'NR == 2 {print $4}')
 if [ -n "$free_kb" ] && [ "$free_kb" -lt 8000000 ]; then
     stop "less than 8 GB free on this disk ($((free_kb / 1024 / 1024)) GB). The tools and databases need about 6 GB."
@@ -154,6 +178,10 @@ if [ "$bootstrap_code" -ne 0 ]; then
         "$out/logs/bootstrap.log"
 else
     run_step dev-install "$py" -m pip install --disable-pip-version-check -q -e ".[dev]"
+
+    # The hidden flag of iCloud can come minutes after the bootstrap: check the import again.
+    "$py" -c 'import kalkan.cli' 2>/dev/null ||
+        stop "kalkan cannot be imported from .venv any more. On macOS, run: ls -lO .venv/lib/python3*/site-packages/*.pth (a hidden .pth file means a folder that iCloud syncs; clone into ~/kalkan)."
 
     run_step tool-tests "$py" -m pytest -m tools -p no:cacheprovider -rfEs \
         --junitxml="$out/tools-junit.xml" tests
