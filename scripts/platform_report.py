@@ -72,6 +72,9 @@ def replacements(
         # A whole path part (/Users/x/, pytest-of-x/), never a part of a longer word.
         pairs.append((re.compile(rf"(?<=pytest-of-){name}(?![\w.-])"), "[user]"))
         pairs.append((re.compile(rf"(?<=[/\\]){name}(?=[/\\])"), "[user]"))
+        # The folder names of Claude Code (~/.claude/projects/-Users-x-kalkan): the home path
+        # with "-" for each separator. Missed before (a macOS archive of 2026-11-13).
+        pairs.append((re.compile(rf"(?:(?<=Users-)|(?<=home-)){name}(?![\w.])"), "[user]"))
     return pairs
 
 

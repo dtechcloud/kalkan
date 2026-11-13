@@ -184,3 +184,15 @@ def test_skipped_tool_test_alone_is_incomplete(tmp_path):
 def test_bad_usage(tmp_path):
     assert report.main([]) == 2
     assert report.main([str(tmp_path / "missing")]) == 2
+
+
+def test_redaction_masks_the_user_name_in_claude_code_folder_names():
+    pairs = report.replacements(home="/Users/ayse", host="h", user="ayse")
+    text = (
+        "projects/-Users-ayse-kalkan/x.jsonl and -home-ayse and C--Users-ayse-Desktop "
+        "and -Users-ayse2-x and Users-ayse.txt"
+    )
+    assert report.redact(text, pairs) == (
+        "projects/-Users-[user]-kalkan/x.jsonl and -home-[user] and C--Users-[user]-Desktop "
+        "and -Users-ayse2-x and Users-ayse.txt"
+    )
