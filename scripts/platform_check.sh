@@ -129,11 +129,13 @@ printf 'kalkan platform check -> %s\n' "$out"
 
 # --- steps ------------------------------------------------------------------------------------
 
+bootstrap_code=0
 if [ "$skip_bootstrap" -eq 1 ] && [ -x "$py" ]; then
     printf 'bootstrap\t0\t0\n' >>"$out/steps.tsv"
     say "bootstrap: skipped (--skip-bootstrap)"
 else
     run_step bootstrap sh scripts/bootstrap.sh
+    bootstrap_code=$?
 fi
 [ -x "$py" ] || stop "the bootstrap made no .venv; read $out/logs/bootstrap.log"
 
@@ -144,26 +146,34 @@ code=$?
 printf 'doctor\t%s\t%s\n' "$code" "$(($(date +%s) - started))" >>"$out/steps.tsv"
 printf '    exit code %s\n' "$code"
 
-run_step dev-install "$py" -m pip install --disable-pip-version-check -q -e ".[dev]"
-
-run_step tool-tests "$py" -m pytest -m tools -p no:cacheprovider -rfEs \
-    --junitxml="$out/tools-junit.xml" tests
-
-if [ "$use_docker" -eq 1 ] && command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-    # The sandbox tests need their base images; without them every test skips.
-    run_step docker-pull "$py" -m kalkan sandbox pull python:3.12-slim mcr.microsoft.com/dotnet/sdk:10.0
-    run_step docker-tests "$py" -m pytest -m docker -p no:cacheprovider -rfEs \
-        --junitxml="$out/docker-junit.xml" tests
+# A failed bootstrap leaves tools missing: the tests would only skip, and the benchmark would
+# measure nothing. The report still runs, so that the archive holds the bootstrap log.
+if [ "$bootstrap_code" -ne 0 ]; then
+    say "tests and benchmark: skipped (the bootstrap failed)"
+    printf '    Fix the cause in the table at the end of %s, then run this script again.\n' \
+        "$out/logs/bootstrap.log"
 else
-    say "docker-tests: skipped (Docker is not running, or --no-docker)"
-fi
+    run_step dev-install "$py" -m pip install --disable-pip-version-check -q -e ".[dev]"
 
-git show HEAD:benchmarks/results/vulnapp.json >"$out/reference-vulnapp.json" 2>/dev/null
-run_step benchmark "$py" benchmarks/run_benchmark.py --target vulnapp
-cp benchmarks/results/vulnapp.json "$out/benchmark/vulnapp.json" 2>/dev/null
-cp benchmarks/results/SUMMARY.md "$out/benchmark/SUMMARY.md" 2>/dev/null
-# The benchmark writes into the tracked results folder: put the committed files back.
-git checkout -- benchmarks/results 2>/dev/null
+    run_step tool-tests "$py" -m pytest -m tools -p no:cacheprovider -rfEs \
+        --junitxml="$out/tools-junit.xml" tests
+
+    if [ "$use_docker" -eq 1 ] && command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+        # The sandbox tests need their base images; without them every test skips.
+        run_step docker-pull "$py" -m kalkan sandbox pull python:3.12-slim mcr.microsoft.com/dotnet/sdk:10.0
+        run_step docker-tests "$py" -m pytest -m docker -p no:cacheprovider -rfEs \
+            --junitxml="$out/docker-junit.xml" tests
+    else
+        say "docker-tests: skipped (Docker is not running, or --no-docker)"
+    fi
+
+    git show HEAD:benchmarks/results/vulnapp.json >"$out/reference-vulnapp.json" 2>/dev/null
+    run_step benchmark "$py" benchmarks/run_benchmark.py --target vulnapp
+    cp benchmarks/results/vulnapp.json "$out/benchmark/vulnapp.json" 2>/dev/null
+    cp benchmarks/results/SUMMARY.md "$out/benchmark/SUMMARY.md" 2>/dev/null
+    # The benchmark writes into the tracked results folder: put the committed files back.
+    git checkout -- benchmarks/results 2>/dev/null
+fi
 
 say "report"
 "$py" scripts/platform_report.py "$out"
