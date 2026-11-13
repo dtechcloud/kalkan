@@ -188,7 +188,7 @@ engine=$(engine_path)
 [ -e "$engine" ] || fail "the engine $engine is missing after the install"
 
 say "Install the pinned tools (kalkan tools install --all)"
-"$engine" tools install --all || fail "kalkan tools install --all failed. Run the setup again; installed tools are kept."
+"$engine" tools install --all || fail "kalkan tools install --all failed. The MESSAGE column above names the cause of each failed tool (a certificate error names SSL_CERT_FILE). Fix it, then run the setup again; installed tools are kept."
 
 say "Download the local vulnerability databases (kalkan sca update-db --max-age 168)"
 "$engine" sca update-db --max-age 168 ||
