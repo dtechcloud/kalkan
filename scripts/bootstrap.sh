@@ -34,7 +34,7 @@ fail() {
 }
 
 find_python() {
-    for candidate in python3 python; do
+    for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
         if command -v "$candidate" >/dev/null 2>&1 &&
             "$candidate" -c "$version_check" >/dev/null 2>&1; then
             printf '%s\n' "$candidate"

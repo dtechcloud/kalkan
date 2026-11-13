@@ -114,7 +114,7 @@ note "$(git --version 2>&1)"
 say "Check Python 3.11 or later"
 version_check='import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)'
 find_python() {
-    for candidate in python3 python; do
+    for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
         if command -v "$candidate" >/dev/null 2>&1 &&
             "$candidate" -c "$version_check" >/dev/null 2>&1; then
             printf '%s\n' "$candidate"
