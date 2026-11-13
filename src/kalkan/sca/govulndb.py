@@ -144,6 +144,7 @@ def download(url: str, dest: Path, timeout_seconds: int) -> dict[str, Any]:
     import urllib.request
 
     from kalkan import __version__
+    from kalkan.tools import tls
 
     request = urllib.request.Request(
         url, headers={"User-Agent": f"kalkan/{__version__}", "Accept": "application/zip"}
@@ -152,7 +153,9 @@ def download(url: str, dest: Path, timeout_seconds: int) -> dict[str, Any]:
     size = 0
     try:
         with (
-            urllib.request.urlopen(request, timeout=timeout_seconds or None) as response,  # noqa: S310 - fixed HTTPS URL
+            urllib.request.urlopen(  # noqa: S310 - fixed HTTPS URL
+                request, timeout=timeout_seconds or None, context=tls.ssl_context()
+            ) as response,
             open(dest, "xb") as out,
         ):
             final = str(response.geturl())
@@ -171,7 +174,7 @@ def download(url: str, dest: Path, timeout_seconds: int) -> dict[str, Any]:
     except urllib.error.HTTPError as exc:
         raise GoDbError(f"{url} answered HTTP {exc.code} {exc.reason}") from None
     except (urllib.error.URLError, http.client.HTTPException, OSError, ValueError) as exc:
-        reason = getattr(exc, "reason", None) or exc
+        reason = tls.explain(getattr(exc, "reason", None) or exc)
         raise GoDbError(f"{url}: {reason}") from None
     with open(dest, "rb") as handle:
         if handle.read(4) != _ZIP_MAGIC:
