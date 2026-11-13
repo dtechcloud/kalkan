@@ -5,7 +5,8 @@
 # The script does these steps in the repository root:
 #   1. Find Python 3.11 or later (python3, python).
 #   2. Create .venv when it is missing.
-#   3. Install kalkan into .venv: pip install -e .
+#   3. Install kalkan into .venv: pip install -e . Then check that kalkan imports (on macOS:
+#      that the .pth file of the install is not hidden).
 #   4. Install every pinned tool, the Go toolchain included: kalkan tools install --all
 #   5. Download the local vulnerability databases: kalkan sca update-db --max-age 168 (a
 #      database younger than 7 days, the stale limit of kalkan doctor, is kept; a failure only
@@ -34,7 +35,7 @@ fail() {
 }
 
 find_python() {
-    for candidate in python3 python; do
+    for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
         if command -v "$candidate" >/dev/null 2>&1 &&
             "$candidate" -c "$version_check" >/dev/null 2>&1; then
             printf '%s\n' "$candidate"
@@ -54,6 +55,31 @@ venv_python() {
     fi
 }
 
+# macOS: iCloud Drive marks the files of dot folders (.venv, .git, .tools) hidden a few minutes
+# after they appear, and Python 3.13+ then skips the .pth file of the editable install: kalkan
+# stops importing (macOS 26.7.1, 2026-11-13). The root of a synced folder (~/Desktop,
+# ~/Documents) carries the attribute com.apple.file-provider-domain-id; only this folder and
+# its parents are read (reading ~/Documents directly can open a privacy dialog).
+icloud_folder() {
+    [ "$(uname -s)" = Darwin ] || return 1
+    dir=$1
+    while [ -n "$dir" ] && [ "$dir" != / ]; do
+        domain=$(xattr -p com.apple.file-provider-domain-id "$dir" 2>/dev/null) || domain=""
+        case "$domain" in
+        com.apple.CloudDocs*)
+            printf '%s\n' "$dir"
+            return 0
+            ;;
+        esac
+        dir=$(dirname -- "$dir")
+    done
+    return 1
+}
+
+if synced=$(icloud_folder "$repo_root"); then
+    fail "iCloud Drive syncs $synced, and it marks the files of .venv hidden after a few minutes: Python then cannot import kalkan. Clone the repository into a folder outside Desktop and Documents, for example ~/kalkan, and run this script there."
+fi
+
 if py=$(venv_python); then
     say "Use the existing .venv ($py)"
 else
@@ -71,6 +97,22 @@ fi
 say "Install kalkan into .venv (pip install -e .)"
 "$py" -m pip install --disable-pip-version-check --no-cache-dir -e "$repo_root" ||
     fail "pip install -e . failed."
+
+# The editable install points .venv at src/ with a .pth file. Python 3.13 and later skip a
+# .pth file that macOS marks hidden, and kalkan then cannot be imported ("No module named
+# kalkan.__main__"). On one Mac (macOS 26.7.1, 2026-11-13) every file of a .venv below
+# ~/Desktop was hidden, and the flag came back at once after chflags nohidden.
+hidden_pth='import glob, os, stat, sys, sysconfig
+site = sysconfig.get_paths()["purelib"]
+files = glob.glob(os.path.join(site, "*kalkan*.pth"))
+sys.exit(1 if any(getattr(os.stat(f), "st_flags", 0) & stat.UF_HIDDEN for f in files) else 0)'
+if [ "$(uname -s)" = Darwin ] && ! "$py" -c "$hidden_pth"; then
+    chflags -R nohidden "$repo_root/.venv" 2>/dev/null || true
+    "$py" -c "$hidden_pth" ||
+        fail "macOS keeps the files of .venv hidden in this folder, and Python skips a hidden .pth file, so kalkan cannot be imported. This was seen below ~/Desktop (a folder that iCloud can sync). Clone the repository into another folder, for example ~/kalkan, and run this script there."
+fi
+"$py" -c 'import kalkan.cli' ||
+    fail "kalkan cannot be imported from .venv after pip install -e . Remove .venv and run this script again."
 
 say "Install every pinned tool, Go included (kalkan tools install --all)"
 install_code=0

@@ -551,6 +551,7 @@ def test_syft_command(tmp_path):
     assert env["SYFT_CHECK_FOR_APP_UPDATE"] == "false"
     assert env["SYFT_JAVA_USE_NETWORK"] == "false"
     assert env["SYFT_GOLANG_SEARCH_REMOTE_LICENSES"] == "false"
+    assert env["SYFT_GOLANG_USE_PACKAGES_LIB"] == "false"  # runs the Go of PATH, can download
     assert env["SYFT_JAVASCRIPT_SEARCH_REMOTE_LICENSES"] == "false"
     assert env["SYFT_PYTHON_SEARCH_REMOTE_LICENSES"] == "false"
 

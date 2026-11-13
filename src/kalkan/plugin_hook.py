@@ -451,15 +451,28 @@ def _bind(data: str, agent_id: object, run_id: str, task_id: str, now: float) ->
         _write_json(file, {"run": run_id, "task": task_id, "at": now})
 
 
+def _bad_glob_pattern(pattern: object) -> bool:
+    """True for a Glob pattern that can leave its ``path``: absolute, ``~`` or a ``..`` part."""
+    if not isinstance(pattern, str) or ".." in pattern.replace("\\", "/").split("/"):
+        return True
+    return pattern.startswith(("/", "\\", "~")) or re.match(r"\A[A-Za-z]:", pattern) is not None
+
+
+#: The deny message of a Glob pattern that can leave its path. The general message ("use an
+#: absolute path") made an agent put the absolute folder into the pattern, which is denied
+#: again (an unattended run of 2026-11-13: four denials).
+GLOB_PATTERN_REASON = (
+    "Glob takes the folder in path and a relative pattern: set path to a folder below the "
+    "target folder named in the prompt file, and pattern to a relative pattern without .. "
+    "(for example pattern **/*.php)"
+)
+
+
 def _subagent_path(tool: str, tool_input: Mapping[str, Any], cwd: object, win: bool) -> str | None:
     if tool == "Read":
         return canonical(tool_input.get("file_path"), cwd=cwd, windows=win)
-    if tool == "Glob":
-        pattern = tool_input.get("pattern")
-        if not isinstance(pattern, str) or ".." in pattern.replace("\\", "/").split("/"):
-            return None
-        if pattern.startswith(("/", "\\", "~")) or re.match(r"\A[A-Za-z]:", pattern):
-            return None
+    if tool == "Glob" and _bad_glob_pattern(tool_input.get("pattern")):
+        return None
     value = tool_input.get("path")
     if value is None or value == "":
         value = cwd  # Grep and Glob search the working folder without a path
@@ -489,6 +502,8 @@ def _subagent_decision(
     ):
         return _decision("allow", "kalkan subagent reads a saved output of its own tool call")
     if tool in READ_TOOLS:
+        if tool == "Glob" and _bad_glob_pattern(tool_input.get("pattern")):
+            return _deny_subagent(GLOB_PATTERN_REASON)
         path = _subagent_path(str(tool), tool_input, cwd, win)
         where = _run_location(path, root, win) if path is not None else None
         if where is None or where[1] not in READ_AREAS:

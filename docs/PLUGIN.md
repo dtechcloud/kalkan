@@ -9,6 +9,7 @@ The plugin lets you run a kalkan audit from any folder, in the Claude Code CLI o
 - git. On Windows: Git for Windows. The skill runs the engine through the Bash tool (Git Bash), and the permission hook runs in Git Bash.
 - Network for the first setup: the pinned scanners and the local vulnerability databases (about 290 MB of OSV databases and the Grype database, 3.67 GB on disk on 2026-10-29, measured once on one Windows 11 machine). On Windows the release archives of the scanners hold about 530 MB (the sizes in `src/kalkan/tools/manifest.json`). pip gets Checkov, Bandit, flawfinder and gixy from PyPI, and Go gets the modules of govulncheck and poutine. The setup checks the 15 downloaded programs and the Go toolchain against a pinned SHA-256. pip installs the 4 Python tools by exact version, without a hash check. The Go checksum database checks the 2 tools that `go install` builds (docs/SECURITY.md). After the setup, an audit uses no network except your Claude session, the clone of a git URL target and the opt-in `--allow-build-network` (docs/SECURITY.md).
 - Optional: Docker (the PoC verification sandbox). You do not need Go: the setup installs Go 1.26.9.
+- With Docker: pull the base images of the sandbox once, `kalkan sandbox pull` (all seven allowlisted images, about 1 GB each; `kalkan sandbox pull golang:1.26` pulls one). The setup does not pull them. A PoC whose stack image is missing ends as `sandbox_image_missing` (an audit on 2026-11-13 lost 2 of 4 PoCs this way). `kalkan doctor` lists the missing images in the row `sandbox-images`.
 
 ## Install
 

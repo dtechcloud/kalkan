@@ -15,7 +15,7 @@
 
 kalkan is a security audit toolkit for source code that runs inside Claude Code. One request starts a long, multi-phase audit of a folder or a git repository. All audit state lives on disk, so an audit continues where it stopped after a usage-limit reset. The output is an English report in Markdown, HTML, JSON and SARIF 2.1.0. With `--lang tr` the report is Turkish, and an English version follows on request.
 
-> **Status (version 1.0.0):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006, ADR-0008) runs its checks in containers without network when a Docker engine answers. Without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
+> **Status (version 1.0.1):** the engine, all pinned scanners (Go toolchain included), local-only SCA, the agent orchestration with a fresh-eyes final review, unattended runs, the Claude Code plugin and Codex support work. The PoC verification sandbox (ADR-0006, ADR-0008) runs its checks in containers without network when a Docker engine answers. Without Docker, findings rest on engine-verified static evidence and the final review. Security guarantees: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Quick start
 
@@ -95,7 +95,7 @@ You do not need to install Go. kalkan installs Go 1.26.9 into `.tools/go/` (SHA-
 
 ## Audit in a Claude Code session (checkout)
 
-1. Clone the repository and open a terminal in its folder.
+1. Clone the repository and open a terminal in its folder. On macOS, clone it outside Desktop and Documents (for example into `~/kalkan`): when iCloud Drive syncs these folders, it marks the files of `.venv` hidden after a few minutes, and Python 3.13 then cannot import kalkan. The bootstrap stops with this message.
 2. Run the bootstrap script. It creates `.venv`, installs kalkan, the pinned scanners and the Go toolchain (SHA-256 checked), downloads the local vulnerability databases and runs `kalkan doctor`. It stops with an error when a tool is missing or broken.
    - Windows: `powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1`
    - Linux, macOS: `sh scripts/bootstrap.sh`

@@ -353,6 +353,20 @@ def test_subagent_reads_stay_in_target_and_tasks_of_its_run(data, tmp_path):
         assert decision(hook.decide(event, data=str(data), runs=runs(data))) == "deny", event
 
 
+def test_a_subagent_glob_with_an_absolute_pattern_learns_the_right_form(data):
+    run = make_run_files(data)
+    hook.decide(read(prompt_of(data)), data=str(data), runs=runs(data))
+    target = str(run / "target")
+    # The form an agent tried after the general message: the absolute folder in the pattern.
+    for pattern in (f"{target}/php/**/autoload.php", "../../*", "~/x"):
+        out = hook.decide(subagent("Glob", {"pattern": pattern}), data=str(data), runs=runs(data))
+        assert decision(out) == "deny", pattern
+        reason = out["hookSpecificOutput"]["permissionDecisionReason"]
+        assert "relative pattern" in reason and "absolute" not in reason, reason
+    fixed = subagent("Glob", {"pattern": "php/**/autoload.php", "path": target})
+    assert decision(hook.decide(fixed, data=str(data), runs=runs(data))) == "allow"
+
+
 @pytest.mark.skipif(sys.platform != "win32", reason="Windows path forms")
 def test_windows_path_forms_are_resolved(data, tmp_path):
     run = make_run_files(data)

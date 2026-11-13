@@ -114,7 +114,7 @@ note "$(git --version 2>&1)"
 say "Check Python 3.11 or later"
 version_check='import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)'
 find_python() {
-    for candidate in python3 python; do
+    for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
         if command -v "$candidate" >/dev/null 2>&1 &&
             "$candidate" -c "$version_check" >/dev/null 2>&1; then
             printf '%s\n' "$candidate"
@@ -240,7 +240,7 @@ elif [ ! -f "$root/bin/kalkan-setup" ] && [ "$dry_run" = no ]; then
 else
     note "this takes 5 to 15 minutes the first time and about 2 seconds later"
     change sh "$root/bin/kalkan-setup" "$data" ||
-        fail "kalkan-setup failed (see above). Run this installer again; installed tools are kept."
+        fail "kalkan-setup failed: the lines above name the cause. Fix it, then run this installer again; installed tools are kept."
 fi
 
 # ---------------------------------------------------------------------------------------------

@@ -15,7 +15,7 @@
 
 kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Rapor varsayılan olarak İngilizce. `--lang tr` ile rapor Türkçe olur ve istersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
 
-> **Durum (sürüm 1.0.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006, ADR-0008), bir Docker motoru yanıt verdiğinde kontrollerini ağsız konteynerlerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
+> **Durum (sürüm 1.0.1):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006, ADR-0008), bir Docker motoru yanıt verdiğinde kontrollerini ağsız konteynerlerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Hızlı başlangıç
 
@@ -95,7 +95,7 @@ Go kurman gerekmez. kalkan, Go 1.26.9'u SHA-256 kontrolüyle `.tools/go/` klasö
 
 ## Claude Code oturumunda denetim (checkout)
 
-1. Repoyu klonla. Repo klasöründe bir terminal aç.
+1. Repoyu klonla. Repo klasöründe bir terminal aç. macOS'ta repoyu Desktop ve Documents dışına klonla (örneğin `~/kalkan`). iCloud Drive bu klasörleri eşitliyorsa birkaç dakika sonra `.venv` dosyalarını gizli işaretler. Python 3.13 o zaman kalkan'ı import edemez. Bootstrap bu durumda bu mesajla durur.
 2. Bootstrap betiğini çalıştır. Betik `.venv` klasörünü oluşturur. Ardından kalkan'ı, sabit sürümlü tarayıcıları ve Go araç zincirini SHA-256 kontrolüyle kurar. Sonra yerel güvenlik açığı veritabanlarını indirir. Son olarak `kalkan doctor` çalıştırır. Bir araç eksik veya bozuksa betik hatayla durur.
    - Windows: `powershell -ExecutionPolicy Bypass -File scripts\bootstrap.ps1`
    - Linux, macOS: `sh scripts/bootstrap.sh`

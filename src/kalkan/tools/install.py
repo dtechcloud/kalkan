@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: MIT
 """Install and verify the pinned tools (docs/ENGINE-SPEC.md, section 12).
 
-- ``binary`` tools: download with urllib (HTTPS, timeouts, HTTPS-only redirects), hash while
-  streaming, refuse a SHA-256 mismatch, check every archive member (no absolute paths, no '..',
-  no links, no device files), extract only the declared binary and place it in
+- ``binary`` tools: download with urllib (HTTPS, timeouts, HTTPS-only redirects, the TLS context
+  of :mod:`kalkan.tools.tls`), hash while streaming, refuse a SHA-256 mismatch, check every
+  archive member (no absolute paths, no '..', no links, no device files), extract only the
+  declared binary and place it in
   ``.tools/<tool>/<version>/bin/``.
 - ``toolchain`` tools (Go): download and hash like a binary tool, check every member of the
   archive (the same rules, plus: every member below the declared top folder, no name that
@@ -54,6 +55,7 @@ from typing import IO, Any
 
 from kalkan import __version__
 from kalkan.errors import ToolError
+from kalkan.tools import tls
 from kalkan.tools.manifest import Asset, Manifest, Tool, load_manifest, tree_digest
 from kalkan.tools.platform import Finder, Runner, find_on_path, platform_key, run_command
 from kalkan.tools.resolve import (
@@ -431,7 +433,8 @@ class _HttpsOnlyRedirectHandler(urllib.request.HTTPRedirectHandler):
 
 
 def _default_opener() -> Opener:
-    return urllib.request.build_opener(_HttpsOnlyRedirectHandler).open
+    https = urllib.request.HTTPSHandler(context=tls.ssl_context())
+    return urllib.request.build_opener(https, _HttpsOnlyRedirectHandler).open
 
 
 def download_verified(
@@ -475,7 +478,7 @@ def download_verified(
             return path
         if attempt < attempts:
             _sleep(2.0 * attempt)
-    raise ToolError(f"download failed: {url}: {last_error}")
+    raise ToolError(f"download failed: {url}: {tls.explain(last_error)}")
 
 
 def _stream_to_file(url: str, dest_dir: Path, limit: int, open_url: Opener) -> tuple[Path, str]:

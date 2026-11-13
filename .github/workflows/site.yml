@@ -12,7 +12,8 @@
 # only so that the logs mask them; none of them grants access.
 # Every action is pinned by its full commit SHA; the comment names the release.
 
-name: site
+name: Deploy website (stable to production, main to staging)
+run-name: Deploy website to ${{ github.ref_name == 'stable' && 'production (stable)' || 'staging (main)' }}
 
 on:
   push:

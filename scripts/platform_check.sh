@@ -14,13 +14,15 @@
 #   2. doctor         kalkan doctor --json
 #   3. dev-install    pip install -e ".[dev]" (pytest)
 #   4. tool-tests     pytest -m tools: every tool on the planted test fixtures
-#   5. docker-tests   pytest -m docker: the PoC sandbox (only when Docker runs)
+#   5. docker-tests   pull the two sandbox base images (about 1 GB), then pytest -m docker:
+#                     the PoC sandbox (only when Docker runs)
 #   6. benchmark      the deterministic pipeline on the vulnapp fixture (scan, SCA, merge, report)
 #   7. report         scripts/platform_report.py: SUMMARY.md, verdict PASS, INCOMPLETE or FAIL
 #
 # Time: about 1 hour, mostly the downloads of step 1 and the tests of step 4. Disk: about 8 GB.
 # The result folder is platform-check/<os>-<arch>-<date>/ with a .tar.gz next to it. Personal
-# data is removed from it: the home folder becomes ~ and the host name becomes [host].
+# data is removed from it: the home folder becomes ~, the host name [host] and the user name
+# in a path [user].
 #
 # Options:
 #   --pr               open a pull request on dtechcloud/kalkan with the result (needs the
@@ -66,13 +68,34 @@ stop() {
     exit 2
 }
 
+# macOS: iCloud Drive marks the files of dot folders (.venv, .git, .tools) hidden a few minutes
+# after they appear, and Python 3.13+ then skips the .pth file of the editable install: kalkan
+# stops importing (macOS 26.7.1, 2026-11-13). The root of a synced folder (~/Desktop,
+# ~/Documents) carries the attribute com.apple.file-provider-domain-id; only this folder and
+# its parents are read (reading ~/Documents directly can open a privacy dialog).
+icloud_folder() {
+    [ "$(uname -s)" = Darwin ] || return 1
+    dir=$1
+    while [ -n "$dir" ] && [ "$dir" != / ]; do
+        domain=$(xattr -p com.apple.file-provider-domain-id "$dir" 2>/dev/null) || domain=""
+        case "$domain" in
+        com.apple.CloudDocs*)
+            printf '%s\n' "$dir"
+            return 0
+            ;;
+        esac
+        dir=$(dirname -- "$dir")
+    done
+    return 1
+}
+
 # --- preconditions ----------------------------------------------------------------------------
 
 [ -d .git ] || stop "run this in a git clone of the repository (git clone https://github.com/$UPSTREAM.git), not in a ZIP download."
 command -v git >/dev/null 2>&1 || stop "git was not found. On macOS: xcode-select --install"
 command -v curl >/dev/null 2>&1 || stop "curl was not found."
 base_python=""
-for candidate in python3 python; do
+for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
     if command -v "$candidate" >/dev/null 2>&1 &&
         "$candidate" -c 'import sys; sys.exit(0 if sys.version_info >= (3, 11) else 1)' 2>/dev/null; then
         base_python=$candidate
@@ -81,6 +104,9 @@ for candidate in python3 python; do
 done
 [ -n "$base_python" ] || [ -x .venv/bin/python ] ||
     stop "Python 3.11 or later was not found. On macOS: brew install python@3.13 (or python.org)."
+if synced=$(icloud_folder "$repo_root"); then
+    stop "iCloud Drive syncs $synced, and it marks the files of .venv hidden after a few minutes: Python then cannot import kalkan. Clone the repository into a folder outside Desktop and Documents, for example ~/kalkan, and run this script there."
+fi
 free_kb=$(df -Pk . | awk 'NR == 2 {print $4}')
 if [ -n "$free_kb" ] && [ "$free_kb" -lt 8000000 ]; then
     stop "less than 8 GB free on this disk ($((free_kb / 1024 / 1024)) GB). The tools and databases need about 6 GB."
@@ -127,11 +153,13 @@ printf 'kalkan platform check -> %s\n' "$out"
 
 # --- steps ------------------------------------------------------------------------------------
 
+bootstrap_code=0
 if [ "$skip_bootstrap" -eq 1 ] && [ -x "$py" ]; then
     printf 'bootstrap\t0\t0\n' >>"$out/steps.tsv"
     say "bootstrap: skipped (--skip-bootstrap)"
 else
     run_step bootstrap sh scripts/bootstrap.sh
+    bootstrap_code=$?
 fi
 [ -x "$py" ] || stop "the bootstrap made no .venv; read $out/logs/bootstrap.log"
 
@@ -142,24 +170,38 @@ code=$?
 printf 'doctor\t%s\t%s\n' "$code" "$(($(date +%s) - started))" >>"$out/steps.tsv"
 printf '    exit code %s\n' "$code"
 
-run_step dev-install "$py" -m pip install --disable-pip-version-check -q -e ".[dev]"
-
-run_step tool-tests "$py" -m pytest -m tools -p no:cacheprovider -rfEs \
-    --junitxml="$out/tools-junit.xml" tests
-
-if [ "$use_docker" -eq 1 ] && command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
-    run_step docker-tests "$py" -m pytest -m docker -p no:cacheprovider -rfEs \
-        --junitxml="$out/docker-junit.xml" tests
+# A failed bootstrap leaves tools missing: the tests would only skip, and the benchmark would
+# measure nothing. The report still runs, so that the archive holds the bootstrap log.
+if [ "$bootstrap_code" -ne 0 ]; then
+    say "tests and benchmark: skipped (the bootstrap failed)"
+    printf '    Fix the cause in the table at the end of %s, then run this script again.\n' \
+        "$out/logs/bootstrap.log"
 else
-    say "docker-tests: skipped (Docker is not running, or --no-docker)"
-fi
+    run_step dev-install "$py" -m pip install --disable-pip-version-check -q -e ".[dev]"
 
-git show HEAD:benchmarks/results/vulnapp.json >"$out/reference-vulnapp.json" 2>/dev/null
-run_step benchmark "$py" benchmarks/run_benchmark.py --target vulnapp
-cp benchmarks/results/vulnapp.json "$out/benchmark/vulnapp.json" 2>/dev/null
-cp benchmarks/results/SUMMARY.md "$out/benchmark/SUMMARY.md" 2>/dev/null
-# The benchmark writes into the tracked results folder: put the committed files back.
-git checkout -- benchmarks/results 2>/dev/null
+    # The hidden flag of iCloud can come minutes after the bootstrap: check the import again.
+    "$py" -c 'import kalkan.cli' 2>/dev/null ||
+        stop "kalkan cannot be imported from .venv any more. On macOS, run: ls -lO .venv/lib/python3*/site-packages/*.pth (a hidden .pth file means a folder that iCloud syncs; clone into ~/kalkan)."
+
+    run_step tool-tests "$py" -m pytest -m tools -p no:cacheprovider -rfEs \
+        --junitxml="$out/tools-junit.xml" tests
+
+    if [ "$use_docker" -eq 1 ] && command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+        # The sandbox tests need their base images; without them every test skips.
+        run_step docker-pull "$py" -m kalkan sandbox pull python:3.12-slim mcr.microsoft.com/dotnet/sdk:10.0
+        run_step docker-tests "$py" -m pytest -m docker -p no:cacheprovider -rfEs \
+            --junitxml="$out/docker-junit.xml" tests
+    else
+        say "docker-tests: skipped (Docker is not running, or --no-docker)"
+    fi
+
+    git show HEAD:benchmarks/results/vulnapp.json >"$out/reference-vulnapp.json" 2>/dev/null
+    run_step benchmark "$py" benchmarks/run_benchmark.py --target vulnapp
+    cp benchmarks/results/vulnapp.json "$out/benchmark/vulnapp.json" 2>/dev/null
+    cp benchmarks/results/SUMMARY.md "$out/benchmark/SUMMARY.md" 2>/dev/null
+    # The benchmark writes into the tracked results folder: put the committed files back.
+    git checkout -- benchmarks/results 2>/dev/null
+fi
 
 say "report"
 "$py" scripts/platform_report.py "$out"
@@ -200,11 +242,25 @@ if [ "$open_pr" -eq 1 ]; then
             head="$branch"
             ;;
         *)
-            gh repo fork "$UPSTREAM" --remote --remote-name fork >/dev/null 2>&1 ||
-                git remote get-url fork >/dev/null 2>&1 ||
-                stop "cannot fork $UPSTREAM; the result is committed on the local branch $branch"
+            login=$(gh api user --jq .login) || stop "gh api user failed; the result is on the local branch $branch"
+            gh repo fork "$UPSTREAM" --clone=false >/dev/null 2>&1
+            # GitHub makes a fork in the background: wait for it, then name it as remote "fork".
+            fork_repo=""
+            tries=0
+            while [ -z "$fork_repo" ] && [ "$tries" -lt 24 ]; do
+                fork_repo=$(gh api --paginate "repos/$UPSTREAM/forks?per_page=100"                     --jq ".[] | select(.owner.login == \"$login\") | .full_name" 2>/dev/null | head -n 1)
+                [ -n "$fork_repo" ] || { tries=$((tries + 1)); sleep 5; }
+            done
+            [ -n "$fork_repo" ] || stop "no fork of $UPSTREAM for $login; the result is committed on the local branch $branch"
+            if [ "$(gh config get git_protocol 2>/dev/null)" = ssh ]; then
+                fork_url="git@github.com:$fork_repo.git"
+            else
+                fork_url="https://github.com/$fork_repo.git"
+            fi
+            git remote remove fork >/dev/null 2>&1
+            git remote add fork "$fork_url" || stop "cannot add the remote fork ($fork_url)"
             remote=fork
-            head="$(gh api user --jq .login):$branch"
+            head="$login:$branch"
             ;;
     esac
     git push -q -u "$remote" "$branch" || stop "git push to $remote failed; the result is on the local branch $branch"

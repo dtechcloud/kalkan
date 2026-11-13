@@ -7,7 +7,8 @@
 #
 # The /kalkan skill runs this script with the resolved ${CLAUDE_PLUGIN_DATA}. The script works in
 # sh on Linux and macOS and in Git Bash on Windows. It stops at the first failure:
-#   1. Find Python 3.11 or later (py -3, python3, python).
+#   1. Find Python 3.11 or later (py -3, python3, python, then python3.14 down to python3.11:
+#      Homebrew installs the versioned names, and macOS has an older /usr/bin/python3).
 #   2. Create the venv <data>/venv when it is missing.
 #   3. Install the engine wheel that the plugin carries (engine/*.whl): no network, no index.
 #   4. Write <venv>/kalkan-home.json: the engine keeps .tools/ in <data> and the runs in
@@ -142,7 +143,7 @@ find_python() {
         printf '%s\n' "py -3"
         return 0
     fi
-    for candidate in python3 python; do
+    for candidate in python3 python python3.14 python3.13 python3.12 python3.11; do
         if command -v "$candidate" >/dev/null 2>&1 &&
             "$candidate" -c "$version_check" >/dev/null 2>&1; then
             printf '%s\n' "$candidate"
@@ -187,7 +188,7 @@ engine=$(engine_path)
 [ -e "$engine" ] || fail "the engine $engine is missing after the install"
 
 say "Install the pinned tools (kalkan tools install --all)"
-"$engine" tools install --all || fail "kalkan tools install --all failed. Run the setup again; installed tools are kept."
+"$engine" tools install --all || fail "kalkan tools install --all failed. The MESSAGE column above names the cause of each failed tool (a certificate error names SSL_CERT_FILE). Fix it, then run the setup again; installed tools are kept."
 
 say "Download the local vulnerability databases (kalkan sca update-db --max-age 168)"
 "$engine" sca update-db --max-age 168 ||

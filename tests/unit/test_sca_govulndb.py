@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import io
 import json
+import ssl
 import urllib.request
 import zipfile
 from email.message import Message
@@ -217,7 +218,8 @@ class FakeResponse(io.BytesIO):
 
 
 def fake_urlopen(data: bytes, url: str, content_type: str, seen: list):
-    def urlopen(request, timeout=None):
+    def urlopen(request, timeout=None, context=None):
+        assert isinstance(context, ssl.SSLContext)  # the kalkan context (kalkan.tools.tls)
         seen.append((request.full_url, dict(request.header_items()), timeout))
         return FakeResponse(data, url, content_type)
 
@@ -265,14 +267,14 @@ def test_download_checks_the_answer(tmp_path, monkeypatch):
 def test_download_reports_http_errors(tmp_path, monkeypatch):
     import urllib.error
 
-    def urlopen(request, timeout=None):
+    def urlopen(request, timeout=None, context=None):
         raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
 
     monkeypatch.setattr(urllib.request, "urlopen", urlopen)
     with pytest.raises(govulndb.GoDbError, match="HTTP 404"):
         govulndb.download("https://vuln.go.dev/vuln.zip", tmp_path / "a.zip", 30)
 
-    def offline(request, timeout=None):
+    def offline(request, timeout=None, context=None):
         raise urllib.error.URLError("getaddrinfo failed")
 
     monkeypatch.setattr(urllib.request, "urlopen", offline)
@@ -308,3 +310,14 @@ def test_vulndb_update_writes_the_go_part(tmp_path):
         root, osv=False, grype=False, retire=False, go_source="osv", fetch=failing_fetch, force=True
     )
     assert built["go"]["status"] == "ok" and built["go"]["go_source"] == "osv"
+
+
+def test_download_names_the_fix_of_a_failed_certificate_check(tmp_path, monkeypatch):
+    import urllib.error
+
+    def untrusted(request, timeout=None, context=None):
+        raise urllib.error.URLError("[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed")
+
+    monkeypatch.setattr(urllib.request, "urlopen", untrusted)
+    with pytest.raises(govulndb.GoDbError, match="SSL_CERT_FILE"):
+        govulndb.download(govulndb.OFFICIAL_URL, tmp_path / "a.zip", 30)
