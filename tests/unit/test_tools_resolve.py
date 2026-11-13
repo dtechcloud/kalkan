@@ -259,7 +259,7 @@ def test_pip_script_without_exe_runs_through_the_venv_python(tmp_path):
         runner=runner_saying("3.3.22", calls),
         path_env="",
     )
-    expected = [str(pyenv_python(tmp_path)), str(script)] if os.name == "nt" else [str(script)]
+    expected = [str(pyenv_python(tmp_path)), str(script)]
     assert found is not None
     assert found.argv == expected
     assert calls == [[*expected, "--version"]]

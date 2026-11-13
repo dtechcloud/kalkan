@@ -189,11 +189,18 @@ def pyenv_script(repo_root: str | os.PathLike[str], executable: str) -> Path | N
 
 
 def pyenv_command(repo_root: str | os.PathLike[str], script: str | os.PathLike[str]) -> list[str]:
-    """Return the argv prefix that runs a tool venv entry point on this host."""
+    """Return the argv prefix that runs a tool venv entry point on this host.
+
+    A script runs with the Python of the tool venv, also on Linux and macOS: its ``#!`` line
+    holds the absolute path of the venv at install time, so a moved checkout gave "bad
+    interpreter" for checkov, bandit, flawfinder and gixy (macOS, 2026-11-13). The Python of a
+    moved venv still finds its packages (``pyvenv.cfg`` sits next to it). A Windows ``.exe``
+    launcher runs on its own.
+    """
     path = Path(script)
-    if os.name == "nt" and path.suffix.lower() != ".exe":
-        return [str(pyenv_python(repo_root)), str(path)]
-    return [str(path)]
+    if os.name == "nt" and path.suffix.lower() == ".exe":
+        return [str(path)]
+    return [str(pyenv_python(repo_root)), str(path)]
 
 
 def read_installed(repo_root: str | os.PathLike[str]) -> dict[str, Any]:
