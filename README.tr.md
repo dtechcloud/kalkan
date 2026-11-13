@@ -15,7 +15,7 @@
 
 kalkan, Claude Code içinde çalışan bir kaynak kod güvenlik denetim aracıdır. Tek bir istek, bir klasör veya git reposu üzerinde uzun ve çok aşamalı bir denetim başlatır. Denetimin bütün durumu diskte durur. Bu yüzden denetim, kullanım limiti sıfırlanınca kaldığı yerden devam eder. Rapor varsayılan olarak İngilizce. `--lang tr` ile rapor Türkçe olur ve istersen İngilizce sürümü de üretilir. Biçimler: Markdown, HTML, JSON ve SARIF 2.1.0.
 
-> **Durum (sürüm 1.0.0):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006, ADR-0008), bir Docker motoru yanıt verdiğinde kontrollerini ağsız konteynerlerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
+> **Durum (sürüm 1.0.1):** Motor, sabit sürümlü bütün tarayıcılar (Go dahil), tamamen yerel SCA, taze göz son incelemeli ajan orkestrasyonu, gözetimsiz çalışma, Claude Code eklentisi ve Codex desteği çalışıyor. PoC doğrulama sandbox'ı (ADR-0006, ADR-0008), bir Docker motoru yanıt verdiğinde kontrollerini ağsız konteynerlerde çalıştırır. Docker yoksa bulgular, motorun doğruladığı statik kanıta ve son incelemeye dayanır. Güvenlik garantileri: [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Hızlı başlangıç
 
