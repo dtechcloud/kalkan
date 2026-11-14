@@ -996,3 +996,13 @@ def test_a_secret_candidate_id_does_not_hash_the_value():
     assert one["class"] == "hardcoded-secrets"
     assert one["id"] == two["id"]
     assert "made-up" not in json.dumps(one)
+
+
+def test_an_adapter_redacted_snippet_keeps_its_commit():
+    from kalkan.sarif.redact import redacted_snippet
+
+    assert redacted_snippet("REDACTED (commit 0123456789ab)") == "REDACTED (commit 0123456789ab)"
+    assert redacted_snippet("REDACTED") == "REDACTED"
+    assert redacted_snippet("") == ""
+    assert redacted_snippet("REDACTED (commit 0123456789ab) password=x") == "REDACTED"
+    assert redacted_snippet("password = 'made-up'") == "REDACTED"

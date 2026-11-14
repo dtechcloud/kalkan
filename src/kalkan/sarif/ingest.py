@@ -43,7 +43,7 @@ from urllib.parse import unquote
 from kalkan.errors import ValidationError
 from kalkan.findings.severity import for_sarif_result
 from kalkan.findings.taxonomy import SLUGS, class_for_cwe, normalize_cwe
-from kalkan.sarif.redact import REDACTED, SECRET_CLASS, secret_message
+from kalkan.sarif.redact import SECRET_CLASS, redacted_snippet, secret_message
 from kalkan.sarif.uri import is_target_relative, normalize_uri
 from kalkan.util.safe_io import read_bounded
 
@@ -465,7 +465,7 @@ def _candidate(
         # A secret result keeps no matched text, also not in the candidate ID or a
         # fingerprint, which would confirm a guessed value (kalkan.sarif.redact).
         message = secret_message(title or rule_id)
-        snippet = REDACTED if snippet else ""
+        snippet = redacted_snippet(snippet)
         fingerprints = {}
 
     return {

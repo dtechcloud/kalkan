@@ -14,12 +14,24 @@ candidate of the class, and :mod:`kalkan.scanners.base` rewrites the SARIF file.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Final
 
-__all__ = ["REDACTED", "SECRET_CLASS", "redact_result", "secret_message"]
+__all__ = ["REDACTED", "SECRET_CLASS", "redact_result", "redacted_snippet", "secret_message"]
 
 SECRET_CLASS: Final = "hardcoded-secrets"
 REDACTED: Final = "REDACTED"
+#: A snippet that an adapter already redacted: ``REDACTED``, or ``REDACTED (commit <hex>)`` of
+#: the history scans (kalkan.scanners.adapters.kingfisher). The commit names no secret.
+_ALREADY_REDACTED: Final = re.compile(r"REDACTED(?: \(commit [0-9a-f]{7,64}\))?")
+
+
+def redacted_snippet(snippet: str) -> str:
+    """Return the snippet of a secret result: an adapter's redacted form stays, any other
+    text becomes :data:`REDACTED`, an empty snippet stays empty."""
+    if not snippet or _ALREADY_REDACTED.fullmatch(snippet):
+        return snippet
+    return REDACTED
 
 
 def secret_message(title: str) -> str:
