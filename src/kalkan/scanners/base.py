@@ -1005,7 +1005,7 @@ def _ingest(adapter: Adapter, ctx: ScanContext, out: Path, record: _Record) -> s
         result = ingest_file(out, adapter.name, ctx.target_dir)
     except KalkanError as exc:
         return f"cannot ingest {relative}: {exc}"
-    problem = _redact_secrets(out, result.candidates)
+    problem = _redact_secrets(out, result.candidates, adapter.name)
     if problem:
         return f"cannot redact {relative}: {problem}"
     suppressed = _suppressed_results(out)
@@ -1038,7 +1038,7 @@ def _ingest(adapter: Adapter, ctx: ScanContext, out: Path, record: _Record) -> s
     return None
 
 
-def _redact_secrets(out: Path, candidates: Sequence[Mapping[str, Any]]) -> str | None:
+def _redact_secrets(out: Path, candidates: Sequence[Mapping[str, Any]], engine: str) -> str | None:
     """Rewrite the SARIF file ``out`` without the matched text of its secret results.
 
     The ingest already scrubbed the candidates (:mod:`kalkan.sarif.redact`). The SARIF file in
@@ -1046,8 +1046,14 @@ def _redact_secrets(out: Path, candidates: Sequence[Mapping[str, Any]]) -> str |
     their snippets, message and fingerprints too. When the file cannot be rewritten, it is
     removed: a secret value never stays. Return a failure message or None.
     """
-    from kalkan.sarif.redact import SECRET_CLASS, redact_result  # lazy: phase 1 module
+    from kalkan.sarif.redact import (  # lazy: phase 1 module
+        ADAPTER_REDACTED_ENGINES,
+        SECRET_CLASS,
+        redact_result,
+    )
 
+    if engine in ADAPTER_REDACTED_ENGINES:
+        return None  # the tool or the adapter already redacted the file
     secrets: dict[tuple[int, int], str] = {}
     for candidate in candidates:
         raw = candidate.get("raw")

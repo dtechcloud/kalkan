@@ -107,7 +107,7 @@
       "class": "hardcoded-secrets",
       "cwe": [],
       "title": "AWS Access Key ID",
-      "message": "Artifact: config/settings.py\nType: \nSecret AWS Access Key ID\nSeverity: CRITICAL\nMatch: AWS_ACCESS_KEY_ID = \"********************\"",
+      "message": "AWS Access Key ID: hardcoded credential (value redacted by kalkan)",
       "file": "config/settings.py",
       "start_line": 12,
       "end_line": 12,

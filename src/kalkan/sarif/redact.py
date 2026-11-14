@@ -17,10 +17,24 @@ from __future__ import annotations
 import re
 from typing import Any, Final
 
-__all__ = ["REDACTED", "SECRET_CLASS", "redact_result", "redacted_snippet", "secret_message"]
+__all__ = [
+    "ADAPTER_REDACTED_ENGINES",
+    "REDACTED",
+    "SECRET_CLASS",
+    "redact_result",
+    "redacted_snippet",
+    "secret_message",
+]
 
 SECRET_CLASS: Final = "hardcoded-secrets"
 REDACTED: Final = "REDACTED"
+#: Engines whose adapter or tool already removes the matched text: gitleaks (``--redact``),
+#: kingfisher (the adapter fails a run with an unredacted value) and the Opengrep rule packs
+#: (``after_run``). Their message (rule, file, commit) and their fingerprints (commit, no hash
+#: of the match) stay; only the snippet rule applies.
+ADAPTER_REDACTED_ENGINES: Final = frozenset(
+    {"gitleaks", "gitleaks-history", "kingfisher", "kingfisher-history", "opengrep-packs"}
+)
 #: A snippet that an adapter already redacted: ``REDACTED``, or ``REDACTED (commit <hex>)`` of
 #: the history scans (kalkan.scanners.adapters.kingfisher). The commit names no secret.
 _ALREADY_REDACTED: Final = re.compile(r"REDACTED(?: \(commit [0-9a-f]{7,64}\))?")
