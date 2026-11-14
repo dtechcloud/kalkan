@@ -289,3 +289,28 @@ def test_atomic_write_json_keeps_the_target_on_invalid_data(tmp_path):
         atomic_write_json(target, {"bad": float("inf")})
     assert json.loads(target.read_text(encoding="utf-8")) == {"ok": 1}
     assert [entry.name for entry in tmp_path.iterdir()] == ["state.json"]
+
+
+# --- append_text_line (self-audit of 2026-11-13) ---------------------------------------------
+
+
+def test_append_text_line_creates_and_appends(tmp_path):
+    path = tmp_path / "log.jsonl"
+    safe_io.append_text_line(path, "one\n")
+    safe_io.append_text_line(path, "zwei ü\n")
+    assert path.read_bytes() == "one\nzwei ü\n".encode()
+
+
+def test_append_text_line_refuses_a_symlink_and_leaves_the_target(tmp_path):
+    target = tmp_path / "operator.txt"
+    target.write_text("keep\n", encoding="utf-8")
+    link = tmp_path / "usage.jsonl"
+    make_symlink(target, link)
+    with pytest.raises(UnsafeInputError):
+        safe_io.append_text_line(link, "planted\n")
+    assert target.read_text(encoding="utf-8") == "keep\n"
+
+
+def test_append_text_line_refuses_a_folder(tmp_path):
+    with pytest.raises(UnsafeInputError):
+        safe_io.append_text_line(tmp_path, "x\n")

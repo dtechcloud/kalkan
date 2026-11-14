@@ -46,6 +46,7 @@ __all__ = [
     "DEFAULT_MAX_BYTES",
     "atomic_write_json",
     "atomic_write_text",
+    "append_text_line",
     "dumps_json",
     "read_bounded",
     "read_text_bounded",
@@ -130,6 +131,63 @@ def read_bounded(path: str | os.PathLike[str], max_bytes: int = DEFAULT_MAX_BYTE
                 raise UnsafeInputError(f"input exceeds {max_bytes} byte limit")
             chunks.append(chunk)
         return b"".join(chunks)
+    except OSError as exc:
+        raise UnsafeInputError(_UNREADABLE) from exc
+    finally:
+        os.close(descriptor)
+
+
+def append_text_line(path: str | os.PathLike[str], line: str) -> None:
+    """Append ``line`` (UTF-8) to the regular file ``path``; create the file when it is missing.
+
+    The checks of :func:`read_bounded` apply to the append: a symlink, a reparse point or a
+    file that is not regular raises :class:`~kalkan.errors.UnsafeInputError`, the open uses
+    ``O_NOFOLLOW`` where the platform has it, and the opened file must be the file that
+    ``os.lstat`` sees after the open (Windows has no ``O_NOFOLLOW``: a link swapped in between
+    the checks is refused before anything is written). Before, a process outside a sandbox
+    followed a link that a sandboxed agent planted in a run folder and appended to the link
+    target (self-audit of 2026-11-13).
+    """
+    target = _path_text(path)
+    try:
+        before: os.stat_result | None = os.lstat(target)
+    except FileNotFoundError:
+        before = None
+    except (OSError, ValueError) as exc:
+        raise UnsafeInputError(_UNREADABLE) from exc
+    if before is not None:
+        _reject_links(before)
+        if not stat.S_ISREG(before.st_mode):
+            raise UnsafeInputError("input must be a regular file")
+    flags = (
+        os.O_WRONLY
+        | os.O_APPEND
+        | os.O_CREAT
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_BINARY", 0)
+    )
+    try:
+        descriptor = os.open(target, flags, 0o600)
+    except OSError as exc:
+        if exc.errno in (errno.ELOOP, errno.EMLINK):
+            raise UnsafeInputError("input must not be a symlink") from exc
+        raise UnsafeInputError(_UNREADABLE) from exc
+    except ValueError as exc:
+        raise UnsafeInputError(_UNREADABLE) from exc
+    try:
+        opened = os.fstat(descriptor)
+        now = os.lstat(target)
+        _reject_links(now)
+        if not stat.S_ISREG(opened.st_mode) or not stat.S_ISREG(now.st_mode):
+            raise UnsafeInputError("input must be a regular file")
+        if (opened.st_dev, opened.st_ino) != (now.st_dev, now.st_ino):
+            raise UnsafeInputError("input changed while it was being opened")
+        if before is not None and (before.st_dev, before.st_ino) != (now.st_dev, now.st_ino):
+            raise UnsafeInputError("input changed while it was being opened")
+        data = line.encode("utf-8")
+        while data:
+            written = os.write(descriptor, data)
+            data = data[written:]
     except OSError as exc:
         raise UnsafeInputError(_UNREADABLE) from exc
     finally:
