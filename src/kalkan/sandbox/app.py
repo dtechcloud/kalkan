@@ -240,6 +240,12 @@ def sanitize(config: dict[str, Any], target_dir: Path) -> dict[str, Any]:
     for name, service in config["services"].items():
         clean: dict[str, Any] = {key: service[key] for key in _KEPT_KEYS if key in service}
         build = service.get("build")
+        if build is not None:
+            # A built image keeps the name that Compose gives it (<project>-<service>), and
+            # down --rmi local removes it. The target image name of a built service could
+            # replace a tag in the image store of the operator, the client image
+            # python:3.12-slim included (self-audit of 2026-11-13).
+            clean.pop("image", None)
         if isinstance(build, dict):
             clean["build"] = {
                 key: build[key]
@@ -386,6 +392,14 @@ def run_app_poc(ctx: Any, task_id: str, harness: dict[str, Any], docker: Path) -
 
     evidence_dir = ctx.run_dir / "evidence" / finding_id
     evidence_dir.mkdir(parents=True, exist_ok=True)
+    # The client starts by the image ID recorded before any pull or build of the stack, never
+    # by the mutable tag (self-audit of 2026-11-13).
+    client_ref = runner.image_id(docker, runner._pinned_ref(CLIENT_IMAGE))
+    if client_ref is None:
+        return blocked(
+            f"The client image {CLIENT_IMAGE} is not present. Pull it first.",
+            "sandbox_image_missing",
+        )
     try:
         if missing:
             pulled = _compose(docker, project, engine_file, "pull", timeout=BUILD_TIMEOUT_SECONDS)
@@ -412,7 +426,7 @@ def run_app_poc(ctx: Any, task_id: str, harness: dict[str, Any], docker: Path) -
             return blocked(f"The stack did not start: {detail}", "sandbox_error")
         argv = runner._unit_argv(
             docker,
-            CLIENT_IMAGE,
+            client_ref,
             f"{project}-client",
             target_dir,
             work,

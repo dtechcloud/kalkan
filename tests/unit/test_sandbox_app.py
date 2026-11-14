@@ -118,3 +118,31 @@ def test_an_app_harness_outside_the_target_is_blocked(tmp_path):
     result = app.run_app_poc(ctx, "T0001-poc_build", harness, Path("docker"))
     assert result["status"] == "blocked" and result["level"] == "app"
     assert "inside the target" in result["observed_result"]
+
+
+def test_a_built_service_never_keeps_the_target_image_name(tmp_path):
+    # The target image name of a built service could replace a tag of the operator's image
+    # store, the client image python:3.12-slim included (self-audit of 2026-11-13).
+    built = service(build={"context": "."}, image=app.CLIENT_IMAGE)
+    short = service(build=".", image="postgres:16")
+    pulled = service(image="redis:7")
+    clean = app.sanitize(config(web=built, worker=short, cache=pulled), tmp_path)
+    assert "image" not in clean["services"]["web"]
+    assert "image" not in clean["services"]["worker"]
+    assert clean["services"]["cache"]["image"] == "redis:7"
+
+
+def test_the_client_starts_by_image_id(monkeypatch):
+    from kalkan.sandbox import runner
+
+    calls = []
+
+    def capture(argv, *, timeout, cleanup=None):
+        calls.append(argv)
+        return runner._Capture(0, "sha256:" + "a" * 64 + "\n", "")
+
+    monkeypatch.setattr(runner, "_capture", capture)
+    assert runner.image_id(Path("docker"), app.CLIENT_IMAGE) == "sha256:" + "a" * 64
+    assert calls[0][1:5] == ["image", "inspect", "--format", "{{.Id}}"]
+    monkeypatch.setattr(runner, "_capture", lambda argv, **kw: runner._Capture(1, "", "no such"))
+    assert runner.image_id(Path("docker"), "missing:1") is None

@@ -303,6 +303,18 @@ def docker_available() -> bool:
     )
 
 
+def image_id(docker: Path, ref: str) -> str | None:
+    """Return the local image ID (``sha256:...``) of ``ref``, or None when it is not present."""
+    result = _capture(
+        [str(docker), "image", "inspect", "--format", "{{.Id}}", ref],
+        timeout=ENGINE_TIMEOUT_SECONDS,
+    )
+    if result.error is not None or result.timed_out or result.exit_code != 0:
+        return None
+    value = result.stdout.strip()
+    return value if value.startswith("sha256:") else None
+
+
 def _image_present(docker: Path, ref: str) -> bool:
     result = _capture([str(docker), "image", "inspect", ref], timeout=ENGINE_TIMEOUT_SECONDS)
     return result.error is None and not result.timed_out and result.exit_code == 0
