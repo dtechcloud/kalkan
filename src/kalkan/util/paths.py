@@ -35,6 +35,7 @@ __all__ = [
     "KALKAN_HOME_ENV",
     "PATH_FORBIDDEN_CHARACTER",
     "WINDOWS_RESERVED_COMPONENT",
+    "checkout_of_package",
     "find_repo_root",
     "is_safe_relative_path",
     "is_safe_relative_source_path",
@@ -127,13 +128,28 @@ def find_repo_root(start: str | os.PathLike[str]) -> Path | None:
     return None
 
 
+def checkout_of_package(package_dir: str | os.PathLike[str]) -> Path | None:
+    """Return the source checkout whose ``src/kalkan`` is ``package_dir``, or None.
+
+    A checkout (and an editable install of it) has the package at ``<root>/src/kalkan``, and
+    ``<root>/pyproject.toml`` declares ``name = "kalkan"``. An installed wheel lives in
+    ``site-packages`` and has no checkout, also when a parent folder of its venv holds such a
+    ``pyproject.toml``. Before, the first such parent folder became the home, and the scanner
+    binaries of its ``.tools`` folder ran (self-audit of 2026-11-13).
+    """
+    package = Path(package_dir).resolve()
+    if package.name != "kalkan" or package.parent.name != "src":
+        return None
+    root = package.parent.parent
+    return root if _declares_kalkan(root / "pyproject.toml") else None
+
+
 def repo_root() -> Path:
     """Return the kalkan repository root.
 
     The ``KALKAN_HOME`` environment variable wins when it is set and not empty. Otherwise the
-    function walks up from this file to the first directory whose ``pyproject.toml`` declares
-    ``name = "kalkan"``. Raises :class:`~kalkan.errors.KalkanError` when neither gives a
-    directory.
+    function returns the source checkout of this package (:func:`checkout_of_package`). Raises
+    :class:`~kalkan.errors.KalkanError` when neither gives a directory.
     """
     override = os.environ.get(KALKAN_HOME_ENV)
     if override:
@@ -141,7 +157,7 @@ def repo_root() -> Path:
         if not root.is_dir():
             raise KalkanError(f"{KALKAN_HOME_ENV} does not name a directory")
         return root
-    found = find_repo_root(Path(__file__).parent)
+    found = checkout_of_package(Path(__file__).resolve().parent.parent)
     if found is None:
         raise KalkanError(f"cannot find the kalkan repository root; set {KALKAN_HOME_ENV}")
     return found

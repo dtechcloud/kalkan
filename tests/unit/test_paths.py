@@ -13,6 +13,7 @@ from kalkan.util.paths import (
     KALKAN_HOME_ENV,
     PATH_FORBIDDEN_CHARACTER,
     WINDOWS_RESERVED_COMPONENT,
+    checkout_of_package,
     find_repo_root,
     is_safe_relative_path,
     is_safe_relative_source_path,
@@ -176,3 +177,17 @@ def test_find_repo_root_checks_the_project_name(tmp_path):
     assert find_repo_root(other) is None
     (tmp_path / "pyproject.toml").write_text('[project]\nname = "kalkan"\n', encoding="utf-8")
     assert find_repo_root(other) == tmp_path.resolve()
+
+
+def test_an_installed_wheel_below_a_kalkan_pyproject_is_no_checkout(tmp_path):
+    # A wheel in a venv below a folder whose pyproject.toml says kalkan made that folder the
+    # home, and its .tools binaries ran (self-audit of 2026-11-13).
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "kalkan"\n', encoding="utf-8")
+    wheel = tmp_path / ".venv" / "lib" / "site-packages" / "kalkan"
+    wheel.mkdir(parents=True)
+    assert checkout_of_package(wheel) is None
+    checkout = tmp_path / "src" / "kalkan"
+    checkout.mkdir(parents=True)
+    assert checkout_of_package(checkout) == tmp_path.resolve()
+    (tmp_path / "pyproject.toml").write_text('[project]\nname = "other"\n', encoding="utf-8")
+    assert checkout_of_package(checkout) is None
