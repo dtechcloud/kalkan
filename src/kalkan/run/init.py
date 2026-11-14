@@ -23,7 +23,11 @@ Targets:
   timeout, prompts off (``GIT_TERMINAL_PROMPT=0``), only the https and ssh protocols
   (``GIT_ALLOW_PROTOCOL``) and no LFS download. Then ``source/`` is copied to ``target/``.
   ``file://``, ``ext::`` and every other transport are refused. Credentials in an https URL are
-  used for the clone but never stored. A missing git gives :class:`~kalkan.errors.ToolError`.
+  used for the clone but never stored: right after the clone, ``remote.origin.url`` of
+  ``source/.git/config`` becomes the URL without credentials (git keeps the URL as given there;
+  ``FETCH_HEAD`` and the reflog hold the anonymized URL). Before, the token stayed in that file
+  of the run folder (self-audit of 2026-11-13). A missing git gives
+  :class:`~kalkan.errors.ToolError`.
 - A git URL with ``ref`` (``run init --ref <tag|branch|commit>``): the clone runs with
   ``--no-checkout`` (full history of every branch and tag, for the history scans), then
   :func:`checkout_ref` resolves the ref in this order: tag ``refs/tags/<ref>``, branch
@@ -419,7 +423,8 @@ def clone_repository(
 
     ``no_checkout`` leaves the work tree empty (:func:`checkout_ref` fills it). Raises
     :class:`~kalkan.errors.ToolError` when git is missing, fails or times out. Error messages
-    show ``display`` instead of the URL, so credentials never reach the output.
+    show ``display`` instead of the URL, so credentials never reach the output. When ``display``
+    differs from ``url`` (credentials), ``remote.origin.url`` of the clone becomes ``display``.
     """
     git = _find_git()
     if git is None:
@@ -459,6 +464,16 @@ def clone_repository(
             f"git clone failed (exit {completed.returncode}): "
             f"{escape_unsafe_diagnostic_characters(tail)}"
         )
+    if display is not None and display != url:
+        stored = _git(
+            git,
+            destination,
+            ["config", "remote.origin.url", display],
+            GIT_QUERY_TIMEOUT_SECONDS,
+            scrub=(url, display),
+        )
+        if stored.returncode != 0:
+            raise ToolError("git config could not remove the credentials from the clone URL")
 
 
 def validate_ref(ref: object) -> str:
@@ -521,7 +536,8 @@ def checkout_ref(
     return the commit (module docstring).
 
     ``url`` and ``display``: the clone URL and its form without credentials; git messages show
-    ``display``. Raises :class:`~kalkan.errors.ValidationError` for an invalid ref,
+    ``display``. A fetch names ``url`` itself, because ``remote.origin.url`` holds ``display``
+    (:func:`clone_repository`). Raises :class:`~kalkan.errors.ValidationError` for an invalid ref,
     :class:`~kalkan.errors.KalkanError` when the ref does not exist and
     :class:`~kalkan.errors.ToolError` when git fails.
     """
@@ -539,7 +555,14 @@ def checkout_ref(
         fetched = _git(
             git,
             repo,
-            ["fetch", "--no-recurse-submodules", "--no-tags", "--end-of-options", "origin", ref],
+            [
+                "fetch",
+                "--no-recurse-submodules",
+                "--no-tags",
+                "--end-of-options",
+                url or "origin",
+                ref,
+            ],
             timeout_seconds,
             scrub=scrub,
         )

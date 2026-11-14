@@ -681,6 +681,15 @@ def origin(tmp_path, monkeypatch) -> tuple[Path, dict[str, str], dict[str, str]]
         git("clone", "-q", *flags, str(repo), str(destination), cwd=tmp_path, env=env)
 
     test_env = {key: value for key, value in env.items() if key != "GIT_ALLOW_PROTOCOL"}
+    # A fetch names the URL itself (remote.origin.url holds the URL without credentials):
+    # git maps the test URL to the local repository.
+    test_env.update(
+        {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": f"url.{repo.as_posix()}.insteadOf",
+            "GIT_CONFIG_VALUE_0": "https://example.com/org/repo.git",
+        }
+    )
     monkeypatch.setattr(init_mod, "clone_repository", local_clone)
     monkeypatch.setattr(init_mod, "_git_env", lambda: dict(test_env))
     monkeypatch.setattr(init_mod, "git_head", ORIGINAL_GIT_HEAD)
@@ -843,3 +852,21 @@ def test_history_refuses_a_commondir_outside_or_alternates(tmp_path):
     (git / "commondir").unlink()
     (git / "objects" / "info" / "alternates").write_text("/elsewhere/objects\n", encoding="utf-8")
     assert "alternates" in init_mod._history_refusal(work, git)
+
+
+def test_the_clone_keeps_no_credentials_in_its_config(tmp_path, origin, monkeypatch):
+    # git stores the clone URL as given in .git/config; the token of an https URL stayed in the
+    # run folder (self-audit of 2026-11-13).
+    repo, env, _commits = origin
+    monkeypatch.undo()
+    monkeypatch.setattr(
+        init_mod,
+        "_git_env",
+        lambda: {key: value for key, value in env.items() if key != "GIT_ALLOW_PROTOCOL"},
+    )
+    destination = tmp_path / "source"
+    display = "https://example.com/org/repo.git"
+    init_mod.clone_repository(str(repo), destination, display=display, no_checkout=True)
+    config = (destination / ".git" / "config").read_text(encoding="utf-8")
+    assert display in config
+    assert repo.as_posix() not in config and str(repo) not in config
