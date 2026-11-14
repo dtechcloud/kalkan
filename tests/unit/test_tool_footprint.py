@@ -380,6 +380,9 @@ def test_the_setup_scripts_keep_pip_downloads_out_of_the_user_cache():
     setup = (ROOT / "plugins" / "kalkan" / "bin" / "kalkan-setup").read_text(encoding="utf-8")
     assert "--no-cache-dir --force-reinstall" in setup
     shell = (ROOT / "scripts" / "bootstrap.sh").read_text(encoding="utf-8")
-    assert "pip install --disable-pip-version-check --no-cache-dir -e" in shell
+    # Both pip runs (the pinned build backend, then kalkan itself) skip the cache.
+    assert "pip install --disable-pip-version-check --no-cache-dir --require-hashes" in shell
+    assert "pip install --disable-pip-version-check --no-cache-dir --no-build-isolation" in shell
     powershell = (ROOT / "scripts" / "bootstrap.ps1").read_text(encoding="utf-8")
-    assert "'--disable-pip-version-check', '--no-cache-dir', '-e'" in powershell
+    assert "'--disable-pip-version-check', '--no-cache-dir', '--require-hashes'" in powershell
+    assert "'--disable-pip-version-check', '--no-cache-dir', '--no-build-isolation'" in powershell
