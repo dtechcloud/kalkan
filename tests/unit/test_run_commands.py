@@ -118,7 +118,7 @@ def test_run_init_errors(runs, tmp_path, capsys, monkeypatch):
     code, _, err = cli(capsys, "run", "init", "file:///etc")
     assert code == 1
     assert "unsupported target URL" in err
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: None)
+    monkeypatch.setattr(init_mod, "_find_git", lambda: None)
     code, _, err = cli(capsys, "run", "init", "https://example.com/org/repo.git")
     assert code == 5
     assert "git is not installed" in err

@@ -39,6 +39,7 @@ from kalkan.matchers.safety import MAX_LINE_LENGTH, regex_safety_error
 from kalkan.resources import home
 from kalkan.sandbox.evidence import promote
 from kalkan.sandbox.redact import redact, redact_file
+from kalkan.tools.platform import find_on_path
 from kalkan.util.paths import is_safe_relative_path
 
 __all__ = ["allowed_images", "docker_available", "docker_path", "run_poc"]
@@ -126,8 +127,8 @@ def docker_path() -> Path | None:
     if override:
         candidate = Path(override)
         return candidate if candidate.exists() else None
-    found = shutil.which("docker")
-    return Path(found) if found else None
+    # find_on_path never searches the current folder (shutil.which does on Windows).
+    return find_on_path("docker")
 
 
 def _pin_file() -> Path:

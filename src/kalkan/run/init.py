@@ -112,6 +112,7 @@ from kalkan.run.state import (
 )
 from kalkan.schema.loader import shared_schema
 from kalkan.schema.validator import validate
+from kalkan.tools.platform import find_on_path
 from kalkan.util import paths
 from kalkan.util.safe_io import atomic_write_json, read_bounded
 from kalkan.util.text import escape_unsafe_diagnostic_characters
@@ -330,6 +331,18 @@ def _sh_quote(text: str) -> str:
     return "'" + text.replace("'", "'\\''") + "'"
 
 
+def _find_git() -> str | None:
+    """Return the git executable from the absolute PATH entries, or None.
+
+    :func:`kalkan.tools.platform.find_on_path`, not ``shutil.which``: on Windows,
+    ``shutil.which`` searches the current folder first, so a ``git.exe``, ``git.bat`` or
+    ``git.cmd`` in an audited folder ran as the operator when kalkan started there (self-audit
+    of 2026-11-13).
+    """
+    found = find_on_path("git")
+    return str(found) if found is not None else None
+
+
 def copy_history(
     work_tree: Path,
     destination: Path,
@@ -341,7 +354,7 @@ def copy_history(
 
     Raises :class:`~kalkan.errors.ToolError` when git is missing, fails or times out.
     """
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH")
     upload_pack = (
@@ -408,7 +421,7 @@ def clone_repository(
     :class:`~kalkan.errors.ToolError` when git is missing, fails or times out. Error messages
     show ``display`` instead of the URL, so credentials never reach the output.
     """
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH; install git to audit a git URL")
     command = [
@@ -513,7 +526,7 @@ def checkout_ref(
     :class:`~kalkan.errors.ToolError` when git fails.
     """
     validate_ref(ref)
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH; install git to audit a git URL")
     names = [f"refs/tags/{ref}^{{commit}}", f"refs/remotes/origin/{ref}^{{commit}}"]
@@ -550,7 +563,7 @@ def checkout_ref(
 
 def git_head(directory: Path) -> str | None:
     """Return the HEAD commit of the git work tree that contains ``directory``, else None."""
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         return None
     command = [

@@ -473,7 +473,7 @@ def test_clone_command_line(tmp_path, monkeypatch):
         calls.append((command, kwargs))
         return completed(command)
 
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: "/opt/git/bin/git")
+    monkeypatch.setattr(init_mod, "_find_git", lambda: "/opt/git/bin/git")
     monkeypatch.setattr(init_mod.subprocess, "run", run)
     destination = tmp_path / "source"
     init_mod.clone_repository("https://example.com/org/repo.git", destination, timeout_seconds=99)
@@ -499,7 +499,7 @@ def test_clone_command_line(tmp_path, monkeypatch):
 
 def test_clone_errors_hide_credentials(tmp_path, monkeypatch):
     url = "https://user:s3cret@example.com/org/repo.git"
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: "git")
+    monkeypatch.setattr(init_mod, "_find_git", lambda: "git")
     monkeypatch.setattr(
         init_mod.subprocess,
         "run",
@@ -520,7 +520,7 @@ def test_clone_errors_hide_credentials(tmp_path, monkeypatch):
 def test_missing_git_removes_the_new_run(tmp_path, monkeypatch):
     root = tmp_path / "runs"
     earlier = init_mod.init_run(str(webapp(tmp_path)), runs_dir=root)
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: None)
+    monkeypatch.setattr(init_mod, "_find_git", lambda: None)
     with pytest.raises(ToolError, match="git is not installed"):
         init_mod.init_run("https://example.com/org/repo.git", runs_dir=root)
     assert [path.name for path in root.iterdir() if path.is_dir()] == [earlier.run_id]
@@ -563,7 +563,7 @@ def test_git_head_of_a_work_tree(tmp_path, monkeypatch):
 
 
 def test_git_head_without_git(tmp_path, monkeypatch):
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: None)
+    monkeypatch.setattr(init_mod, "_find_git", lambda: None)
     assert ORIGINAL_GIT_HEAD(tmp_path) is None
 
 
@@ -616,7 +616,7 @@ def test_clone_without_checkout(tmp_path, monkeypatch):
         calls.append(command)
         return completed(command)
 
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: "/opt/git/bin/git")
+    monkeypatch.setattr(init_mod, "_find_git", lambda: "/opt/git/bin/git")
     monkeypatch.setattr(init_mod.subprocess, "run", run)
     init_mod.clone_repository("https://example.com/r.git", tmp_path / "s", no_checkout=True)
     assert calls[0][:4] == ["/opt/git/bin/git", "clone", "--no-recurse-submodules", "--no-checkout"]
@@ -778,3 +778,19 @@ def test_long_paths_enabled_reads_the_registry():
         assert value in (True, False, None)
     else:
         assert value is None
+
+
+def test_a_planted_git_in_the_current_folder_is_never_used(tmp_path, monkeypatch):
+    # shutil.which searched the current folder first on Windows; a git.exe or git.bat in an
+    # audited folder then ran as the operator (self-audit of 2026-11-13).
+    planted = tmp_path / "audited"
+    planted.mkdir()
+    for name in ("git", "git.exe", "git.bat", "git.cmd"):
+        script = planted / name
+        script.write_text("#!/bin/sh\necho planted\n", encoding="utf-8")
+        script.chmod(0o755)
+    monkeypatch.chdir(planted)
+    monkeypatch.setenv("PATH", os.pathsep.join(["", ".", "audited"]))
+    assert init_mod._find_git() is None
+    monkeypatch.setenv("PATH", str(planted))
+    assert init_mod._find_git() is not None  # an absolute PATH entry is used
