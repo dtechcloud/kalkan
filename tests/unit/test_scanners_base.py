@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from kalkan.errors import ValidationError
+from kalkan.errors import ToolError, ValidationError
 from kalkan.scanners import base
 from kalkan.scanners.base import (
     BuiltinOutcome,
@@ -1021,7 +1021,42 @@ def test_checkov_launcher_turns_config_discovery_off(tmp_path):
     assert any(".checkov.yaml" in item for item in ignored)
     assert any("checkov:skip" in item for item in honored)
     python.unlink()
-    [item] = adapter.invocations(ctx, entry, out)
-    assert item.argv[0] == str(entry)
-    ignored, honored = adapter.suppression_sources(ctx)
-    assert any("could not be turned off" in item for item in honored)
+    # Without a launcher Python, Checkov never runs (self-audit of 2026-11-13).
+    with pytest.raises(ToolError, match="only through its launcher"):
+        adapter.invocations(ctx, entry, out)
+
+
+# --- secret results keep no matched text (self-audit of 2026-11-13) --------------------------
+
+#: A made-up value; it only has to be unique in the run folder.
+SECRET_VALUE = "kalkanTestSecretValue" + "Q" * 19
+SECRET_RULE = {
+    "id": "aws-secret",
+    "shortDescription": {"text": "AWS secret access key"},
+    "properties": {"tags": ["CWE-798: Use of Hard-coded Credentials"]},
+}
+
+
+def test_secret_results_keep_no_matched_text_in_any_run_file(tmp_path):
+    ctx = make_ctx(tmp_path)
+    line = f'aws_secret_access_key = "{SECRET_VALUE}"'
+    secret = result(snippet=line, rule="aws-secret")
+    secret["message"] = {"text": f"found {SECRET_VALUE}"}
+    secret["fingerprints"] = {"matchBasedId/v1": "hash-of-the-match"}
+    plain = result(line=1, snippet="eval(x)")
+    runner = FakeRunner(write_after("--out", sarif([secret, plain], [RULE, SECRET_RULE])))
+    res = run_adapter(FakeSarifAdapter(), ctx, runner=runner, resolver=resolver())
+    assert res.status == "ok", res.message
+    for path in ctx.run_dir.rglob("*"):
+        if path.is_file() and "target" not in path.relative_to(ctx.run_dir).parts:
+            text = path.read_text(encoding="utf-8", errors="replace")
+            assert SECRET_VALUE not in text, path
+            assert "hash-of-the-match" not in text, path
+    by_rule = {c["rule_id"]: c for c in load_candidates(ctx.run_dir.resolve())["candidates"]}
+    assert by_rule["aws-secret"]["class"] == "hardcoded-secrets"
+    assert by_rule["aws-secret"]["snippet"] == "REDACTED"
+    assert by_rule["aws-secret"]["fingerprints"] == {}
+    assert by_rule["R1"]["snippet"] == "eval(x)"  # other results stay unchanged
+    doc = json.loads((ctx.run_dir / "scans" / "opengrep.sarif").read_text(encoding="utf-8"))
+    kept = doc["runs"][0]["results"]
+    assert kept[1]["locations"][0]["physicalLocation"]["region"]["snippet"]["text"] == "eval(x)"

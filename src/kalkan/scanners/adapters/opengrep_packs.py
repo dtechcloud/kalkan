@@ -13,7 +13,9 @@ Command line, checked against ``opengrep scan --help`` of the pinned version 1.3
 
     opengrep scan -f <pack> [-f <pack> ...] --sarif --output <run>/scans/opengrep-packs.sarif
         --timeout 10 --disable-version-check --rewrite-rule-ids --no-git-ignore
-        --x-ignore-semgrepignore-files [--disable-nosem] [--exclude-rule <id> ...] <target>
+        --x-ignore-semgrepignore-files [--disable-nosem] [--exclude-rule <id> ...]
+        --exclude third-party --exclude third_party --exclude thirdparty --exclude vendor
+        --exclude vendors <target>
 
 - Working directory: ``prepare`` copies the enabled pack folders (bundle files only) into the
   run-owned staging folder ``scans/.work/opengrep-packs/packs``, the working directory, and
@@ -30,6 +32,15 @@ Command line, checked against ``opengrep scan --help`` of the pinned version 1.3
   file, and three timeouts skip the rest of a file). Measured on 2026-10-27 on a large C#
   code base (Opengrep 1.30.1, 16 jobs, with the ``scope`` entry of ``curation.json``): 5 s lost
   results of a C# rule, 10 s kept them, and 15 s gave the same results in about 30 % more time.
+- ``--exclude`` of the folders of :data:`kalkan.scanners.adapters._sources.VENDOR_DIRS`: the
+  packs leave out third-party code that the target copied in, as the file-list adapters do.
+  The ``opengrep`` adapter (kalkan's own pack) and the other scanners still scan these folders.
+  Measured on 2026-11-14 on the repository of kalkan itself (2,257 files): the packs timed out
+  after 1,800 s, and its ``third_party`` folder alone (1,052 vendored rule YAML files) timed
+  out after 900 s; without it the rest took about 500 s. Seven Ansible rules of the Trail of
+  Bits pack (``trailofbits.yaml.apt-key-unencrypted-url`` and others) hit the 10 s limit on
+  most of these deeply nested YAML files. The status records the excluded folder names
+  (``excluded_folders``).
 - The other options and the suppressions as for the ``opengrep`` adapter (ADR-0003). A rule
   file that Opengrep cannot load stops the whole scan (exit code 7); the build keeps only
   rules that Opengrep 1.30.1 loads, and a ``tools`` test checks it.
@@ -69,7 +80,9 @@ from pathlib import Path
 from typing import Any, Final
 
 from kalkan.errors import KalkanError, ToolError
+from kalkan.sarif.redact import SECRET_CLASS, redact_result
 from kalkan.scanners import rulepacks
+from kalkan.scanners.adapters._sources import VENDOR_DIRS
 from kalkan.scanners.adapters.opengrep import OpengrepAdapter, default_rules_dir
 from kalkan.scanners.base import Invocation, ScanContext, work_dir
 from kalkan.util.safe_io import atomic_write_json, read_bounded
@@ -79,8 +92,6 @@ MAX_SARIF_BYTES: Final = 50 * 1024 * 1024
 STAGING_DIRNAME: Final = "packs"
 #: The status file lists at most this many run-time duplicates.
 MAX_LISTED_DUPLICATES: Final = 100
-SECRET_CLASS: Final = "hardcoded-secrets"
-REDACTED: Final = "REDACTED"
 #: Opengrep ``--timeout``: seconds per rule and file (module docstring).
 RULE_TIMEOUT_SECONDS: Final = 10
 
@@ -218,6 +229,8 @@ class OpengrepPacksAdapter(OpengrepAdapter):
         excluded: list[str] = []
         for rule_id in sorted(plan.duplicates):
             excluded += ["--exclude-rule", rule_id]
+        for folder in sorted(VENDOR_DIRS):
+            excluded += ["--exclude", folder]
         return [
             "scan",
             *configs,
@@ -250,6 +263,7 @@ class OpengrepPacksAdapter(OpengrepAdapter):
         ``kalkan_duplicates``."""
         details = super().status_details(ctx, stdout_log, stderr_log, outputs)
         details.update(self.pack_details())
+        details["excluded_folders"] = sorted(VENDOR_DIRS)
         return details
 
     def pack_details(self) -> dict[str, Any]:
@@ -320,33 +334,6 @@ def annotate_sarif(doc: Any, rules: Mapping[str, Mapping[str, Any]]) -> Any:
             if isinstance(result, dict) and str(result.get("ruleId")) in secret_rules:
                 redact_result(result, secret_rules[str(result["ruleId"])])
     return doc
-
-
-def redact_result(result: dict[str, Any], title: str) -> None:
-    """Remove the matched text of a secret result: snippets, message and fingerprints."""
-    result["message"] = {"text": f"{title}: hardcoded credential (value redacted by kalkan)"}
-    result.pop("fingerprints", None)
-    result.pop("partialFingerprints", None)
-
-    def scrub(location: Any) -> None:
-        physical = location.get("physicalLocation") if isinstance(location, dict) else None
-        if not isinstance(physical, dict):
-            return
-        for key in ("region", "contextRegion"):
-            region = physical.get(key)
-            if isinstance(region, dict) and "snippet" in region:
-                region["snippet"] = {"text": REDACTED}
-
-    for key in ("locations", "relatedLocations"):
-        for location in result.get(key) or []:
-            scrub(location)
-    for flow in result.get("codeFlows") or []:
-        threads = flow.get("threadFlows") if isinstance(flow, dict) else None
-        for thread in threads if isinstance(threads, list) else []:
-            steps = thread.get("locations") if isinstance(thread, dict) else None
-            for step in steps if isinstance(steps, list) else []:
-                if isinstance(step, dict):
-                    scrub(step.get("location"))
 
 
 def _mtime(path: Path) -> float:

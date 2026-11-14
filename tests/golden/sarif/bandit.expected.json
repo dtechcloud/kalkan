@@ -63,7 +63,7 @@
       }
     },
     {
-      "id": "CAND-9689FEC51579AFA0",
+      "id": "CAND-09AB9DB64CF53646",
       "engine": "bandit",
       "rule_id": "B105",
       "class": "hardcoded-secrets",
@@ -71,11 +71,11 @@
         "CWE-259"
       ],
       "title": "hardcoded_password_string",
-      "message": "Possible hardcoded password: 'admin123'",
+      "message": "hardcoded_password_string: hardcoded credential (value redacted by kalkan)",
       "file": "config/settings.py",
       "start_line": 5,
       "end_line": 5,
-      "snippet": "DB_PASSWORD = \"admin123\"\n",
+      "snippet": "REDACTED",
       "severity": "low",
       "tool_severity": "LOW",
       "confidence": "medium",

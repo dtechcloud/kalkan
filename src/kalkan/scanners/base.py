@@ -1005,6 +1005,9 @@ def _ingest(adapter: Adapter, ctx: ScanContext, out: Path, record: _Record) -> s
         result = ingest_file(out, adapter.name, ctx.target_dir)
     except KalkanError as exc:
         return f"cannot ingest {relative}: {exc}"
+    problem = _redact_secrets(out, result.candidates, adapter.name)
+    if problem:
+        return f"cannot redact {relative}: {problem}"
     suppressed = _suppressed_results(out)
     candidates: list[dict[str, Any]] = []
     marked = 0
@@ -1032,6 +1035,49 @@ def _ingest(adapter: Adapter, ctx: ScanContext, out: Path, record: _Record) -> s
         return f"cannot update candidates.json: {exc}"
     if result.warnings:
         record.details["ingest_warnings"] = len(result.warnings)
+    return None
+
+
+def _redact_secrets(out: Path, candidates: Sequence[Mapping[str, Any]], engine: str) -> str | None:
+    """Rewrite the SARIF file ``out`` without the matched text of its secret results.
+
+    The ingest already scrubbed the candidates (:mod:`kalkan.sarif.redact`). The SARIF file in
+    ``scans/`` stays in the run folder after ``kalkan run clean``, so its secret results lose
+    their snippets, message and fingerprints too. When the file cannot be rewritten, it is
+    removed: a secret value never stays. Return a failure message or None.
+    """
+    from kalkan.sarif.redact import (  # lazy: phase 1 module
+        ADAPTER_REDACTED_ENGINES,
+        SECRET_CLASS,
+        redact_result,
+    )
+
+    if engine in ADAPTER_REDACTED_ENGINES:
+        return None  # the tool or the adapter already redacted the file
+    secrets: dict[tuple[int, int], str] = {}
+    for candidate in candidates:
+        raw = candidate.get("raw")
+        if candidate.get("class") != SECRET_CLASS or not isinstance(raw, Mapping):
+            continue
+        run_index, result_index = raw.get("run_index"), raw.get("result_index")
+        if isinstance(run_index, int) and isinstance(result_index, int):
+            title = str(candidate.get("title") or candidate.get("rule_id") or "secret")
+            secrets[(run_index, result_index)] = title
+    if not secrets:
+        return None
+    try:
+        doc = _load_json(out)
+        runs = doc.get("runs") if isinstance(doc, dict) else None
+        for (run_index, result_index), title in secrets.items():
+            run = runs[run_index] if isinstance(runs, list) else None
+            results = run.get("results") if isinstance(run, dict) else None
+            result = results[result_index] if isinstance(results, list) else None
+            if isinstance(result, dict):
+                redact_result(result, title)
+        atomic_write_json(out, doc)
+    except (KalkanError, OSError, IndexError) as exc:
+        _unlink(out)
+        return str(exc)
     return None
 
 

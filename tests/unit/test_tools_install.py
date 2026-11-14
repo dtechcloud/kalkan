@@ -396,6 +396,22 @@ def script_path(root: Path, name: str) -> Path:
     return pyenv_dir(root) / "bin" / name
 
 
+DIGEST = "--hash=sha256:" + "0" * 64
+
+
+@pytest.fixture(autouse=True)
+def fake_pip_lock(tmp_path_factory, monkeypatch):
+    """A hashed lock that pins the fake pip tools (kalkan.tools.install.PIP_LOCK_PATH)."""
+    lock = tmp_path_factory.mktemp("lock") / "fake-pip-tools.lock"
+    lock.write_text(
+        f"# test lock\nfakepip==3.3.22 \\\n    {DIGEST}\notherpip==1.9.4 \\\n    {DIGEST}\n"
+        f"pyyaml==6.0.2 ; python_full_version >= '3.11' \\\n    {DIGEST}\n",
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(install_mod, "PIP_LOCK_PATH", lock)
+    return lock
+
+
 class FakePip:
     """Simulate ``python -m venv``, ``pip install`` and the package query."""
 
@@ -407,12 +423,12 @@ class FakePip:
     def __call__(self, argv, *, timeout, env=None, cwd=None):
         argv = [str(a) for a in argv]
         self.calls.append(argv)
-        if argv[1:3] == ["-m", "venv"]:
+        if argv[1:4] == ["-I", "-m", "venv"]:
             python = pyenv_python(self.root)
             python.parent.mkdir(parents=True, exist_ok=True)
             python.write_bytes(b"")
             return subprocess.CompletedProcess(argv, 0, "", "")
-        if argv[1:4] == ["-m", "pip", "install"]:
+        if argv[1:5] == ["-I", "-m", "pip", "install"]:
             for name in ("fakepip", "otherpip"):
                 script = script_path(self.root, name)
                 script.parent.mkdir(parents=True, exist_ok=True)
@@ -432,10 +448,13 @@ def test_pip_tools_install_into_one_venv(tmp_path):
     results = install("all", repo_root=tmp_path, manifest=manifest, key=KEY, runner=runner)
     assert [r.status for r in results] == [STATUS_INSTALLED, STATUS_INSTALLED]
     venv_call, pip_call, _query = runner.calls
-    assert venv_call[1:] == ["-m", "venv", str(pyenv_dir(tmp_path.resolve()))]
+    assert venv_call[1:] == ["-I", "-m", "venv", str(pyenv_dir(tmp_path.resolve()))]
     assert "--disable-pip-version-check" in pip_call
     assert "--no-cache-dir" in pip_call  # no download stays in the pip cache of the user
-    assert pip_call[-2:] == ["fakepip==3.3.22", "otherpip[sarif]==1.9.4"]
+    # The hashed lock, only wheels (self-audit of 2026-11-13).
+    assert pip_call[-2:] == ["-r", str(install_mod.PIP_LOCK_PATH)]
+    assert "--require-hashes" in pip_call
+    assert pip_call[pip_call.index("--only-binary") + 1] == ":all:"
     data = read_installed(tmp_path)
     assert data["tools"]["fakepip"]["version"] == "3.3.22"
     assert data["tools"]["otherpip"]["requirement"] == "otherpip[sarif]==1.9.4"
@@ -1011,3 +1030,31 @@ def test_remove_go_build_reports_a_missing_folder_and_a_failure(tmp_path, monkey
     assert install_mod.remove_go_build(tmp_path, messages.append) is failed
     assert messages[0].startswith("warning: could not remove all of the Go build folder")
     assert "cache/x: Access is denied" in messages[0]
+
+
+def test_a_pip_tool_missing_from_the_lock_is_not_installed(tmp_path, fake_pip_lock):
+    manifest = make_manifest(fakepip=pip_entry("fakepip", "fakepip==3.3.23", "3.3.23"))
+    runner = FakePip(tmp_path, {})
+    (result,) = install("all", repo_root=tmp_path, manifest=manifest, key=KEY, runner=runner)
+    assert result.status == STATUS_FAILED
+    assert "does not pin fakepip==3.3.23" in result.message
+    assert not any(call[1:5] == ["-I", "-m", "pip", "install"] for call in runner.calls)
+
+
+def test_a_lock_line_without_a_digest_is_refused(tmp_path):
+    lock = tmp_path / "bad.lock"
+    lock.write_text("fakepip==3.3.22\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="no sha256 digest"):
+        install_mod.read_pip_lock(lock)
+
+
+def test_the_shipped_pip_lock_pins_every_pip_tool_of_the_manifest():
+    from kalkan.tools.manifest import load_manifest
+
+    lock = Path(install_mod.__file__).with_name("pip-tools.lock")
+    pins = install_mod.read_pip_lock(lock)
+    tools = [tool for tool in load_manifest().tools.values() if tool.kind == "pip"]
+    assert tools
+    for tool in tools:
+        name, version = install_mod.requirement_pin(tool.requirement or "")
+        assert version in pins.get(name, set()), tool.requirement

@@ -89,7 +89,7 @@ from typing import Any, Final
 
 from kalkan.errors import KalkanError, ToolError
 from kalkan.scanners.adapters import _sources
-from kalkan.scanners.adapters.checkov import LAUNCHER, RESULT_NAME, launcher_python
+from kalkan.scanners.adapters.checkov import LAUNCHER, NO_LAUNCHER, RESULT_NAME, launcher_python
 from kalkan.scanners.base import PYTHON_TOOL_ENV, Invocation, ScanContext, ToolAdapter, work_dir
 from kalkan.util.safe_io import atomic_write_json, read_bounded
 
@@ -547,7 +547,7 @@ class HelmCheckovAdapter(ToolAdapter):
         python = launcher_python(Path(checkov.path))
         self._launcher_used = python is not None
         if python is None:
-            return [*(str(arg) for arg in checkov.argv), *self.checkov_arguments(ctx)]
+            raise ToolError(NO_LAUNCHER)
         return [str(python), "-I", "-X", "utf8", "-c", LAUNCHER, *self.checkov_arguments(ctx)]
 
     def command(self, ctx: ScanContext, tool_path: Path, out: Path) -> list[str]:

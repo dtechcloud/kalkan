@@ -35,9 +35,11 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Final
 
+from kalkan.matchers.safety import MAX_LINE_LENGTH, regex_safety_error
 from kalkan.resources import home
 from kalkan.sandbox.evidence import promote
 from kalkan.sandbox.redact import redact, redact_file
+from kalkan.tools.platform import find_on_path
 from kalkan.util.paths import is_safe_relative_path
 
 __all__ = ["allowed_images", "docker_available", "docker_path", "run_poc"]
@@ -125,8 +127,8 @@ def docker_path() -> Path | None:
     if override:
         candidate = Path(override)
         return candidate if candidate.exists() else None
-    found = shutil.which("docker")
-    return Path(found) if found else None
+    # find_on_path never searches the current folder (shutil.which does on Windows).
+    return find_on_path("docker")
 
 
 def _pin_file() -> Path:
@@ -301,6 +303,18 @@ def docker_available() -> bool:
     )
 
 
+def image_id(docker: Path, ref: str) -> str | None:
+    """Return the local image ID (``sha256:...``) of ``ref``, or None when it is not present."""
+    result = _capture(
+        [str(docker), "image", "inspect", "--format", "{{.Id}}", ref],
+        timeout=ENGINE_TIMEOUT_SECONDS,
+    )
+    if result.error is not None or result.timed_out or result.exit_code != 0:
+        return None
+    value = result.stdout.strip()
+    return value if value.startswith("sha256:") else None
+
+
 def _image_present(docker: Path, ref: str) -> bool:
     result = _capture([str(docker), "image", "inspect", ref], timeout=ENGINE_TIMEOUT_SECONDS)
     return result.error is None and not result.timed_out and result.exit_code == 0
@@ -350,10 +364,29 @@ def _result(
     return record
 
 
+def success_pattern(text: object) -> tuple[re.Pattern[str] | None, str]:
+    """Compile the ``success_regex`` of a harness, or return why it cannot be used.
+
+    The pattern comes from an agent. It passes the checks of the matcher regexes
+    (:func:`kalkan.matchers.safety.regex_safety_error`: no nested quantifiers, no
+    backreferences, a bounded length) before it runs in the engine process; a plain
+    ``re.compile`` let a crafted pattern backtrack without a bound (self-audit of 2026-11-13).
+    """
+    if not isinstance(text, str) or not text:
+        return None, "The harness has no success pattern."
+    error = regex_safety_error(text)
+    if error:
+        return None, f"The success pattern is not safe: {error}"
+    try:
+        return re.compile(text), ""
+    except re.error as exc:
+        return None, f"The success pattern is not a valid expression: {exc}"
+
+
 def _match_line(pattern: re.Pattern[str], *texts: str) -> str | None:
     for text in texts:
         for line in text.splitlines():
-            if pattern.search(line):
+            if len(line) <= MAX_LINE_LENGTH and pattern.search(line):
                 return line.strip()[:OBSERVATION_CAP_CHARS]
     return None
 
@@ -508,24 +541,9 @@ def _run_poc(
         return _result(
             finding_id, "unit", "blocked", "The harness is incomplete.", blocker="sandbox_error"
         )
-    if not isinstance(pattern_text, str) or not pattern_text:
-        return _result(
-            finding_id,
-            "unit",
-            "blocked",
-            "The harness has no success pattern.",
-            blocker="sandbox_error",
-        )
-    try:
-        pattern = re.compile(pattern_text)
-    except re.error as exc:
-        return _result(
-            finding_id,
-            "unit",
-            "blocked",
-            f"The success pattern is not a valid expression: {exc}",
-            blocker="sandbox_error",
-        )
+    pattern, problem = success_pattern(pattern_text)
+    if pattern is None:
+        return _result(finding_id, "unit", "blocked", problem, blocker="sandbox_error")
 
     poc_root = ctx.run_dir / "poc" / finding_id
     poc_files = poc_root / "poc"

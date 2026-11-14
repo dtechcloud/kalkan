@@ -326,6 +326,7 @@ def test_prompt_command_and_hint_helpers():
     argv = init_command("C:/My Code/app", "fast", latest=False, python="py")
     assert argv == [
         "py",
+        "-I",
         "-m",
         "kalkan",
         "run",
@@ -345,7 +346,9 @@ def test_prompt_command_and_hint_helpers():
         "--json",
     ]
     assert resume_hint("kalkan unattended", "claude", RUN) == f"kalkan unattended devam {RUN}"
-    assert resume_hint("kalkan unattended", "codex", RUN).endswith(f"devam {RUN} --host codex")
+    assert resume_hint("kalkan unattended", "codex", RUN).endswith(
+        f"devam {RUN} --host codex --accept-codex-risk"
+    )
     spaced = resume_hint("kalkan-unattended", "claude", None, "C:/My Code/app", "deep")
     assert spaced == 'kalkan-unattended "C:/My Code/app" --profile deep'
     assert resume_hint("kalkan unattended", "claude", None) == "kalkan unattended devam"
@@ -758,7 +761,7 @@ def test_status_reader_runs_kalkan_run_status_of_the_run_in_a_subprocess(tmp_pat
     reading = subprocess_status_reader(tmp_path, runner=fake)(RUN)
     assert reading.status is not None and reading.status.finished_tasks == 3
     argv, kwargs = fake.calls[0]
-    assert argv == [sys.executable, "-m", "kalkan", "run", "status", "--run", RUN, "--json"]
+    assert argv == [sys.executable, "-I", "-m", "kalkan", "run", "status", "--run", RUN, "--json"]
     assert kwargs["cwd"] == os.fspath(tmp_path) and kwargs["shell"] is False
     assert kwargs["env"]["PYTHONIOENCODING"] == "utf-8" and kwargs["timeout"] > 0
 
@@ -794,6 +797,7 @@ def test_run_creator_runs_run_init_and_reads_the_run_id(tmp_path):
     argv, kwargs = fake.calls[0]
     assert argv == [
         sys.executable,
+        "-I",
         "-m",
         "kalkan",
         "run",
@@ -1009,7 +1013,7 @@ def test_codex_out_of_credits_stops_the_loop(tmp_path):
     result = run(tmp_path, harness, target=None, host=codex_host())
     assert result.exit_code == 1 and result.reason == "host_blocked"
     assert "out of credits" in result.message
-    assert f"kalkan unattended devam {RUN} --host codex" in result.message
+    assert f"kalkan unattended devam {RUN} --host codex --accept-codex-risk" in result.message
     assert harness.clock.sleeps == []
 
 
@@ -1173,3 +1177,35 @@ def test_a_round_that_hit_the_budget_stops_the_loop(tmp_path):
     harness = Harness([Round(status=status_doc("done", 6))])
     run(tmp_path / "other", harness)
     assert "--max-budget-usd" not in harness.calls[0][0]
+
+
+def test_a_round_without_a_cost_counts_with_its_budget(tmp_path):
+    # A round stopped at its time limit reports no cost; it counts with the budget it got, so
+    # the next round cannot get the full cap again (self-audit of 2026-11-13).
+    run_dir = tmp_path / "runs" / RUN
+    run_dir.mkdir(parents=True)
+    (run_dir / "usage.jsonl").write_text('{"round": 1, "total_cost_usd": 30.0}\n', "utf-8")
+    harness = Harness(
+        [
+            Round(stdout=['{"type": "system"}'], status=status_doc("hunt", 1)),
+            Round(status=status_doc("done", 6)),
+        ]
+    )
+    result = run(tmp_path, harness, max_usd=50.0)
+    assert result.reason == "max_usd" and len(harness.calls) == 1
+    last = json.loads((run_dir / "usage.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+    assert last["budget_usd"] == 20.0 and "total_cost_usd" not in last
+    assert "recorded cost USD 50.00" in result.message
+
+
+def test_a_round_of_unknown_cost_stops_the_cap(tmp_path):
+    run_dir = tmp_path / "runs" / RUN
+    run_dir.mkdir(parents=True)
+    (run_dir / "usage.jsonl").write_text('{"round": 1, "result_event": false}\n', "utf-8")
+    harness = Harness([Round(status=status_doc("done", 6))])
+    result = run(tmp_path, harness, max_usd=50.0)
+    assert result.exit_code == 1 and result.reason == "max_usd"
+    assert "cannot be checked: 1 round(s)" in result.message
+    assert harness.calls == []
+    # Without the cap the same run goes on.
+    assert run(tmp_path, Harness([Round(status=status_doc("done", 6))])).exit_code == 0

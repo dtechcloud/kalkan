@@ -425,3 +425,21 @@ def test_workflow_matrix_and_test_command(workflow_text: str) -> None:
     assert 'pytest -m "not tools and not docker"' in workflow_text
     assert "ruff check ." in workflow_text
     assert "ruff format --check ." in workflow_text
+
+
+def test_the_build_backend_installs_with_pinned_hashes(dockerfile: Dockerfile) -> None:
+    # pip resolved hatchling from PyPI without a version or a hash (self-audit of 2026-11-13).
+    root = Path(__file__).resolve().parents[2]
+    text = (root / "requirements-build.txt").read_text(encoding="utf-8")
+    joined = re.sub(r"\\\n\s*", " ", text)  # join the continued lines
+    entries = [e for e in joined.splitlines() if e and not e.startswith("#")]
+    assert {e.split("==")[0] for e in entries} >= {"hatchling", "editables"}
+    for entry in entries:
+        assert "==" in entry and "--hash=sha256:" in entry, entry
+    commands = [c for run in dockerfile.runs() for c in run.split("&&") if "pip install" in c]
+    assert any("--require-hashes" in c and "requirements-build.txt" in c for c in commands)
+    assert all("--no-build-isolation" in c for c in commands if "-e /opt/kalkan" in c)
+    for script in ("bootstrap.sh", "bootstrap.ps1"):
+        body = (root / "scripts" / script).read_text(encoding="utf-8")
+        assert "requirements-build.txt" in body and "--require-hashes" in body, script
+        assert "--no-build-isolation" in body, script

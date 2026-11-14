@@ -446,3 +446,32 @@ def test_file_matcher_round_trip() -> None:
     spec = binary_spec()
     assert spec.is_file_matcher and not make_spec().is_file_matcher
     assert parse_spec(spec.to_dict()) == spec
+
+
+def test_run_budget_stops_the_whole_run(tree: Path) -> None:
+    # The file budget alone did not bound the total (self-audit of 2026-11-13).
+    write(tree, "src/other.js", "eval(5)\n")
+    result = run(tree, [], [make_spec()], max_total_seconds=-1.0)
+    assert result.candidates == []
+    assert result.stats.files_not_scanned_budget == result.stats.files_total
+    assert any("for the whole run" in warning for warning in result.warnings)
+    unbounded = run(tree, [], [make_spec()], max_total_seconds=None)
+    assert len(unbounded.candidates) == 2
+    assert unbounded.stats.files_not_scanned_budget == 0
+
+
+def test_a_secret_matcher_keeps_no_matched_text(tmp_path: Path) -> None:
+    # The secrets-exposure matchers hit credential lines by design (self-audit of 2026-11-13).
+    write(tmp_path, "src/config.js", "const a = 1;\nconst password = 'made-up-value';\n")
+    spec = make_spec(
+        "js-password",
+        description="hard-coded password",
+        **{"class": "hardcoded-secrets", "cwe": ["CWE-798"]},
+        patterns=[{"regex": r"password\s*=\s*'", "flags": "", "label": "password"}],
+        examples=["password = 'x'"],
+    )
+    result = run(tmp_path, [], [spec])
+    assert len(result.candidates) == 1
+    candidate = result.candidates[0]
+    assert candidate["snippet"] == "REDACTED"
+    assert "made-up-value" not in str(candidate)

@@ -38,8 +38,10 @@ def ctx(tmp_path, monkeypatch):
     return run
 
 
-def make_task(ctx, subject=SUBJECT, claim=None, meta=None):
+def make_task(ctx, subject=SUBJECT, claim=None, meta=None, nearby=None):
     data = {"subject": subject, "claim": claim or {"class": "sqli", "trace": [], "evidence": []}}
+    if nearby is not None:
+        data["nearby_claims"] = [{"ref": ref, "title": "", "fingerprint": None} for ref in nearby]
     return queue.create_task(
         ctx, "verify", "validate", data, meta=meta or {"subject": subject["ref"]}
     )
@@ -367,7 +369,7 @@ def test_duplicate_of_takes_the_primary_fingerprint(ctx):
     primary = make_task(ctx)
     run_handler(ctx, primary, result_for(primary, answers(), base_finding(**CONFIRMED_EXTRA)))
     subject = {"kind": "hunter", "ref": "T0001-hunt#1"}
-    second = make_task(ctx, subject=subject)
+    second = make_task(ctx, subject=subject, nearby=["T0001-hunt#0"])
     finding = copy.deepcopy(base_finding())
     finding["trace"][1]["scope"] = "other_scope"
     duplicate, record = run_handler(
@@ -398,3 +400,44 @@ def test_duplicate_of_takes_the_primary_fingerprint(ctx):
     )
     assert rejected["fingerprint"] == "sqli:app/routes.py:other_scope"
     assert record["duplicate_honored"] is False
+
+
+def test_duplicate_of_names_only_a_nearby_claim_of_the_same_class(ctx):
+    # A steered verifier could name any claim of the run and take over its record in the
+    # merge (self-audit of 2026-11-13).
+    primary = make_task(ctx)
+    run_handler(ctx, primary, result_for(primary, answers(), base_finding(**CONFIRMED_EXTRA)))
+    subject = {"kind": "hunter", "ref": "T0001-hunt#1"}
+    finding = copy.deepcopy(base_finding())
+    finding["trace"][1]["scope"] = "other_scope"
+    far = make_task(ctx, subject=subject, nearby=[])
+    taken, record = run_handler(
+        ctx,
+        far,
+        result_for(
+            far,
+            answers(privilege_boundary="unknown"),
+            finding,
+            subject=subject,
+            duplicate_of="T0001-hunt#0",
+        ),
+    )
+    assert record["duplicate_honored"] is False
+    assert taken["fingerprint"] == "sqli:app/routes.py:other_scope"
+    assert any("not one of the nearby_claims" in note for note in record["normalized"])
+    other = copy.deepcopy(finding)
+    other["class"] = "xss"
+    near = make_task(ctx, subject=subject, nearby=["T0001-hunt#0"])
+    taken, record = run_handler(
+        ctx,
+        near,
+        result_for(
+            near,
+            answers(privilege_boundary="unknown"),
+            other,
+            subject=subject,
+            duplicate_of="T0001-hunt#0",
+        ),
+    )
+    assert record["duplicate_honored"] is False
+    assert any("class sqli, not xss" in note for note in record["normalized"])

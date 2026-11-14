@@ -91,3 +91,15 @@ def test_the_task_prompt_forbids_network_and_writes_outside_the_result():
     text = (ROOT / "src" / "kalkan" / "prompts" / "_common.md").read_text(encoding="utf-8")
     assert re.search(r"Write exactly one file", text)
     assert "No execution, no network." in text
+
+
+def test_the_checkout_confines_kalkan_subagents_with_the_hook():
+    # Checkout mode had no hook: a prompt-injected subagent could read any operator file and
+    # write the result of any task (self-audit of 2026-11-13).
+    hooks = json.loads(SETTINGS.read_text(encoding="utf-8"))["hooks"]["PreToolUse"]
+    [entry] = hooks
+    assert set(entry["matcher"].split("|")) >= {"Read", "Grep", "Glob", "Write", "Edit"}
+    [handler] = entry["hooks"]
+    assert handler["command"] == 'sh "$CLAUDE_PROJECT_DIR/scripts/pre-tool-use-checkout.sh"'
+    launcher = (ROOT / "scripts" / "pre-tool-use-checkout.sh").read_text(encoding="utf-8")
+    assert "KALKAN_HOOK_CHECKOUT=$root" in launcher and "-I -m kalkan.plugin_hook" in launcher

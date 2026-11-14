@@ -3,9 +3,10 @@
 
 No external tool: :func:`kalkan.matchers.spec.load_specs` loads ``<repo>/rules/matchers`` and
 :func:`kalkan.matchers.engine.run` runs the specs over the target with the tech list
-(``include_noisy=True``, ``max_file_seconds=20.0``). The candidates go straight to
-``candidates.json`` (no SARIF); their ``raw.sarif_file`` is ``""``. ``stats``, ``skipped``
-(slug to reason) and ``warnings`` of the run go into ``scans/matcher.status.json``.
+(``include_noisy=True``, ``max_file_seconds=20.0``, ``max_total_seconds=900.0``). The
+candidates go straight to ``candidates.json`` (no SARIF); their ``raw.sarif_file`` is ``""``.
+``stats``, ``skipped`` (slug to reason) and ``warnings`` of the run go into
+``scans/matcher.status.json``.
 """
 
 from __future__ import annotations
@@ -37,6 +38,8 @@ class MatcherAdapter:
     timeout_seconds = 1200
     include_noisy = True
     max_file_seconds = 20.0
+    #: The run budget; below ``timeout_seconds``, which the in-process matcher does not enforce.
+    max_total_seconds = 900.0
 
     def __init__(self, rules_dir: Path | None = None) -> None:
         self._rules_dir = rules_dir
@@ -69,6 +72,7 @@ class MatcherAdapter:
             specs,
             include_noisy=self.include_noisy,
             max_file_seconds=self.max_file_seconds,
+            max_total_seconds=self.max_total_seconds,
         )
         stats = result.stats.to_dict()
         applied = stats.get("matchers_applied")

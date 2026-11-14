@@ -29,7 +29,7 @@ This document tells a coding agent (or a human) how to develop kalkan. The root 
 
 1. Run `pytest`, `ruff check .`, `ruff format --check .`, `python scripts/vendor_third_party.py --check`, `python scripts/sync_host_files.py --check` and `python scripts/build_plugin.py --check`. All must pass.
 2. Run the acceptance demo of the change. Write the command and the result in the pull request.
-3. For a release: bump the version in `pyproject.toml`, `src/kalkan/__init__.py`, `plugins/kalkan/.claude-plugin/plugin.json`, `README.md`, `README.tr.md` and the site, run `python scripts/build_plugin.py`, and merge that pull request into `main`. Try `main` with the plugin (`claude plugin marketplace add dtechcloud/kalkan#main` on a test machine). Then move `stable` to that commit (`git push origin <commit>:stable`, a fast-forward), tag `vX.Y.Z` on it and push the tag.
+3. For a release: bump the version in `pyproject.toml`, `src/kalkan/__init__.py`, `plugins/kalkan/.claude-plugin/plugin.json`, `README.md`, `README.tr.md` and the site, run `python scripts/lock_pip_tools.py --check` (after a version change of a pip tool, write the lock again with `--uv <uv>`), run `python scripts/build_plugin.py`, and merge that pull request into `main`. Try `main` with the plugin (`claude plugin marketplace add dtechcloud/kalkan#main` on a test machine). Then move `stable` to that commit (`git push origin <commit>:stable`, a fast-forward), tag `vX.Y.Z` on it and push the tag.
 
 Never skip the checklist. If a check fails, fix it and run the whole checklist again.
 

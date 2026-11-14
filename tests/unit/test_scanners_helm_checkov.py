@@ -12,6 +12,7 @@ from pathlib import Path
 
 import pytest
 
+from kalkan.errors import ToolError
 from kalkan.sarif.ingest import ingest_document
 from kalkan.scanners.adapters import helm_checkov
 from kalkan.scanners.adapters.checkov import LAUNCHER
@@ -120,8 +121,9 @@ def test_invocations_render_each_chart_offline_then_run_checkov(tmp_path, with_c
     last = items[-1]
     assert not last.setup and last.cwd == work / "helm"
     assert last.output == work / "results" / "results_sarif.sarif"
-    assert list(last.argv) == [
-        str(Path("/opt/checkov")),
+    python = Path("/opt") / ("python.exe" if os.name == "nt" else "python")
+    assert list(last.argv[:6]) == [str(python), "-I", "-X", "utf8", "-c", LAUNCHER]
+    assert list(last.argv[6:]) == [
         "-d",
         ".",
         "-o",
@@ -409,10 +411,24 @@ def test_suppression_sources(tmp_path, monkeypatch):
     assert any("config discovery (turned off" in item for item in ignored)
     assert any("checkov.io/skip" in item for item in ignored)
     assert any(".helmignore" in item for item in honored)
-    # A Checkov without the tool venv Python (from PATH) cannot run through the launcher.
+    # A Checkov without a launcher Python never runs: a target .checkov.yaml could make it run
+    # target code (self-audit of 2026-11-13).
     monkeypatch.setattr(helm_checkov, "checkov_resolver", lambda allow_path=False: checkov_tool())
+    monkeypatch.setattr(helm_checkov, "launcher_python", lambda tool_path: None)
     other = HelmCheckovAdapter()
     other.applies(ctx)
-    other.checkov_command(ctx)
-    ignored, honored = other.suppression_sources(ctx)
-    assert ignored == [] and any("could not be turned off" in item for item in honored)
+    with pytest.raises(ToolError, match="only through its launcher"):
+        other.checkov_command(ctx)
+
+
+@pytest.fixture(autouse=True)
+def _checkov_launcher(monkeypatch):
+    """Give the fake Checkov paths a launcher Python: since the self-audit of 2026-11-13
+    Checkov never runs without one (a target .checkov.yaml could run target code)."""
+    from kalkan.scanners.adapters import checkov, helm_checkov
+
+    def python_next_to(tool_path):
+        return Path(tool_path).parent / ("python.exe" if os.name == "nt" else "python")
+
+    monkeypatch.setattr(checkov, "launcher_python", python_next_to)
+    monkeypatch.setattr(helm_checkov, "launcher_python", python_next_to)

@@ -237,6 +237,15 @@ def test_no_scanner_gets_the_original_path(tmp_path, monkeypatch):
         "checkov_resolver",
         lambda **_: ResolvedTool(name="checkov", path=TOOL, version="0", source="kalkan"),
     )
+    # Checkov runs only through its launcher Python (self-audit of 2026-11-13): the fake
+    # Checkov gets one next to it.
+    from kalkan.scanners.adapters import checkov
+
+    def python_next_to(tool_path):
+        return Path(tool_path).parent / ("python.exe" if os.name == "nt" else "python")
+
+    monkeypatch.setattr(checkov, "launcher_python", python_next_to)
+    monkeypatch.setattr(helm_checkov, "launcher_python", python_next_to)
     scan_ctx = load_scan_context(ctx.run_dir)
     assert scan_ctx.source_dir == (ctx.run_dir / "source").resolve()
     assert {"go", "python", "docker"} <= scan_ctx.tech

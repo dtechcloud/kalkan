@@ -176,7 +176,9 @@ SUFFIXES: Final = (".conf", ".conf.template", ".nginx", ".vhost")
 MAX_CONFIG_BYTES: Final = 1024 * 1024
 MAX_OUTPUT_BYTES: Final = 50 * 1024 * 1024
 _BLOCK = re.compile(
-    r"^\s*(?:http|events|server|location\s+[^{;\n]*|upstream\s+[^{;\s]+|stream)\s*\{",
+    # Possessive repeats: "location" and a run of spaces backtracked cubically (2,000 spaces took
+    # 8.8 s; self-audit of 2026-11-13). [^{;\n]*+ already takes the spaces before the brace.
+    r"^[ \t]*+(?:http|events|server|location\s[^{;\n]*+|upstream\s++[^{;\s]++|stream)\s*+\{",
     re.MULTILINE,
 )
 

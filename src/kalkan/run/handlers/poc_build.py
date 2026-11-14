@@ -17,6 +17,7 @@ import importlib
 from typing import Any
 
 from kalkan.errors import ValidationError
+from kalkan.matchers.safety import regex_safety_error
 from kalkan.run.runfiles import task_input, write_json
 from kalkan.run.state import RunContext
 from kalkan.util.paths import is_safe_relative_path
@@ -60,6 +61,9 @@ def handle(ctx: RunContext, task: dict[str, Any], result: dict[str, Any]) -> Non
     if len(set(paths)) != len(paths):
         errors.append("$result.files: every path must be unique")
     errors += [f"$result.files: unsafe path {p!r}" for p in paths if not is_safe_relative_path(p)]
+    regex_error = regex_safety_error(result.get("success_regex"))
+    if regex_error:
+        errors.append(f"$result.success_regex: {regex_error}")
     app = result.get("app")
     if isinstance(app, dict) and not is_safe_relative_path(app["compose_file"]):
         errors.append("$result.app.compose_file: must be a safe target-relative path")

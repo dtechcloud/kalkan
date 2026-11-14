@@ -175,3 +175,13 @@ def test_a_dead_poc_task_is_recorded_as_blocked(ctx, monkeypatch):
     assert poc["finding_id"] == FINDING_ID and "(3 attempts)" in poc["observed_result"]
     # A second run of the step keeps the record and counts nothing new.
     assert steps._poc_run(ctx, "poc:run", None).detail == "0 PoC harnesses ran"
+
+
+def test_poc_build_rejects_an_unsafe_success_regex(ctx):
+    # An agent-supplied pattern runs in the engine process (self-audit of 2026-11-13).
+    task_id = queue.create_task(ctx, "poc_build", "poc", {"finding_id": FINDING_ID})
+    feasible = sample("poc_build", task_id)
+    feasible["success_regex"] = "(a+)+$"
+    with pytest.raises(ValidationError) as caught:
+        poc_build.handle(ctx, queue.get_task(ctx, task_id), feasible)
+    assert any("success_regex" in error for error in caught.value.errors)

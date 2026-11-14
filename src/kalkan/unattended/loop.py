@@ -39,7 +39,12 @@ skill prefix comes from the host: ``/kalkan`` for Claude Code, ``$kalkan`` for C
    cap is reached, or when the last round ended with the result ``error_max_budget_usd``.
    Otherwise a host with ``budget_args`` (Claude Code: ``--max-budget-usd``) gets the rest of
    the cap, so one round cannot pass it. The cost is the estimate of Claude Code at list
-   prices; the bill of the API account is the authority.
+   prices; the bill of the API account is the authority. The cap fails closed: ``usage.jsonl``
+   records the budget of each round (``budget_usd``), a round without a reported cost (for
+   example a round stopped at its time limit) counts with its full budget, and a round with
+   neither, or a round whose usage could not be recorded, stops the loop. ``--max-usd`` needs
+   a host with ``budget_args`` (not Codex). Before, such rounds counted as free, and the cap
+   never stopped a Codex run (self-audit of 2026-11-13).
 
 The process starter, the clock, the sleep function, the run creator, the run checker, the
 status reader and the process-tree killer are parameters, so that tests never start the real
@@ -287,7 +292,8 @@ def init_command(
     The caller passes a normalized target (an absolute folder or a git URL, never text that
     starts with ``-``).
     """
-    argv = [python or sys.executable, "-m", "kalkan", "run", "init", target, "--profile", profile]
+    argv = [python or sys.executable, "-I", "-m", "kalkan", "run", "init", target]
+    argv += ["--profile", profile]
     if not latest:
         argv.append("--no-latest")
     if lang != "en":
@@ -306,9 +312,9 @@ def resume_hint(
 
     ``<command> devam <run-id>`` when the run exists, else ``<command> <target> --profile
     <profile>`` (the run was not created), else ``<command> devam``. A host other than Claude
-    Code adds ``--host <name>``.
+    Code adds ``--host <name>`` (and ``--accept-codex-risk`` for Codex).
     """
-    host = "" if host_name == "claude" else f" --host {host_name}"
+    host = host_option(host_name)
     if run_id is not None:
         return f"{command} devam {run_id}{host}"
     if target is not None:
@@ -329,10 +335,33 @@ def log_file_name(moment: datetime) -> str:
     return f"unattended-{ids.as_utc(moment).strftime('%Y%m%dT%H%M%SZ')}.log"
 
 
+def host_option(host_name: str) -> str:
+    """Return the host options of a resume command: none for Claude Code, else ``--host <name>``,
+    and ``--accept-codex-risk`` for Codex (the run cannot continue without it)."""
+    if host_name == "claude":
+        return ""
+    risk = " --accept-codex-risk" if host_name == "codex" else ""
+    return f" --host {host_name}{risk}"
+
+
 def status_command(run_id: str, python: str | None = None) -> list[str]:
     """Return the command that reads the status of the bound run:
-    ``<python> -m kalkan run status --run <run-id> --json``."""
-    return [python or sys.executable, "-m", "kalkan", "run", "status", "--run", run_id, "--json"]
+    ``<python> -I -m kalkan run status --run <run-id> --json``.
+
+    ``-I``: the loop runs in the repository root, which a Codex agent can write; without it a
+    planted ``kalkan`` package there ran outside the sandbox (self-audit of 2026-11-13).
+    """
+    return [
+        python or sys.executable,
+        "-I",
+        "-m",
+        "kalkan",
+        "run",
+        "status",
+        "--run",
+        run_id,
+        "--json",
+    ]
 
 
 def _local_text(moment: datetime) -> str:
@@ -1052,6 +1081,8 @@ class UnattendedLoop:
         self._say = say or _say_stderr
         self._runs_dir = Path(runs_dir) if runs_dir is not None else None
         self._rounds = 0
+        #: Rounds of this session whose usage could not be recorded (``--max-usd`` stops).
+        self._unrecorded_rounds = 0
         self._started_processes = 0
         self._run_id: str | None = None
         self._limits: list[dict[str, Any]] = []
@@ -1107,7 +1138,9 @@ class UnattendedLoop:
                 return self._stop_max_hours(previous)
             budget_left: float | None = None
             if options.max_usd is not None:
-                spent, hit = self._spent_usd()
+                spent, hit, unknown = self._spent_usd()
+                if unknown:
+                    return self._stop_unknown_cost(unknown, previous)
                 if hit or spent >= options.max_usd:
                     return self._stop_max_usd(spent, previous)
                 budget_left = options.max_usd - spent
@@ -1238,7 +1271,7 @@ class UnattendedLoop:
             f"{'timed out, ' if timed_out else ''}{minutes:.1f} minutes"
         )
         self._say(f"round {number} ended after {minutes:.1f} minutes")
-        self._record_usage(number, started, finished, timed_out, results, inits)
+        self._record_usage(number, started, finished, timed_out, results, inits, budget_left)
         return RoundResult(
             number, prompt, argv, returncode, timed_out, tail.lines(), started, finished
         )
@@ -1283,8 +1316,13 @@ class UnattendedLoop:
         timed_out: bool,
         results: list[dict[str, Any]],
         inits: list[dict[str, Any]] | None = None,
+        budget_left: float | None = None,
     ) -> None:
         """Add the round to ``usage.jsonl`` of the bound run (:mod:`kalkan.run.usage`).
+
+        ``budget_usd`` is the budget of the round under ``--max-usd`` (``budget_left``): the cap
+        charges it when the round reports no cost. When the round cannot be recorded, the cap
+        stops the loop (:meth:`_spent_usd`).
 
         ``round`` counts the rounds of the run over every ``devam`` session, and ``session_round``
         is ``number``, the round of this session (the log line). ``auth`` and ``auth_source``
@@ -1299,6 +1337,7 @@ class UnattendedLoop:
             run_round = len(usage_mod.load(run_dir)) + 1
         except (OSError, KalkanError) as exc:
             self._log.note(f"round {number}: usage not recorded: {exc}")
+            self._unrecorded_rounds += 1
             return
         entry: dict[str, Any] = {
             "round": run_round,
@@ -1313,10 +1352,13 @@ class UnattendedLoop:
             **(inits[0] if inits else {}),
             **(results[-1] if results else {"result_event": False}),
         }
+        if budget_left is not None:
+            entry["budget_usd"] = round(budget_left, 6)
         try:
             usage_mod.append(run_dir, entry)
         except (OSError, KalkanError) as exc:
             self._log.note(f"round {number}: usage not recorded: {exc}")
+            self._unrecorded_rounds += 1
             return
         cost = entry.get("total_cost_usd")
         if isinstance(cost, (int, float)):
@@ -1452,7 +1494,7 @@ class UnattendedLoop:
     # -- results --------------------------------------------------------------------------
 
     def _host_option(self) -> str:
-        return "" if self._host.name == "claude" else f" --host {self._host.name}"
+        return host_option(self._host.name)
 
     def _resume_hint(self) -> str:
         options = self.options
@@ -1460,17 +1502,44 @@ class UnattendedLoop:
             options.command, self._host.name, self._run_id, options.target, options.profile
         )
 
-    def _spent_usd(self) -> tuple[float, bool]:
-        """Return the recorded cost of the bound run and whether its last round hit the cap."""
+    def _spent_usd(self) -> tuple[float, bool, int]:
+        """Return the cost of the bound run under ``--max-usd``, whether its last round hit the
+        cap, and the number of rounds of unknown cost (module docstring, step 7).
+
+        A round counts with ``total_cost_usd``; without it, with its ``budget_usd`` (an upper
+        bound: Claude Code stops a round at its budget). A round with neither, a round of this
+        session that could not be recorded, or an unreadable ``usage.jsonl`` is of unknown
+        cost: the cap then fails closed.
+        """
         if self._run_id is None:
-            return 0.0, False
+            return 0.0, False, self._unrecorded_rounds
         try:
             rounds = usage_mod.load(ids.resolve_run(self._run_id, self._runs_dir))
         except (OSError, KalkanError):
-            return 0.0, False
-        totals = usage_mod.summarize(rounds) or {}
+            return 0.0, False, 1
+        spent = 0.0
+        unknown = self._unrecorded_rounds
+        for item in rounds:
+            cost = item.get("total_cost_usd")
+            budget = item.get("budget_usd")
+            if isinstance(cost, (int, float)) and not isinstance(cost, bool) and cost >= 0:
+                spent += float(cost)
+            elif isinstance(budget, (int, float)) and not isinstance(budget, bool) and budget >= 0:
+                spent += float(budget)
+            else:
+                unknown += 1
         hit = bool(rounds) and rounds[-1].get("subtype") == BUDGET_SUBTYPE
-        return float(totals.get("cost_usd") or 0.0), hit
+        return spent, hit, unknown
+
+    def _stop_unknown_cost(self, unknown: int, status: RunStatus | None) -> UnattendedResult:
+        cap = self.options.max_usd or 0.0
+        message = (
+            f"stopped: --max-usd {cap:.2f} cannot be checked: {unknown} round(s) of this run "
+            "have no recorded cost and no recorded budget (usage.jsonl), so their cost is "
+            "unknown. The run is resumable. Check the cost in the API account, then resume "
+            f"without the cap: {self._resume_hint()}"
+        )
+        return self._finish(EXIT_ERROR, REASON_MAX_USD, message, status)
 
     def _stop_max_usd(self, spent: float, status: RunStatus | None) -> UnattendedResult:
         cap = self.options.max_usd or 0.0

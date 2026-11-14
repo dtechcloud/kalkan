@@ -32,7 +32,7 @@ import re
 import subprocess
 import time
 from datetime import UTC, datetime
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, Final
 
 from kalkan.sandbox.redact import redact
@@ -146,7 +146,10 @@ for index, item in enumerate(spec["requests"], start=1):
 
 def compose_env() -> dict[str, str]:
     """Return the minimal environment for ``docker compose`` (no host secret is interpolated)."""
-    return {name: value for name, value in os.environ.items() if name.upper() in _ENV_KEEP}
+    env = {name: value for name, value in os.environ.items() if name.upper() in _ENV_KEEP}
+    # Compose loads remote include and extends resources (git, OCI) only with these on.
+    env.update(COMPOSE_EXPERIMENTAL_GIT_REMOTE="false", COMPOSE_EXPERIMENTAL_OCI_REMOTE="false")
+    return env
 
 
 def _inside(path: str, root: Path) -> bool:
@@ -160,6 +163,105 @@ def _inside(path: str, root: Path) -> bool:
 def _is_socket(text: str) -> bool:
     lowered = text.replace("\\", "/").lower()
     return "docker.sock" in lowered or "docker_engine" in lowered or lowered.startswith("//./pipe")
+
+
+# ---------------------------------------------------------------------------------------------
+# The raw compose file, before docker compose reads it
+
+#: Keys whose value is a path that ``docker compose config`` reads (env_file content goes into
+#: the environment, extends.file and secret or config files are loaded).
+_RAW_PATH_KEYS: Final = ("env_file", "file")
+_RAW_KEY: Final = re.compile(
+    # A YAML key ends with ":" and a space or the line end, so C:\path is no key.
+    r"^(?P<indent>\s*)(?:-\s+)?(?P<key>[A-Za-z_][\w.-]*)\s*:(?:\s+(?P<value>.*))?$"
+)
+_RAW_ITEM: Final = re.compile(r"^(?P<indent>\s*)-\s*(?P<value>.*)$")
+_RAW_INCLUDE: Final = re.compile(r"(?m)^include\s*:")
+_URL_SCHEME: Final = re.compile(r"\A[A-Za-z][A-Za-z0-9+.-]*://|\Agit@", re.IGNORECASE)
+
+
+def _unquote(text: str) -> str:
+    value = text.split(" #", 1)[0].strip()
+    if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+        return value[1:-1]
+    return value
+
+
+def _raw_path_error(value: str) -> str | None:
+    """Return why a path of the raw compose file may leave the target, or None."""
+    if not value:
+        return None
+    if "$" in value or value.startswith("~"):
+        return f"a path with a variable or a home folder ({value})"
+    if _URL_SCHEME.match(value):
+        return f"a remote resource ({value})"
+    windows = PureWindowsPath(value)
+    if windows.drive or windows.anchor or value.startswith(("/", "\\")):
+        return f"an absolute path ({value})"
+    depth = 0
+    for part in value.replace("\\", "/").split("/"):
+        if part == "..":
+            depth -= 1
+        elif part not in ("", "."):
+            depth += 1
+        if depth < 0:
+            return f"a path outside the target ({value})"
+    return None
+
+
+def _raw_values(lines: list[str], index: int, indent: int, value: str) -> list[str]:
+    """Return the path values of a raw ``env_file`` or ``file`` key: a scalar, a flow list, or
+    a block list of strings or ``{path: ...}`` items below the key."""
+    if value.startswith("["):
+        return [_unquote(item) for item in value.strip("[]").split(",")]
+    if value and not value.startswith("#"):
+        return [_unquote(value)]
+    values: list[str] = []
+    for following in lines[index + 1 :]:
+        stripped = following.lstrip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        depth = len(following) - len(stripped)
+        if depth <= indent and not stripped.startswith("-"):
+            break
+        item = _RAW_ITEM.match(following)
+        if item is not None and len(item.group("indent")) < indent:
+            break
+        entry = item.group("value").strip() if item is not None else stripped
+        nested = _RAW_KEY.match(entry)
+        if nested is not None:
+            if nested.group("key") == "path":
+                values.append(_unquote(nested.group("value") or ""))
+        elif item is not None:
+            values.append(_unquote(entry))
+    return values
+
+
+def raw_compose_errors(text: str) -> list[str]:
+    """Return why the raw compose ``text`` is unsafe to hand to ``docker compose config``.
+
+    ``docker compose config`` itself reads files and resources: env_file content (into the
+    environment of the service), ``extends.file``, secret and config files, and ``include``
+    entries, which can be remote (git, OCI). The check is lexical and conservative, because
+    kalkan has no full YAML reader: ``include`` is refused, and every ``env_file`` and ``file``
+    value must be a relative path that stays inside the target, without a variable, ``~`` or a
+    URL. Before, the policy ran only on the resolved file, after Compose had read a host file
+    or fetched a remote resource (self-audit of 2026-11-13).
+    """
+    errors: list[str] = []
+    if _RAW_INCLUDE.search(text):
+        errors.append("include is not supported (an included file can name a remote resource)")
+    lines = text.splitlines()
+    for index, line in enumerate(lines):
+        match = _RAW_KEY.match(line)
+        if match is None or match.group("key") not in _RAW_PATH_KEYS:
+            continue
+        indent = len(match.group("indent"))
+        for candidate in _raw_values(lines, index, indent, (match.group("value") or "").strip()):
+            problem = _raw_path_error(candidate)
+            if problem:
+                errors.append(f"{match.group('key')}: {problem}")
+    return errors
 
 
 def policy_errors(config: dict[str, Any], target_dir: Path) -> list[str]:
@@ -199,6 +301,9 @@ def policy_errors(config: dict[str, Any], target_dir: Path) -> list[str]:
             context = str(build.get("context") or "")
             if context and not _inside(context, root):
                 errors.append(f"{name}: a build context outside the target ({context})")
+            dockerfile = str(build.get("dockerfile") or "")
+            if dockerfile and not _inside(str(Path(context or root) / dockerfile), root):
+                errors.append(f"{name}: a Dockerfile outside the target ({dockerfile})")
             if build.get("network") not in (None, "", "default"):
                 errors.append(f"{name}: a build network ({build.get('network')})")
             if build.get("entitlements") or build.get("privileged"):
@@ -240,6 +345,12 @@ def sanitize(config: dict[str, Any], target_dir: Path) -> dict[str, Any]:
     for name, service in config["services"].items():
         clean: dict[str, Any] = {key: service[key] for key in _KEPT_KEYS if key in service}
         build = service.get("build")
+        if build is not None:
+            # A built image keeps the name that Compose gives it (<project>-<service>), and
+            # down --rmi local removes it. The target image name of a built service could
+            # replace a tag in the image store of the operator, the client image
+            # python:3.12-slim included (self-audit of 2026-11-13).
+            clean.pop("image", None)
         if isinstance(build, dict):
             clean["build"] = {
                 key: build[key]
@@ -323,12 +434,20 @@ def run_app_poc(ctx: Any, task_id: str, harness: dict[str, Any], docker: Path) -
         return blocked("The compose file is not inside the target.", "sandbox_error")
     if not compose_path.is_file():
         return blocked(f"The compose file {compose_rel} does not exist.", "sandbox_error")
-    pattern_text = harness.get("success_regex")
-    try:
-        pattern = re.compile(str(pattern_text))
-    except re.error as exc:
-        return blocked(f"The success pattern is not a valid expression: {exc}", "sandbox_error")
+    pattern, problem = runner.success_pattern(harness.get("success_regex"))
+    if pattern is None:
+        return blocked(problem, "sandbox_error")
 
+    try:
+        raw_text = compose_path.read_text(encoding="utf-8", errors="replace")
+    except OSError as exc:
+        return blocked(f"The compose file cannot be read: {exc}", "sandbox_error")
+    raw_problems = raw_compose_errors(raw_text)
+    if raw_problems:
+        return blocked(
+            "The compose stack is not started: " + "; ".join(raw_problems[:8]),
+            "sandbox_app_unsafe",
+        )
     project = project_name(str(ctx.run_id), task_id)
     shown = _compose(docker, project, compose_path, "config", "--format", "json", timeout=60)
     if shown is None or shown.returncode != 0:
@@ -388,6 +507,14 @@ def run_app_poc(ctx: Any, task_id: str, harness: dict[str, Any], docker: Path) -
 
     evidence_dir = ctx.run_dir / "evidence" / finding_id
     evidence_dir.mkdir(parents=True, exist_ok=True)
+    # The client starts by the image ID recorded before any pull or build of the stack, never
+    # by the mutable tag (self-audit of 2026-11-13).
+    client_ref = runner.image_id(docker, runner._pinned_ref(CLIENT_IMAGE))
+    if client_ref is None:
+        return blocked(
+            f"The client image {CLIENT_IMAGE} is not present. Pull it first.",
+            "sandbox_image_missing",
+        )
     try:
         if missing:
             pulled = _compose(docker, project, engine_file, "pull", timeout=BUILD_TIMEOUT_SECONDS)
@@ -414,7 +541,7 @@ def run_app_poc(ctx: Any, task_id: str, harness: dict[str, Any], docker: Path) -
             return blocked(f"The stack did not start: {detail}", "sandbox_error")
         argv = runner._unit_argv(
             docker,
-            CLIENT_IMAGE,
+            client_ref,
             f"{project}-client",
             target_dir,
             work,

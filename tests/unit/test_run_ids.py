@@ -9,6 +9,7 @@ import pytest
 
 from kalkan.errors import StateError
 from kalkan.run import ids
+from kalkan.util.paths import KALKAN_HOME_ENV
 
 MOMENT = datetime(2026, 10, 15, 22, 43, 5, tzinfo=UTC)
 
@@ -68,6 +69,8 @@ def test_runs_root_uses_the_environment_override(monkeypatch, tmp_path):
 
 def test_runs_root_defaults_to_the_repository(monkeypatch):
     monkeypatch.delenv(ids.RUNS_DIR_ENV, raising=False)
+    # A KALKAN_HOME of the developer (the plugin tool home for the tool tests) moves the root.
+    monkeypatch.delenv(KALKAN_HOME_ENV, raising=False)
     root = ids.runs_root()
     assert root.name == "runs"
     assert (root.parent / "pyproject.toml").is_file()

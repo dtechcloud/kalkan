@@ -166,8 +166,8 @@ def test_run_setup_runs_the_engine_with_stdout_on_stderr():
         python="/venv/python",
     )
     assert [argv for argv, _ in calls] == [
-        ["/venv/python", "-m", "kalkan", "tools", "install", "--all"],
-        ["/venv/python", "-m", "kalkan", "sca", "update-db", "--max-age", "168"],
+        ["/venv/python", "-I", "-m", "kalkan", "tools", "install", "--all"],
+        ["/venv/python", "-I", "-m", "kalkan", "sca", "update-db", "--max-age", "168"],
     ]
     for _, kwargs in calls:
         assert kwargs["stdout"] == 2 and kwargs["stderr"] == 2
@@ -220,3 +220,32 @@ def test_run_checks_skips_what_the_audit_does_not_need(agents, tools, skip):
 
     preflight.run_checks(agents=agents, tools=tools, doctor=doctor, repo_root="/x")
     assert seen["skip"] == frozenset(skip) and seen["repo_root"] == "/x"
+
+
+def test_a_kalkan_py_in_the_current_folder_never_loads(tmp_path):
+    # The setup started "python -m kalkan" in the operator's current folder, which can be the
+    # audited folder; a planted kalkan.py then ran (self-audit of 2026-11-13). -I keeps the
+    # current folder off sys.path.
+    import subprocess
+    import sys
+
+    marker = tmp_path / "planted-ran"
+    (tmp_path / "kalkan.py").write_text(f"open({str(marker)!r}, 'w').close()\n", encoding="utf-8")
+    proc = subprocess.run(
+        [sys.executable, "-I", "-m", "kalkan", "--version"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert not marker.exists()
+    unsafe = subprocess.run(
+        [sys.executable, "-m", "kalkan", "--version"],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=False,
+    )
+    assert marker.exists(), (proc.stderr, unsafe.stderr)  # the control: without -I it loads

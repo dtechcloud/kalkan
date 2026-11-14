@@ -23,12 +23,19 @@ Targets:
   timeout, prompts off (``GIT_TERMINAL_PROMPT=0``), only the https and ssh protocols
   (``GIT_ALLOW_PROTOCOL``) and no LFS download. Then ``source/`` is copied to ``target/``.
   ``file://``, ``ext::`` and every other transport are refused. Credentials in an https URL are
-  used for the clone but never stored. A missing git gives :class:`~kalkan.errors.ToolError`.
+  used for the clone but never stored: right after the clone, ``remote.origin.url`` of
+  ``source/.git/config`` becomes the URL without credentials (git keeps the URL as given there;
+  ``FETCH_HEAD`` and the reflog hold the anonymized URL). Before, the token stayed in that file
+  of the run folder (self-audit of 2026-11-13). A missing git gives
+  :class:`~kalkan.errors.ToolError`.
 - A git URL with ``ref`` (``run init --ref <tag|branch|commit>``): the clone runs with
   ``--no-checkout`` (full history of every branch and tag, for the history scans), then
   :func:`checkout_ref` resolves the ref in this order: tag ``refs/tags/<ref>``, branch
-  ``refs/remotes/origin/<ref>``, commit (hex, at least 7 digits). When none resolves,
-  ``git fetch --no-recurse-submodules --no-tags --end-of-options origin <ref>`` fetches it (for
+  ``refs/remotes/origin/<ref>``, commit (hex, at least 7 digits). A full commit ID (40 or 64
+  hex digits) resolves only as that commit, never as a tag or branch of the same name, and the
+  checked out commit must equal it: a repository author could push a tag named like the ID
+  and redirect the audit to another commit (self-audit of 2026-11-13). When none resolves,
+  ``git fetch --no-recurse-submodules --no-tags --end-of-options <url> <ref>`` fetches it (for
   example a commit that no branch contains) and ``FETCH_HEAD`` is used. The commit is checked
   out as a detached HEAD with ``core.symlinks=false``. The manifest records the commit in
   ``git_ref`` and the given ref in ``requested_ref``. A ref is refused for a local folder.
@@ -87,7 +94,7 @@ import sys
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, Final
 from urllib.parse import urlsplit, urlunsplit
 
@@ -112,6 +119,7 @@ from kalkan.run.state import (
 )
 from kalkan.schema.loader import shared_schema
 from kalkan.schema.validator import validate
+from kalkan.tools.platform import find_on_path
 from kalkan.util import paths
 from kalkan.util.safe_io import atomic_write_json, read_bounded
 from kalkan.util.text import escape_unsafe_diagnostic_characters
@@ -330,6 +338,18 @@ def _sh_quote(text: str) -> str:
     return "'" + text.replace("'", "'\\''") + "'"
 
 
+def _find_git() -> str | None:
+    """Return the git executable from the absolute PATH entries, or None.
+
+    :func:`kalkan.tools.platform.find_on_path`, not ``shutil.which``: on Windows,
+    ``shutil.which`` searches the current folder first, so a ``git.exe``, ``git.bat`` or
+    ``git.cmd`` in an audited folder ran as the operator when kalkan started there (self-audit
+    of 2026-11-13).
+    """
+    found = find_on_path("git")
+    return str(found) if found is not None else None
+
+
 def copy_history(
     work_tree: Path,
     destination: Path,
@@ -341,7 +361,7 @@ def copy_history(
 
     Raises :class:`~kalkan.errors.ToolError` when git is missing, fails or times out.
     """
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH")
     upload_pack = (
@@ -406,9 +426,10 @@ def clone_repository(
 
     ``no_checkout`` leaves the work tree empty (:func:`checkout_ref` fills it). Raises
     :class:`~kalkan.errors.ToolError` when git is missing, fails or times out. Error messages
-    show ``display`` instead of the URL, so credentials never reach the output.
+    show ``display`` instead of the URL, so credentials never reach the output. When ``display``
+    differs from ``url`` (credentials), ``remote.origin.url`` of the clone becomes ``display``.
     """
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH; install git to audit a git URL")
     command = [
@@ -446,6 +467,16 @@ def clone_repository(
             f"git clone failed (exit {completed.returncode}): "
             f"{escape_unsafe_diagnostic_characters(tail)}"
         )
+    if display is not None and display != url:
+        stored = _git(
+            git,
+            destination,
+            ["config", "remote.origin.url", display],
+            GIT_QUERY_TIMEOUT_SECONDS,
+            scrub=(url, display),
+        )
+        if stored.returncode != 0:
+            raise ToolError("git config could not remove the credentials from the clone URL")
 
 
 def validate_ref(ref: object) -> str:
@@ -508,17 +539,23 @@ def checkout_ref(
     return the commit (module docstring).
 
     ``url`` and ``display``: the clone URL and its form without credentials; git messages show
-    ``display``. Raises :class:`~kalkan.errors.ValidationError` for an invalid ref,
+    ``display``. A fetch names ``url`` itself, because ``remote.origin.url`` holds ``display``
+    (:func:`clone_repository`). Raises :class:`~kalkan.errors.ValidationError` for an invalid ref,
     :class:`~kalkan.errors.KalkanError` when the ref does not exist and
     :class:`~kalkan.errors.ToolError` when git fails.
     """
     validate_ref(ref)
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH; install git to audit a git URL")
-    names = [f"refs/tags/{ref}^{{commit}}", f"refs/remotes/origin/{ref}^{{commit}}"]
-    if _HEX_REF.fullmatch(ref):
-        names.append(f"{ref}^{{commit}}")
+    full = ref.lower() if _GIT_SHA.fullmatch(ref.lower()) else None
+    if full is not None:
+        # A full commit ID is immutable: no tag or branch of the same name may win.
+        names = [f"{full}^{{commit}}"]
+    else:
+        names = [f"refs/tags/{ref}^{{commit}}", f"refs/remotes/origin/{ref}^{{commit}}"]
+        if _HEX_REF.fullmatch(ref):
+            names.append(f"{ref}^{{commit}}")
     commit = next((c for c in (_resolve(git, repo, name) for name in names) if c), None)
     scrub = (url, display or "<url>") if url else None
     shown = escape_unsafe_diagnostic_characters(ref)
@@ -526,7 +563,14 @@ def checkout_ref(
         fetched = _git(
             git,
             repo,
-            ["fetch", "--no-recurse-submodules", "--no-tags", "--end-of-options", "origin", ref],
+            [
+                "fetch",
+                "--no-recurse-submodules",
+                "--no-tags",
+                "--end-of-options",
+                url or "origin",
+                ref,
+            ],
             timeout_seconds,
             scrub=scrub,
         )
@@ -535,6 +579,10 @@ def checkout_ref(
     if commit is None:
         raise KalkanError(
             f"the ref {shown!r} was not found in the repository (tag, branch or commit)"
+        )
+    if full is not None and commit.lower() != full:
+        raise KalkanError(
+            f"the commit ID {shown!r} resolved to another commit ({commit}); the audit stops"
         )
     done = _git(
         git, repo, ["checkout", "--detach", "--quiet", commit, "--"], timeout_seconds, scrub=scrub
@@ -550,7 +598,7 @@ def checkout_ref(
 
 def git_head(directory: Path) -> str | None:
     """Return the HEAD commit of the git work tree that contains ``directory``, else None."""
-    git = shutil.which("git")
+    git = _find_git()
     if git is None:
         return None
     command = [
@@ -596,9 +644,43 @@ def _read_small(path: Path, limit: int = _HEAD_MAX_BYTES) -> str | None:
         return None
 
 
+def _confined_folder(root: Path, base: Path, value: str) -> Path | None:
+    """Return the folder that the path ``value`` (from a git pointer file, relative to ``base``)
+    names, or None when it is not a real folder inside ``root``.
+
+    The value comes from the audited folder (a ``gitdir:`` line, a ``commondir`` file). It is
+    checked as text before any file system call: an absolute path, a drive, a UNC path or a
+    long-path (question mark) form is refused, because even a lookup of a UNC path sends an
+    SMB request with the NTLM hash of the operator on Windows (self-audit of 2026-11-13).
+    Inside ``root`` the
+    walk checks each part with ``lstat``, so it never passes a link.
+    """
+    text = value.strip()
+    if not text or "\0" in text:
+        return None
+    windows = PureWindowsPath(text)
+    if windows.drive or windows.anchor or text.startswith(("/", "\\")) or os.path.isabs(text):
+        return None
+    top = os.path.normpath(os.path.abspath(root))
+    joined = os.path.normpath(os.path.join(os.path.abspath(base), text))
+    top_key, joined_key = os.path.normcase(top), os.path.normcase(joined)
+    if joined_key != top_key and not joined_key.startswith(top_key.rstrip(os.sep) + os.sep):
+        return None
+    current = Path(top)
+    for part in Path(os.path.relpath(joined, top)).parts:
+        if part in ("", os.curdir):
+            continue
+        current = current / part
+        if not _is_real_directory(current):
+            return None
+    return current
+
+
 def _git_folder(work_tree: Path) -> Path | None:
     """Return the git folder of the work tree root ``work_tree`` (a ``.git`` folder, or the folder
-    that the ``gitdir:`` line of a ``.git`` file names). Links are never followed."""
+    that the ``gitdir:`` line of a ``.git`` file names). Links are never followed, and a
+    ``gitdir:`` folder must be inside ``work_tree`` (:func:`_confined_folder`): before, the
+    line could name another repository of the operator or a UNC path."""
     entry = work_tree / ".git"
     try:
         info = os.lstat(entry)
@@ -613,18 +695,42 @@ def _git_folder(work_tree: Path) -> Path | None:
     text = _read_small(entry) or ""
     for line in text.splitlines():
         if line.startswith("gitdir:"):
-            named = Path(line.split(":", 1)[1].strip())
-            folder = named if named.is_absolute() else work_tree / named
-            return folder if _is_real_directory(folder) else None
+            return _confined_folder(work_tree, work_tree, line.split(":", 1)[1])
     return None
 
 
-def _ref_commit(git_folder: Path, ref: str) -> str | None:
+#: Git files that make git read objects from another place; a history copy refuses them.
+_ALTERNATES: Final = ("objects/info/alternates", "objects/info/http-alternates")
+
+
+def _history_refusal(work_tree: Path, git_folder: Path) -> str | None:
+    """Return why the history of ``work_tree`` is not copied, or None.
+
+    git itself follows a ``commondir`` file and the alternates files of the git folder. A
+    value from the audited folder could name a UNC path or another local repository there, so
+    a ``commondir`` must name a folder inside the work tree, and no alternates file may exist.
+    """
+    common = git_folder
+    if os.path.lexists(git_folder / "commondir"):
+        found = _confined_folder(work_tree, git_folder, _read_small(git_folder / "commondir") or "")
+        if found is None:
+            return "the commondir file of the git folder names no folder inside the target"
+        common = found
+    for base in dict.fromkeys((git_folder, common)):
+        for name in _ALTERNATES:
+            if os.path.lexists(base / name):
+                return f"the git folder has {name} (objects from another place)"
+    return None
+
+
+def _ref_commit(git_folder: Path, ref: str, work_tree: Path) -> str | None:
     common = git_folder
     pointer = _read_small(git_folder / "commondir")
     if pointer and pointer.strip():
-        named = Path(pointer.strip())
-        common = named if named.is_absolute() else git_folder / named
+        found = _confined_folder(work_tree, git_folder, pointer)
+        if found is None:
+            return None
+        common = found
     for base in dict.fromkeys((git_folder, common)):
         value = (_read_small(base / ref) or "").strip()
         if _GIT_SHA.fullmatch(value):
@@ -663,7 +769,7 @@ def read_head(directory: Path) -> str | None:
             return head
         if head.startswith("ref:"):
             ref = head[4:].strip()
-            return _ref_commit(git_folder, ref) if _REF_NAME.fullmatch(ref) else None
+            return _ref_commit(git_folder, ref, folder) if _REF_NAME.fullmatch(ref) else None
         return None
     return None
 
@@ -971,12 +1077,16 @@ def _local_history(
             "status": "none",
             "detail": "the target folder is not the root of a git work tree (no .git entry)",
         }
-    if _git_folder(folder) is None:
+    git_folder = _git_folder(folder)
+    if git_folder is None:
         return None, {
             "status": "failed",
-            "detail": "the .git entry of the target is a link or "
-            "names no git folder; no history copy",
+            "detail": "the .git entry of the target is a link or names no git folder inside "
+            "the target; no history copy",
         }
+    refusal = _history_refusal(folder, git_folder)
+    if refusal:
+        return None, {"status": "failed", "detail": f"{refusal}; no history copy"}
     destination = run_dir / SOURCE_DIRNAME
     try:
         copy_history(folder, destination, timeout_seconds=timeout_seconds)
