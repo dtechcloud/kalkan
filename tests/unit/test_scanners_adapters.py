@@ -512,6 +512,20 @@ def test_go_env(tmp_path, monkeypatch, with_go):
     assert offline["GOSUMDB"] == "off"
 
 
+def test_go_env_local_mode_has_no_direct_fetch_path(tmp_path, monkeypatch, with_go):
+    # cmd/go fetches a GONOPROXY or GOPRIVATE module straight from its host, also with
+    # GOPROXY=off (self-audit of 2026-11-13).
+    for key in ("GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOINSECURE"):
+        monkeypatch.setenv(key, "corp.example")
+    offline = _common.go_env(make_ctx(tmp_path, offline=True))
+    for key in ("GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOINSECURE"):
+        assert key not in offline
+    assert offline["GOVCS"] == "*:off"
+    online = _common.go_env(make_ctx(tmp_path))
+    assert online["GONOPROXY"] == "corp.example"
+    assert "GOVCS" not in online
+
+
 def test_go_env_with_a_system_go_keeps_its_goroot(tmp_path, monkeypatch):
     system = GoToolchain(Path("/usr/local/go/bin/go"), "1.26.1", "path")
     monkeypatch.setattr(_common, "go_resolver", lambda allow_path=False: system)
