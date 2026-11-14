@@ -73,6 +73,20 @@ EXIT_OK: Final = 0
 EXIT_ERROR: Final = 1
 
 #: The launcher of the plugin install (``plugins/kalkan/bin/kalkan-unattended``).
+
+#: Why ``--host codex`` needs ``--accept-codex-risk`` (self-audit of 2026-11-13, high). A Codex
+#: subagent writes anywhere in the checkout: the engine source (installed editable), ``.venv``
+#: and ``.codex``. Two engine commands run outside the Codex sandbox, and every round starts a
+#: new Codex session that reads ``.codex`` again; a prompt-injected subagent can thus run code
+#: as the operator. Claude Code limits each subagent to read rules and one result file.
+CODEX_RISK = (
+    "--host codex is not safe for a target you do not trust: a prompt-injected Codex subagent "
+    "can write anywhere in the kalkan checkout (the engine source, .venv and .codex), and the "
+    "engine commands that run outside the Codex sandbox then run that code as you "
+    "(docs/SECURITY.md, Codex mode). Audit an untrusted target with Claude Code (--host claude "
+    "or the plugin). For a target you trust, add --accept-codex-risk."
+)
+
 PLUGIN_COMMAND: Final = "kalkan-unattended"
 
 HELP: Final = "Run or resume an audit headless and wait through usage-limit resets."
@@ -179,6 +193,12 @@ def register(subparsers: argparse._SubParsersAction) -> None:
         choices=hosts.host_names(),
         default="claude",
         help="agent CLI that runs the rounds (default: claude)",
+    )
+    parser.add_argument(
+        "--accept-codex-risk",
+        action="store_true",
+        help="with --host codex: run although a prompt-injected Codex subagent can change the "
+        "engine in the checkout (docs/SECURITY.md); use it only for a target you trust",
     )
     parser.add_argument(
         "--log-dir",
@@ -408,6 +428,7 @@ def prepare(
     plugin: bool | None = None,
     max_usd: float | None = None,
     lang: str = "en",
+    accept_codex_risk: bool = False,
 ) -> Launch:
     """Check the options of an unattended run and return its :class:`Launch`.
 
@@ -426,6 +447,8 @@ def prepare(
             f"the Claude Code plugin runs only Claude Code rounds, not {host_name}. "
             "--host codex needs a kalkan checkout (docs/CODEX.md)."
         )
+    if host_name == "codex" and not accept_codex_risk:
+        raise KalkanError(CODEX_RISK)
     normalized = None if target is None else normalize_target(target, cwd=_cwd())
     options = loop_mod.UnattendedOptions(
         target=normalized,
@@ -528,6 +551,7 @@ def _cmd_unattended(args: argparse.Namespace) -> int:
         plugin=plugin,
         max_usd=args.max_usd,
         lang=args.lang or "en",
+        accept_codex_risk=args.accept_codex_risk,
     )
     if args.dry_run:
         return _dry_run(args, launch)

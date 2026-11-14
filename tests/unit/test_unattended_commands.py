@@ -357,7 +357,10 @@ def test_normalize_target_rejects_a_file(tmp_path):
 
 
 def test_codex_dry_run(env, capsys):
-    assert main(["unattended", "app", "--host", "codex", "--dry-run", "--json"]) == EXIT_OK
+    assert (
+        main(["unattended", "app", "--host", "codex", "--accept-codex-risk", "--dry-run", "--json"])
+        == EXIT_OK
+    )
     data = json.loads(capsys.readouterr().out)
     assert data["host"] == "codex"
     (later,) = (item["argv"] for item in data["rounds"])
@@ -380,14 +383,31 @@ def test_codex_dry_run(env, capsys):
     ]
     placeholder = f"$kalkan devam {commands.RUN_ID_PLACEHOLDER} --headless"
     assert later == ["/opt/codex/bin/codex", *flags, placeholder]
-    assert main(["unattended", "devam", RUN, "--host", "codex", "--dry-run", "--json"]) == 0
+    assert (
+        main(
+            [
+                "unattended",
+                "devam",
+                RUN,
+                "--host",
+                "codex",
+                "--accept-codex-risk",
+                "--dry-run",
+                "--json",
+            ]
+        )
+        == 0
+    )
     data = json.loads(capsys.readouterr().out)
     assert data["rounds"][0]["argv"][-1] == f"$kalkan devam {RUN} --headless"
 
 
 def test_codex_refuses_a_git_url(env, capsys):
     url = "https://github.com/org/repo.git"
-    assert main(["unattended", url, "--host", "codex", "--dry-run"]) == EXIT_ERROR
+    assert (
+        main(["unattended", url, "--host", "codex", "--accept-codex-risk", "--dry-run"])
+        == EXIT_ERROR
+    )
     assert "Clone the repository first" in capsys.readouterr().err
     assert main(["unattended", url, "--dry-run"]) == EXIT_OK  # Claude Code clones it itself
 
@@ -397,14 +417,18 @@ def test_a_real_codex_run_without_codex_is_a_tool_error(env, monkeypatch, capsys
         return hosts.create_host(name, finder=lambda _name: None, require=require)
 
     monkeypatch.setattr(commands, "_create_host", no_program)
-    assert main(["unattended", "devam", "--host", "codex"]) == EXIT_TOOL_MISSING
+    assert (
+        main(["unattended", "devam", "--host", "codex", "--accept-codex-risk"]) == EXIT_TOOL_MISSING
+    )
     assert "codex login" in capsys.readouterr().err
 
 
 def test_ctrl_c_hint_names_the_codex_host(env, monkeypatch, capsys):
     install_fake_loop(monkeypatch, behavior="interrupt")
-    assert main(["unattended", "devam", "--host", "codex"]) == EXIT_ERROR
-    assert f"kalkan unattended devam {RUN} --host codex" in capsys.readouterr().err
+    assert main(["unattended", "devam", "--host", "codex", "--accept-codex-risk"]) == EXIT_ERROR
+    assert (
+        f"kalkan unattended devam {RUN} --host codex --accept-codex-risk" in capsys.readouterr().err
+    )
 
 
 def test_untrusted_workspace_stops_before_any_round(env, monkeypatch, capsys):
@@ -516,3 +540,15 @@ def test_plugin_host_keeps_the_executable_and_refuses_other_hosts():
     assert host.executable == "/usr/bin/claude" and host.skill == "/kalkan:kalkan"
     with pytest.raises(KalkanError, match="codex"):
         commands.plugin_host(CodexHost("/usr/bin/codex"))
+
+
+def test_the_codex_host_needs_the_risk_flag(env, monkeypatch, capsys):
+    # A prompt-injected Codex subagent can change the engine in the checkout (self-audit of
+    # 2026-11-13); --host codex runs only after an explicit choice.
+    def no_host(name, require):
+        raise AssertionError("the host must not be created")
+
+    monkeypatch.setattr(commands, "_create_host", no_host)
+    assert main(["unattended", "app", "--host", "codex", "--dry-run"]) == EXIT_ERROR
+    err = capsys.readouterr().err
+    assert "not safe for a target you do not trust" in err and "--accept-codex-risk" in err

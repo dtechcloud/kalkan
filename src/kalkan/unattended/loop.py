@@ -307,9 +307,9 @@ def resume_hint(
 
     ``<command> devam <run-id>`` when the run exists, else ``<command> <target> --profile
     <profile>`` (the run was not created), else ``<command> devam``. A host other than Claude
-    Code adds ``--host <name>``.
+    Code adds ``--host <name>`` (and ``--accept-codex-risk`` for Codex).
     """
-    host = "" if host_name == "claude" else f" --host {host_name}"
+    host = host_option(host_name)
     if run_id is not None:
         return f"{command} devam {run_id}{host}"
     if target is not None:
@@ -328,6 +328,15 @@ def format_command(argv: Sequence[str]) -> str:
 def log_file_name(moment: datetime) -> str:
     """Return ``unattended-<UTC yyyymmddThhmmssZ>.log``."""
     return f"unattended-{ids.as_utc(moment).strftime('%Y%m%dT%H%M%SZ')}.log"
+
+
+def host_option(host_name: str) -> str:
+    """Return the host options of a resume command: none for Claude Code, else ``--host <name>``,
+    and ``--accept-codex-risk`` for Codex (the run cannot continue without it)."""
+    if host_name == "claude":
+        return ""
+    risk = " --accept-codex-risk" if host_name == "codex" else ""
+    return f" --host {host_name}{risk}"
 
 
 def status_command(run_id: str, python: str | None = None) -> list[str]:
@@ -1467,7 +1476,7 @@ class UnattendedLoop:
     # -- results --------------------------------------------------------------------------
 
     def _host_option(self) -> str:
-        return "" if self._host.name == "claude" else f" --host {self._host.name}"
+        return host_option(self._host.name)
 
     def _resume_hint(self) -> str:
         options = self.options

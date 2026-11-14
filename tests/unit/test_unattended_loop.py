@@ -346,7 +346,7 @@ def test_prompt_command_and_hint_helpers():
         "--json",
     ]
     assert resume_hint("kalkan unattended", "claude", RUN) == f"kalkan unattended devam {RUN}"
-    assert resume_hint("kalkan unattended", "codex", RUN).endswith(f"devam {RUN} --host codex")
+    assert resume_hint("kalkan unattended", "codex", RUN).endswith(f"devam {RUN} --host codex --accept-codex-risk")
     spaced = resume_hint("kalkan-unattended", "claude", None, "C:/My Code/app", "deep")
     assert spaced == 'kalkan-unattended "C:/My Code/app" --profile deep'
     assert resume_hint("kalkan unattended", "claude", None) == "kalkan unattended devam"
@@ -1011,7 +1011,7 @@ def test_codex_out_of_credits_stops_the_loop(tmp_path):
     result = run(tmp_path, harness, target=None, host=codex_host())
     assert result.exit_code == 1 and result.reason == "host_blocked"
     assert "out of credits" in result.message
-    assert f"kalkan unattended devam {RUN} --host codex" in result.message
+    assert f"kalkan unattended devam {RUN} --host codex --accept-codex-risk" in result.message
     assert harness.clock.sleeps == []
 
 
