@@ -180,12 +180,15 @@ _DOTNET_SUFFIXES: Final = (".csproj", ".fsproj", ".vbproj", ".sln")
 _COMPOSE: Final = re.compile(r"(?:docker-)?compose(?:\.[a-z0-9_-]+)*\.ya?ml")
 _REQUIREMENT_NAME: Final = re.compile(r"\s*([A-Za-z0-9][A-Za-z0-9._-]*)")
 _NAME_SEPARATORS: Final = re.compile(r"[-_.]+")
-_GEM_RAILS: Final = re.compile(r"^\s*gem\s+[\"'](?:rails|railties)[\"']", re.MULTILINE)
+#: ``[ \t]`` and possessive repeats: ``^\s*`` in MULTILINE mode crossed line breaks, and a
+#: crafted Gemfile made the search quadratic (self-audit of 2026-11-13).
+_GEM_RAILS: Final = re.compile(r"^[ \t]*+gem[ \t]++[\"'](?:rails|railties)[\"']", re.MULTILINE)
 _K8S_API_VERSION: Final = re.compile(r"^apiVersion:[ \t]*\S", re.MULTILINE)
 _K8S_KIND: Final = re.compile(r"^kind:[ \t]*\S", re.MULTILINE)
 _SPRING: Final = re.compile(r"org\.springframework")
 _KOTLIN_BUILD: Final = re.compile(
-    r"org\.jetbrains\.kotlin|kotlin-maven-plugin|kotlin\(\s*\"|id\s*\(?\s*[\"']kotlin"
+    # Possessive repeats: "id" and a long run of spaces backtracked quadratically.
+    r"org\.jetbrains\.kotlin|kotlin-maven-plugin|kotlin\(\s*+\"|id\s*+\(?+\s*+[\"']kotlin"
 )
 
 

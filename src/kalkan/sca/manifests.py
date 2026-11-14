@@ -196,12 +196,16 @@ _COMPOSER_NAME: Final = re.compile(r"[A-Za-z0-9._-]+/[A-Za-z0-9._-]+")
 _COMPOSER_PLATFORM: Final = frozenset(
     {"php", "php-64bit", "hhvm", "composer", "composer-plugin-api", "composer-runtime-api"}
 )
-_GEM_LINE: Final = re.compile(r"""^\s*gem\s*\(?\s*(['"])([A-Za-z0-9._-]+)\1(.*)$""")
+#: Possessive repeats: with plain ``\s*`` on both sides of the optional ``(``, "gem" and a long
+#: run of spaces took seconds (quadratic backtracking; self-audit of 2026-11-13).
+_GEM_LINE: Final = re.compile(r"""^\s*+gem\s*+\(?+\s*+(['"])([A-Za-z0-9._-]+)\1(.*)$""")
 _GEM_ARG: Final = re.compile(r"""\s*,\s*(['"])([^'"]*)\1""")
 _GEM_EXACT: Final = re.compile(r"(?:=\s*)?(\d+(?:\.[0-9A-Za-z]+)*)")
 _GEM_LOCAL: Final = re.compile(r"\b(?:path|git|github|gitlab|bitbucket)\s*:|:(?:path|git)\s*=>")
 _PEP440_EXACT: Final = re.compile(r"===?\s*([0-9][0-9A-Za-z.!+_-]*)")
 _POETRY_EXACT: Final = re.compile(r"(?:==?)?\s*([0-9][0-9A-Za-z.!+_-]*)")
+#: The longest requirement string that :func:`_pep508` reads; a longer one counts as a range.
+MAX_REQUIREMENT_CHARS: Final = 1024
 _PEP508: Final = re.compile(r"\s*([A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?)\s*(\[[^\]]*\])?(.*)")
 _PYPI_NAME: Final = re.compile(r"[A-Za-z0-9](?:[A-Za-z0-9._-]*[A-Za-z0-9])?")
 _CARGO_EXACT: Final = re.compile(rf"=\s*({_SEMVER})")
@@ -706,6 +710,11 @@ def _pep508(requirement: object, parsed: _Parsed) -> None:
     if not isinstance(requirement, str):
         return
     text = requirement.split(";", 1)[0].strip()
+    if len(text) > MAX_REQUIREMENT_CHARS or any(ord(char) < 32 for char in text):
+        # No real requirement is that long or holds a line break. With a line break the
+        # fullmatch of _PEP508 backtracks quadratically (self-audit of 2026-11-13).
+        parsed.ranges += 1
+        return
     match = _PEP508.fullmatch(text)
     if match is None or not text:
         parsed.ranges += 1
