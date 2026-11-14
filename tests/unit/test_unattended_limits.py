@@ -162,7 +162,9 @@ def test_an_event_wins_over_later_text():
     reset = NOW + timedelta(hours=4)
     lines = [
         event({"status": "rejected", "resetsAt": epoch(reset)}),
-        json.dumps({"type": "result", "result": "You've hit your limit · resets 5pm"}),
+        json.dumps(
+            {"type": "result", "is_error": True, "result": "You've hit your limit · resets 5pm"}
+        ),
     ]
     found = parse(lines)
     assert found is not None and found.source == SOURCE_EVENT and found.reset_at == reset
@@ -449,3 +451,17 @@ def test_limit_info_to_dict():
 
 def test_lines_without_hints_and_non_strings_are_skipped():
     assert parse(["", "   ", '{"type":"assistant"}', None, 42]) is None
+
+
+def test_the_final_message_of_a_successful_round_is_no_limit_notice():
+    # The result field of a successful result event is model text, which can repeat the
+    # audited target (self-audit of 2026-11-13).
+    line = json.dumps(
+        {
+            "type": "result",
+            "subtype": "success",
+            "is_error": False,
+            "result": "The README says: usage limit reached · resets in 2 days",
+        }
+    )
+    assert parse([line]) is None
