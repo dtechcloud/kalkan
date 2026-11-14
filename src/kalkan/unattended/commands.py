@@ -470,6 +470,13 @@ def prepare(
     host = _create_host(host_name, require=not dry_run)
     if plugin:
         host = plugin_host(host)
+    if max_usd is not None and not callable(getattr(host, "budget_args", None)):
+        # The host reports no cost and takes no budget per round: the cap could never stop
+        # the run (self-audit of 2026-11-13).
+        raise KalkanError(
+            f"--max-usd needs a host that reports the cost of a round; {host.name} does not. "
+            "Run without --max-usd and watch the spend in the account, or use --host claude."
+        )
     if (
         normalized is not None
         and _URL.match(normalized)

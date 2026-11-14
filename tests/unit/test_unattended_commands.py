@@ -552,3 +552,12 @@ def test_the_codex_host_needs_the_risk_flag(env, monkeypatch, capsys):
     assert main(["unattended", "app", "--host", "codex", "--dry-run"]) == EXIT_ERROR
     err = capsys.readouterr().err
     assert "not safe for a target you do not trust" in err and "--accept-codex-risk" in err
+
+
+def test_codex_refuses_max_usd(env, capsys):
+    # Codex reports no cost and takes no budget per round: the cap could never stop the run
+    # (self-audit of 2026-11-13).
+    argv = ["unattended", "app", "--host", "codex", "--accept-codex-risk", "--dry-run"]
+    assert main([*argv, "--max-usd", "10"]) == EXIT_ERROR
+    assert "--max-usd needs a host that reports the cost" in capsys.readouterr().err
+    assert main(argv) == EXIT_OK

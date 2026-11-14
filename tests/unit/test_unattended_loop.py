@@ -1177,3 +1177,35 @@ def test_a_round_that_hit_the_budget_stops_the_loop(tmp_path):
     harness = Harness([Round(status=status_doc("done", 6))])
     run(tmp_path / "other", harness)
     assert "--max-budget-usd" not in harness.calls[0][0]
+
+
+def test_a_round_without_a_cost_counts_with_its_budget(tmp_path):
+    # A round stopped at its time limit reports no cost; it counts with the budget it got, so
+    # the next round cannot get the full cap again (self-audit of 2026-11-13).
+    run_dir = tmp_path / "runs" / RUN
+    run_dir.mkdir(parents=True)
+    (run_dir / "usage.jsonl").write_text('{"round": 1, "total_cost_usd": 30.0}\n', "utf-8")
+    harness = Harness(
+        [
+            Round(stdout=['{"type": "system"}'], status=status_doc("hunt", 1)),
+            Round(status=status_doc("done", 6)),
+        ]
+    )
+    result = run(tmp_path, harness, max_usd=50.0)
+    assert result.reason == "max_usd" and len(harness.calls) == 1
+    last = json.loads((run_dir / "usage.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+    assert last["budget_usd"] == 20.0 and "total_cost_usd" not in last
+    assert "recorded cost USD 50.00" in result.message
+
+
+def test_a_round_of_unknown_cost_stops_the_cap(tmp_path):
+    run_dir = tmp_path / "runs" / RUN
+    run_dir.mkdir(parents=True)
+    (run_dir / "usage.jsonl").write_text('{"round": 1, "result_event": false}\n', "utf-8")
+    harness = Harness([Round(status=status_doc("done", 6))])
+    result = run(tmp_path, harness, max_usd=50.0)
+    assert result.exit_code == 1 and result.reason == "max_usd"
+    assert "cannot be checked: 1 round(s)" in result.message
+    assert harness.calls == []
+    # Without the cap the same run goes on.
+    assert run(tmp_path, Harness([Round(status=status_doc("done", 6))])).exit_code == 0
