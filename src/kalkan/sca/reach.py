@@ -18,8 +18,11 @@ Rules of :func:`apply_reach_result`:
 
 - ``reachable`` needs at least one engine-verified quote, else ``unknown``
   (``unverified_evidence``).
-- ``not_reachable`` needs a non-empty ``searched`` list, else ``unknown``
-  (``ungrounded_not_reachable``). When the result cites quotes and none is verified, it also
+- ``not_reachable`` needs a non-empty ``searched`` list and at least one verified quote (the
+  import or manifest line that shows the usage scope), else ``unknown``
+  (``ungrounded_not_reachable``): a model-only answer, which target text can steer, never
+  lowers a severity (self-audit of 2026-11-13). When the result cites quotes and none is
+  verified, it also
   becomes ``unknown`` (``unverified_evidence``), as in the verdict policy of ENGINE-SPEC 6.3.
 - ``not_reachable`` lowers the severity by one level; ``severity_original`` keeps the old value.
   A record is never deleted.
@@ -70,7 +73,7 @@ __all__ = [
 AGENT_SEVERITIES = frozenset({"critical", "high"})
 #: Reason code: a ``reachable`` (or quoted ``not_reachable``) claim without a verified quote.
 UNVERIFIED_EVIDENCE = "unverified_evidence"
-#: Reason code: a ``not_reachable`` claim without a search list.
+#: Reason code: a ``not_reachable`` claim without a search list or without any quote.
 UNGROUNDED_NOT_REACHABLE = "ungrounded_not_reachable"
 #: At most this many govulncheck call traces become evidence of one record.
 MAX_TRACE_EVIDENCE = 5
@@ -471,9 +474,9 @@ def decide_reachability(
     if claimed == "reachable" and not evidence:
         return "unknown", _downgraded(UNVERIFIED_EVIDENCE, reason), [], searched
     if claimed == "not_reachable":
-        if not searched:
+        if not searched or not cited:
             return "unknown", _downgraded(UNGROUNDED_NOT_REACHABLE, reason), evidence, searched
-        if cited and not evidence:
+        if not evidence:
             return "unknown", _downgraded(UNVERIFIED_EVIDENCE, reason), [], searched
     return claimed, reason, evidence, searched
 

@@ -301,10 +301,11 @@ def test_apply_not_reachable_lowers_the_severity(run_dir, merge_calls):
     data = result(
         reachability="not_reachable",
         reason="yaml is imported only by a build script.",
-        evidence=[],
+        evidence=[{"file": "build.py", "line": 1, "quote": "import yaml"}],
         searched=["import yaml", "from yaml", "yaml.load"],
     )
-    apply_reach_result(run_dir, data, [])
+    verified = [{"file": "build.py", "line": 1, "quote": "import yaml"}]
+    apply_reach_result(run_dir, data, verified)
     records = read_vulns(run_dir)["records"]
     assert len(records) == before  # never deleted
     record = find(records, PYYAML_REF)
@@ -315,7 +316,7 @@ def test_apply_not_reachable_lowers_the_severity(run_dir, merge_calls):
     )
     assert candidate["severity"] == "high"
     # A second identical result does not lower the severity again.
-    apply_reach_result(run_dir, data, [])
+    apply_reach_result(run_dir, data, verified)
     record = find(read_vulns(run_dir)["records"], PYYAML_REF)
     assert (record["severity"], record["severity_original"]) == ("high", "critical")
 
@@ -373,8 +374,14 @@ def test_decide_reachability_rules():
     verified = [{"file": "a.py", "line": 1, "quote": "import yaml"}]
     assert decide_reachability(result(), verified)[0] == "reachable"
     assert decide_reachability(result(), [])[0] == "unknown"
+    # A model-only not_reachable (no quote) never lowers a severity (self-audit of
+    # 2026-11-13).
     lowered = result(reachability="not_reachable", evidence=[], searched=["x"])
-    assert decide_reachability(lowered, [])[0] == "not_reachable"
+    decided = decide_reachability(lowered, [])
+    assert decided[0] == "unknown" and decided[1].startswith("ungrounded_not_reachable")
+    quoted = result(reachability="not_reachable", evidence=verified, searched=["x"])
+    assert decide_reachability(quoted, verified)[0] == "not_reachable"
+    assert decide_reachability(quoted, [])[0] == "unknown"
     assert decide_reachability(result(reachability="unknown", reason=""), [])[1] == ""
 
 

@@ -31,7 +31,7 @@ A record with `vendored` entries comes from a JavaScript library file that the t
    - `reachable`: the target's code calls the vulnerable function or feature. Quote the import line and the call line. Say in `reason` whether attacker-controlled data reaches the call, when you can see it.
    - `not_reachable`: the package is imported but the vulnerable part is never used, or the package is only a build, test or development dependency. List every pattern and path you searched in `searched`. Quote the import or the manifest line that shows the usage scope.
    - `unknown`: the package is used only through another dependency, the vulnerable part cannot be identified from the record, or dynamic loading hides the use. Explain in `reason`.
-5. Never claim `not_reachable` without a search list. When in doubt, answer `unknown`.
+5. Never claim `not_reachable` without a search list and a quote: the engine turns a `not_reachable` without a verified quote into `unknown`. When in doubt, answer `unknown`.
 
 ### Result fields
 
