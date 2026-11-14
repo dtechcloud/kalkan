@@ -34,6 +34,10 @@ GO_PASSTHROUGH = (
     "GOFLAGS",
     "GOINSECURE",
 )
+#: Go variables that open a direct fetch path past ``GOPROXY=off`` (cmd/go fetches a module
+#: that matches ``GONOPROXY`` or ``GOPRIVATE`` straight from its version control host, and
+#: ``GOINSECURE`` allows plain HTTP). Local mode removes them (:func:`go_env`).
+GO_DIRECT_FETCH = ("GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOINSECURE")
 #: The CycloneDX file in ``sca/`` with the exact pins of manifests without a lockfile
 #: (:mod:`kalkan.sca.manifests`); ``osv-scanner-pins`` and ``grype-pins`` read it.
 PINS_SBOM_NAME = "manifest-pins.cdx.json"
@@ -130,9 +134,12 @@ def go_env(ctx: ScanContext, work: Path | None = None) -> dict[str, str]:
     downloading and running the toolchain that a target ``go.mod`` names. Local mode (the
     default, docs/SECURITY.md) also sets ``GOPROXY=off`` and ``GOSUMDB=off``: Go downloads no
     module (the module paths and versions of the target would go to the proxy and the checksum
-    database), also not for a ``GONOPROXY`` or ``GOPRIVATE`` path. Packages whose modules are
-    not in the local module cache or a ``vendor`` folder then load with errors; gosec still
-    checks their syntax.
+    database). ``GOPROXY=off`` alone does not cover a module that matches ``GONOPROXY`` or
+    ``GOPRIVATE``: cmd/go fetches it straight from its version control host. Local mode thus
+    removes the :data:`GO_DIRECT_FETCH` variables of the user and sets ``GOVCS=*:off``, so a
+    target ``go.mod`` cannot make Go contact a host (self-audit of 2026-11-13). Packages whose
+    modules are not in the local module cache or a ``vendor`` folder then load with errors;
+    gosec still checks their syntax.
 
     ``work`` is the work folder of the adapter (:func:`go_prepare` fills it). Go then keeps its
     build cache there (``GOCACHE``; ``go list`` filled ``%LOCALAPPDATA%\\go-build`` with 93 MB
@@ -149,8 +156,11 @@ def go_env(ctx: ScanContext, work: Path | None = None) -> dict[str, str]:
         env.update(run_env(go))
     env["GOTOOLCHAIN"] = "local"
     if ctx.offline:
+        for key in GO_DIRECT_FETCH:
+            env.pop(key, None)
         env["GOPROXY"] = "off"
         env["GOSUMDB"] = "off"
+        env["GOVCS"] = "*:off"
     if work is not None:
         env["GOCACHE"] = str(work / GO_CACHE_DIRNAME)
         config = toolhome.go_config_env(work / toolhome.GO_CONFIG_DIRNAME)

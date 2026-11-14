@@ -5,6 +5,9 @@ from __future__ import annotations
 
 import io
 import json
+import os
+import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -638,3 +641,121 @@ def test_an_orchestrating_session_may_read_its_own_saved_output(data, tmp_path, 
     assert decision(hook.decide(event, **options)) == "allow"
     elsewhere = dict(event, session_id="s2")
     assert hook.decide(elsewhere, **options) is None  # other sessions follow the normal flow
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        "run init https://attacker.example/repo.git --json",
+        "run init git@attacker.example:org/repo.git --json",
+        "scan trivy --online --json",
+        "sca match --online",
+        "tools install --all",
+        "sca update-db --force",
+        "sandbox pull python:3.12-slim",
+        "unattended devam",
+        "run init ./app --allow-build-network --json",
+    ],
+)
+def test_a_marked_session_gets_no_allow_for_an_engine_network_command(data, args):
+    # The engine allow ran before the network deny (self-audit of 2026-11-13).
+    write_state(data, "hunt")
+    options = {"data": data.as_posix(), "windows": False, "runs": runs(data), "now": 1000.0}
+    fresh = engine(data, args, session="fresh")
+    assert decision(hook.decide(fresh, **options)) == "allow"  # no audit in that session yet
+    hook.decide(engine(data, f"run next --run {RUN_ID} --json"), **options)
+    out = hook.decide(engine(data, args), **options)
+    assert decision(out) == "deny", args
+    assert "can reach the network" in out["hookSpecificOutput"]["permissionDecisionReason"]
+    for offline in (f"run step --run {RUN_ID} --json", f"task complete T0001-recon --run {RUN_ID}"):
+        assert decision(hook.decide(engine(data, offline), **options)) == "allow"
+
+
+def test_the_session_mark_stays_with_its_run_until_that_run_is_done(data):
+    # One engine command that named a finished run ended the network deny before.
+    finished = "20261016T151915Z-old-5fc6"
+    write_state(data, "hunt")
+    (data / "runs" / finished).mkdir(parents=True)
+    (data / "runs" / finished / "state.json").write_text('{"phase": "done"}', encoding="utf-8")
+    options = {"data": data.as_posix(), "windows": False, "runs": runs(data), "now": 1000.0}
+    hook.decide(engine(data, f"run next --run {RUN_ID} --json"), **options)
+    hook.decide(engine(data, f"run status --run {finished} --json"), **options)
+    marker = data / "hook" / "sessions" / "s1.json"
+    assert json.loads(marker.read_text(encoding="utf-8"))["run"] == RUN_ID
+    assert decision(hook.decide(network_events("s1")[0], **options)) == "deny"
+    write_state(data, "done")  # the session's own run ends: a new run may take the mark
+    hook.decide(engine(data, f"run status --run {finished} --json"), **options)
+    assert json.loads(marker.read_text(encoding="utf-8"))["run"] == finished
+
+
+def test_grep_and_glob_never_read_env_files(data):
+    run = make_run_files(data)
+    hook.decide(read(prompt_of(data)), data=str(data), runs=runs(data))
+    target = str(run / "target")
+    denied = [
+        subagent("Grep", {"pattern": "SECRET", "path": f"{target}/.env"}),
+        subagent("Grep", {"pattern": "KEY", "path": target, "glob": "**/.env*"}),
+        subagent("Grep", {"pattern": "KEY", "path": f"{target}/config/.env.production"}),
+        subagent("Glob", {"pattern": "**/.env", "path": target}),
+    ]
+    for event in denied:
+        out = hook.decide(event, data=str(data), runs=runs(data))
+        assert decision(out) == "deny", event
+        assert ".env" in out["hookSpecificOutput"]["permissionDecisionReason"]
+    allowed = subagent("Grep", {"pattern": r"\.env", "path": target, "glob": "*.py"})
+    assert decision(hook.decide(allowed, data=str(data), runs=runs(data))) == "allow"
+    main = {"tool_name": "Grep", "tool_input": {"pattern": "x", "path": f"{target}/.env"}}
+    assert decision(hook.decide(main, data=str(data), runs=runs(data))) == "deny"
+
+
+def test_the_checkout_hook_confines_the_project_subagents(data, tmp_path):
+    # Checkout mode: the project agents are named kalkan-<role>; the orchestrator and other
+    # agents follow the settings (self-audit of 2026-11-13).
+    run = make_run_files(data)
+    options = {"data": str(data), "runs": runs(data), "checkout": True}
+
+    def checkout_event(event: dict) -> dict:
+        return event | {"agent_type": "kalkan-hunter"}
+
+    assert decision(hook.decide(checkout_event(read(prompt_of(data))), **options)) == "allow"
+    assert (
+        decision(
+            hook.decide(checkout_event(read(str(run / "target" / "app" / "db.py"))), **options)
+        )
+        == "allow"
+    )
+    assert (
+        decision(hook.decide(checkout_event(read(str(tmp_path / "secret.txt"))), **options))
+        == "deny"
+    )
+    assert decision(hook.decide(checkout_event(write(result_of(data))), **options)) == "allow"
+    other = result_of(data, "T0002-hunt")
+    assert decision(hook.decide(checkout_event(write(other)), **options)) == "deny"
+    # The plugin form of the name, the orchestrator and other agents get no decision here.
+    assert hook.decide(read(str(tmp_path / "secret.txt")), **options) is None
+    for agent in (None, "general-purpose", "my-kalkan-helper"):
+        event = read(str(tmp_path / "secret.txt"), agent=agent)
+        assert hook.decide(event, **options) is None, agent
+
+
+@pytest.mark.skipif(shutil.which("sh") is None, reason="needs sh")
+def test_the_checkout_launcher_runs_only_for_kalkan_subagents(tmp_path):
+    root = tmp_path / "repo"
+    (root / "scripts").mkdir(parents=True)
+    script = Path(__file__).resolve().parents[2] / "scripts" / "pre-tool-use-checkout.sh"
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": root.as_posix()}
+
+    def run(event: str) -> str:
+        proc = subprocess.run(
+            ["sh", str(script)],
+            input=event.encode(),
+            env=env,
+            timeout=60,
+            capture_output=True,
+            check=True,
+        )
+        return proc.stdout.decode()
+
+    assert run('{"tool_name":"Read","session_id":"s1"}') == ""  # the orchestrator
+    out = run('{"tool_name":"Read","agent_type":"kalkan-hunter"}')  # no .venv yet
+    assert '"permissionDecision": "deny"' in out and "no .venv" in out

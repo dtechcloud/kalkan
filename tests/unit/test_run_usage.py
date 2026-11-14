@@ -136,3 +136,27 @@ def test_an_api_run_says_that_the_account_paid(tmp_path):
     page = render_executive(model, "tr")
     assert "Maliyet: 7,50 USD, API hesabından ödendi (foundry)" in page
     assert "billed to foundry, estimate" in usage_text(model.usage)
+
+
+def test_usage_never_follows_a_planted_link(tmp_path):
+    # The unattended loop runs outside the Codex sandbox; a link that a sandboxed agent plants
+    # as usage.jsonl must not make it append to a file outside the run (self-audit of
+    # 2026-11-13).
+    import os
+
+    import pytest
+
+    from kalkan.errors import UnsafeInputError
+
+    outside = tmp_path / "operator.txt"
+    outside.write_text("keep\n", encoding="utf-8")
+    run_dir = tmp_path / "run"
+    run_dir.mkdir()
+    try:
+        os.symlink(outside, run_dir / usage.USAGE_NAME)
+    except (OSError, NotImplementedError) as exc:
+        pytest.skip(f"cannot create a symlink here: {exc}")
+    with pytest.raises(UnsafeInputError):
+        usage.append(run_dir, {"round": 1})
+    assert outside.read_text(encoding="utf-8") == "keep\n"
+    assert usage.load(run_dir) == []

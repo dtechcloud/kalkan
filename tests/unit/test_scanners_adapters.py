@@ -15,6 +15,7 @@ from kalkan.sca import vulndb
 from kalkan.scanners import registry
 from kalkan.scanners.adapters import _common, helm_checkov
 from kalkan.scanners.adapters.bandit import BanditAdapter
+from kalkan.scanners.adapters.checkov import LAUNCHER as CHECKOV_LAUNCHER
 from kalkan.scanners.adapters.checkov import CheckovAdapter
 from kalkan.scanners.adapters.gitleaks import (
     HISTORY_LOG_OPTS,
@@ -201,8 +202,9 @@ def test_checkov_command_cwd_and_env(tmp_path):
     stage = ctx.run_dir / "scans" / ".work" / "checkov" / "checkov.sarif"
     [item] = adapter.invocations(ctx, TOOL, stage)
     folder = stage.parent / "results"
-    assert list(item.argv) == [
-        str(TOOL),
+    python = TOOL.parent / ("python.exe" if os.name == "nt" else "python")
+    assert list(item.argv[:6]) == [str(python), "-I", "-X", "utf8", "-c", CHECKOV_LAUNCHER]
+    assert list(item.argv[6:]) == [
         "-d",
         ".",
         "-o",
@@ -508,6 +510,20 @@ def test_go_env(tmp_path, monkeypatch, with_go):
     offline = _common.go_env(make_ctx(tmp_path, offline=True))
     assert offline["GOPROXY"] == "off"
     assert offline["GOSUMDB"] == "off"
+
+
+def test_go_env_local_mode_has_no_direct_fetch_path(tmp_path, monkeypatch, with_go):
+    # cmd/go fetches a GONOPROXY or GOPRIVATE module straight from its host, also with
+    # GOPROXY=off (self-audit of 2026-11-13).
+    for key in ("GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOINSECURE"):
+        monkeypatch.setenv(key, "corp.example")
+    offline = _common.go_env(make_ctx(tmp_path, offline=True))
+    for key in ("GOPRIVATE", "GONOPROXY", "GONOSUMDB", "GOINSECURE"):
+        assert key not in offline
+    assert offline["GOVCS"] == "*:off"
+    online = _common.go_env(make_ctx(tmp_path))
+    assert online["GONOPROXY"] == "corp.example"
+    assert "GOVCS" not in online
 
 
 def test_go_env_with_a_system_go_keeps_its_goroot(tmp_path, monkeypatch):
@@ -1218,3 +1234,16 @@ def test_gosec_failed_package_load_gives_failed(tmp_path, with_go):
     res = run_adapter(GosecAdapter(), ctx, runner=runner, resolver=resolver)
     assert res.status == "failed"
     assert "could not load the Go packages" in res.message
+
+
+@pytest.fixture(autouse=True)
+def _checkov_launcher(monkeypatch):
+    """Give the fake Checkov paths a launcher Python: since the self-audit of 2026-11-13
+    Checkov never runs without one (a target .checkov.yaml could run target code)."""
+    from kalkan.scanners.adapters import checkov, helm_checkov
+
+    def python_next_to(tool_path):
+        return Path(tool_path).parent / ("python.exe" if os.name == "nt" else "python")
+
+    monkeypatch.setattr(checkov, "launcher_python", python_next_to)
+    monkeypatch.setattr(helm_checkov, "launcher_python", python_next_to)

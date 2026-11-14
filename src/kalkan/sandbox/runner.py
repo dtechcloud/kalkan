@@ -39,6 +39,7 @@ from kalkan.matchers.safety import MAX_LINE_LENGTH, regex_safety_error
 from kalkan.resources import home
 from kalkan.sandbox.evidence import promote
 from kalkan.sandbox.redact import redact, redact_file
+from kalkan.tools.platform import find_on_path
 from kalkan.util.paths import is_safe_relative_path
 
 __all__ = ["allowed_images", "docker_available", "docker_path", "run_poc"]
@@ -126,8 +127,8 @@ def docker_path() -> Path | None:
     if override:
         candidate = Path(override)
         return candidate if candidate.exists() else None
-    found = shutil.which("docker")
-    return Path(found) if found else None
+    # find_on_path never searches the current folder (shutil.which does on Windows).
+    return find_on_path("docker")
 
 
 def _pin_file() -> Path:
@@ -300,6 +301,18 @@ def docker_available() -> bool:
         and result.exit_code == 0
         and bool(result.stdout.strip())
     )
+
+
+def image_id(docker: Path, ref: str) -> str | None:
+    """Return the local image ID (``sha256:...``) of ``ref``, or None when it is not present."""
+    result = _capture(
+        [str(docker), "image", "inspect", "--format", "{{.Id}}", ref],
+        timeout=ENGINE_TIMEOUT_SECONDS,
+    )
+    if result.error is not None or result.timed_out or result.exit_code != 0:
+        return None
+    value = result.stdout.strip()
+    return value if value.startswith("sha256:") else None
 
 
 def _image_present(docker: Path, ref: str) -> bool:

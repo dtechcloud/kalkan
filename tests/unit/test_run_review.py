@@ -277,14 +277,29 @@ def test_downgrade_without_severity_makes_needs_validation(ctx):
         assert gone not in reviewed
 
 
-def test_reject_with_a_verified_quote_rejects_the_record(ctx):
+def test_a_grounded_reject_of_a_confirmed_record_is_a_downgrade(ctx):
+    # One review step steered by target text must not remove a record that needed three
+    # established answers (self-audit of 2026-11-13).
     _, task = review_task(ctx)
     outcome, reviewed = run_review(ctx, task, result_for(task, "reject", evidence=[BINDING]))
-    assert outcome["decision"] == "reject" and outcome["verdict_after"] == "rejected"
-    assert reviewed["verdict"] == "rejected"
-    assert reviewed["reason"] == outcome["reason"]
+    assert outcome["requested"] == "reject" and outcome["decision"] == "downgrade"
+    assert outcome["verdict_after"] == "needs_validation"
+    assert reviewed["verdict"] == "needs_validation"
+    assert reviewed["blockers"] == [outcome["reason"], review.SINGLE_REVIEW_REJECTION]
     assert reviewed["claimed_root_cause"]
     assert outcome["evidence"][0]["quote_status"] == "verified"
+
+
+def test_a_reject_quote_must_be_in_a_file_of_the_record(ctx):
+    # A verified quote in another target file (for example a planted comment) does not ground
+    # a reject (self-audit of 2026-11-13).
+    _, task = review_task(ctx, confirmed=False)
+    result = result_for(task, "reject")
+    result["evidence"] = [{"file": "requirements.txt", "line": 1, "quote": "flask==3.0.3"}]
+    outcome, reviewed = run_review(ctx, task, result)
+    assert outcome["evidence"][0]["quote_status"] == "verified"
+    assert outcome["decision"] == "downgrade"
+    assert review.UNGROUNDED_REJECTION in reviewed["blockers"]
 
 
 def test_reject_without_a_verified_quote_is_a_downgrade(ctx):
@@ -530,7 +545,9 @@ def test_one_review_task_per_final_record(ctx):
 
 def test_merge_applies_reviews_and_the_poc_skips_rejected_records(ctx):
     kept = make_verified(ctx, ref="T0001-hunt#0", scope="a", line=13)
-    gone = make_verified(ctx, ref="T0001-hunt#1", scope="b", line=14)
+    # A needs_validation record: one grounded reject removes it (a confirmed record would
+    # become needs_validation, test_a_grounded_reject_of_a_confirmed_record_is_a_downgrade).
+    gone = make_verified(ctx, confirmed=False, ref="T0001-hunt#1", scope="b", line=14)
     create_review_tasks(ctx)
     for task_id, task in review_tasks(ctx):
         decision = "verified" if task["meta"]["verify_tasks"] == [kept] else "reject"
@@ -568,7 +585,7 @@ def test_merge_skips_an_outcome_whose_record_changed(ctx):
 
 
 def test_merge_takes_the_most_conservative_of_several_outcomes(ctx):
-    task_id, task = review_task(ctx)
+    task_id, task = review_task(ctx, confirmed=False)
     reject = result_for(task, "reject", evidence=[BINDING])
     (ctx.task_dir(task_id) / "result.json").write_text(json.dumps(reject), encoding="utf-8")
     queue.complete(ctx, task_id)
@@ -576,7 +593,10 @@ def test_merge_takes_the_most_conservative_of_several_outcomes(ctx):
     second = queue.create_task(ctx, "review", "validate", {}, meta=dict(task["meta"]))
     outcome = json.loads((ctx.task_dir(task_id) / "review.json").read_text(encoding="utf-8"))
     outcome.update(
-        task_id=second, requested="verified", decision="verified", verdict_after="confirmed"
+        task_id=second,
+        requested="verified",
+        decision="verified",
+        verdict_after="needs_validation",
     )
     (ctx.task_dir(second) / "review.json").write_text(json.dumps(outcome), encoding="utf-8")
     with state.transaction(ctx) as tx:

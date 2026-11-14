@@ -473,7 +473,7 @@ def test_clone_command_line(tmp_path, monkeypatch):
         calls.append((command, kwargs))
         return completed(command)
 
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: "/opt/git/bin/git")
+    monkeypatch.setattr(init_mod, "_find_git", lambda: "/opt/git/bin/git")
     monkeypatch.setattr(init_mod.subprocess, "run", run)
     destination = tmp_path / "source"
     init_mod.clone_repository("https://example.com/org/repo.git", destination, timeout_seconds=99)
@@ -499,7 +499,7 @@ def test_clone_command_line(tmp_path, monkeypatch):
 
 def test_clone_errors_hide_credentials(tmp_path, monkeypatch):
     url = "https://user:s3cret@example.com/org/repo.git"
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: "git")
+    monkeypatch.setattr(init_mod, "_find_git", lambda: "git")
     monkeypatch.setattr(
         init_mod.subprocess,
         "run",
@@ -520,7 +520,7 @@ def test_clone_errors_hide_credentials(tmp_path, monkeypatch):
 def test_missing_git_removes_the_new_run(tmp_path, monkeypatch):
     root = tmp_path / "runs"
     earlier = init_mod.init_run(str(webapp(tmp_path)), runs_dir=root)
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: None)
+    monkeypatch.setattr(init_mod, "_find_git", lambda: None)
     with pytest.raises(ToolError, match="git is not installed"):
         init_mod.init_run("https://example.com/org/repo.git", runs_dir=root)
     assert [path.name for path in root.iterdir() if path.is_dir()] == [earlier.run_id]
@@ -563,7 +563,7 @@ def test_git_head_of_a_work_tree(tmp_path, monkeypatch):
 
 
 def test_git_head_without_git(tmp_path, monkeypatch):
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: None)
+    monkeypatch.setattr(init_mod, "_find_git", lambda: None)
     assert ORIGINAL_GIT_HEAD(tmp_path) is None
 
 
@@ -616,7 +616,7 @@ def test_clone_without_checkout(tmp_path, monkeypatch):
         calls.append(command)
         return completed(command)
 
-    monkeypatch.setattr(init_mod.shutil, "which", lambda name: "/opt/git/bin/git")
+    monkeypatch.setattr(init_mod, "_find_git", lambda: "/opt/git/bin/git")
     monkeypatch.setattr(init_mod.subprocess, "run", run)
     init_mod.clone_repository("https://example.com/r.git", tmp_path / "s", no_checkout=True)
     assert calls[0][:4] == ["/opt/git/bin/git", "clone", "--no-recurse-submodules", "--no-checkout"]
@@ -681,6 +681,15 @@ def origin(tmp_path, monkeypatch) -> tuple[Path, dict[str, str], dict[str, str]]
         git("clone", "-q", *flags, str(repo), str(destination), cwd=tmp_path, env=env)
 
     test_env = {key: value for key, value in env.items() if key != "GIT_ALLOW_PROTOCOL"}
+    # A fetch names the URL itself (remote.origin.url holds the URL without credentials):
+    # git maps the test URL to the local repository.
+    test_env.update(
+        {
+            "GIT_CONFIG_COUNT": "1",
+            "GIT_CONFIG_KEY_0": f"url.{repo.as_posix()}.insteadOf",
+            "GIT_CONFIG_VALUE_0": "https://example.com/org/repo.git",
+        }
+    )
     monkeypatch.setattr(init_mod, "clone_repository", local_clone)
     monkeypatch.setattr(init_mod, "_git_env", lambda: dict(test_env))
     monkeypatch.setattr(init_mod, "git_head", ORIGINAL_GIT_HEAD)
@@ -778,3 +787,100 @@ def test_long_paths_enabled_reads_the_registry():
         assert value in (True, False, None)
     else:
         assert value is None
+
+
+def test_a_planted_git_in_the_current_folder_is_never_used(tmp_path, monkeypatch):
+    # shutil.which searched the current folder first on Windows; a git.exe or git.bat in an
+    # audited folder then ran as the operator (self-audit of 2026-11-13).
+    planted = tmp_path / "audited"
+    planted.mkdir()
+    for name in ("git", "git.exe", "git.bat", "git.cmd"):
+        script = planted / name
+        script.write_text("#!/bin/sh\necho planted\n", encoding="utf-8")
+        script.chmod(0o755)
+    monkeypatch.chdir(planted)
+    monkeypatch.setenv("PATH", os.pathsep.join(["", ".", "audited"]))
+    assert init_mod._find_git() is None
+    monkeypatch.setenv("PATH", str(planted))
+    assert init_mod._find_git() is not None  # an absolute PATH entry is used
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        r"\\attacker.example\share\repo.git",
+        "//attacker.example/share/repo.git",
+        r"\\?\UNC\attacker.example\share",
+        r"C:\Users\someone\other\.git",
+        "/home/someone/other/.git",
+        "../other/.git",
+        "sub/../../outside",
+    ],
+)
+def test_a_gitdir_outside_the_target_is_refused_without_a_lookup(tmp_path, monkeypatch, value):
+    # A gitdir: line could name a UNC path (an SMB request leaks the NTLM hash on Windows) or
+    # another repository of the operator (self-audit of 2026-11-13).
+    work = tmp_path / "target"
+    work.mkdir()
+    (work / ".git").write_text(f"gitdir: {value}\n", encoding="utf-8")
+    seen: list[str] = []
+    real_lstat = os.lstat
+
+    def lstat(path, *args, **kwargs):
+        seen.append(str(path))
+        return real_lstat(path, *args, **kwargs)
+
+    monkeypatch.setattr(init_mod.os, "lstat", lstat)
+    assert init_mod._git_folder(work) is None
+    assert not any("attacker" in item or "someone" in item for item in seen), seen
+
+
+def test_a_gitdir_inside_the_target_is_used(tmp_path):
+    work = tmp_path / "target"
+    (work / "modules" / "app.git").mkdir(parents=True)
+    (work / ".git").write_text("gitdir: modules/app.git\n", encoding="utf-8")
+    assert init_mod._git_folder(work) == work / "modules" / "app.git"
+
+
+def test_history_refuses_a_commondir_outside_or_alternates(tmp_path):
+    work = tmp_path / "target"
+    git = work / ".git"
+    (git / "objects" / "info").mkdir(parents=True)
+    assert init_mod._history_refusal(work, git) is None
+    (git / "commondir").write_text(r"\\attacker.example\share" + "\n", encoding="utf-8")
+    assert "commondir" in init_mod._history_refusal(work, git)
+    (git / "commondir").unlink()
+    (git / "objects" / "info" / "alternates").write_text("/elsewhere/objects\n", encoding="utf-8")
+    assert "alternates" in init_mod._history_refusal(work, git)
+
+
+def test_the_clone_keeps_no_credentials_in_its_config(tmp_path, origin, monkeypatch):
+    # git stores the clone URL as given in .git/config; the token of an https URL stayed in the
+    # run folder (self-audit of 2026-11-13).
+    repo, env, _commits = origin
+    monkeypatch.undo()
+    monkeypatch.setattr(
+        init_mod,
+        "_git_env",
+        lambda: {key: value for key, value in env.items() if key != "GIT_ALLOW_PROTOCOL"},
+    )
+    destination = tmp_path / "source"
+    display = "https://example.com/org/repo.git"
+    init_mod.clone_repository(str(repo), destination, display=display, no_checkout=True)
+    config = (destination / ".git" / "config").read_text(encoding="utf-8")
+    assert display in config
+    assert repo.as_posix() not in config and str(repo) not in config
+
+
+def test_a_full_commit_id_never_resolves_as_a_tag_of_the_same_name(tmp_path, origin):
+    # A repository author pushes a tag named like the requested commit ID, pointing to another
+    # commit (self-audit of 2026-11-13).
+    repo, env, commits = origin
+    git("tag", commits["second"], commits["first"], cwd=repo, env=env)
+    git("branch", commits["second"].upper()[:7] + "x", commits["first"], cwd=repo, env=env)
+    url = "https://example.com/org/repo.git"
+    ctx = init_mod.init_run(url, runs_dir=tmp_path / "runs", ref=commits["second"])
+    assert ctx.state["target"]["git_ref"] == commits["second"]
+    assert (ctx.target_dir / "app.py").read_text(encoding="utf-8") == "v2\n"
+    upper = init_mod.init_run(url, runs_dir=tmp_path / "runs2", ref=commits["second"].upper())
+    assert upper.state["target"]["git_ref"] == commits["second"]

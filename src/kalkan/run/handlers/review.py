@@ -8,8 +8,14 @@ section 4, ENGINE-SPEC section 18).
 3. ``verified`` must not fail a check. Only ``severity`` and ``remediation`` may fail when the
    result gives the corrected field. A contradictory result fails the attempt.
 4. Every evidence quote is checked with :func:`kalkan.findings.quote_verify.verify_evidence`.
-   ``reject`` needs at least one verified quote; a ``reject`` without one is applied as a
-   ``downgrade`` with the reason code :data:`UNGROUNDED_REJECTION`.
+   ``reject`` needs at least one verified quote in a file of the record (its trace, evidence
+   or audit answers); a ``reject`` without one is applied as a ``downgrade`` with the reason
+   code :data:`UNGROUNDED_REJECTION`. A grounded ``reject`` of a ``confirmed`` record is also
+   applied as a ``downgrade`` (:data:`SINGLE_REVIEW_REJECTION`): the record needed three
+   established answers, and one review step steered by target text must not remove it from
+   the report. It stays visible as ``needs_validation`` with the reason as a blocker. Before,
+   one verified quote in any target file, for example a planted comment, rejected a confirmed
+   record (self-audit of 2026-11-13).
 5. The applied decision (:func:`kalkan.findings.review.apply_review`): a corrected severity
    counts only when it lowers the record's severity (never raises it; the overall severity
    never exceeds the impact). A ``downgrade`` of a confirmed record without a lower severity
@@ -34,9 +40,10 @@ from kalkan.run.runfiles import read_task_json, target_get_lines, task_input, wr
 from kalkan.run.state import RunContext, parse_task_id
 from kalkan.util.paths import is_safe_relative_path
 
-__all__ = ["UNGROUNDED_REJECTION", "handle"]
+__all__ = ["SINGLE_REVIEW_REJECTION", "UNGROUNDED_REJECTION", "handle"]
 
 UNGROUNDED_REJECTION: Final = "ungrounded_rejection"
+SINGLE_REVIEW_REJECTION: Final = "single_review_rejection"
 OUTCOME_NAME: Final = "review.json"
 _CORRECTABLE: Final = ("severity", "remediation")
 _ENGINE_PLAN: Final = {
@@ -91,6 +98,22 @@ def _quotes(result: dict[str, Any], ctx: RunContext) -> tuple[list[dict[str, Any
         )
         verified += len(passed)
     return statuses, verified
+
+
+def _record_files(record: dict[str, Any]) -> set[str]:
+    """Return the target files that the record cites: trace, evidence and audit answers."""
+    items: list[Any] = [*(record.get("trace") or []), *(record.get("evidence") or [])]
+    answers = record.get("audit_answers")
+    for answer in answers.values() if isinstance(answers, dict) else []:
+        if isinstance(answer, dict):
+            items += answer.get("evidence") or []
+    files = set()
+    for item in items:
+        value = item.get("file") if isinstance(item, dict) else item
+        path = normalize_path(value) if isinstance(value, str) else None
+        if isinstance(path, str):
+            files.add(path)
+    return files
 
 
 def _remediation(remediation: dict[str, Any], notes: list[str]) -> dict[str, Any]:
@@ -158,10 +181,23 @@ def build_outcome(
     notes: list[str] = []
     codes: list[str] = []
     decision = requested
-    if requested == "reject" and not verified:
+    cited = _record_files(record)
+    grounded = sum(
+        1 for item in evidence if item["quote_status"] == "verified" and item["file"] in cited
+    )
+    if requested == "reject" and not grounded:
         decision = "downgrade"
         codes.append(UNGROUNDED_REJECTION)
-        notes.append("reject without a verified quote: applied as a downgrade")
+        notes.append(
+            "reject without a verified quote in a file of the record: applied as a downgrade"
+        )
+    elif requested == "reject" and verdict == "confirmed":
+        decision = "downgrade"
+        codes.append(SINGLE_REVIEW_REJECTION)
+        notes.append(
+            "one review does not reject a confirmed record: applied as a downgrade "
+            "(needs_validation)"
+        )
     meta = task.get("meta") or {}
     verify_tasks = [item for item in meta.get("verify_tasks") or [] if isinstance(item, str)]
     severity = remediation = plan = None

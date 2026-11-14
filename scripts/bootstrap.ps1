@@ -113,8 +113,14 @@ if (-not (Test-Python -Exe $VenvPython -Prefix @())) {
     Stop-Bootstrap '.venv does not run Python 3.11 or later. Remove .venv and run this script again.'
 }
 
-Invoke-Step -Description 'Install kalkan into .venv (pip install -e .)' -Exe $VenvPython `
-    -Arguments @('-m', 'pip', 'install', '--disable-pip-version-check', '--no-cache-dir', '-e', $RepoRoot)
+# The build backend comes from requirements-build.txt with pinned SHA-256 values; before,
+# pip resolved hatchling and its dependencies from PyPI without a version or a hash.
+Invoke-Step -Description 'Install the pinned build backend (requirements-build.txt, --require-hashes)' -Exe $VenvPython `
+    -Arguments @('-I', '-m', 'pip', 'install', '--disable-pip-version-check', '--no-cache-dir', '--require-hashes',
+        '--only-binary', ':all:', '-r', (Join-Path $RepoRoot 'requirements-build.txt'))
+Invoke-Step -Description 'Install kalkan into .venv (pip install --no-build-isolation -e .)' -Exe $VenvPython `
+    -Arguments @('-I', '-m', 'pip', 'install', '--disable-pip-version-check', '--no-cache-dir', '--no-build-isolation',
+        '--no-deps', '-e', $RepoRoot)
 $installCode = Invoke-Check -Description 'Install every pinned tool, Go included (kalkan tools install --all)' `
     -Exe $VenvPython -Arguments @('-m', 'kalkan', 'tools', 'install', '--all')
 $dbCode = Invoke-Check -Description 'Download the local vulnerability databases (kalkan sca update-db --max-age 168)' `

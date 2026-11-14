@@ -13,10 +13,10 @@ import pytest
 
 from kalkan.findings.taxonomy import SLUGS
 from kalkan.sarif.ingest import PACK_CLASS_ENGINES, ingest_document
+from kalkan.sarif.redact import REDACTED
 from kalkan.scanners import registry, rulepacks
 from kalkan.scanners.adapters._sources import VENDOR_DIRS
 from kalkan.scanners.adapters.opengrep_packs import (
-    REDACTED,
     OpengrepPacksAdapter,
     annotate_sarif,
 )

@@ -284,7 +284,9 @@ def run_setup(
     steps: list[SetupStep] = []
     for arguments in commands:
         say(f"setup: kalkan {' '.join(arguments)}")
-        argv = [python or sys.executable, "-m", "kalkan", *arguments]
+        # -I: no current folder on sys.path, so a kalkan.py in the audited folder never loads
+        # (self-audit of 2026-11-13); the plugin hook starts Python the same way.
+        argv = [python or sys.executable, "-I", "-m", "kalkan", *arguments]
         try:
             proc = run(
                 argv,

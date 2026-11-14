@@ -27,9 +27,14 @@ from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, Final
 
+from kalkan.errors import UnsafeInputError
+from kalkan.util import safe_io
+
 __all__ = ["USAGE_NAME", "append", "load", "parse_init", "parse_result", "summarize"]
 
 USAGE_NAME: Final = "usage.jsonl"
+#: ``load`` reads at most this many bytes (10000 rounds of about 1 KB each fit).
+MAX_USAGE_BYTES: Final = 32 * 1024 * 1024
 _MAX_LINE_CHARS: Final = 4 * 1024 * 1024
 _TOKEN_KEYS: Final = (
     "input_tokens",
@@ -129,16 +134,25 @@ def parse_result(line: str) -> dict[str, Any] | None:
 
 
 def append(run_dir: Path, entry: Mapping[str, Any]) -> None:
-    """Add one round to ``usage.jsonl`` (one JSON object per line, append only)."""
-    with open(run_dir / USAGE_NAME, "a", encoding="utf-8", newline="\n") as handle:
-        handle.write(json.dumps(dict(entry), sort_keys=True) + "\n")
+    """Add one round to ``usage.jsonl`` (one JSON object per line, append only).
+
+    The unattended loop runs outside the sandbox of the host, but the run folder can be inside
+    the workspace of a Codex agent. The file must thus be a regular file: a link raises
+    :class:`~kalkan.errors.UnsafeInputError` (:func:`kalkan.util.safe_io.append_text_line`).
+    """
+    safe_io.append_text_line(run_dir / USAGE_NAME, json.dumps(dict(entry), sort_keys=True) + "\n")
 
 
 def load(run_dir: Path) -> list[dict[str, Any]]:
-    """Return the rounds of ``usage.jsonl``; unreadable lines are skipped."""
+    """Return the rounds of ``usage.jsonl``; unreadable lines are skipped.
+
+    A link, a file that is not regular, a file over :data:`MAX_USAGE_BYTES` or a file that is
+    not UTF-8 gives no rounds (:func:`kalkan.util.safe_io.read_text_bounded`).
+    """
+    path = run_dir / USAGE_NAME
     try:
-        text = (run_dir / USAGE_NAME).read_text(encoding="utf-8")
-    except OSError:
+        text = safe_io.read_text_bounded(path, MAX_USAGE_BYTES)
+    except UnsafeInputError:
         return []
     rounds = []
     for line in text.splitlines()[:10000]:

@@ -94,8 +94,15 @@ fi
 "$py" -c "$version_check" ||
     fail ".venv does not run Python 3.11 or later. Remove .venv and run this script again."
 
-say "Install kalkan into .venv (pip install -e .)"
-"$py" -m pip install --disable-pip-version-check --no-cache-dir -e "$repo_root" ||
+# The build backend comes from requirements-build.txt with pinned SHA-256 values; before,
+# pip resolved hatchling and its dependencies from PyPI without a version or a hash.
+say "Install the pinned build backend (requirements-build.txt, --require-hashes)"
+"$py" -I -m pip install --disable-pip-version-check --no-cache-dir --require-hashes \
+    --only-binary :all: -r "$repo_root/requirements-build.txt" ||
+    fail "pip install -r requirements-build.txt failed."
+say "Install kalkan into .venv (pip install --no-build-isolation -e .)"
+"$py" -I -m pip install --disable-pip-version-check --no-cache-dir --no-build-isolation \
+    --no-deps -e "$repo_root" ||
     fail "pip install -e . failed."
 
 # The editable install points .venv at src/ with a .pth file. Python 3.13 and later skip a

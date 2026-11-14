@@ -58,7 +58,10 @@ FROM base AS engine
 COPY . /opt/kalkan
 RUN python /opt/kalkan/docker/manifest_tools.py core gpl go go-gpl > /dev/null \
     && python -m venv /opt/kalkan/.venv \
-    && /opt/kalkan/.venv/bin/python -m pip install --no-cache-dir -e /opt/kalkan \
+    && /opt/kalkan/.venv/bin/python -I -m pip install --no-cache-dir --require-hashes \
+        --only-binary :all: -r /opt/kalkan/requirements-build.txt \
+    && /opt/kalkan/.venv/bin/python -I -m pip install --no-cache-dir --no-build-isolation \
+        --no-deps -e /opt/kalkan \
     && /opt/kalkan/.venv/bin/python -m compileall -q /opt/kalkan/src
 
 # ---------------------------------------------------------------------------------------------

@@ -8,7 +8,7 @@ You check one final record of this audit with fresh eyes. An earlier verifier bu
 
 How the engine applies your decision:
 
-- `reject` needs at least one `evidence` quote that matches the source. The record then becomes `rejected` with your reason. A `reject` without a matching quote counts as a `downgrade`.
+- `reject` needs at least one `evidence` quote that matches the source in a file that the record cites (its trace, evidence or audit answers). A `needs_validation` record then becomes `rejected` with your reason. A `confirmed` record becomes `needs_validation` with your reason as a blocker: one review does not remove a record that has three established answers. A `reject` without such a quote counts as a `downgrade`.
 - `downgrade` of a `confirmed` record: when you give a `severity` that is lower than the record's severity, the record stays `confirmed` with your severity. Without a lower severity, the record becomes `needs_validation` and your reason becomes its blocker.
 - `downgrade` of a `needs_validation` record adds your reason to its blockers.
 - A severity never goes up: the engine keeps the lower of each score, and the overall severity never exceeds the impact. A `needs_validation` record takes no severity and no remediation.

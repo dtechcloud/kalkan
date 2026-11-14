@@ -957,3 +957,52 @@ def test_ingest_file_missing_file_raises_unsafe_input_error(tmp_path):
 def test_ingest_file_rejects_a_directory(tmp_path):
     with pytest.raises(UnsafeInputError):
         ingest_file(tmp_path, "opengrep", ROOT)
+
+
+def test_a_secret_candidate_id_does_not_hash_the_value():
+    # Two different values at the same place give one ID: the ID cannot confirm a guess
+    # (self-audit of 2026-11-13).
+    def doc(value):
+        return {
+            "version": "2.1.0",
+            "runs": [
+                {
+                    "tool": {"driver": {"name": "Bandit", "rules": [{"id": "B105"}]}},
+                    "results": [
+                        {
+                            "ruleId": "B105",
+                            "message": {"text": f"Possible hardcoded password: '{value}'"},
+                            "properties": {"tags": ["CWE-259"]},
+                            "locations": [
+                                {
+                                    "physicalLocation": {
+                                        "artifactLocation": {"uri": "app.py"},
+                                        "region": {
+                                            "startLine": 4,
+                                            "snippet": {"text": f"password = '{value}'"},
+                                        },
+                                    }
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ],
+        }
+
+    first = ingest_document(doc("first-made-up"), "bandit", None, "scans/bandit.sarif")
+    second = ingest_document(doc("second-made-up"), "bandit", None, "scans/bandit.sarif")
+    one, two = first.candidates[0], second.candidates[0]
+    assert one["class"] == "hardcoded-secrets"
+    assert one["id"] == two["id"]
+    assert "made-up" not in json.dumps(one)
+
+
+def test_an_adapter_redacted_snippet_keeps_its_commit():
+    from kalkan.sarif.redact import redacted_snippet
+
+    assert redacted_snippet("REDACTED (commit 0123456789ab)") == "REDACTED (commit 0123456789ab)"
+    assert redacted_snippet("REDACTED") == "REDACTED"
+    assert redacted_snippet("") == ""
+    assert redacted_snippet("REDACTED (commit 0123456789ab) password=x") == "REDACTED"
+    assert redacted_snippet("password = 'made-up'") == "REDACTED"

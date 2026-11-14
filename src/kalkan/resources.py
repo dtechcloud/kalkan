@@ -41,7 +41,7 @@ from pathlib import Path
 from typing import Final
 
 from kalkan.errors import KalkanError
-from kalkan.util.paths import KALKAN_HOME_ENV, find_repo_root
+from kalkan.util.paths import KALKAN_HOME_ENV, checkout_of_package
 
 __all__ = [
     "DATA_NAMES",
@@ -105,8 +105,10 @@ def packaged_data_root() -> Path:
 
 
 def checkout_root() -> Path | None:
-    """Return the source checkout that holds this package, or None for an installed wheel."""
-    return find_repo_root(_PACKAGE_DIR)
+    """Return the source checkout that holds this package, or None for an installed wheel
+    (:func:`kalkan.util.paths.checkout_of_package`: the package must be ``<root>/src/kalkan``).
+    """
+    return checkout_of_package(_PACKAGE_DIR)
 
 
 def _check_name(name: str) -> None:

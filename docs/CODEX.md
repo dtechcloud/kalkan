@@ -2,6 +2,8 @@
 
 kalkan runs under Claude Code and under the OpenAI Codex CLI. The engine (`kalkan`) is the same for both hosts. This document covers the Codex host: setup, interactive audits, headless rounds with `codex exec` and resume after a usage limit.
 
+> **Use Codex mode only for a target you trust.** A Codex subagent can write anywhere in the kalkan checkout, the engine source included, and two engine commands run outside the Codex sandbox. Text in a hostile target can therefore lead to code that runs as you (docs/SECURITY.md, promise 2, Codex mode). Audit an untrusted target with Claude Code. `kalkan unattended --host codex` needs `--accept-codex-risk`.
+
 ## Files for Codex
 
 | File | Purpose | Source |
@@ -134,9 +136,9 @@ To test a rule without a session: `codex execpolicy check --pretty --rules .code
 `kalkan unattended --host codex` runs the headless rounds above in a loop and waits through usage-limit resets. The Python loop is the same for both hosts (`src/kalkan/unattended/`, `CodexHost` in `hosts.py`).
 
 ```sh
-kalkan unattended C:\code\shop --profile standard --host codex
-kalkan unattended devam 20261016T151915Z-shop-5fc6 --host codex
-kalkan unattended devam --host codex
+kalkan unattended C:\code\shop --profile standard --host codex --accept-codex-risk
+kalkan unattended devam 20261016T151915Z-shop-5fc6 --host codex --accept-codex-risk
+kalkan unattended devam --host codex --accept-codex-risk
 ```
 
 `scripts/run-unattended.ps1` and `scripts/run-unattended.sh` take the same arguments. Add `--dry-run` to print the command lines and start nothing.

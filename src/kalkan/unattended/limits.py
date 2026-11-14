@@ -24,7 +24,8 @@ usage limit resets, or None. It uses two sources, in this order:
 When neither source gives a reset time, the caller backs off (:mod:`kalkan.unattended.loop`).
 
 **Trusted text only.** The text search reads plain-text lines (for example stderr), the
-``result``, ``error`` and ``errors`` fields of a JSON line, and the text of a synthetic
+``result`` field of an error event (``is_error`` true or a ``subtype`` other than ``success``),
+the ``error`` and ``errors`` fields of a JSON line, and the text of a synthetic
 assistant message (model ``<synthetic>``: an error message that Claude Code writes itself). It
 skips tool results and normal assistant messages. They can quote the audit target, and the
 target is untrusted data. A line that starts with ``{`` but does not parse is skipped.
@@ -406,11 +407,21 @@ def _pick_event(
 
 
 def _host_texts(document: Mapping[str, Any]) -> Iterator[str]:
-    """Yield the strings of a JSON line that the host itself writes (see the module docs)."""
-    for key in ("result", "error"):
-        value = document.get(key)
-        if isinstance(value, str):
-            yield value
+    """Yield the strings of a JSON line that the host itself writes (see the module docs).
+
+    The ``result`` field counts only for an error event (``is_error`` true, or a ``subtype``
+    other than ``success``): in a successful result event it is the final message of the model,
+    which can repeat text of the audited target. Before, a reset phrase there made the loop
+    wait up to 8 days or stop (self-audit of 2026-11-13).
+    """
+    subtype = document.get("subtype")
+    failed = document.get("is_error") is True or (isinstance(subtype, str) and subtype != "success")
+    result = document.get("result")
+    if failed and isinstance(result, str):
+        yield result
+    error = document.get("error")
+    if isinstance(error, str):
+        yield error
     errors = document.get("errors")
     if isinstance(errors, list):
         yield from (item for item in errors[:20] if isinstance(item, str))

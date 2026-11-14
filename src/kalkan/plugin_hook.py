@@ -104,6 +104,12 @@ WEB_TOOLS: Final = frozenset({"WebFetch", "WebSearch"})
 ENV_DATA: Final = "CLAUDE_PLUGIN_DATA"
 ENV_ROOT: Final = "CLAUDE_PLUGIN_ROOT"
 ENV_LOG: Final = "KALKAN_HOOK_LOG"
+#: Checkout mode: the repository root (scripts/pre-tool-use-checkout.sh sets it). The hook then
+#: decides only for the kalkan subagents, which are project agents named ``kalkan-<role>``; the
+#: orchestrator follows .claude/settings.json. Before, checkout mode had no hook, and its bare
+#: Read, Grep and Glob rules let a prompt-injected subagent read any operator file and write
+#: the result of any task (self-audit of 2026-11-13).
+ENV_CHECKOUT: Final = "KALKAN_HOOK_CHECKOUT"
 #: The Claude Code configuration folder (default ``~/.claude``); its ``projects`` folder holds the
 #: saved tool outputs of each session.
 ENV_CONFIG: Final = "CLAUDE_CONFIG_DIR"
@@ -129,6 +135,8 @@ _TASK_ID: Final = re.compile(
 _FORBIDDEN: Final = re.compile(r"[;&|<>()`$\n\r\x00]")
 _MSYS_DRIVE: Final = re.compile(r"\A/([A-Za-z])(?=/|\Z)")
 _ENV_FILE: Final = re.compile(r"\A\.env(?:\..*)?\Z", re.IGNORECASE)
+#: A Grep ``glob`` or a Glob ``pattern`` that names .env files.
+_ENV_GLOB: Final = re.compile(r"(?:\A|[/\\{,*])\.env", re.IGNORECASE)
 _SAFE_ID: Final = re.compile(r"\A[A-Za-z0-9_-][A-Za-z0-9._-]{0,127}\Z")
 #: The file name of a saved tool output (Claude Code writes ``toolu_<id>.txt``).
 _TOOL_RESULT_NAME: Final = re.compile(r"\A[A-Za-z0-9_-]{1,128}\.txt\Z")
@@ -290,11 +298,14 @@ def is_own_tool_result(
 # Event helpers
 
 
-def is_kalkan_agent(event: Mapping[str, Any]) -> bool:
-    """Return True when the call comes from a subagent of the kalkan plugin: ``agent_type``
-    starts with ``kalkan:`` (Claude Code names plugin agents ``<plugin>:<agent>``)."""
+def is_kalkan_agent(event: Mapping[str, Any], *, checkout: bool = False) -> bool:
+    """Return True when the call comes from a kalkan subagent: in the plugin ``agent_type``
+    starts with ``kalkan:`` (Claude Code names plugin agents ``<plugin>:<agent>``); in a
+    checkout it is one of :data:`AGENT_NAMES` (project agents keep their file name)."""
     agent = event.get("agent_type")
-    return isinstance(agent, str) and agent.startswith(PLUGIN_NAME + ":")
+    if not isinstance(agent, str):
+        return False
+    return agent in AGENT_NAMES if checkout else agent.startswith(PLUGIN_NAME + ":")
 
 
 def is_network_command(command: object) -> bool:
@@ -366,6 +377,50 @@ def _engine_tokens(command: object, data: str, root: str | None, windows: bool) 
         if normalize(tokens[1], windows=windows) == script and same_data and flags_ok:
             return tokens
     return None
+
+
+#: Engine subcommands that use the network (database, tool and image downloads, new rounds).
+_NETWORK_SUBCOMMANDS: Final = (
+    ("tools", "install"),
+    ("sca", "update-db"),
+    ("sandbox", "pull"),
+    ("unattended",),
+    ("audit",),
+)
+_NETWORK_FLAGS: Final = ("--online", "--allow-build-network")
+#: A git URL in the scp form (``git@host:org/repo.git``), which has no scheme.
+_SCP_GIT: Final = re.compile(r"\A[A-Za-z0-9._-]+@[A-Za-z0-9.-]+:[^\s]")
+
+
+def _engine_uses_network(tokens: list[str]) -> bool:
+    """Return True when an engine command can reach the network: a URL or git target, an online
+    flag or a download subcommand. A marked session gets no automatic allow for it: the engine
+    allow ran before the network deny, so ``run init https://...`` or ``--online`` passed in the
+    middle of an audit (self-audit of 2026-11-13)."""
+    words = tokens[1:]
+    if any(word in _NETWORK_FLAGS or word.split("=", 1)[0] in _NETWORK_FLAGS for word in words):
+        return True
+    if any(tuple(words[: len(sub)]) == sub for sub in _NETWORK_SUBCOMMANDS):
+        return True
+    if any(_SCP_GIT.match(word) for word in words):
+        return True
+    return is_network_command(" ".join(words))
+
+
+def _names_env(tool: object, tool_input: Mapping[str, Any], path: str) -> bool:
+    """Return True when a read tool call names a .env file: the path or one of its parts, a Grep
+    ``glob`` or a Glob ``pattern``. Before, only Read was checked, and Grep on target/.env
+    returned the secrets (self-audit of 2026-11-13)."""
+    parts = [part for part in path.replace("\\", "/").split("/") if part]
+    if any(_ENV_FILE.match(part) for part in parts):
+        return True
+    for key in ("glob", "pattern") if tool in ("Grep", "Glob") else ():
+        value = tool_input.get(key)
+        if key == "pattern" and tool == "Grep":
+            continue  # the search text of Grep, not a file name
+        if isinstance(value, str) and _ENV_GLOB.search(value):
+            return True
+    return False
 
 
 def _runs_root(data: str) -> str:
@@ -515,8 +570,7 @@ def _subagent_decision(
         binding = _load_binding(data, agent_id)
         if binding is not None and binding["run"] != run_id:
             return _deny_subagent("read only inside the run of your task")
-        name = (path or "").rstrip("/").rsplit("/", 1)[-1]
-        if tool == "Read" and _ENV_FILE.match(name):
+        if _names_env(tool, tool_input, path or ""):
             return _deny_subagent("kalkan never reads .env files of an audited target")
         if (
             binding is None
@@ -568,15 +622,19 @@ def _run_option(tokens: list[str]) -> str | None:
     return None
 
 
-def _mark_session(data: str, session_id: object, tokens: list[str], now: float) -> None:
+def _mark_session(data: str, session_id: object, tokens: list[str], now: float, runs: str) -> None:
     file = _session_file(data, session_id)
     if file is None:
         return
     previous = _read_json(file)
     since = previous.get("since") if isinstance(previous, dict) else None
+    stored = previous.get("run") if isinstance(previous, dict) else None
     run = _run_option(tokens)
-    if run is None and isinstance(previous, dict) and isinstance(previous.get("run"), str):
-        run = previous["run"]
+    if isinstance(stored, str) and (run is None or _run_phase(runs, stored) != "done"):
+        # The mark stays with the run that the session audits until that run is done: before,
+        # one engine command that named any finished run ended the network deny
+        # (self-audit of 2026-11-13).
+        run = stored
     with contextlib.suppress(OSError):
         _prune(file.parent, SESSION_TTL_SECONDS, now)
         _write_json(file, {"since": since or now, "last": now, "run": run})
@@ -632,12 +690,16 @@ def decide(
     windows: bool | None = None,
     runs: str | None = None,
     now: float | None = None,
+    checkout: bool = False,
 ) -> dict[str, Any] | None:
     """Return the hook output for one PreToolUse event, or None (normal permission flow).
 
-    ``runs`` replaces the runs root and ``now`` the clock (tests).
+    ``runs`` replaces the runs root and ``now`` the clock (tests). With ``checkout`` (the
+    repository hook, :data:`ENV_CHECKOUT`) only the calls of kalkan subagents get a decision.
     """
     if not data:
+        return None
+    if checkout and not is_kalkan_agent(event, checkout=True):
         return None
     win = os.name == "nt" if windows is None else windows
     moment = time.time() if now is None else now
@@ -646,7 +708,7 @@ def decide(
     tool_input: Mapping[str, Any] = raw_input if isinstance(raw_input, Mapping) else {}
     runs_folder = runs if runs is not None else _runs_root(data)
 
-    if is_kalkan_agent(event):
+    if is_kalkan_agent(event, checkout=checkout):
         return _subagent_decision(event, tool, tool_input, data, runs_folder, win, moment)
 
     session = event.get("session_id")
@@ -654,7 +716,16 @@ def decide(
         tokens = _engine_tokens(tool_input.get("command"), data, plugin_root, win)
         if tokens is not None:
             if tokens[0] != "sh":
-                _mark_session(data, session, tokens, moment)
+                if _engine_uses_network(tokens) and _session_active(
+                    data, session, runs_folder, moment
+                ):
+                    return _decision(
+                        "deny",
+                        "a kalkan audit runs in this session, and kalkan sends no data to the "
+                        "network until the run is done (docs/SECURITY.md); this engine command "
+                        "can reach the network",
+                    )
+                _mark_session(data, session, tokens, moment, runs_folder)
                 return _decision("allow", "kalkan engine command")
             return _decision("allow", "kalkan setup command")
     if _network_tool(tool, tool_input) and _session_active(data, session, runs_folder, moment):
@@ -684,8 +755,7 @@ def decide(
             return None
         if not any(_inside(path, root, windows=win) for root in (data, runs_folder)):
             return None
-        name = path.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1]
-        if tool == "Read" and _ENV_FILE.match(name):
+        if _names_env(tool, tool_input, path):
             return _decision("deny", "kalkan never reads .env files of an audited target")
         return _decision("allow", "read inside the kalkan data or runs folder")
     return None
@@ -709,9 +779,17 @@ def main(argv: list[str] | None = None) -> int:
         event = json.loads(raw.decode("utf-8"))
         if not isinstance(event, dict):
             return 0
-        output = decide(event, data=os.environ.get(ENV_DATA), plugin_root=os.environ.get(ENV_ROOT))
+        checkout_root = os.environ.get(ENV_CHECKOUT)
+        if checkout_root:
+            # The agent bindings live in <repo>/.tools/hook, next to the tools of the checkout.
+            output = decide(event, data=f"{checkout_root}/.tools", checkout=True)
+        else:
+            output = decide(
+                event, data=os.environ.get(ENV_DATA), plugin_root=os.environ.get(ENV_ROOT)
+            )
     except Exception:  # never break a tool call of the user ...
-        if not (isinstance(event, dict) and is_kalkan_agent(event)):
+        checkout = bool(os.environ.get(ENV_CHECKOUT))
+        if not (isinstance(event, dict) and is_kalkan_agent(event, checkout=checkout)):
             return 0
         # ... but a kalkan subagent fails closed.
         output = _deny_subagent("the permission check failed; the call is refused")
