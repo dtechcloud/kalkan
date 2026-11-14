@@ -870,3 +870,17 @@ def test_the_clone_keeps_no_credentials_in_its_config(tmp_path, origin, monkeypa
     config = (destination / ".git" / "config").read_text(encoding="utf-8")
     assert display in config
     assert repo.as_posix() not in config and str(repo) not in config
+
+
+def test_a_full_commit_id_never_resolves_as_a_tag_of_the_same_name(tmp_path, origin):
+    # A repository author pushes a tag named like the requested commit ID, pointing to another
+    # commit (self-audit of 2026-11-13).
+    repo, env, commits = origin
+    git("tag", commits["second"], commits["first"], cwd=repo, env=env)
+    git("branch", commits["second"].upper()[:7] + "x", commits["first"], cwd=repo, env=env)
+    url = "https://example.com/org/repo.git"
+    ctx = init_mod.init_run(url, runs_dir=tmp_path / "runs", ref=commits["second"])
+    assert ctx.state["target"]["git_ref"] == commits["second"]
+    assert (ctx.target_dir / "app.py").read_text(encoding="utf-8") == "v2\n"
+    upper = init_mod.init_run(url, runs_dir=tmp_path / "runs2", ref=commits["second"].upper())
+    assert upper.state["target"]["git_ref"] == commits["second"]

@@ -31,8 +31,11 @@ Targets:
 - A git URL with ``ref`` (``run init --ref <tag|branch|commit>``): the clone runs with
   ``--no-checkout`` (full history of every branch and tag, for the history scans), then
   :func:`checkout_ref` resolves the ref in this order: tag ``refs/tags/<ref>``, branch
-  ``refs/remotes/origin/<ref>``, commit (hex, at least 7 digits). When none resolves,
-  ``git fetch --no-recurse-submodules --no-tags --end-of-options origin <ref>`` fetches it (for
+  ``refs/remotes/origin/<ref>``, commit (hex, at least 7 digits). A full commit ID (40 or 64
+  hex digits) resolves only as that commit, never as a tag or branch of the same name, and the
+  checked out commit must equal it: a repository author could push a tag named like the ID
+  and redirect the audit to another commit (self-audit of 2026-11-13). When none resolves,
+  ``git fetch --no-recurse-submodules --no-tags --end-of-options <url> <ref>`` fetches it (for
   example a commit that no branch contains) and ``FETCH_HEAD`` is used. The commit is checked
   out as a detached HEAD with ``core.symlinks=false``. The manifest records the commit in
   ``git_ref`` and the given ref in ``requested_ref``. A ref is refused for a local folder.
@@ -545,9 +548,14 @@ def checkout_ref(
     git = _find_git()
     if git is None:
         raise ToolError("git is not installed or not on PATH; install git to audit a git URL")
-    names = [f"refs/tags/{ref}^{{commit}}", f"refs/remotes/origin/{ref}^{{commit}}"]
-    if _HEX_REF.fullmatch(ref):
-        names.append(f"{ref}^{{commit}}")
+    full = ref.lower() if _GIT_SHA.fullmatch(ref.lower()) else None
+    if full is not None:
+        # A full commit ID is immutable: no tag or branch of the same name may win.
+        names = [f"{full}^{{commit}}"]
+    else:
+        names = [f"refs/tags/{ref}^{{commit}}", f"refs/remotes/origin/{ref}^{{commit}}"]
+        if _HEX_REF.fullmatch(ref):
+            names.append(f"{ref}^{{commit}}")
     commit = next((c for c in (_resolve(git, repo, name) for name in names) if c), None)
     scrub = (url, display or "<url>") if url else None
     shown = escape_unsafe_diagnostic_characters(ref)
@@ -571,6 +579,10 @@ def checkout_ref(
     if commit is None:
         raise KalkanError(
             f"the ref {shown!r} was not found in the repository (tag, branch or commit)"
+        )
+    if full is not None and commit.lower() != full:
+        raise KalkanError(
+            f"the commit ID {shown!r} resolved to another commit ({commit}); the audit stops"
         )
     done = _git(
         git, repo, ["checkout", "--detach", "--quiet", commit, "--"], timeout_seconds, scrub=scrub
