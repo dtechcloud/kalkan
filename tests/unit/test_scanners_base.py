@@ -12,7 +12,7 @@ from pathlib import Path
 
 import pytest
 
-from kalkan.errors import ValidationError
+from kalkan.errors import ToolError, ValidationError
 from kalkan.scanners import base
 from kalkan.scanners.base import (
     BuiltinOutcome,
@@ -1021,7 +1021,6 @@ def test_checkov_launcher_turns_config_discovery_off(tmp_path):
     assert any(".checkov.yaml" in item for item in ignored)
     assert any("checkov:skip" in item for item in honored)
     python.unlink()
-    [item] = adapter.invocations(ctx, entry, out)
-    assert item.argv[0] == str(entry)
-    ignored, honored = adapter.suppression_sources(ctx)
-    assert any("could not be turned off" in item for item in honored)
+    # Without a launcher Python, Checkov never runs (self-audit of 2026-11-13).
+    with pytest.raises(ToolError, match="only through its launcher"):
+        adapter.invocations(ctx, entry, out)

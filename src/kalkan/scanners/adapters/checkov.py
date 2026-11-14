@@ -52,9 +52,12 @@ one more file. A target config can skip checks and can name ``external-checks-di
 whose Python code Checkov then runs (tested: a crafted target ran its own code and hid
 CKV_DOCKER_7). :data:`LAUNCHER` starts Checkov with that discovery turned off. It runs in the
 tool venv Python next to the ``checkov`` entry point, in isolated mode (``-I``: the working
-directory, which is the target, never enters ``sys.path``) with UTF-8 I/O (``-X utf8``). When
-no such Python exists (a Checkov from PATH), the entry point runs as is and the status file
-records that the target config is honored.
+directory, which is the target, never enters ``sys.path``) with UTF-8 I/O (``-X utf8``). The
+Python is the one next to the entry point, next to the entry point that a link names (pipx,
+Homebrew), or, on Windows, one folder up (the ``Scripts`` folder of a Python install). When no
+such Python exists, Checkov does not run: before, the entry point ran as is and honored the
+target config, so a target ``external-checks-dir`` ran its Python code on the operator machine
+(self-audit of 2026-11-13). :data:`NO_LAUNCHER` is the error.
 
 Suppressions (ADR-0003): the target config is never loaded, also with ``honor_suppressions``,
 because of the code execution risk. Inline ``checkov:skip`` comments: Checkov reports the
@@ -69,6 +72,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+from kalkan.errors import ToolError
 from kalkan.scanners.base import PYTHON_TOOL_ENV, Invocation, ScanContext, ToolAdapter, work_dir
 
 #: The file name that Checkov writes into ``--output-file-path``.
@@ -91,11 +95,26 @@ LAUNCHER = (
 )
 
 
+#: The error when no launcher Python exists for a Checkov (module docstring).
+NO_LAUNCHER = (
+    "kalkan runs Checkov only through its launcher, which turns off the .checkov.yaml discovery "
+    "(a target config can make Checkov run target Python code), and found no Python for this "
+    "Checkov. Install the pinned Checkov: kalkan tools install checkov"
+)
+
+
 def launcher_python(tool_path: Path) -> Path | None:
-    """Return the tool venv Python next to the Checkov entry point, or None."""
+    """Return the Python that has the Checkov of ``tool_path``, or None (module docstring)."""
     name = "python.exe" if os.name == "nt" else "python"
-    python = Path(tool_path).parent / name
-    return python if python.is_file() else None
+    entry = Path(tool_path)
+    candidates = [entry.parent / name]
+    try:
+        candidates.append(entry.resolve().parent / name)
+    except OSError:
+        pass
+    if os.name == "nt":
+        candidates.append(entry.parent.parent / name)
+    return next((python for python in candidates if python.is_file()), None)
 
 
 class CheckovAdapter(ToolAdapter):
@@ -135,7 +154,7 @@ class CheckovAdapter(ToolAdapter):
     def command(self, ctx: ScanContext, tool_path: Path, out: Path) -> list[str]:
         python = launcher_python(tool_path)
         if python is None:
-            return [str(tool_path), *self.arguments(ctx, out)]
+            raise ToolError(NO_LAUNCHER)
         return [str(python), "-I", "-X", "utf8", "-c", LAUNCHER, *self.arguments(ctx, out)]
 
     def home_dir(self, ctx: ScanContext) -> Path:
