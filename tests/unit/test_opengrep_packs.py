@@ -14,6 +14,7 @@ import pytest
 from kalkan.findings.taxonomy import SLUGS
 from kalkan.sarif.ingest import PACK_CLASS_ENGINES, ingest_document
 from kalkan.scanners import registry, rulepacks
+from kalkan.scanners.adapters._sources import VENDOR_DIRS
 from kalkan.scanners.adapters.opengrep_packs import (
     REDACTED,
     OpengrepPacksAdapter,
@@ -384,6 +385,9 @@ def test_command_line(tmp_path, index):
     assert not any(item.startswith(("http", "git+", "p/")) for item in configs)
     excluded = [argv[i + 1] for i, item in enumerate(argv) if item == "--exclude-rule"]
     assert excluded == sorted(adapter.plan().duplicates)
+    # Vendored folders stay out (1,052 vendored rule YAML files timed out the packs).
+    folders = [argv[i + 1] for i, item in enumerate(argv) if item == "--exclude"]
+    assert folders == ["third-party", "third_party", "thirdparty", "vendor", "vendors"]
     staging = ctx.run_dir / "scans" / ".work" / "opengrep-packs" / "packs"
     assert adapter.cwd(ctx) == staging
     assert adapter.applies(ctx) == (True, "")
@@ -571,3 +575,13 @@ def test_keep_only_drops_the_unmeasured_rules(curation, index):
             if group["pack"] == pack["name"] and group["kind"] == "unmeasured"
         ]
         assert [group["reason"] for group in groups] == [only["reason"]]
+
+
+def test_status_details_name_the_excluded_vendor_folders(tmp_path, index):
+    adapter = OpengrepPacksAdapter(environ={})
+    ctx = make_ctx(tmp_path)
+    logs = [tmp_path / "stdout.txt", tmp_path / "stderr.txt"]
+    for log in logs:
+        log.write_text("", encoding="utf-8")
+    details = adapter.status_details(ctx, logs[0], logs[1], [])
+    assert details["excluded_folders"] == sorted(VENDOR_DIRS)
