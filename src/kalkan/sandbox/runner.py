@@ -35,6 +35,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, Final
 
+from kalkan.matchers.safety import MAX_LINE_LENGTH, regex_safety_error
 from kalkan.resources import home
 from kalkan.sandbox.evidence import promote
 from kalkan.sandbox.redact import redact, redact_file
@@ -350,10 +351,29 @@ def _result(
     return record
 
 
+def success_pattern(text: object) -> tuple[re.Pattern[str] | None, str]:
+    """Compile the ``success_regex`` of a harness, or return why it cannot be used.
+
+    The pattern comes from an agent. It passes the checks of the matcher regexes
+    (:func:`kalkan.matchers.safety.regex_safety_error`: no nested quantifiers, no
+    backreferences, a bounded length) before it runs in the engine process; a plain
+    ``re.compile`` let a crafted pattern backtrack without a bound (self-audit of 2026-11-13).
+    """
+    if not isinstance(text, str) or not text:
+        return None, "The harness has no success pattern."
+    error = regex_safety_error(text)
+    if error:
+        return None, f"The success pattern is not safe: {error}"
+    try:
+        return re.compile(text), ""
+    except re.error as exc:
+        return None, f"The success pattern is not a valid expression: {exc}"
+
+
 def _match_line(pattern: re.Pattern[str], *texts: str) -> str | None:
     for text in texts:
         for line in text.splitlines():
-            if pattern.search(line):
+            if len(line) <= MAX_LINE_LENGTH and pattern.search(line):
                 return line.strip()[:OBSERVATION_CAP_CHARS]
     return None
 
@@ -508,24 +528,9 @@ def _run_poc(
         return _result(
             finding_id, "unit", "blocked", "The harness is incomplete.", blocker="sandbox_error"
         )
-    if not isinstance(pattern_text, str) or not pattern_text:
-        return _result(
-            finding_id,
-            "unit",
-            "blocked",
-            "The harness has no success pattern.",
-            blocker="sandbox_error",
-        )
-    try:
-        pattern = re.compile(pattern_text)
-    except re.error as exc:
-        return _result(
-            finding_id,
-            "unit",
-            "blocked",
-            f"The success pattern is not a valid expression: {exc}",
-            blocker="sandbox_error",
-        )
+    pattern, problem = success_pattern(pattern_text)
+    if pattern is None:
+        return _result(finding_id, "unit", "blocked", problem, blocker="sandbox_error")
 
     poc_root = ctx.run_dir / "poc" / finding_id
     poc_files = poc_root / "poc"

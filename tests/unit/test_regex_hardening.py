@@ -94,3 +94,18 @@ def test_openapi_leads_are_still_found(line, reason):
 def test_openapi_plain_ref_value_is_read():
     found = _openapi.reference_values("$ref: '#/components/schemas/A'\n")
     assert [value.value for value in found][:1] == ["#/components/schemas/A"]
+
+
+def test_success_pattern_of_a_harness_passes_the_matcher_checks():
+    from kalkan.sandbox import runner
+
+    pattern, problem = runner.success_pattern("KALKAN_POC_OK")
+    assert pattern is not None and problem == ""
+    for bad in ("(a+)+$", "(x|x)*y", "", None, "(?<=a)b"):
+        pattern, problem = runner.success_pattern(bad)
+        assert pattern is None and problem, bad
+    # A line over the length limit is never searched.
+    long_line = "KALKAN_POC_OK" + "x" * runner.MAX_LINE_LENGTH
+    good = runner.success_pattern("KALKAN_POC_OK")[0]
+    assert runner._match_line(good, long_line) is None
+    assert runner._match_line(good, "noise\nKALKAN_POC_OK done") == "KALKAN_POC_OK done"
