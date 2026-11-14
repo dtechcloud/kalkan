@@ -59,6 +59,11 @@ MAX_SENTINEL_READS = 200
 #: used up, the engine stops matching that file and records a warning, so a hostile target
 #: cannot stall the run. The results for that file are then incomplete.
 MAX_FILE_SECONDS = 20.0
+#: Default time budget for the whole run. The file budget alone did not bound the total: a
+#: target controls the number of files, and many crafted files of 20 s each could stall the
+#: audit (self-audit of 2026-11-13). When this budget is used up, the engine stops, keeps the
+#: candidates found so far and records the number of files that were not scanned.
+MAX_TOTAL_SECONDS = 900.0
 #: The candidate message lists at most this many line numbers (a lockfile can match on
 #: thousands of lines), then the number of the others.
 MAX_MESSAGE_LINES = 50
@@ -81,6 +86,7 @@ class MatchStats:
     files_skipped_large: int = 0
     files_skipped_unreadable: int = 0
     files_timed_out: int = 0
+    files_not_scanned_budget: int = 0
     lines_skipped_long: int = 0
     matchers_total: int = 0
     matchers_applied: int = 0
@@ -108,6 +114,7 @@ def run(
     *,
     include_noisy: bool = True,
     max_file_seconds: float | None = MAX_FILE_SECONDS,
+    max_total_seconds: float | None = MAX_TOTAL_SECONDS,
 ) -> MatchRun:
     """Run ``specs`` over ``target_dir`` and return the candidates in a deterministic order.
 
@@ -115,7 +122,8 @@ def run(
     with ``requires.tech`` runs only when the tags intersect. With ``include_noisy=False`` the
     ``noisy`` tier is skipped. ``max_file_seconds`` bounds the matching time of one file
     (None: no bound); a file that exceeds it keeps the candidates of the matchers that
-    finished and gets a warning.
+    finished and gets a warning. ``max_total_seconds`` bounds the whole run (None: no bound):
+    when it is used up, the remaining files are not scanned, and one warning names their number.
     """
     root = Path(target_dir)
     if not root.is_dir():
@@ -138,7 +146,15 @@ def run(
     stats.matchers_applied = len(matchers)
 
     candidates: list[dict[str, Any]] = []
-    for rel in files:
+    run_deadline = None if max_total_seconds is None else time.monotonic() + max_total_seconds
+    for position, rel in enumerate(files):
+        if run_deadline is not None and time.monotonic() >= run_deadline:
+            stats.files_not_scanned_budget = len(files) - position
+            result.warnings.append(
+                f"matching stopped after {max_total_seconds:g} s for the whole run; "
+                f"{stats.files_not_scanned_budget} files were not scanned"
+            )
+            break
         applicable = [item for item in matchers if item.applies_to(rel)]
         if not applicable:
             continue
@@ -157,6 +173,8 @@ def run(
             continue
         stats.files_scanned += 1
         deadline = None if max_file_seconds is None else time.monotonic() + max_file_seconds
+        if run_deadline is not None:
+            deadline = run_deadline if deadline is None else min(deadline, run_deadline)
         context = _FileContext(lines, stats, deadline)
         try:
             for matcher in applicable:
@@ -166,7 +184,7 @@ def run(
         except _Timeout:
             stats.files_timed_out += 1
             result.warnings.append(
-                f"{rel}: matching stopped after {max_file_seconds:g} s; "
+                f"{rel}: matching stopped after the time budget; "
                 "the results for this file are incomplete"
             )
     candidates.sort(key=lambda item: (item["file"], item["start_line"] or 0, item["rule_id"]))

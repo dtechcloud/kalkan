@@ -446,3 +446,15 @@ def test_file_matcher_round_trip() -> None:
     spec = binary_spec()
     assert spec.is_file_matcher and not make_spec().is_file_matcher
     assert parse_spec(spec.to_dict()) == spec
+
+
+def test_run_budget_stops_the_whole_run(tree: Path) -> None:
+    # The file budget alone did not bound the total (self-audit of 2026-11-13).
+    write(tree, "src/other.js", "eval(5)\n")
+    result = run(tree, [], [make_spec()], max_total_seconds=-1.0)
+    assert result.candidates == []
+    assert result.stats.files_not_scanned_budget == result.stats.files_total
+    assert any("for the whole run" in warning for warning in result.warnings)
+    unbounded = run(tree, [], [make_spec()], max_total_seconds=None)
+    assert len(unbounded.candidates) == 2
+    assert unbounded.stats.files_not_scanned_budget == 0

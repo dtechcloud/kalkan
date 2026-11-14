@@ -323,11 +323,9 @@ def run_app_poc(ctx: Any, task_id: str, harness: dict[str, Any], docker: Path) -
         return blocked("The compose file is not inside the target.", "sandbox_error")
     if not compose_path.is_file():
         return blocked(f"The compose file {compose_rel} does not exist.", "sandbox_error")
-    pattern_text = harness.get("success_regex")
-    try:
-        pattern = re.compile(str(pattern_text))
-    except re.error as exc:
-        return blocked(f"The success pattern is not a valid expression: {exc}", "sandbox_error")
+    pattern, problem = runner.success_pattern(harness.get("success_regex"))
+    if pattern is None:
+        return blocked(problem, "sandbox_error")
 
     project = project_name(str(ctx.run_id), task_id)
     shown = _compose(docker, project, compose_path, "config", "--format", "json", timeout=60)

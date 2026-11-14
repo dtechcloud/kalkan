@@ -72,8 +72,12 @@ _JSON_SWAGGER = re.compile(r'"swagger"\s*:\s*"2\.0"')
 #: The keys that make libopenapi (vacuum) look up another document or change the base URI.
 REF_KEYS: Final = ("ref", "id", "dynamicRef", "recursiveRef")
 _KEY = re.compile(
-    r"""(?P<lead>[?*&!][^\s"']*\s*)?(?P<q>["']?)\$(?P<key>ref|id|dynamicRef|recursiveRef)(?P=q)"""
-    r"""(?P<colon>\s*:)?"""
+    # The lead (an explicit key, an alias, an anchor or a tag) starts only at a token boundary
+    # and holds no flow indicator, and every repeat is possessive: before, 20,000 "?" took 33 s
+    # (quadratic; self-audit of 2026-11-13). YAML anchor and tag names hold no [ ] { } ,.
+    r"""(?P<lead>(?<![^\s"'{\[,])[?*&!][^\s"'${\[,]*+\s*+)?"""
+    r"""(?P<q>["']?)\$(?P<key>ref|id|dynamicRef|recursiveRef)(?P=q)"""
+    r"""(?P<colon>\s*+:)?"""
 )
 _SCHEME = re.compile(r"^[A-Za-z][A-Za-z0-9+.-]*:")
 #: The line breaks of the YAML parser of vacuum (go-yaml): CR LF, CR, LF, NEL, LS, PS.
