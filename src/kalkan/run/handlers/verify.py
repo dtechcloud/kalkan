@@ -222,17 +222,46 @@ def _audit_answers(evaluation: dict[str, Any]) -> dict[str, Any]:
     return answers
 
 
-def _duplicate_fingerprint(ctx: RunContext, ref: object, own_task: str) -> str | None:
-    """Return the fingerprint of the claim that ``duplicate_of`` names, or None."""
+def _duplicate_fingerprint(
+    ctx: RunContext,
+    ref: object,
+    own_task: str,
+    *,
+    nearby: object = None,
+    class_slug: str | None = None,
+    notes: list[str] | None = None,
+) -> str | None:
+    """Return the fingerprint of the claim that ``duplicate_of`` names, or None.
+
+    Only a claim of ``nearby`` (the ``nearby_claims`` of the task input) counts, and a claim
+    whose finding has another class does not. Before, ``duplicate_of`` could name any claim of
+    the run and give the new finding its fingerprint, so a steered verifier replaced the text
+    of an unrelated finding in the merge (self-audit of 2026-11-13). A refused ref goes into
+    ``notes``.
+    """
     if not isinstance(ref, str) or not ref.strip():
         return None
     ref = ref.strip()
+    allowed = {
+        item.get("ref")
+        for item in (nearby if isinstance(nearby, list) else [])
+        if isinstance(item, dict)
+    }
+    if ref not in allowed:
+        if notes is not None:
+            notes.append(f"duplicate_of {ref!r} refused: not one of the nearby_claims")
+        return None
     for task_id, task in ctx.state["tasks"].items():
         meta = task.get("meta") or {}
         if task["type"] != "verify" or task_id == own_task or meta.get("subject") != ref:
             continue
         finding = read_task_json(ctx, task_id, "finding.json")
         if isinstance(finding, dict) and isinstance(finding.get("fingerprint"), str):
+            other = finding.get("class")
+            if class_slug is not None and isinstance(other, str) and other != class_slug:
+                if notes is not None:
+                    notes.append(f"duplicate_of {ref!r} refused: class {other}, not {class_slug}")
+                return None
             return finding["fingerprint"]
         if isinstance(meta.get("fingerprint"), str):
             return meta["fingerprint"]
@@ -278,7 +307,14 @@ def build_finding(
     duplicate = (
         None
         if verdict == "rejected"
-        else _duplicate_fingerprint(ctx, result.get("duplicate_of"), task_id)
+        else _duplicate_fingerprint(
+            ctx,
+            result.get("duplicate_of"),
+            task_id,
+            nearby=data.get("nearby_claims"),
+            class_slug=class_slug,
+            notes=notes,
+        )
     )
     finding: dict[str, Any] = {
         "verdict": verdict,
