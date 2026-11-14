@@ -44,6 +44,7 @@ from kalkan.errors import KalkanError
 from kalkan.matchers.globs import GlobSet
 from kalkan.matchers.safety import MAX_LINE_LENGTH, compile_regex
 from kalkan.matchers.spec import Condition, MatcherSpec, Pattern
+from kalkan.sarif.redact import REDACTED, SECRET_CLASS
 
 ENGINE = "matcher"
 SKIP_DIRS = frozenset({".git", "node_modules", ".venv", "venv", "dist", "build"})
@@ -573,6 +574,10 @@ def _candidate(
     start = max(0, first - SNIPPET_CONTEXT)
     end = min(len(lines), first + SNIPPET_CONTEXT + 1)
     snippet = "\n".join(line[:MAX_SNIPPET_LINE] for line in lines[start:end])
+    if spec.vuln_class == SECRET_CLASS:
+        # The lines of a secret hit hold the value: no matched text in candidates.json, a
+        # task input or the candidate ID (kalkan.sarif.redact, self-audit of 2026-11-13).
+        snippet = REDACTED
     numbers = [index + 1 for index in indexes]
     listed = ", ".join(str(n) for n in numbers[:MAX_MESSAGE_LINES])
     if len(numbers) > MAX_MESSAGE_LINES:

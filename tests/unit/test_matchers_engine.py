@@ -458,3 +458,20 @@ def test_run_budget_stops_the_whole_run(tree: Path) -> None:
     unbounded = run(tree, [], [make_spec()], max_total_seconds=None)
     assert len(unbounded.candidates) == 2
     assert unbounded.stats.files_not_scanned_budget == 0
+
+
+def test_a_secret_matcher_keeps_no_matched_text(tmp_path: Path) -> None:
+    # The secrets-exposure matchers hit credential lines by design (self-audit of 2026-11-13).
+    write(tmp_path, "src/config.js", "const a = 1;\nconst password = 'made-up-value';\n")
+    spec = make_spec(
+        "js-password",
+        description="hard-coded password",
+        **{"class": "hardcoded-secrets", "cwe": ["CWE-798"]},
+        patterns=[{"regex": r"password\s*=\s*'", "flags": "", "label": "password"}],
+        examples=["password = 'x'"],
+    )
+    result = run(tmp_path, [], [spec])
+    assert len(result.candidates) == 1
+    candidate = result.candidates[0]
+    assert candidate["snippet"] == "REDACTED"
+    assert "made-up-value" not in str(candidate)

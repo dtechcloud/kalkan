@@ -43,6 +43,7 @@ from urllib.parse import unquote
 from kalkan.errors import ValidationError
 from kalkan.findings.severity import for_sarif_result
 from kalkan.findings.taxonomy import SLUGS, class_for_cwe, normalize_cwe
+from kalkan.sarif.redact import REDACTED, SECRET_CLASS, secret_message
 from kalkan.sarif.uri import is_target_relative, normalize_uri
 from kalkan.util.safe_io import read_bounded
 
@@ -459,6 +460,13 @@ def _candidate(
         notes.append(f"the file {file!r} is not inside the target root")
     severity, tool_severity = for_sarif_result(item, rule)
     tags = _unique([*_strings(result_props.get("tags")), *_strings(rule_props.get("tags"))])
+    fingerprints = _fingerprints(item)
+    if vuln_class == SECRET_CLASS:
+        # A secret result keeps no matched text, also not in the candidate ID or a
+        # fingerprint, which would confirm a guessed value (kalkan.sarif.redact).
+        message = secret_message(title or rule_id)
+        snippet = REDACTED if snippet else ""
+        fingerprints = {}
 
     return {
         "id": make_id(engine, rule_id, file, start_line, snippet),
@@ -476,7 +484,7 @@ def _candidate(
         "tool_severity": tool_severity,
         "confidence": _confidence(result_props, rule_props),
         "tags": tags,
-        "fingerprints": _fingerprints(item),
+        "fingerprints": fingerprints,
         "sca": _sca(engine, rule_id, rule, rule_props, result_props, message, file),
     }
 

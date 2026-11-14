@@ -80,6 +80,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from kalkan.errors import KalkanError, ToolError
+from kalkan.sarif.redact import SECRET_CLASS, redact_result
 from kalkan.scanners import rulepacks
 from kalkan.scanners.adapters._sources import VENDOR_DIRS
 from kalkan.scanners.adapters.opengrep import OpengrepAdapter, default_rules_dir
@@ -91,8 +92,6 @@ MAX_SARIF_BYTES: Final = 50 * 1024 * 1024
 STAGING_DIRNAME: Final = "packs"
 #: The status file lists at most this many run-time duplicates.
 MAX_LISTED_DUPLICATES: Final = 100
-SECRET_CLASS: Final = "hardcoded-secrets"
-REDACTED: Final = "REDACTED"
 #: Opengrep ``--timeout``: seconds per rule and file (module docstring).
 RULE_TIMEOUT_SECONDS: Final = 10
 
@@ -335,33 +334,6 @@ def annotate_sarif(doc: Any, rules: Mapping[str, Mapping[str, Any]]) -> Any:
             if isinstance(result, dict) and str(result.get("ruleId")) in secret_rules:
                 redact_result(result, secret_rules[str(result["ruleId"])])
     return doc
-
-
-def redact_result(result: dict[str, Any], title: str) -> None:
-    """Remove the matched text of a secret result: snippets, message and fingerprints."""
-    result["message"] = {"text": f"{title}: hardcoded credential (value redacted by kalkan)"}
-    result.pop("fingerprints", None)
-    result.pop("partialFingerprints", None)
-
-    def scrub(location: Any) -> None:
-        physical = location.get("physicalLocation") if isinstance(location, dict) else None
-        if not isinstance(physical, dict):
-            return
-        for key in ("region", "contextRegion"):
-            region = physical.get(key)
-            if isinstance(region, dict) and "snippet" in region:
-                region["snippet"] = {"text": REDACTED}
-
-    for key in ("locations", "relatedLocations"):
-        for location in result.get(key) or []:
-            scrub(location)
-    for flow in result.get("codeFlows") or []:
-        threads = flow.get("threadFlows") if isinstance(flow, dict) else None
-        for thread in threads if isinstance(threads, list) else []:
-            steps = thread.get("locations") if isinstance(thread, dict) else None
-            for step in steps if isinstance(steps, list) else []:
-                if isinstance(step, dict):
-                    scrub(step.get("location"))
 
 
 def _mtime(path: Path) -> float:
