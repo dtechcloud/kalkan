@@ -93,9 +93,16 @@ def test_dry_run_json(env, capsys):
     assert Path(data["log_file"]).name.startswith("unattended-")
     assert data["run_id"] is None
     app = env["app"].resolve().as_posix()
-    assert data["init_argv"][1:] == ["-m", "kalkan", "run", "init", app, "--profile", "deep"] + [
-        "--json"
-    ]
+    assert data["init_argv"][1:] == [
+        "-I",
+        "-m",
+        "kalkan",
+        "run",
+        "init",
+        app,
+        "--profile",
+        "deep",
+    ] + ["--json"]
     assert [r["when"] for r in data["rounds"]] == ["every round"]
     argv = data["rounds"][0]["argv"]
     assert argv[0] == "/opt/claude/bin/claude"
@@ -109,6 +116,7 @@ def test_dry_run_json(env, capsys):
         "--verbose",
     ]
     assert data["status_argv"][1:] == [
+        "-I",
         "-m",
         "kalkan",
         "run",
@@ -209,7 +217,7 @@ def test_a_target_with_spaces_stays_one_argument(env, capsys):
     spaced.mkdir()
     assert main(["unattended", "my app", "--dry-run", "--json"]) == EXIT_OK
     data = json.loads(capsys.readouterr().out)
-    assert data["init_argv"][5] == spaced.resolve().as_posix()
+    assert data["init_argv"][6] == spaced.resolve().as_posix()
     assert data["rounds"][0]["argv"][2] == PLACEHOLDER
 
 
@@ -219,7 +227,7 @@ def test_a_target_with_spaces_stays_one_argument(env, capsys):
 def test_a_git_url_passes_unchanged(env, capsys, url):
     assert main(["unattended", url, "--dry-run", "--json"]) == EXIT_OK
     data = json.loads(capsys.readouterr().out)
-    assert data["init_argv"][5] == url
+    assert data["init_argv"][6] == url
 
 
 def test_a_missing_folder_is_an_error(env, capsys):
@@ -249,7 +257,7 @@ def test_a_cmd_shim_takes_a_target_with_cmd_metacharacters(env, monkeypatch, cap
     (env["work"] / "a&b").mkdir()
     assert main(["unattended", "a&b", "--dry-run", "--json"]) == EXIT_OK
     data = json.loads(capsys.readouterr().out)
-    assert data["init_argv"][5].endswith("/a&b")
+    assert data["init_argv"][6].endswith("/a&b")
     assert "&" not in data["rounds"][0]["argv"][2]
 
 
@@ -366,7 +374,7 @@ def test_codex_dry_run(env, capsys):
         "--json",
     ]
     app = env["app"].resolve().as_posix()
-    assert data["init_argv"][1:] == ["-m", "kalkan", "run", "init", app, "--profile"] + [
+    assert data["init_argv"][1:] == ["-I", "-m", "kalkan", "run", "init", app, "--profile"] + [
         "standard",
         "--json",
     ]
@@ -442,7 +450,7 @@ def test_plugin_dry_run_sends_the_plugin_skill_from_the_runs_root(plugin_env, ca
     assert Path(data["log_file"]).parent == plugin_env["runs"]
     (argv,) = (item["argv"] for item in data["rounds"])
     app = plugin_env["app"].resolve().as_posix()
-    assert data["init_argv"][4:] == ["init", app, "--profile", "fast", "--json"]
+    assert data["init_argv"][5:] == ["init", app, "--profile", "fast", "--json"]
     assert argv == [
         "/opt/claude/bin/claude",
         "-p",

@@ -287,7 +287,8 @@ def init_command(
     The caller passes a normalized target (an absolute folder or a git URL, never text that
     starts with ``-``).
     """
-    argv = [python or sys.executable, "-m", "kalkan", "run", "init", target, "--profile", profile]
+    argv = [python or sys.executable, "-I", "-m", "kalkan", "run", "init", target]
+    argv += ["--profile", profile]
     if not latest:
         argv.append("--no-latest")
     if lang != "en":
@@ -331,8 +332,22 @@ def log_file_name(moment: datetime) -> str:
 
 def status_command(run_id: str, python: str | None = None) -> list[str]:
     """Return the command that reads the status of the bound run:
-    ``<python> -m kalkan run status --run <run-id> --json``."""
-    return [python or sys.executable, "-m", "kalkan", "run", "status", "--run", run_id, "--json"]
+    ``<python> -I -m kalkan run status --run <run-id> --json``.
+
+    ``-I``: the loop runs in the repository root, which a Codex agent can write; without it a
+    planted ``kalkan`` package there ran outside the sandbox (self-audit of 2026-11-13).
+    """
+    return [
+        python or sys.executable,
+        "-I",
+        "-m",
+        "kalkan",
+        "run",
+        "status",
+        "--run",
+        run_id,
+        "--json",
+    ]
 
 
 def _local_text(moment: datetime) -> str:

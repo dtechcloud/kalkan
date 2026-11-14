@@ -1075,13 +1075,17 @@ def _install_pip(
                 say("Creating the tool venv .tools/pyenv")
                 _checked(
                     run(
-                        [sys.executable, "-m", "venv", str(pyenv_dir(root))],
+                        [sys.executable, "-I", "-m", "venv", str(pyenv_dir(root))],
                         timeout=VENV_TIMEOUT_SECONDS,
                     ),
                     "python -m venv",
                 )
+            # -I: the current folder of the operator (it can be an audited folder) is not on
+            # sys.path, so a planted pip.py or venv.py never loads (self-audit of 2026-11-13).
+            # pip still reads its PIP_* variables.
             argv = [
                 str(python),
+                "-I",
                 "-m",
                 "pip",
                 "install",

@@ -407,12 +407,12 @@ class FakePip:
     def __call__(self, argv, *, timeout, env=None, cwd=None):
         argv = [str(a) for a in argv]
         self.calls.append(argv)
-        if argv[1:3] == ["-m", "venv"]:
+        if argv[1:4] == ["-I", "-m", "venv"]:
             python = pyenv_python(self.root)
             python.parent.mkdir(parents=True, exist_ok=True)
             python.write_bytes(b"")
             return subprocess.CompletedProcess(argv, 0, "", "")
-        if argv[1:4] == ["-m", "pip", "install"]:
+        if argv[1:5] == ["-I", "-m", "pip", "install"]:
             for name in ("fakepip", "otherpip"):
                 script = script_path(self.root, name)
                 script.parent.mkdir(parents=True, exist_ok=True)
@@ -432,7 +432,7 @@ def test_pip_tools_install_into_one_venv(tmp_path):
     results = install("all", repo_root=tmp_path, manifest=manifest, key=KEY, runner=runner)
     assert [r.status for r in results] == [STATUS_INSTALLED, STATUS_INSTALLED]
     venv_call, pip_call, _query = runner.calls
-    assert venv_call[1:] == ["-m", "venv", str(pyenv_dir(tmp_path.resolve()))]
+    assert venv_call[1:] == ["-I", "-m", "venv", str(pyenv_dir(tmp_path.resolve()))]
     assert "--disable-pip-version-check" in pip_call
     assert "--no-cache-dir" in pip_call  # no download stays in the pip cache of the user
     assert pip_call[-2:] == ["fakepip==3.3.22", "otherpip[sarif]==1.9.4"]

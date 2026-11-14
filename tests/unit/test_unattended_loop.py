@@ -326,6 +326,7 @@ def test_prompt_command_and_hint_helpers():
     argv = init_command("C:/My Code/app", "fast", latest=False, python="py")
     assert argv == [
         "py",
+        "-I",
         "-m",
         "kalkan",
         "run",
@@ -758,7 +759,7 @@ def test_status_reader_runs_kalkan_run_status_of_the_run_in_a_subprocess(tmp_pat
     reading = subprocess_status_reader(tmp_path, runner=fake)(RUN)
     assert reading.status is not None and reading.status.finished_tasks == 3
     argv, kwargs = fake.calls[0]
-    assert argv == [sys.executable, "-m", "kalkan", "run", "status", "--run", RUN, "--json"]
+    assert argv == [sys.executable, "-I", "-m", "kalkan", "run", "status", "--run", RUN, "--json"]
     assert kwargs["cwd"] == os.fspath(tmp_path) and kwargs["shell"] is False
     assert kwargs["env"]["PYTHONIOENCODING"] == "utf-8" and kwargs["timeout"] > 0
 
@@ -794,6 +795,7 @@ def test_run_creator_runs_run_init_and_reads_the_run_id(tmp_path):
     argv, kwargs = fake.calls[0]
     assert argv == [
         sys.executable,
+        "-I",
         "-m",
         "kalkan",
         "run",
