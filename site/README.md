@@ -40,6 +40,13 @@ The fonts are in `assets/fonts` (Geist and Geist Mono subsets, SIL OFL 1.1,
 `scripts/build_report_fonts.py`). The only external requests are the visit counts
 (Application Insights, `assets/analytics.js`). Everything else is in this folder.
 
+## Search engines
+
+- Every page has a `<title>`, a description, a canonical link to `https://kalkan.dtechcloud.com/<clean URL>` and Open Graph tags with `assets/og.png` (1200 x 630). The canonical link also covers the default `*.azurestaticapps.net` host name of the app.
+- `index.html` carries JSON-LD (schema.org `Organization`, `WebSite`, `SoftwareApplication`). The block is data, not script, so the CSP does not change.
+- `robots.txt` allows everything and names `sitemap.xml`. The staging environment gets `X-Robots-Tag: none` from Azure, so search engines skip it.
+- When you add, rename or remove a page: change `sitemap.xml`, and give the new page its title (`<title>`, `data-title-en`, `data-title-tr`), description, canonical link and Open Graph tags.
+
 ## Hosting and deploy
 
 Azure Static Web Apps (Standard) serves the site. `.github/workflows/site.yml` deploys it:
