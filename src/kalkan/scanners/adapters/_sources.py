@@ -33,6 +33,7 @@ __all__ = [
     "MAX_SOURCE_BYTES",
     "VENDOR_DIRS",
     "batches",
+    "is_test_path",
     "is_vendored",
     "read_head",
     "read_line",
@@ -53,6 +54,22 @@ def is_vendored(rel: str) -> bool:
     """Return True when a target-relative path is inside a folder of :data:`VENDOR_DIRS`."""
     parts = PurePosixPath(rel).parts[:-1]
     return any(part.casefold() in VENDOR_DIRS for part in parts)
+
+
+#: Folder names of test code (compared case-insensitively), for :func:`is_test_path`.
+TEST_DIRS: Final = frozenset({"test", "tests", "testing"})
+
+
+def is_test_path(rel: str) -> bool:
+    """Return True for a target-relative Python test file: a file inside a folder of
+    :data:`TEST_DIRS`, or a file named ``test_*.py``, ``*_test.py`` or ``conftest.py``."""
+    path = PurePosixPath(rel)
+    if any(part.casefold() in TEST_DIRS for part in path.parts[:-1]):
+        return True
+    name = path.name.casefold()
+    return name == "conftest.py" or (
+        name.endswith(".py") and (name.startswith("test_") or name.endswith("_test.py"))
+    )
 
 
 def source_files(target: Path, predicate: Callable[[str], bool]) -> list[str]:
