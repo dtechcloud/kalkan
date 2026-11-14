@@ -129,6 +129,8 @@ _TASK_ID: Final = re.compile(
 _FORBIDDEN: Final = re.compile(r"[;&|<>()`$\n\r\x00]")
 _MSYS_DRIVE: Final = re.compile(r"\A/([A-Za-z])(?=/|\Z)")
 _ENV_FILE: Final = re.compile(r"\A\.env(?:\..*)?\Z", re.IGNORECASE)
+#: A Grep ``glob`` or a Glob ``pattern`` that names .env files.
+_ENV_GLOB: Final = re.compile(r"(?:\A|[/\\{,*])\.env", re.IGNORECASE)
 _SAFE_ID: Final = re.compile(r"\A[A-Za-z0-9_-][A-Za-z0-9._-]{0,127}\Z")
 #: The file name of a saved tool output (Claude Code writes ``toolu_<id>.txt``).
 _TOOL_RESULT_NAME: Final = re.compile(r"\A[A-Za-z0-9_-]{1,128}\.txt\Z")
@@ -368,6 +370,50 @@ def _engine_tokens(command: object, data: str, root: str | None, windows: bool) 
     return None
 
 
+#: Engine subcommands that use the network (database, tool and image downloads, new rounds).
+_NETWORK_SUBCOMMANDS: Final = (
+    ("tools", "install"),
+    ("sca", "update-db"),
+    ("sandbox", "pull"),
+    ("unattended",),
+    ("audit",),
+)
+_NETWORK_FLAGS: Final = ("--online", "--allow-build-network")
+#: A git URL in the scp form (``git@host:org/repo.git``), which has no scheme.
+_SCP_GIT: Final = re.compile(r"\A[A-Za-z0-9._-]+@[A-Za-z0-9.-]+:[^\s]")
+
+
+def _engine_uses_network(tokens: list[str]) -> bool:
+    """Return True when an engine command can reach the network: a URL or git target, an online
+    flag or a download subcommand. A marked session gets no automatic allow for it: the engine
+    allow ran before the network deny, so ``run init https://...`` or ``--online`` passed in the
+    middle of an audit (self-audit of 2026-11-13)."""
+    words = tokens[1:]
+    if any(word in _NETWORK_FLAGS or word.split("=", 1)[0] in _NETWORK_FLAGS for word in words):
+        return True
+    if any(tuple(words[: len(sub)]) == sub for sub in _NETWORK_SUBCOMMANDS):
+        return True
+    if any(_SCP_GIT.match(word) for word in words):
+        return True
+    return is_network_command(" ".join(words))
+
+
+def _names_env(tool: object, tool_input: Mapping[str, Any], path: str) -> bool:
+    """Return True when a read tool call names a .env file: the path or one of its parts, a Grep
+    ``glob`` or a Glob ``pattern``. Before, only Read was checked, and Grep on target/.env
+    returned the secrets (self-audit of 2026-11-13)."""
+    parts = [part for part in path.replace("\\", "/").split("/") if part]
+    if any(_ENV_FILE.match(part) for part in parts):
+        return True
+    for key in ("glob", "pattern") if tool in ("Grep", "Glob") else ():
+        value = tool_input.get(key)
+        if key == "pattern" and tool == "Grep":
+            continue  # the search text of Grep, not a file name
+        if isinstance(value, str) and _ENV_GLOB.search(value):
+            return True
+    return False
+
+
 def _runs_root(data: str) -> str:
     override = os.environ.get("KALKAN_RUNS_DIR")
     if override:
@@ -515,8 +561,7 @@ def _subagent_decision(
         binding = _load_binding(data, agent_id)
         if binding is not None and binding["run"] != run_id:
             return _deny_subagent("read only inside the run of your task")
-        name = (path or "").rstrip("/").rsplit("/", 1)[-1]
-        if tool == "Read" and _ENV_FILE.match(name):
+        if _names_env(tool, tool_input, path or ""):
             return _deny_subagent("kalkan never reads .env files of an audited target")
         if (
             binding is None
@@ -568,15 +613,19 @@ def _run_option(tokens: list[str]) -> str | None:
     return None
 
 
-def _mark_session(data: str, session_id: object, tokens: list[str], now: float) -> None:
+def _mark_session(data: str, session_id: object, tokens: list[str], now: float, runs: str) -> None:
     file = _session_file(data, session_id)
     if file is None:
         return
     previous = _read_json(file)
     since = previous.get("since") if isinstance(previous, dict) else None
+    stored = previous.get("run") if isinstance(previous, dict) else None
     run = _run_option(tokens)
-    if run is None and isinstance(previous, dict) and isinstance(previous.get("run"), str):
-        run = previous["run"]
+    if isinstance(stored, str) and (run is None or _run_phase(runs, stored) != "done"):
+        # The mark stays with the run that the session audits until that run is done: before,
+        # one engine command that named any finished run ended the network deny
+        # (self-audit of 2026-11-13).
+        run = stored
     with contextlib.suppress(OSError):
         _prune(file.parent, SESSION_TTL_SECONDS, now)
         _write_json(file, {"since": since or now, "last": now, "run": run})
@@ -654,7 +703,16 @@ def decide(
         tokens = _engine_tokens(tool_input.get("command"), data, plugin_root, win)
         if tokens is not None:
             if tokens[0] != "sh":
-                _mark_session(data, session, tokens, moment)
+                if _engine_uses_network(tokens) and _session_active(
+                    data, session, runs_folder, moment
+                ):
+                    return _decision(
+                        "deny",
+                        "a kalkan audit runs in this session, and kalkan sends no data to the "
+                        "network until the run is done (docs/SECURITY.md); this engine command "
+                        "can reach the network",
+                    )
+                _mark_session(data, session, tokens, moment, runs_folder)
                 return _decision("allow", "kalkan engine command")
             return _decision("allow", "kalkan setup command")
     if _network_tool(tool, tool_input) and _session_active(data, session, runs_folder, moment):
@@ -684,8 +742,7 @@ def decide(
             return None
         if not any(_inside(path, root, windows=win) for root in (data, runs_folder)):
             return None
-        name = path.replace("\\", "/").rstrip("/").rsplit("/", 1)[-1]
-        if tool == "Read" and _ENV_FILE.match(name):
+        if _names_env(tool, tool_input, path):
             return _decision("deny", "kalkan never reads .env files of an audited target")
         return _decision("allow", "read inside the kalkan data or runs folder")
     return None

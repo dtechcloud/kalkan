@@ -638,3 +638,68 @@ def test_an_orchestrating_session_may_read_its_own_saved_output(data, tmp_path, 
     assert decision(hook.decide(event, **options)) == "allow"
     elsewhere = dict(event, session_id="s2")
     assert hook.decide(elsewhere, **options) is None  # other sessions follow the normal flow
+
+
+@pytest.mark.parametrize(
+    "args",
+    [
+        "run init https://attacker.example/repo.git --json",
+        "run init git@attacker.example:org/repo.git --json",
+        "scan trivy --online --json",
+        "sca match --online",
+        "tools install --all",
+        "sca update-db --force",
+        "sandbox pull python:3.12-slim",
+        "unattended devam",
+        "run init ./app --allow-build-network --json",
+    ],
+)
+def test_a_marked_session_gets_no_allow_for_an_engine_network_command(data, args):
+    # The engine allow ran before the network deny (self-audit of 2026-11-13).
+    write_state(data, "hunt")
+    options = {"data": data.as_posix(), "windows": False, "runs": runs(data), "now": 1000.0}
+    fresh = engine(data, args, session="fresh")
+    assert decision(hook.decide(fresh, **options)) == "allow"  # no audit in that session yet
+    hook.decide(engine(data, f"run next --run {RUN_ID} --json"), **options)
+    out = hook.decide(engine(data, args), **options)
+    assert decision(out) == "deny", args
+    assert "can reach the network" in out["hookSpecificOutput"]["permissionDecisionReason"]
+    for offline in (f"run step --run {RUN_ID} --json", f"task complete T0001-recon --run {RUN_ID}"):
+        assert decision(hook.decide(engine(data, offline), **options)) == "allow"
+
+
+def test_the_session_mark_stays_with_its_run_until_that_run_is_done(data):
+    # One engine command that named a finished run ended the network deny before.
+    finished = "20261016T151915Z-old-5fc6"
+    write_state(data, "hunt")
+    (data / "runs" / finished).mkdir(parents=True)
+    (data / "runs" / finished / "state.json").write_text('{"phase": "done"}', encoding="utf-8")
+    options = {"data": data.as_posix(), "windows": False, "runs": runs(data), "now": 1000.0}
+    hook.decide(engine(data, f"run next --run {RUN_ID} --json"), **options)
+    hook.decide(engine(data, f"run status --run {finished} --json"), **options)
+    marker = data / "hook" / "sessions" / "s1.json"
+    assert json.loads(marker.read_text(encoding="utf-8"))["run"] == RUN_ID
+    assert decision(hook.decide(network_events("s1")[0], **options)) == "deny"
+    write_state(data, "done")  # the session's own run ends: a new run may take the mark
+    hook.decide(engine(data, f"run status --run {finished} --json"), **options)
+    assert json.loads(marker.read_text(encoding="utf-8"))["run"] == finished
+
+
+def test_grep_and_glob_never_read_env_files(data):
+    run = make_run_files(data)
+    hook.decide(read(prompt_of(data)), data=str(data), runs=runs(data))
+    target = str(run / "target")
+    denied = [
+        subagent("Grep", {"pattern": "SECRET", "path": f"{target}/.env"}),
+        subagent("Grep", {"pattern": "KEY", "path": target, "glob": "**/.env*"}),
+        subagent("Grep", {"pattern": "KEY", "path": f"{target}/config/.env.production"}),
+        subagent("Glob", {"pattern": "**/.env", "path": target}),
+    ]
+    for event in denied:
+        out = hook.decide(event, data=str(data), runs=runs(data))
+        assert decision(out) == "deny", event
+        assert ".env" in out["hookSpecificOutput"]["permissionDecisionReason"]
+    allowed = subagent("Grep", {"pattern": r"\.env", "path": target, "glob": "*.py"})
+    assert decision(hook.decide(allowed, data=str(data), runs=runs(data))) == "allow"
+    main = {"tool_name": "Grep", "tool_input": {"pattern": "x", "path": f"{target}/.env"}}
+    assert decision(hook.decide(main, data=str(data), runs=runs(data))) == "deny"
