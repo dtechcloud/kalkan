@@ -104,6 +104,12 @@ WEB_TOOLS: Final = frozenset({"WebFetch", "WebSearch"})
 ENV_DATA: Final = "CLAUDE_PLUGIN_DATA"
 ENV_ROOT: Final = "CLAUDE_PLUGIN_ROOT"
 ENV_LOG: Final = "KALKAN_HOOK_LOG"
+#: Checkout mode: the repository root (scripts/pre-tool-use-checkout.sh sets it). The hook then
+#: decides only for the kalkan subagents, which are project agents named ``kalkan-<role>``; the
+#: orchestrator follows .claude/settings.json. Before, checkout mode had no hook, and its bare
+#: Read, Grep and Glob rules let a prompt-injected subagent read any operator file and write
+#: the result of any task (self-audit of 2026-11-13).
+ENV_CHECKOUT: Final = "KALKAN_HOOK_CHECKOUT"
 #: The Claude Code configuration folder (default ``~/.claude``); its ``projects`` folder holds the
 #: saved tool outputs of each session.
 ENV_CONFIG: Final = "CLAUDE_CONFIG_DIR"
@@ -292,11 +298,14 @@ def is_own_tool_result(
 # Event helpers
 
 
-def is_kalkan_agent(event: Mapping[str, Any]) -> bool:
-    """Return True when the call comes from a subagent of the kalkan plugin: ``agent_type``
-    starts with ``kalkan:`` (Claude Code names plugin agents ``<plugin>:<agent>``)."""
+def is_kalkan_agent(event: Mapping[str, Any], *, checkout: bool = False) -> bool:
+    """Return True when the call comes from a kalkan subagent: in the plugin ``agent_type``
+    starts with ``kalkan:`` (Claude Code names plugin agents ``<plugin>:<agent>``); in a
+    checkout it is one of :data:`AGENT_NAMES` (project agents keep their file name)."""
     agent = event.get("agent_type")
-    return isinstance(agent, str) and agent.startswith(PLUGIN_NAME + ":")
+    if not isinstance(agent, str):
+        return False
+    return agent in AGENT_NAMES if checkout else agent.startswith(PLUGIN_NAME + ":")
 
 
 def is_network_command(command: object) -> bool:
@@ -681,12 +690,16 @@ def decide(
     windows: bool | None = None,
     runs: str | None = None,
     now: float | None = None,
+    checkout: bool = False,
 ) -> dict[str, Any] | None:
     """Return the hook output for one PreToolUse event, or None (normal permission flow).
 
-    ``runs`` replaces the runs root and ``now`` the clock (tests).
+    ``runs`` replaces the runs root and ``now`` the clock (tests). With ``checkout`` (the
+    repository hook, :data:`ENV_CHECKOUT`) only the calls of kalkan subagents get a decision.
     """
     if not data:
+        return None
+    if checkout and not is_kalkan_agent(event, checkout=True):
         return None
     win = os.name == "nt" if windows is None else windows
     moment = time.time() if now is None else now
@@ -695,7 +708,7 @@ def decide(
     tool_input: Mapping[str, Any] = raw_input if isinstance(raw_input, Mapping) else {}
     runs_folder = runs if runs is not None else _runs_root(data)
 
-    if is_kalkan_agent(event):
+    if is_kalkan_agent(event, checkout=checkout):
         return _subagent_decision(event, tool, tool_input, data, runs_folder, win, moment)
 
     session = event.get("session_id")
@@ -766,9 +779,17 @@ def main(argv: list[str] | None = None) -> int:
         event = json.loads(raw.decode("utf-8"))
         if not isinstance(event, dict):
             return 0
-        output = decide(event, data=os.environ.get(ENV_DATA), plugin_root=os.environ.get(ENV_ROOT))
+        checkout_root = os.environ.get(ENV_CHECKOUT)
+        if checkout_root:
+            # The agent bindings live in <repo>/.tools/hook, next to the tools of the checkout.
+            output = decide(event, data=f"{checkout_root}/.tools", checkout=True)
+        else:
+            output = decide(
+                event, data=os.environ.get(ENV_DATA), plugin_root=os.environ.get(ENV_ROOT)
+            )
     except Exception:  # never break a tool call of the user ...
-        if not (isinstance(event, dict) and is_kalkan_agent(event)):
+        checkout = bool(os.environ.get(ENV_CHECKOUT))
+        if not (isinstance(event, dict) and is_kalkan_agent(event, checkout=checkout)):
             return 0
         # ... but a kalkan subagent fails closed.
         output = _deny_subagent("the permission check failed; the call is refused")

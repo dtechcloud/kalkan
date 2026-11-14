@@ -346,7 +346,9 @@ def test_prompt_command_and_hint_helpers():
         "--json",
     ]
     assert resume_hint("kalkan unattended", "claude", RUN) == f"kalkan unattended devam {RUN}"
-    assert resume_hint("kalkan unattended", "codex", RUN).endswith(f"devam {RUN} --host codex --accept-codex-risk")
+    assert resume_hint("kalkan unattended", "codex", RUN).endswith(
+        f"devam {RUN} --host codex --accept-codex-risk"
+    )
     spaced = resume_hint("kalkan-unattended", "claude", None, "C:/My Code/app", "deep")
     assert spaced == 'kalkan-unattended "C:/My Code/app" --profile deep'
     assert resume_hint("kalkan unattended", "claude", None) == "kalkan unattended devam"

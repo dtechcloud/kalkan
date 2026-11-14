@@ -5,6 +5,9 @@ from __future__ import annotations
 
 import io
 import json
+import os
+import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -703,3 +706,56 @@ def test_grep_and_glob_never_read_env_files(data):
     assert decision(hook.decide(allowed, data=str(data), runs=runs(data))) == "allow"
     main = {"tool_name": "Grep", "tool_input": {"pattern": "x", "path": f"{target}/.env"}}
     assert decision(hook.decide(main, data=str(data), runs=runs(data))) == "deny"
+
+
+def test_the_checkout_hook_confines_the_project_subagents(data, tmp_path):
+    # Checkout mode: the project agents are named kalkan-<role>; the orchestrator and other
+    # agents follow the settings (self-audit of 2026-11-13).
+    run = make_run_files(data)
+    options = {"data": str(data), "runs": runs(data), "checkout": True}
+
+    def checkout_event(event: dict) -> dict:
+        return event | {"agent_type": "kalkan-hunter"}
+
+    assert decision(hook.decide(checkout_event(read(prompt_of(data))), **options)) == "allow"
+    assert (
+        decision(
+            hook.decide(checkout_event(read(str(run / "target" / "app" / "db.py"))), **options)
+        )
+        == "allow"
+    )
+    assert (
+        decision(hook.decide(checkout_event(read(str(tmp_path / "secret.txt"))), **options))
+        == "deny"
+    )
+    assert decision(hook.decide(checkout_event(write(result_of(data))), **options)) == "allow"
+    other = result_of(data, "T0002-hunt")
+    assert decision(hook.decide(checkout_event(write(other)), **options)) == "deny"
+    # The plugin form of the name, the orchestrator and other agents get no decision here.
+    assert hook.decide(read(str(tmp_path / "secret.txt")), **options) is None
+    for agent in (None, "general-purpose", "my-kalkan-helper"):
+        event = read(str(tmp_path / "secret.txt"), agent=agent)
+        assert hook.decide(event, **options) is None, agent
+
+
+@pytest.mark.skipif(shutil.which("sh") is None, reason="needs sh")
+def test_the_checkout_launcher_runs_only_for_kalkan_subagents(tmp_path):
+    root = tmp_path / "repo"
+    (root / "scripts").mkdir(parents=True)
+    script = Path(__file__).resolve().parents[2] / "scripts" / "pre-tool-use-checkout.sh"
+    env = {**os.environ, "CLAUDE_PROJECT_DIR": root.as_posix()}
+
+    def run(event: str) -> str:
+        proc = subprocess.run(
+            ["sh", str(script)],
+            input=event.encode(),
+            env=env,
+            timeout=60,
+            capture_output=True,
+            check=True,
+        )
+        return proc.stdout.decode()
+
+    assert run('{"tool_name":"Read","session_id":"s1"}') == ""  # the orchestrator
+    out = run('{"tool_name":"Read","agent_type":"kalkan-hunter"}')  # no .venv yet
+    assert '"permissionDecision": "deny"' in out and "no .venv" in out
