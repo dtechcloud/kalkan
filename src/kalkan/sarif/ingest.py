@@ -43,7 +43,12 @@ from urllib.parse import unquote
 from kalkan.errors import ValidationError
 from kalkan.findings.severity import for_sarif_result
 from kalkan.findings.taxonomy import SLUGS, class_for_cwe, normalize_cwe
-from kalkan.sarif.redact import SECRET_CLASS, redacted_snippet, secret_message
+from kalkan.sarif.redact import (
+    ADAPTER_REDACTED_ENGINES,
+    SECRET_CLASS,
+    redacted_snippet,
+    secret_message,
+)
 from kalkan.sarif.uri import is_target_relative, normalize_uri
 from kalkan.util.safe_io import read_bounded
 
@@ -464,9 +469,10 @@ def _candidate(
     if vuln_class == SECRET_CLASS:
         # A secret result keeps no matched text, also not in the candidate ID or a
         # fingerprint, which would confirm a guessed value (kalkan.sarif.redact).
-        message = secret_message(title or rule_id)
         snippet = redacted_snippet(snippet)
-        fingerprints = {}
+        if engine not in ADAPTER_REDACTED_ENGINES:
+            message = secret_message(title or rule_id)
+            fingerprints = {}
 
     return {
         "id": make_id(engine, rule_id, file, start_line, snippet),
