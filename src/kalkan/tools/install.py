@@ -12,8 +12,13 @@
   :data:`MAX_TREE_BYTES` bytes), extract the whole tree into a new folder, check the SHA-256
   of the executable and of the tree (:func:`kalkan.tools.manifest.tree_digest`) and move the
   folder to ``.tools/<tool>/<version>/``.
-- ``pip`` tools: one venv ``.tools/pyenv`` with exact versions. pip runs with
-  ``--no-cache-dir``: no download stays in the pip cache of the user.
+- ``pip`` tools: one venv ``.tools/pyenv`` with exact versions. pip installs the hashed lock
+  :data:`PIP_LOCK_PATH` (the full dependency closure of every pip tool, with the sha256 digest
+  of every file; ``scripts/lock_pip_tools.py``) with ``--require-hashes --only-binary :all:``:
+  a new release of a dependency on PyPI and an sdist build never reach the operator machine.
+  Before, pip resolved the dependencies at install time without a pin or a digest (self-audit
+  of 2026-11-13). Every pending tool must be pinned in the lock at its manifest version. pip
+  runs with ``--no-cache-dir``: no download stays in the pip cache of the user.
 - ``go-install`` tools: ``go install [build_flags] <module>@<version>`` with the Go of
   :func:`kalkan.tools.golang.resolve_go` and :func:`kalkan.tools.golang.build_env` (``GOBIN``,
   ``GOPATH``, ``GOMODCACHE``, ``GOCACHE``, ``GOTMPDIR`` and the Go configuration folder with
@@ -98,6 +103,9 @@ MAX_BINARY_BYTES = 1024 * 1024 * 1024
 CHUNK_BYTES = 1024 * 1024
 VENV_TIMEOUT_SECONDS = 600.0
 PIP_TIMEOUT_SECONDS = 3600.0
+#: The hashed lock of the pip tools (package data; ``scripts/lock_pip_tools.py`` writes it).
+PIP_LOCK_PATH = Path(__file__).with_name("pip-tools.lock")
+_LOCK_PIN = re.compile(r"^([A-Za-z0-9][A-Za-z0-9._-]*)(?:\[[^\]]*\])?==([^\s;\\]+)")
 GO_TIMEOUT_SECONDS = 1800.0
 QUERY_TIMEOUT_SECONDS = 120.0
 #: Limits of a toolchain archive (Go 1.26.9: 15045 files, 236 MB).
@@ -1043,6 +1051,58 @@ def _remove_tree(path: Path) -> None:
 # pip tools
 
 
+def requirement_pin(requirement: str) -> tuple[str, str]:
+    """Return ``(normalized name, version)`` of an exact requirement such as
+    ``bandit[sarif]==1.9.4``. Raise ``ValueError`` for anything else."""
+    match = _LOCK_PIN.match(requirement.strip())
+    if match is None:
+        raise ValueError(f"not an exact requirement: {requirement!r}")
+    return _normalize_dist(match.group(1)), match.group(2)
+
+
+def read_pip_lock(path: str | os.PathLike[str]) -> dict[str, set[str]]:
+    """Return ``{normalized name: versions}`` of a hashed pip lock (:data:`PIP_LOCK_PATH`).
+
+    Every requirement must be an exact pin with at least one ``--hash=sha256:`` digest (a
+    marker such as ``; python_full_version < '3.12'`` may follow). Raise ``ValueError`` for
+    another line, a requirement without a digest or a lock without a requirement.
+    """
+    text = Path(path).read_text(encoding="utf-8")
+    pins: dict[str, set[str]] = {}
+    for line in re.sub(r"\\\r?\n", " ", text).splitlines():
+        entry = line.strip()
+        if not entry or entry.startswith("#"):
+            continue
+        match = _LOCK_PIN.match(entry)
+        if match is None:
+            raise ValueError(f"unexpected line {entry[:60]!r}")
+        if "--hash=sha256:" not in entry:
+            raise ValueError(f"{match.group(1)} has no sha256 digest")
+        pins.setdefault(_normalize_dist(match.group(1)), set()).add(match.group(2))
+    if not pins:
+        raise ValueError("the lock has no requirement")
+    return pins
+
+
+def _lock_problem(tools: list[Tool]) -> str | None:
+    """Return why :data:`PIP_LOCK_PATH` cannot install ``tools``, or None."""
+    try:
+        pins = read_pip_lock(PIP_LOCK_PATH)
+        missing = []
+        for tool in tools:
+            name, version = requirement_pin(tool.requirement or "")
+            if version not in pins.get(name, set()):
+                missing.append(f"{name}=={version}")
+    except (OSError, ValueError) as exc:
+        return f"the pip lock {PIP_LOCK_PATH.name} cannot be used: {exc}"
+    if missing:
+        return (
+            f"the pip lock {PIP_LOCK_PATH.name} does not pin {', '.join(missing)}; "
+            "run scripts/lock_pip_tools.py"
+        )
+    return None
+
+
 def _install_pip(
     tools: list[Tool], root: Path, force: bool, run: Runner, say: Log
 ) -> list[InstallResult]:
@@ -1068,6 +1128,11 @@ def _install_pip(
             continue
         pending.append(tool)
 
+    problem = _lock_problem(pending) if pending else None
+    if problem is not None:
+        for tool in pending:
+            results[tool.name] = _pip_result(tool, root, STATUS_FAILED, problem)
+        pending = []
     if pending:
         specs = [tool.requirement or "" for tool in pending]
         try:
@@ -1092,11 +1157,20 @@ def _install_pip(
                 "--disable-pip-version-check",
                 "--no-input",
                 "--no-cache-dir",  # no download stays in the pip cache of the user
+                # The hashed lock: every file of the dependency closure has a pinned digest,
+                # and only wheels install (an sdist build would run unpinned build tools).
+                "--require-hashes",
+                "--only-binary",
+                ":all:",
             ]
             if force:
                 argv.append("--force-reinstall")
-            say(f"Installing {' '.join(specs)} with pip (this can take a few minutes)")
-            _checked(run([*argv, *specs], timeout=PIP_TIMEOUT_SECONDS), "pip install")
+            say(
+                f"Installing {' '.join(specs)} with pip from the hashed lock "
+                f"{PIP_LOCK_PATH.name} (this can take a few minutes)"
+            )
+            argv += ["-r", str(PIP_LOCK_PATH)]
+            _checked(run(argv, timeout=PIP_TIMEOUT_SECONDS), "pip install")
             versions = _pyenv_versions(python, run)
         except ToolError as exc:
             for tool in pending:
