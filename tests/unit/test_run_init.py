@@ -794,3 +794,52 @@ def test_a_planted_git_in_the_current_folder_is_never_used(tmp_path, monkeypatch
     assert init_mod._find_git() is None
     monkeypatch.setenv("PATH", str(planted))
     assert init_mod._find_git() is not None  # an absolute PATH entry is used
+
+
+@pytest.mark.parametrize(
+    "value",
+    [
+        r"\\attacker.example\share\repo.git",
+        "//attacker.example/share/repo.git",
+        r"\\?\UNC\attacker.example\share",
+        r"C:\Users\someone\other\.git",
+        "/home/someone/other/.git",
+        "../other/.git",
+        "sub/../../outside",
+    ],
+)
+def test_a_gitdir_outside_the_target_is_refused_without_a_lookup(tmp_path, monkeypatch, value):
+    # A gitdir: line could name a UNC path (an SMB request leaks the NTLM hash on Windows) or
+    # another repository of the operator (self-audit of 2026-11-13).
+    work = tmp_path / "target"
+    work.mkdir()
+    (work / ".git").write_text(f"gitdir: {value}\n", encoding="utf-8")
+    seen: list[str] = []
+    real_lstat = os.lstat
+
+    def lstat(path, *args, **kwargs):
+        seen.append(str(path))
+        return real_lstat(path, *args, **kwargs)
+
+    monkeypatch.setattr(init_mod.os, "lstat", lstat)
+    assert init_mod._git_folder(work) is None
+    assert not any("attacker" in item or "someone" in item for item in seen), seen
+
+
+def test_a_gitdir_inside_the_target_is_used(tmp_path):
+    work = tmp_path / "target"
+    (work / "modules" / "app.git").mkdir(parents=True)
+    (work / ".git").write_text("gitdir: modules/app.git\n", encoding="utf-8")
+    assert init_mod._git_folder(work) == work / "modules" / "app.git"
+
+
+def test_history_refuses_a_commondir_outside_or_alternates(tmp_path):
+    work = tmp_path / "target"
+    git = work / ".git"
+    (git / "objects" / "info").mkdir(parents=True)
+    assert init_mod._history_refusal(work, git) is None
+    (git / "commondir").write_text(r"\\attacker.example\share" + "\n", encoding="utf-8")
+    assert "commondir" in init_mod._history_refusal(work, git)
+    (git / "commondir").unlink()
+    (git / "objects" / "info" / "alternates").write_text("/elsewhere/objects\n", encoding="utf-8")
+    assert "alternates" in init_mod._history_refusal(work, git)

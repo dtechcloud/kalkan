@@ -87,7 +87,7 @@ import sys
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 from typing import Any, Final
 from urllib.parse import urlsplit, urlunsplit
 
@@ -609,9 +609,43 @@ def _read_small(path: Path, limit: int = _HEAD_MAX_BYTES) -> str | None:
         return None
 
 
+def _confined_folder(root: Path, base: Path, value: str) -> Path | None:
+    """Return the folder that the path ``value`` (from a git pointer file, relative to ``base``)
+    names, or None when it is not a real folder inside ``root``.
+
+    The value comes from the audited folder (a ``gitdir:`` line, a ``commondir`` file). It is
+    checked as text before any file system call: an absolute path, a drive, a UNC path or a
+    long-path (question mark) form is refused, because even a lookup of a UNC path sends an
+    SMB request with the NTLM hash of the operator on Windows (self-audit of 2026-11-13).
+    Inside ``root`` the
+    walk checks each part with ``lstat``, so it never passes a link.
+    """
+    text = value.strip()
+    if not text or "\0" in text:
+        return None
+    windows = PureWindowsPath(text)
+    if windows.drive or windows.anchor or text.startswith(("/", "\\")) or os.path.isabs(text):
+        return None
+    top = os.path.normpath(os.path.abspath(root))
+    joined = os.path.normpath(os.path.join(os.path.abspath(base), text))
+    top_key, joined_key = os.path.normcase(top), os.path.normcase(joined)
+    if joined_key != top_key and not joined_key.startswith(top_key.rstrip(os.sep) + os.sep):
+        return None
+    current = Path(top)
+    for part in Path(os.path.relpath(joined, top)).parts:
+        if part in ("", os.curdir):
+            continue
+        current = current / part
+        if not _is_real_directory(current):
+            return None
+    return current
+
+
 def _git_folder(work_tree: Path) -> Path | None:
     """Return the git folder of the work tree root ``work_tree`` (a ``.git`` folder, or the folder
-    that the ``gitdir:`` line of a ``.git`` file names). Links are never followed."""
+    that the ``gitdir:`` line of a ``.git`` file names). Links are never followed, and a
+    ``gitdir:`` folder must be inside ``work_tree`` (:func:`_confined_folder`): before, the
+    line could name another repository of the operator or a UNC path."""
     entry = work_tree / ".git"
     try:
         info = os.lstat(entry)
@@ -626,18 +660,42 @@ def _git_folder(work_tree: Path) -> Path | None:
     text = _read_small(entry) or ""
     for line in text.splitlines():
         if line.startswith("gitdir:"):
-            named = Path(line.split(":", 1)[1].strip())
-            folder = named if named.is_absolute() else work_tree / named
-            return folder if _is_real_directory(folder) else None
+            return _confined_folder(work_tree, work_tree, line.split(":", 1)[1])
     return None
 
 
-def _ref_commit(git_folder: Path, ref: str) -> str | None:
+#: Git files that make git read objects from another place; a history copy refuses them.
+_ALTERNATES: Final = ("objects/info/alternates", "objects/info/http-alternates")
+
+
+def _history_refusal(work_tree: Path, git_folder: Path) -> str | None:
+    """Return why the history of ``work_tree`` is not copied, or None.
+
+    git itself follows a ``commondir`` file and the alternates files of the git folder. A
+    value from the audited folder could name a UNC path or another local repository there, so
+    a ``commondir`` must name a folder inside the work tree, and no alternates file may exist.
+    """
+    common = git_folder
+    if os.path.lexists(git_folder / "commondir"):
+        found = _confined_folder(work_tree, git_folder, _read_small(git_folder / "commondir") or "")
+        if found is None:
+            return "the commondir file of the git folder names no folder inside the target"
+        common = found
+    for base in dict.fromkeys((git_folder, common)):
+        for name in _ALTERNATES:
+            if os.path.lexists(base / name):
+                return f"the git folder has {name} (objects from another place)"
+    return None
+
+
+def _ref_commit(git_folder: Path, ref: str, work_tree: Path) -> str | None:
     common = git_folder
     pointer = _read_small(git_folder / "commondir")
     if pointer and pointer.strip():
-        named = Path(pointer.strip())
-        common = named if named.is_absolute() else git_folder / named
+        found = _confined_folder(work_tree, git_folder, pointer)
+        if found is None:
+            return None
+        common = found
     for base in dict.fromkeys((git_folder, common)):
         value = (_read_small(base / ref) or "").strip()
         if _GIT_SHA.fullmatch(value):
@@ -676,7 +734,7 @@ def read_head(directory: Path) -> str | None:
             return head
         if head.startswith("ref:"):
             ref = head[4:].strip()
-            return _ref_commit(git_folder, ref) if _REF_NAME.fullmatch(ref) else None
+            return _ref_commit(git_folder, ref, folder) if _REF_NAME.fullmatch(ref) else None
         return None
     return None
 
@@ -984,12 +1042,16 @@ def _local_history(
             "status": "none",
             "detail": "the target folder is not the root of a git work tree (no .git entry)",
         }
-    if _git_folder(folder) is None:
+    git_folder = _git_folder(folder)
+    if git_folder is None:
         return None, {
             "status": "failed",
-            "detail": "the .git entry of the target is a link or "
-            "names no git folder; no history copy",
+            "detail": "the .git entry of the target is a link or names no git folder inside "
+            "the target; no history copy",
         }
+    refusal = _history_refusal(folder, git_folder)
+    if refusal:
+        return None, {"status": "failed", "detail": f"{refusal}; no history copy"}
     destination = run_dir / SOURCE_DIRNAME
     try:
         copy_history(folder, destination, timeout_seconds=timeout_seconds)
