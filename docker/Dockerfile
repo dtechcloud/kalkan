@@ -28,7 +28,7 @@ ARG WITH_GO=true
 # read from the Docker Hub registry on 2026-10-16. Change the tag and the digest together.
 # The image is on a FROM line of its own, so that Dependabot can update the tag and the digest
 # (.github/dependabot.yml: patch releases of Python 3.12 only).
-FROM python:3.12.15-slim-trixie@sha256:a0f57064cbdcd6285fa45f51237ab0b35ea8ebaed06a1f5973e89e19dfb86704 AS pinned-python
+FROM python:3.12.16-slim-trixie@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b AS pinned-python
 
 # ---------------------------------------------------------------------------------------------
 # base: Python, git, CA certificates and the non-root user. No compilers.
